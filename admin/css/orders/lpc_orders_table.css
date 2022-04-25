@@ -1,0 +1,179 @@
+.lpc_unit_actions{
+	width: 100px;
+}
+
+.lpcspinner{
+	background: url('/wp-admin/images/wpspin_light-2x.gif') no-repeat;
+	background-size: 16px 16px;
+	display: none;
+	opacity: .7;
+	filter: alpha(opacity=70);
+	width: 16px;
+	height: 16px;
+	margin: 5px 5px 0;
+}
+
+.lpc_shipping_rates_title_hide{
+	display: none;
+}
+
+.lpc_print_labels_button{
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+#lpc__orders_listing__page__more_options--toggle{
+	align-items: center;
+	display: flex;
+	height: 30px;
+	float: left;
+}
+
+#lpc__orders_listing__page__more_options--options__bottom-actions{
+	align-items: center;
+	display: flex;
+	height: 30px;
+	width: fit-content;
+	margin: 1.5rem 0;
+}
+
+#lpc__orders_listing__page__more_options--toggle--text{
+	cursor: pointer;
+}
+
+#lpc__orders_listing__page__more_options--options input{
+	margin: 0.5rem;
+}
+
+#lpc__orders_listing__page__more_options--options{
+	float: left;
+}
+
+.lpc__orders_listing__page__more_options--options__title{
+	font-weight: bold;
+}
+
+#lpc__orders_listing__page__more_options--options__bottom-actions__reset{
+	cursor: pointer;
+}
+
+#lpc__orders_listing__page__more_options--toggle--numbers_filters{
+	display: inline-block;
+	vertical-align: top;
+	box-sizing: border-box;
+	margin: 1px 0 -1px 2px;
+	padding: 0 5px;
+	min-width: 18px;
+	height: 18px;
+	border-radius: 9px;
+	background-color: #EC7407;
+	color: #fff;
+	font-size: 11px;
+	line-height: 1.6;
+	text-align: center;
+	z-index: 26;
+}
+
+#lpc__orders_listing__title__inward, .lpc_generate_inward_label{
+	color: blue;
+}
+
+#lpc__orders_listing__title__outward, .lpc_generate_outward_label{
+	color: green;
+}
+
+#lpc__orders_listing__title__bordereau, .lpc__orders_listing__id--bordereau{
+	color: #3857e9;
+}
+
+.lpc_generate_inward_label{
+	padding: 5px 0;
+}
+
+.lpc_generate_label{
+	cursor: pointer;
+}
+
+.lpc_generate_label_dashicon{
+	line-height: 20px;
+}
+
+.lpc__orders_listing__tracking_number--inward{
+	color: blue;
+}
+
+.lpc__orders_listing__tracking_number--outward{
+	color: green;
+}
+
+.lpc__orders_listing__tracking-numbers .dashicons.lpc__orders_listing__inward_logo{
+	transform: rotate(180deg);
+	cursor: default;
+	margin: 0;
+}
+
+.column-lpc-label .dashicons{
+	font-size: 1rem;
+	cursor: pointer;
+	margin: 0 0.1rem;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-bordereau, .woocommerce_page_wc_colissimo_view td.lpc-bordereau{
+	max-width: 6rem;
+	width: 6rem;
+}
+
+.woocommerce_page_wc_colissimo_view td.lpc-bordereau a{
+	margin-right: 10px;
+	word-wrap: normal;
+	display: inline-block;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-customer, .woocommerce_page_wc_colissimo_view td.lpc-customer{
+	max-width: 8rem;
+	width: 8rem;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-id, .woocommerce_page_wc_colissimo_view td.lpc-id{
+	max-width: 3.5rem;
+	width: 3.5rem
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-country, .woocommerce_page_wc_colissimo_view td.lpc-country{
+	max-width: 4rem;
+	width: 4rem;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-date, .woocommerce_page_wc_colissimo_view td.lpc-date{
+	max-width: 6rem;
+	width: 6rem;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-address, .woocommerce_page_wc_colissimo_view td.lpc-address{
+	max-width: 11rem;
+	width: 11rem;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-label, .woocommerce_page_wc_colissimo_view td.lpc-label{
+	max-width: 16rem;
+	width: 16rem;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-woo-status, .woocommerce_page_wc_colissimo_view td.lpc-woo-status{
+	max-width: 11rem;
+	width: 11rem;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-shipping-method, .woocommerce_page_wc_colissimo_view td.lpc-shipping-method{
+	max-width: 11rem;
+	width: 11rem;
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-shipping-status, .woocommerce_page_wc_colissimo_view td.lpc-shipping-status{
+	max-width: 8rem;
+	width: 8rem;
+}
+
+#colissimo-tracking_number_import{
+	display: none;
+}

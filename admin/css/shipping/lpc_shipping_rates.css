@@ -1,0 +1,20 @@
+#lpc_nosign_shipping_rates{
+	overflow: auto;
+}
+
+.shippingrows thead tr{
+	background-color: #E5E5E5;
+}
+
+.shippingrows thead tr th{
+	text-align: center;
+}
+
+.shippingrows .table_rates td.check-column{
+	vertical-align: middle;
+	padding: inherit;
+}
+
+.shippingrows .table_rates td.check-column input[type="checkbox"]{
+	margin-left: 11px;
+}

@@ -1,0 +1,218 @@
+/* Global elements */
+
+.lpc-modal #lpc_layer_relays, .lpc-modal .content{
+	height: 100%;
+}
+
+a#lpc_pick_up_web_service_show_map{
+	cursor: pointer;
+}
+
+.lpc-modal .wc-backbone-modal-main{
+	overflow: hidden;
+}
+
+#lpc_layer_error_message{
+	color: red;
+}
+
+#lpc_map{
+	height: 100%;
+}
+
+#lpc_left{
+	width: calc(100% - 220px);
+	height: calc(100% - 70px);
+	min-height: 400px;
+	float: left;
+}
+
+#lpc_right{
+	float: right;
+	height: calc(100% - 70px);
+	min-height: 400px;
+	width: 220px;
+	overflow: hidden;
+	overflow-y: auto;
+	padding-left: 10px;
+}
+
+/* Search address zone */
+
+#lpc_search_address{
+	text-align: center;
+}
+
+.lpc_modal_relays_search_input{
+	width: 100%;
+	max-width: 300px;
+	margin-right: 30px;
+	margin-left: 10px;
+}
+
+#lpc_modal_address_details{
+	display: inline-block;
+}
+
+#lpc_modal_relays_search_address input{
+	max-width: 500px;
+}
+
+#lpc_modal_relays_search_zipcode input{
+	width: 80px;
+}
+
+#lpc_modal_relays_search_city input{
+	width: 180px;
+}
+
+.lpc_modal_relays_search_input, #lpc_layer_button_search{
+	margin-bottom: 1rem;
+}
+
+#lpc_layer_relays_loader{
+	height: 15px;
+}
+
+.lpc-modal #lpc_layer_relays_loader{
+	z-index: 1000;
+	border: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background: rgb(255, 255, 255);
+	opacity: 0.6;
+	cursor: default;
+	position: absolute;
+}
+
+
+/* Relay listing */
+
+.lpc_relay_separator{
+	width: 100%;
+	margin: 1rem 0;
+}
+
+.lpc_layer_relay_name{
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.lpc_layer_relay_address{
+	font-size: 12px;
+	color: grey;
+}
+
+.lpc_layer_relay_address_street{
+	display: block;
+}
+
+.lpc_layer_relay_distance{
+	font-size: 12px;
+}
+
+.lpc_layer_relay_button_choose{
+	margin: 1rem;
+	float: right;
+}
+
+.lpc_layer_relay_id,
+.lpc_layer_relay_latitude,
+.lpc_layer_relay_longitude,
+.lpc_layer_relay_schedule,
+.lpc_layer_relay_address_country,
+.lpc_layer_relay_type{
+	display: none;
+}
+
+
+/* Relay information window */
+
+.lpc_store_name{
+	font-weight: bold;
+	font-size: 14px;
+	display: block;
+}
+
+.lpc_store_address{
+	color: grey;
+	font-size: 12px;
+}
+
+.lpc_store_schedule table td{
+	padding: 0 2px 0 0;
+	font-size: 12px;
+}
+
+
+/* Unknown */
+
+#lpc_change_my_relay{
+	color: #06187c;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+
+/* Mobile version */
+
+@media all and (max-width: 1500px){
+	#lpc_modal_relays_search_address{
+		width: 100%;
+		display: block;
+	}
+
+	#lpc_modal_relays_search_address input{
+		max-width: 80%;
+	}
+
+	#lpc_modal_address_details{
+		display: block;
+	}
+
+	#lpc_modal_relays_search_zipcode{
+		width: 30%;
+		display: inline-block;
+	}
+
+	#lpc_modal_relays_search_zipcode input{
+		max-width: 80%;
+	}
+
+	#lpc_modal_relays_search_city{
+		width: 40%;
+		display: inline-block;
+	}
+
+	#lpc_modal_relays_search_city input{
+		max-width: 80%;
+	}
+}
+
+@media all and (max-width: 1023px){
+	#lpc_right{
+		float: left;
+		width: 100%;
+		height: auto;
+		overflow: visible;
+		padding-left: inherit;
+		padding-top: 10px;
+	}
+
+	#lpc_left{
+		width: 100%;
+		height: 400px;
+	}
+
+	.lpc_layer_relay_address{
+		float: left;
+	}
+
+	.lpc_relay_choose_btn{
+		float: right;
+	}
+}

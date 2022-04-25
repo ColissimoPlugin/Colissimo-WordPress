@@ -1,0 +1,886 @@
+{
+  "main": [
+    {
+      "id": "lpc_section_general",
+      "type": "title",
+      "title": "General configuration"
+    },
+    {
+      "id": "lpc_id_webservices",
+      "type": "text",
+      "title": "ID",
+      "desc": "ID of your account for La Poste webservices",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_pwd_webservices",
+      "type": "password",
+      "title": "Password",
+      "desc": "Password to connect to La Poste webservices and use the module",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_parent_id_webservices",
+      "type": "text",
+      "title": "Parent account ID",
+      "desc": "If you use an advanced account, please enter the parent account ID",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_section_general",
+      "type": "sectionend"
+    },
+    {
+      "id": "lpc_section_origin_address",
+      "type": "title",
+      "title": "Origin address",
+      "desc": "This is the address of your warehouse, if this address is set it will override the default WooCommerce store address"
+    },
+    {
+      "id": "lpc_origin_address_line_1",
+      "type": "originaddress",
+      "title": "Address line 1",
+      "desc": "The street address for your warehouse location",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_origin_address_line_2",
+      "type": "originaddress",
+      "title": "Address line 2",
+      "desc": "An additional, optional address line for your warehouse location",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_origin_address_city",
+      "type": "originaddress",
+      "title": "City",
+      "desc": "The city in which your warehouse is located",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_origin_address_country",
+      "type": "originaddress",
+      "title": "Country / State",
+      "desc": "The country and state or province, if any, in which your warehouse is located",
+      "desc_tip": true,
+      "class": ""
+    },
+    {
+      "id": "lpc_origin_address_zipcode",
+      "type": "originaddress",
+      "title": "Postcode / ZIP",
+      "desc": "The postal code, if any, in which your warehouse is located",
+      "desc_tip": true,
+      "class": ""
+    },
+    {
+      "id": "lpc_section_origin_address",
+      "type": "sectionend"
+    },
+    {
+      "id": "lpc_section_dev",
+      "type": "title",
+      "title": "Debug and development"
+    },
+    {
+      "id": "lpc_log",
+      "type": "select",
+      "title": "Log messages",
+      "desc": "The extension will save informative or debug messages in a file when needed, please enable it only if support asks for it",
+      "desc_tip": true,
+      "class": "",
+      "default": "0",
+      "options": {
+        "0": "No",
+        "1": "Yes"
+      }
+    },
+    {
+      "id": "lpc_log",
+      "type": "seelog",
+      "title": "",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_status_page",
+      "type": "lpcstatus",
+      "title": "Colissimo services",
+      "text": "Check status",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_contact",
+      "type": "mailto",
+      "title": "Need help?",
+      "text": "Contact us",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_section_dev",
+      "type": "sectionend"
+    }
+  ],
+  "ddp": [
+    {
+      "id": "lpc_section_delivery_duty",
+      "type": "title",
+      "title": "Delivery Duty Paid settings"
+    },
+    {
+      "id": "lpc_extracost_bh",
+      "type": "number",
+      "title": "Option price for Bahrain",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_ca",
+      "type": "number",
+      "title": "Option price for Canada",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_cn",
+      "type": "number",
+      "title": "Option price for China",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_eg",
+      "type": "number",
+      "title": "Option price for Egypt",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_hk",
+      "type": "number",
+      "title": "Option price for Hong Kong",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_id",
+      "type": "number",
+      "title": "Option price for Indonesia",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_jp",
+      "type": "number",
+      "title": "Option price for Japan",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_kw",
+      "type": "number",
+      "title": "Option price for Kuwait",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_mx",
+      "type": "number",
+      "title": "Option price for Mexico",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_om",
+      "type": "number",
+      "title": "Option price for Oman",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_ph",
+      "type": "number",
+      "title": "Option price for Philippines",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_sa",
+      "type": "number",
+      "title": "Option price for Saudi Arabia",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_sg",
+      "type": "number",
+      "title": "Option price for Singapore",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_za",
+      "type": "number",
+      "title": "Option price for South Africa",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_kr",
+      "type": "number",
+      "title": "Option price for South Korea",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_ch",
+      "type": "number",
+      "title": "Option price for Switzerland",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_th",
+      "type": "number",
+      "title": "Option price for Thailand",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_ae",
+      "type": "number",
+      "title": "Option price for United Arab Emirates",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_gb",
+      "type": "number",
+      "title": "Option price for United Kingdom",
+      "class": "",
+      "default": "10",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_us",
+      "type": "number",
+      "title": "Option price for United States",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_extracost_msg",
+      "type": "textarea",
+      "title": "Message shown when selecting the sending method",
+      "class": "",
+      "default": "",
+      "css": "min-width: 50%; height: 75px;"
+    },
+    {
+      "id": "lpc_section_delivery_duty",
+      "type": "sectionend"
+    }
+  ],
+  "label": [
+    {
+      "id": "lpc_section_labels",
+      "type": "title",
+      "title": "Labels"
+    },
+    {
+      "id": "lpc_company_name",
+      "type": "text",
+      "title": "Name of your store company",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_preparation_time",
+      "type": "number",
+      "title": "Average preparation delay",
+      "desc": "Your average delay for preparation of a shipment, in days.",
+      "desc_tip": true,
+      "class": "",
+      "default": "1",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_using_insurance",
+      "type": "checkbox",
+      "title": "Use Colissimo Insurance?",
+      "desc": "If enabled, each label generation will use Colissimo Insurance feature by default.",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_packaging_weight",
+      "type": "numberinputwithweightunit"
+    },
+    {
+      "id": "lpc_calculate_shipping_before_coupon",
+      "type": "checkbox",
+      "title": "Calculate shipping method before applying coupons",
+      "desc": "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any coupon.",
+      "desc_tip": true,
+      "default": "no"
+    },
+    {
+      "id": "lpc_deliveryLabelFormat",
+      "type": "select",
+      "title": "Delivery label format",
+      "class": "",
+      "default": "PDF_A4_300dpi",
+      "options": {
+        "PDF_A4_300dpi": "PDF office printing, dimension A4 and resolution of 300dpi",
+        "PDF_10x15_300dpi": "PDF office printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "DPL_10x15_300dpi": "DPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "DPL_10x15_203dpi": "DPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi",
+        "ZPL_10x15_300dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "ZPL_10x15_203dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi"
+      }
+    },
+    {
+      "id": "lpc_generate_label_on",
+      "type": "multiselectorderstatus",
+      "title": "",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_order_status_on_label_generated",
+      "type": "selectorderstatusonlabelgenerated",
+      "title": "",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_order_status_on_bordereau_generated",
+      "type": "selectorderstatusonbordereaugenerated",
+      "title": "",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_email_outward_tracking",
+      "type": "select",
+      "title": "Send tracking email",
+      "desc": "Send the tracking link in an email to customer. Please make sure that the 'Colissimo order tracking' email is enabled in WooCommerce->Settings->Emails.",
+      "desc_tip": true,
+      "class": "",
+      "default": "no",
+      "options": {
+        "on_outward_label_generation": "On outward label generation",
+        "on_bordereau_generation": "On bordereau generation",
+        "no": "Disable"
+      }
+    },
+    {
+      "id": "lpc_email_tracking_link",
+      "type": "select",
+      "title": "Tracking link",
+      "desc": "Choose where the tracking link in the tracking email will redirect to",
+      "desc_tip": true,
+      "class": "",
+      "default": "website_tracking_page",
+      "options": {
+        "website_tracking_page": "This website's tracking page",
+        "laposte_tracking_page": "La Poste's tracking page"
+      }
+    },
+    {
+      "id": "lpc_add_customer_notes",
+      "type": "checkbox",
+      "title": "Add order notes on label",
+      "desc": "If enabled, the order notes set by the customer during the checkout will be displayed on the label",
+      "desc_tip": true,
+      "default": "yes"
+    },
+    {
+      "id": "lpc_day_purge",
+      "type": "number",
+      "title": "Number of days to consider labels for purging (days)",
+      "desc": "Delay before deleting labels BLOB from database. Use 0 or leave empty to disable this purge.",
+      "desc_tip": true,
+      "class": "",
+      "default": "",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_status_on_partial_expedition",
+      "type": "selectorderstatuspartialexpedition",
+      "title": "",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_status_on_delivered",
+      "type": "selectorderstatusdelivered",
+      "title": "",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "display_logo",
+      "type": "checkbox",
+      "title": "Display shipping methods logo on checkout",
+      "desc": "Choose to add the shipping methods logo next to the method name in the checkout",
+      "desc_tip": true,
+      "default": "no"
+    },
+    {
+      "id": "display_import_tracking_number",
+      "type": "checkbox",
+      "title": "Display a button to import your tracking number in Colissimo listing",
+      "desc": "This feature is only if you don't generate your labels on your website. You can import a CSV to set the tracking number in WooCommerce with the following columns: order_id, tracking_number",
+      "desc_tip": true,
+      "default": "no"
+    },
+    {
+      "id": "add_invoice_zip_label",
+      "type": "checkbox",
+      "title": "Add the invoice in the label archive",
+      "desc": "In the Colissimo listing on the bulk action download label information, if this option is checked it adds the invoice to the archive",
+      "desc_tip": true,
+      "default": "yes"
+    },
+    {
+      "id": "lpc_section_labels",
+      "type": "sectionend"
+    },
+    {
+      "id": "lpc_section_return_labels",
+      "type": "title",
+      "title": "Return labels"
+    },
+    {
+      "id": "lpc_returnLabelFormat",
+      "type": "select",
+      "title": "Return label format",
+      "class": "",
+      "default": "PDF_A4_300dpi",
+      "options": {
+        "PDF_A4_300dpi": "PDF office printing, dimension A4 and resolution of 300dpi",
+        "PDF_10x15_300dpi": "PDF office printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "DPL_10x15_300dpi": "DPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "DPL_10x15_203dpi": "DPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi",
+        "ZPL_10x15_300dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "ZPL_10x15_203dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi"
+      }
+    },
+    {
+      "id": "lpc_createReturnLabelWithOutward",
+      "type": "checkbox",
+      "title": "Automatically create return label at the same time as the outward label",
+      "desc": "If you don't activate this option, you can still manually create return labels on order shipping page",
+      "desc_tip": true,
+      "class": ""
+    },
+    {
+      "id": "lpc_email_return_label",
+      "type": "checkbox",
+      "title": "Automatically email the return label to the customer",
+      "desc": "If enabled, the return label will be automatically emailed to the customer when it is generated. Please make sure that the 'Inward label generated' email is enabled in WooCommerce->Settings->Emails.",
+      "desc_tip": true,
+      "class": ""
+    },
+    {
+      "id": "lpc_bal_return",
+      "type": "checkbox",
+      "title": "MailBox pick-up",
+      "desc": "Allow customers to automatically create return labels and use them to return the parcel from their MailBox",
+      "desc_tip": true,
+      "class": ""
+    },
+    {
+      "id": "lpc_customers_download_return_label",
+      "type": "checkbox",
+      "title": "Allow customers to download return label from their account",
+      "desc": "If the return label doesn't exist, it will be generated",
+      "desc_tip": true,
+      "default": "no"
+    },
+    {
+      "id": "lpc_section_return_labels",
+      "type": "sectionend"
+    },
+    {
+      "id": "lpc_section_zpldpl_labels",
+      "type": "title",
+      "title": "ZPL/DPL labels printing"
+    },
+    {
+      "id": "lpc_zpldpl_labels_port",
+      "type": "select",
+      "title": "Port",
+      "class": "",
+      "default": "USB",
+      "options": {
+        "USB": "USB",
+        "ETHERNET": "Ethernet"
+      }
+    },
+    {
+      "id": "lpc_zpldpl_labels_ip",
+      "type": "text",
+      "title": "IP address",
+      "class": "",
+      "default": "",
+      "desc": "IPV4 format IP address. Only if Ethernet is selected for Port",
+      "desc_tip": true
+    },
+    {
+      "id": "lpc_zpldpl_labels_protocol",
+      "type": "select",
+      "title": "Protocol",
+      "class": "",
+      "default": "DATAMAX",
+      "options": {
+        "DATAMAX": "DATAMAX",
+        "INTERMEC": "INTERMEC",
+        "ZEBRA": "ZEBRA"
+      },
+      "desc": "Only if USB is selected for Port",
+      "desc_tip": true
+    },
+    {
+      "id": "lpc_section_zpldpl_labels",
+      "type": "sectionend"
+    }
+  ],
+  "shipping": [
+    {
+      "id": "lpc_domiciless",
+      "type": "title",
+      "title": "Colissimo without signature"
+    },
+    {
+      "id": "lpc_domiciless_FreeFromOrderValue",
+      "type": "number",
+      "title": "Free from order value",
+      "desc": "Shipping cost will be free if the order value is over the given one (only applied if this field is strictly positive).",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_domiciless",
+      "type": "sectionend"
+    },
+    {
+      "id": "lpc_domicileas",
+      "type": "title",
+      "title": "Colissimo with signature"
+    },
+    {
+      "id": "lpc_domicileas_FreeFromOrderValue",
+      "type": "number",
+      "title": "Free from order value",
+      "desc": "Shipping cost will be free if the order value is over the given one (only applied if this field is strictly positive).",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_domicileas_SendingService",
+      "type": "select",
+      "title": "Sending service",
+      "class": "",
+      "default": "partner",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      },
+      "desc": "Sending service used for Austria, Germany, Italy and Luxembourg",
+      "desc_tip": true
+    },
+    {
+      "id": "lpc_domicileas",
+      "type": "sectionend"
+    },
+    {
+      "id": "lpc_expert",
+      "type": "title",
+      "title": "Colissimo Expert"
+    },
+    {
+      "id": "lpc_expert_FreeFromOrderValue",
+      "type": "number",
+      "title": "Free from order value",
+      "desc": "Shipping cost will be free if the order value is over the given one (only applied if this field is strictly positive).",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_expert_SendingService",
+      "type": "select",
+      "title": "Sending service",
+      "class": "",
+      "default": "partner",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      },
+      "desc": "Sending service used for Austria, Germany, Italy and Luxembourg",
+      "desc_tip": true
+    },
+    {
+      "id": "lpc_expert",
+      "type": "sectionend"
+    },
+    {
+      "id": "lpc_relay",
+      "type": "title",
+      "title": "Colissimo relay"
+    },
+    {
+      "id": "lpc_relay_FreeFromOrderValue",
+      "type": "number",
+      "title": "Free from order value",
+      "desc": "Shipping cost will be free if the order value is over the given one (only applied if this field is strictly positive).",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_prUseWebService",
+      "type": "checkbox",
+      "title": "Use web service instead of widget?",
+      "desc": "If enabled, the web service will be used to choose a relay point, else the standard Colissimo widget will be used.",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_gmap_key",
+      "type": "text",
+      "title": "Google maps API key",
+      "desc": "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_show_international",
+      "type": "checkbox",
+      "title": "Show internationals Relay Points",
+      "desc": "Only applicable for Webservice method",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_prCustomizeWidget",
+      "type": "checkbox",
+      "title": "Customize widget",
+      "desc": "If enabled, you can customize font and font color of the Colissimo widget",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_prAddressTextColor",
+      "type": "color",
+      "title": "Colour of the selected pickup point in the list and on the map",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_prListTextColor",
+      "type": "color",
+      "title": "Information icons color",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_prDisplayFont",
+      "type": "select",
+      "title": "Font",
+      "desc": "Font for texts inside the widget",
+      "desc_tip": true,
+      "class": "",
+      "default": "verdana",
+      "options": {
+        "georgia": "Georgia, serif",
+        "palatino": "\"Palatino Linotype\", \"Book Antiqua\", Palatino, serif",
+        "times": "\"Times New Roman\", Times, serif",
+        "arial": "Arial, Helvetica, sans-serif",
+        "arialblack": "\"Arial Black\", Gadget, sans-serif",
+        "comic": "\"Comic Sans MS\", cursive, sans-serif",
+        "impact": "Impact, Charcoal, sans-serif",
+        "lucida": "\"Lucida Sans Unicode\", \"Lucida Grande\", sans-serif",
+        "tahoma": "Tahoma, Geneva, sans-serif",
+        "trebuchet": "\"Trebuchet MS\", Helvetica, sans-serif",
+        "verdana": "Verdana, Geneva, sans-serif",
+        "courier": "\"Courier New\", Courier, monospace",
+        "lucidaconsole": "\"Lucida Console\", Monaco, monospace"
+      }
+    },
+    {
+      "id": "lpc_relay",
+      "type": "sectionend"
+    }
+  ],
+  "custom": [
+    {
+      "id": "lpc_customs",
+      "type": "title",
+      "title": "Customs declaration"
+    },
+    {
+      "id": "lpc_customs_defaultHsCode",
+      "type": "text",
+      "title": "Default HS code",
+      "desc": "Used when no HS code set on a product",
+      "desc_tip": true
+    },
+    {
+      "id": "lpc_customs_hsCodeFieldName",
+      "type": "text",
+      "title": "HS code custom attribute name",
+      "desc": "The name of the custom attribute you use to store the product HS code on products",
+      "desc_tip": true,
+      "default": "hs_code"
+    },
+    {
+      "id": "lpc_default_country_for_product",
+      "type": "defaultcountry",
+      "title": "Default country for products without country",
+      "desc": "This option allows you to set a default country for products without country",
+      "desc_tip": true,
+      "default": ""
+    },
+    {
+      "id": "lpc_customs_countryOfManufactureFieldName",
+      "type": "text",
+      "title": "Origin custom attribute name",
+      "desc": "The name of the custom attribute you use to store the product country of manufacture / origin on products",
+      "desc_tip": true,
+      "default": "country_of_manufacture"
+    },
+    {
+      "id": "lpc_customs_defaultCustomsCategory",
+      "type": "select",
+      "title": "Default customs category",
+      "desc": "Define the nature of the shipment",
+      "desc_tip": true,
+      "options": {
+        "1": "Gift",
+        "2": "Commercial sample",
+        "3": "Commercial shipment",
+        "4": "Document",
+        "5": "Other"
+      },
+      "default": "5"
+    },
+    {
+      "id": "lpc_customs_isFtd",
+      "type": "checkbox",
+      "title": "Are parcels free of taxes and fees?",
+      "desc": "For french overseas destinations only (except St-Pierre-et-Miquelon)",
+      "desc_tip": true,
+      "default": ""
+    },
+    {
+      "id": "lpc_eori_number",
+      "type": "text",
+      "title": "EORI number"
+    },
+    {
+      "id": "lpc_eori_uk_number",
+      "type": "text",
+      "title": "UK EORI number",
+      "desc": "EORI number for delivery to United Kingdom",
+      "desc_tip": true
+    },
+    {
+      "id": "lpc_vat_number",
+      "type": "text",
+      "title": "VAT number",
+      "desc": "The VAT number is needed for delivery to United Kingdom",
+      "desc_tip": true
+    },
+    {
+      "id": "lpc_customs",
+      "type": "sectionend"
+    }
+  ]
+}

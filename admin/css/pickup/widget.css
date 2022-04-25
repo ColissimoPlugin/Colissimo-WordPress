@@ -1,0 +1,34 @@
+a.lpc_pick_up_widget_show_map{
+	cursor: pointer;
+}
+
+/* Override style from Colissimo widget */
+.lpc-modal #lpc_widget_container{
+	height: 100% !important;
+	width: 100% !important;
+}
+
+.lpc-modal #lpc_widget_container div#colissimo-container .row{
+	margin-left: 0px;
+}
+
+.lpc-modal #lpc_widget_container #colissimo_widget_zoneTableauHoraires1 table{
+	margin-bottom: 0;
+}
+
+.lpc-modal #lpc_widget_container #colissimo_widget_listePays{
+	height: 32px;
+}
+
+.lpc-modal #lpc_widget_container #colissimo_widget_zoneTableauHoraires1 table td{
+	background-color: inherit;
+}
+
+.lpc-modal #lpc_widget_container #colissimo_widget_zoneTableauHoraires1 table{
+	width: 90%;
+	max-width: 90%;
+}
+
+.lpc-modal div#colissimo-container .colissimo_widget_submit-valider-point-retrait-bulle-bouton{
+	margin: 15px 30px 15px 15px;
+}

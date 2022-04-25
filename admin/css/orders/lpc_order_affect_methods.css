@@ -1,0 +1,29 @@
+.lpc_order_affect{
+	margin: 1em 0;
+}
+
+.lpc_order_affect_method{
+	margin: 0.5em 0;
+}
+
+.lpc_order_affect_available_methods{
+	margin: 1em 0;
+}
+
+.lpc_order_affect_validate_method.button{
+	margin: 0.5em 0;
+}
+
+.lpc_order_affect_relay{
+	margin: 0.5em 0;
+}
+
+.lpc_order_affect_relay_information_displayed{
+	margin: 0.5em 0;
+	padding-left: 1em;
+	color: grey;
+}
+
+.lpc_order_affect_error_message{
+	color: red;
+}
