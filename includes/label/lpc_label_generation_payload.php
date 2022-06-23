@@ -408,7 +408,7 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withInsuranceValue($amount, $productCode, $countryCode, $customParams = []) {
+    public function withInsuranceValue($amount, $productCode, $countryCode, $shippingMethodUsed, $customParams = []) {
         if (!empty($customParams['useInsurance'])) {
             $usingInsurance = $customParams['useInsurance'];
         } else {
@@ -422,7 +422,11 @@ class LpcLabelGenerationPayload {
          */
         $usingInsurance = apply_filters('lpc_payload_letter_parcel_using_insurance', $usingInsurance, $this->getOrderNumber(), $this->getIsReturnLabel());
 
-        if ('yes' !== $usingInsurance || !in_array($productCode, self::PRODUCT_CODE_INSURANCE_AVAILABLE) || ('DOS' == $productCode && 'FR' !== $countryCode)) {
+        if ('yes' !== $usingInsurance || !in_array($productCode, self::PRODUCT_CODE_INSURANCE_AVAILABLE)) {
+            return $this;
+        }
+
+        if ('DOS' === $productCode && 'FR' !== $countryCode && !in_array($shippingMethodUsed, [LpcExpert::ID, LpcExpertDDP::ID])) {
             return $this;
         }
 

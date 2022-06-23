@@ -201,7 +201,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             $payload->withPickupLocationId($relayId);
         }
 
-        $payload->withInsuranceValue($order->get_subtotal(), $productCode, $order->get_shipping_country(), $customParams);
+        $payload->withInsuranceValue($order->get_subtotal(), $productCode, $order->get_shipping_country(), $shippingMethodUsed, $customParams);
 
         return $payload->checkConsistency();
     }
