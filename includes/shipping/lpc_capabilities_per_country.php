@@ -112,7 +112,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
                     return get_post_meta($order->get_id(), LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY, true);
                 case 'lpc_expert_ddp':
                 case 'lpc_expert':
-                    return 'COLI';
+                    return 'DOS';
                 case 'lpc_sign_ddp':
                 case 'lpc_sign':
                     if (in_array($countryCode, self::DOM1_COUNTRIES_CODE)) {
@@ -148,12 +148,6 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         $stateCode   = $order->get_shipping_state();
         $zipCode     = $order->get_shipping_postcode();
         $city        = $order->get_shipping_city();
-
-        // For Brexit
-        if ('GB' === $countryCode) {
-            return true;
-        }
-        // End Brexit
 
         // From DOM1 destinations, we don't need CN23 if we sent from and to the same island
         $storeCountryCode = $this->getStoreCountryCode();
@@ -195,17 +189,9 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         $returnProductCode = $this->getInfoForDestination($countryCode, 'return');
 
         if (true === $returnProductCode) {
-            if (
-                in_array($countryCode, self::DOM1_COUNTRIES_CODE)
-                && $this->isIntraDOM1($storeCountryCode, $countryCode)
-            ) {
+            if (in_array($countryCode, self::DOM1_COUNTRIES_CODE) && $this->isIntraDOM1($storeCountryCode, $countryCode)) {
                 return 'CORE';
-            }
-
-            if (
-                in_array($countryCode, self::DOM1_COUNTRIES_CODE)
-                && !$this->isIntraDOM1($storeCountryCode, $countryCode)
-            ) {
+            } else {
                 return 'CORI';
             }
         }
@@ -215,15 +201,6 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
 
     public function getInfoForDestination($countryCode, $info) {
         $productInfo = $this->getCapabilitiesForCountry($countryCode);
-
-        // Start Brexit
-        $deadlineBrexit = new WC_DateTime('2020-12-31');
-        $now            = new WC_DateTime();
-
-        if ('GB' === $countryCode && $now >= $deadlineBrexit) {
-            $productInfo['lpc_relay'] = false;
-        }
-        // End Brexit
 
         if ('FR' !== $this->getStoreCountryCode()) {
             $productInfo[LpcSignDDP::ID]   = false;
@@ -274,7 +251,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
      * @return bool
      */
     protected function isIntraDOM1($storeCountryCode, $countryCode) {
-        // For expedition between theses destinations, Colissimo consider it as intra
+        // For expedition between these destinations, Colissimo considers it as intra
         $intraCountryCodes = ['GP', 'MQ', 'MF', 'BL'];
 
         if ($storeCountryCode == $countryCode) {

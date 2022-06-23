@@ -11,4 +11,9 @@ if (!empty($additional_content)) {
 
 echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
+/**
+ * Action on the tracking email's footer (text version)
+ *
+ * @since 1.6
+ */
 echo esc_html(apply_filters('woocommerce_email_footer_text', get_option('woocommerce_email_footer_text')));

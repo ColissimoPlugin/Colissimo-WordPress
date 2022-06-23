@@ -161,12 +161,17 @@ END_HTML;
                 continue;
             }
 
-            $wc_order = new WC_Order($orderId);
-            $address  = $wc_order->get_shipping_address_1();
-            $address  .= !empty($wc_order->get_shipping_address_2()) ?
+            try {
+                $wc_order = new WC_Order($orderId);
+            } catch (Exception $exception) {
+                continue;
+            }
+
+            $address = $wc_order->get_shipping_address_1();
+            $address .= !empty($wc_order->get_shipping_address_2()) ?
                 '<br>' . $wc_order->get_shipping_address_2()
                 : '';
-            $address  .= '<br>' . $wc_order->get_shipping_postcode() . ' ' . $wc_order->get_shipping_city();
+            $address .= '<br>' . $wc_order->get_shipping_postcode() . ' ' . $wc_order->get_shipping_city();
 
             $outwardLabel = $wc_order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
             if (current_user_can('lpc_manage_labels')) {

@@ -1,4 +1,11 @@
 <?php
+// for phpcs
+
+/**
+ * Action on the tracking email's header
+ *
+ * @since 1.6
+ */
 do_action('woocommerce_email_header', $email_heading, $email); ?>
 	<p><?php printf(__('Hi %s,', 'wc_colissimo'), $order->get_billing_first_name()); ?></p>
 	<p><?php printf(__('Your order #%s is being prepared and will soon be taken care of for shipping.', 'wc_colissimo'), $order->get_order_number()); ?></p>
@@ -24,4 +31,9 @@ $linkText = __('here', 'wc_colissimo');
         ?>
 	</p>
 <?php
+/**
+ * Action on the tracking email's footer
+ *
+ * @since 1.6
+ */
 do_action('woocommerce_email_footer', $email);

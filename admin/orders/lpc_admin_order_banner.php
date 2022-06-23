@@ -219,9 +219,14 @@ class LpcAdminOrderBanner extends LpcComponent {
         $args['lpc_sending_service_config'] = 'partner';
         $productCode                        = $this->capabilitiesPerCountry->getProductCodeForOrder($order);
         $args['lpc_product_code']           = $productCode;
-        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && !empty($productCode) && in_array($productCode, ['BOS', 'COLI', 'DOS'])) {
+        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && !empty($productCode) && in_array($productCode, ['BOS', 'DOS'])) {
+            $shippingMethod                     = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
             $args['lpc_sending_service_needed'] = true;
-            $args['lpc_sending_service_config'] = LpcHelper::get_option('COLI' === $productCode ? 'lpc_expert_SendingService' : 'lpc_domicileas_SendingService');
+            if (in_array($shippingMethod, [LpcExpert::ID, LpcExpertDDP::ID])) {
+                $args['lpc_sending_service_config'] = LpcHelper::get_option('lpc_expert_SendingService');
+            } else {
+                $args['lpc_sending_service_config'] = LpcHelper::get_option('lpc_domicileas_SendingService');
+            }
         }
 
         // On demand

@@ -6,7 +6,7 @@ class LpcLabelGenerationPayload {
     const FORCED_ORIGINAL_IDENT = 'A';
     const RETURN_LABEL_LETTER_MARK = 'R';
     const RETURN_TYPE_CHOICE_NO_RETURN = 3;
-    const PRODUCT_CODE_INSURANCE_AVAILABLE = ['DOS', 'COL', 'BPR', 'A2P', 'CDS', 'CORE', 'CORI', 'COLI'];
+    const PRODUCT_CODE_INSURANCE_AVAILABLE = ['DOS', 'COL', 'BPR', 'A2P', 'CDS', 'CORE', 'CORI'];
     const CUSTOMS_CATEGORY_RETURN_OF_ARTICLES = 6;
     const LABEL_FORMAT_PDF = 'PDF';
     const LABEL_FORMAT_ZPL = 'ZPL';
@@ -21,10 +21,15 @@ class LpcLabelGenerationPayload {
     protected $eoriAdded;
     protected $dimensionsAdded;
 
+    /** @var LpcShippingMethods */
+    protected $lpcShippingMethods;
+
     public function __construct(
-        LpcCapabilitiesPerCountry $capabilitiesPerCountry = null
+        LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
+        LpcShippingMethods $lpcShippingMethods = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
+        $this->lpcShippingMethods     = LpcRegister::get('shippingMethods', $lpcShippingMethods);
 
         $this->payload = [
             'letter' => [
@@ -58,6 +63,11 @@ class LpcLabelGenerationPayload {
             $payloadSender['address']['line3'] = $sender['street2'];
         }
 
+        /**
+         * Filter on the sender when generating a label
+         *
+         * @since 1.6
+         */
         $payloadSender = apply_filters('lpc_payload_letter_sender', $payloadSender, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         $this->payload['letter']['sender']['address'] = $payloadSender;
@@ -66,6 +76,11 @@ class LpcLabelGenerationPayload {
     }
 
     public function withCommercialName($commercialName = null) {
+        /**
+         * Filter on the commercial name when generating a label
+         *
+         * @since 1.6
+         */
         $commercialName = apply_filters('lpc_payload_letter_service_commercial_name', $commercialName, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if (empty($commercialName)) {
@@ -82,6 +97,11 @@ class LpcLabelGenerationPayload {
             $contractNumber = LpcHelper::get_option('lpc_id_webservices');
         }
 
+        /**
+         * Filter on the contract number when generating a label
+         *
+         * @since 1.6
+         */
         $contractNumber = apply_filters('lpc_payload_contract_number', $contractNumber, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if (empty($contractNumber)) {
@@ -150,6 +170,11 @@ class LpcLabelGenerationPayload {
             }
         }
 
+        /**
+         * Filter on the addressee when generating a label
+         *
+         * @since 1.6
+         */
         $payloadAddressee = apply_filters('lpc_payload_letter_addressee', $payloadAddressee, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         $this->payload['letter']['addressee'] = $payloadAddressee;
@@ -188,6 +213,11 @@ class LpcLabelGenerationPayload {
 
         $totalWeight = number_format($totalWeight, 2);
 
+        /**
+         * Filter on the parcel total weight when generating a label
+         *
+         * @since 1.6
+         */
         $totalWeight = apply_filters('lpc_payload_letter_parcel_weight', $totalWeight, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         $this->payload['letter']['parcel']['weight'] = (string) $totalWeight;
@@ -221,6 +251,11 @@ class LpcLabelGenerationPayload {
     }
 
     public function withPickupLocationId($pickupLocationId) {
+        /**
+         * Filter on the pickup location id when generating a label
+         *
+         * @since 1.6
+         */
         $pickupLocationId = apply_filters('lpc_payload_letter_parcel_pickup_location_id', $pickupLocationId, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if (null === $pickupLocationId) {
@@ -235,14 +270,12 @@ class LpcLabelGenerationPayload {
     public function withProductCode($productCode) {
         $allowedProductCodes = [
             'A2P',
-            'ACCI',
             'BDP',
             'BPR',
             'CDS',
             'CMT',
             'COL',
             'COLD',
-            'COLI',
             'COM',
             'CORE',
             'CORI',
@@ -251,6 +284,11 @@ class LpcLabelGenerationPayload {
             'ECO',
         ];
 
+        /**
+         * Filter on the product code when generating a label
+         *
+         * @since 1.6
+         */
         $productCode = apply_filters('lpc_payload_letter_service_product_code', $productCode, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if (!in_array($productCode, $allowedProductCodes)) {
@@ -280,7 +318,12 @@ class LpcLabelGenerationPayload {
     }
 
     public function withDepositDate(\DateTime $depositDate) {
-        $now         = new \DateTime();
+        $now = new \DateTime();
+        /**
+         * Filter on the deposit date when generating a label
+         *
+         * @since 1.6
+         */
         $depositDate = apply_filters('lpc_payload_letter_service_deposit_date', $depositDate, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if ($depositDate->getTimestamp() < $now->getTimestamp()) {
@@ -304,6 +347,11 @@ class LpcLabelGenerationPayload {
             $delay = LpcHelper::get_option('lpc_preparation_time');
         }
 
+        /**
+         * Filter on the preparation delay when generating a label
+         *
+         * @since 1.6
+         */
         $delay = apply_filters('lpc_payload_delay', $delay, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         $depositDate = new \DateTime();
@@ -328,6 +376,11 @@ class LpcLabelGenerationPayload {
                 : LpcHelper::get_option('lpc_deliveryLabelFormat');
         }
 
+        /**
+         * Filter on the output format when generating a label
+         *
+         * @since 1.6
+         */
         $outputFormat = apply_filters('lpc_payload_output_format', $outputFormat, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         $this->payload['outputFormat'] = [
@@ -342,6 +395,11 @@ class LpcLabelGenerationPayload {
     public function withOrderNumber($orderNumber) {
         $this->orderNumber = $orderNumber;
 
+        /**
+         * Filter on the order number when generating a label
+         *
+         * @since 1.6
+         */
         $orderNumber = apply_filters('lpc_payload_letter_service_order_number', $orderNumber, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         $this->payload['letter']['service']['orderNumber']    = $orderNumber;
@@ -357,12 +415,22 @@ class LpcLabelGenerationPayload {
             $usingInsurance = LpcHelper::get_option('lpc_using_insurance', 'no');
         }
 
+        /**
+         * Filter on the using insurance option when generating a label
+         *
+         * @since 1.6
+         */
         $usingInsurance = apply_filters('lpc_payload_letter_parcel_using_insurance', $usingInsurance, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if ('yes' !== $usingInsurance || !in_array($productCode, self::PRODUCT_CODE_INSURANCE_AVAILABLE) || ('DOS' == $productCode && 'FR' !== $countryCode)) {
             return $this;
         }
 
+        /**
+         * Filter on the insurance value when generating a label
+         *
+         * @since 1.6
+         */
         $amount             = (float) apply_filters('lpc_payload_letter_parcel_insurance_value', $amount, $this->getOrderNumber(), $this->getIsReturnLabel());
         $maxInsuranceAmount = $this->getMaxInsuranceAmountByProductCode($productCode);
 
@@ -468,6 +536,11 @@ class LpcLabelGenerationPayload {
     }
 
     public function withCODAmount($amount) {
+        /**
+         * Filter on the COD amount when generating a label
+         *
+         * @since 1.6
+         */
         $amount = (float) apply_filters('lpc_payload_letter_parcel_cod', $amount, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if ($amount > 0) {
@@ -487,6 +560,11 @@ class LpcLabelGenerationPayload {
     }
 
     public function withReturnReceipt($value = true) {
+        /**
+         * Filter on the return label's value
+         *
+         * @since 1.6
+         */
         $value = apply_filters('lpc_payload_letter_parcel_return_receipt', $value, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if ($value) {
@@ -503,6 +581,11 @@ class LpcLabelGenerationPayload {
             return $this;
         }
 
+        /**
+         * Filter on the shipping instructions
+         *
+         * @since 1.6
+         */
         $instructions = apply_filters('lpc_payload_letter_parcel_instructions', $instructions, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         if (empty($instructions)) {
@@ -628,12 +711,22 @@ class LpcLabelGenerationPayload {
                 ];
         }
 
+        /**
+         * Filter on the customs declaration
+         *
+         * @since 1.6
+         */
         $customsDeclarationPayload = apply_filters('lpc_payload_letter_customs_declarations', $customsDeclarationPayload, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         $this->payload['letter']['customsDeclarations'] = $customsDeclarationPayload;
 
         $shippingCosts = isset($customParams['shippingCosts']) ? $customParams['shippingCosts'] : $order->get_shipping_total();
 
+        /**
+         * Filter on the total shipping cost
+         *
+         * @since 1.6
+         */
         $transportationAmount = apply_filters('lpc_payload_letter_service_total_amount', $shippingCosts, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         // payload want centi-currency for these fields.
@@ -649,6 +742,11 @@ class LpcLabelGenerationPayload {
             $eoriNumber = LpcHelper::get_option('lpc_eori_number');
         }
 
+        /**
+         * Filter on the eori number when generating a label
+         *
+         * @since 1.6
+         */
         $eoriNumber = apply_filters('lpc_payload_eori_number', $eoriNumber, $this->getOrderNumber(), $this->getIsReturnLabel());
 
         $eoriFields = [
@@ -1016,9 +1114,11 @@ class LpcLabelGenerationPayload {
         return in_array($productCode, ['A2P', 'BPR']) ? self::MAX_INSURANCE_AMOUNT_RELAY : self::MAX_INSURANCE_AMOUNT;
     }
 
-    public function withPostalNetwork($countryCode, $productCode) {
-        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && in_array($productCode, ['BOS', 'COLI', 'DOS'])) {
-            if ('COLI' === $productCode) {
+    public function withPostalNetwork($countryCode, $productCode, $order) {
+        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && in_array($productCode, ['BOS', 'DOS'])) {
+            $shippingMethod = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
+
+            if (in_array($shippingMethod, [LpcExpert::ID, LpcExpertDDP::ID])) {
                 $network = LpcHelper::get_option('lpc_expert_SendingService');
             } else {
                 $network = LpcHelper::get_option('lpc_domicileas_SendingService');

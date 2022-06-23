@@ -124,7 +124,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         // Sort events first to last in case it isn't done on the API side
         usort($response->parcel->event,
             function ($a, $b) {
-                return strtotime($a->date) > strtotime($b->date) ? 1 : -1;
+                return strtotime($a->date) > strtotime($b->date) ? 1 : - 1;
             }
         );
 
@@ -178,7 +178,11 @@ class LpcUnifiedTrackingApi extends LpcComponent {
             return;
         }
 
-        $allOrderIdsToUpdateTracking = json_decode($allOrderIdsToUpdateTrackingEncoded);
+        $allOrderIdsToUpdateTracking = json_decode($allOrderIdsToUpdateTrackingEncoded, true);
+
+        if (!is_array($allOrderIdsToUpdateTracking)) {
+            $allOrderIdsToUpdateTracking = [$allOrderIdsToUpdateTracking];
+        }
 
         if (0 === count($allOrderIdsToUpdateTracking)) {
             $timestamp = wp_next_scheduled(self::UPDATE_TRACKING_ORDER_CRON_NAME);
@@ -187,11 +191,8 @@ class LpcUnifiedTrackingApi extends LpcComponent {
             return;
         }
 
-        if (!is_array($allOrderIdsToUpdateTracking)) {
-            $allOrderIdsToUpdateTracking = [$allOrderIdsToUpdateTracking];
-        }
-
         $orderIdsToUpdateTracking = array_splice($allOrderIdsToUpdateTracking, 0, 10);
+        $orderStatusOnDelivered = LpcHelper::get_option('lpc_status_on_delivered', LpcOrderStatuses::WC_LPC_DELIVERED);
 
         foreach ($orderIdsToUpdateTracking as $orderId) {
             if (empty($orderId)) {
@@ -242,15 +243,20 @@ class LpcUnifiedTrackingApi extends LpcComponent {
 
                 update_post_meta($orderId, self::LAST_EVENT_CODE_META_KEY, $eventLastCode);
                 update_post_meta($orderId, self::LAST_EVENT_DATE_META_KEY, strtotime($eventLastDate));
+                update_post_meta($orderId, self::LAST_EVENT_INTERNAL_CODE_META_KEY, $currentStateInternalCode);
+
+                // The user manually changed the order status to finished, don't change the order after this
+                if ($orderStatusOnDelivered === $order->get_status()) {
+                    $isDelivered = true;
+                }
                 update_post_meta(
                     $orderId,
                     self::IS_DELIVERED_META_KEY,
                     $isDelivered ? self::IS_DELIVERED_META_VALUE_TRUE : self::IS_DELIVERED_META_VALUE_FALSE
                 );
-                update_post_meta($orderId, self::LAST_EVENT_INTERNAL_CODE_META_KEY, $currentStateInternalCode);
 
                 if ($isDelivered) {
-                    $change_order_status = LpcHelper::get_option('lpc_status_on_delivered', LpcOrderStatuses::WC_LPC_DELIVERED);
+                    $change_order_status = $orderStatusOnDelivered;
                     if ('unchanged_order_status' === $change_order_status) {
                         $change_order_status = '';
                     }
@@ -258,6 +264,11 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                     $change_order_status = empty($currentStateInfo) ? '' : $currentStateInfo['change_order_status'];
                 }
 
+                /**
+                 * Filter on the new status of an order, based on an option in the configuration
+                 *
+                 * @since 1.6.7
+                 */
                 $change_order_status = apply_filters('lpc_unified_tracking_api_change_order_status', $change_order_status, $order);
 
                 if (!empty($change_order_status)) {

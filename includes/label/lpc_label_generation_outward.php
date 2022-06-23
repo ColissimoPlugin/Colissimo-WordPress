@@ -96,6 +96,11 @@ class LpcLabelGenerationOutward extends LpcComponent {
 
         $email_outward_label = LpcHelper::get_option(LpcOutwardLabelEmailManager::EMAIL_OUTWARD_TRACKING_OPTION, 'no');
         if (LpcOutwardLabelEmailManager::ON_OUTWARD_LABEL_GENERATION_OPTION === $email_outward_label) {
+            /**
+             * Action when the shipping label has been sent by email
+             *
+             * @since 1.6
+             */
             do_action(
                 'lpc_outward_label_generated_to_email',
                 ['order' => $order]
@@ -187,7 +192,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withCustomsDeclaration($order, $customParams, $shippingMethodUsed)
             ->withProductCode($productCode)
             ->withOutputFormat()
-            ->withPostalNetwork($recipient['countryCode'], $productCode)
+            ->withPostalNetwork($recipient['countryCode'], $productCode, $order)
             ->withNonMachinable($customParams)
             ->withDDP($shippingMethodUsed);
 

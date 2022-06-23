@@ -134,6 +134,11 @@ class LpcBordereauGeneration extends LpcComponent {
 
                 $email_outward_label = LpcHelper::get_option(LpcOutwardLabelEmailManager::EMAIL_OUTWARD_TRACKING_OPTION, 'no');
                 if (LpcOutwardLabelEmailManager::ON_BORDEREAU_GENERATION_OPTION === $email_outward_label) {
+                    /**
+                     * Action when the shipping label has been sent by email
+                     *
+                     * @since 1.6
+                     */
                     do_action(
                         'lpc_outward_label_generated_to_email',
                         ['order' => $order]

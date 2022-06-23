@@ -246,7 +246,12 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
 
         // Remove duplicate shipping classes
         $cartShippingClasses = array_unique($cartShippingClasses);
-        $totalWeight         = (float) apply_filters('lpc_payload_letter_parcel_weight_checkout', $totalWeight, $package);
+        /**
+         * Filter on the package's total weight, before the checkout calculation
+         *
+         * @since 1.6.7
+         */
+        $totalWeight = (float) apply_filters('lpc_payload_letter_parcel_weight_checkout', $totalWeight, $package);
 
         // For configuration of version 1.1 or lower
         if (isset($rates[0]['weight'])) {

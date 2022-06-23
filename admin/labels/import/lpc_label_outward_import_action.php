@@ -149,6 +149,11 @@ class LpcLabelOutwardImportAction extends LpcComponent {
 
             $email_outward_label = LpcHelper::get_option(LpcOutwardLabelEmailManager::EMAIL_OUTWARD_TRACKING_OPTION, 'no');
             if (LpcOutwardLabelEmailManager::ON_OUTWARD_LABEL_GENERATION_OPTION === $email_outward_label) {
+                /**
+                 * Action called when a shipping label has been generated
+                 *
+                 * @since 1.6.4
+                 */
                 do_action(
                     'lpc_outward_label_generated_to_email',
                     ['order' => $order]

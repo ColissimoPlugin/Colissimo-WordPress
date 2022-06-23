@@ -69,6 +69,11 @@ class LpcLabelGenerationInward extends LpcComponent {
         $this->inwardLabelDb->insert($order->get_id(), $label, $parcelNumber, $cn23, $labelFormat, $outwardLabelNumber);
         $email_inward_label = LpcHelper::get_option(LpcInwardLabelEmailManager::EMAIL_RETURN_LABEL_OPTION, 'no');
         if ('yes' === $email_inward_label) {
+            /**
+             * Action when the return shipping label has been sent by email
+             *
+             * @since 1.0.2
+             */
             do_action(
                 'lpc_inward_label_generated_to_email',
                 [
