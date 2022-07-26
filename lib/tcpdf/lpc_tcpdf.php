@@ -924,7 +924,7 @@ class LPC_TCPDF {
 	 * @protected
 	 * @since 3.0.014 (2008-05-23)
 	 */
-	protected $cell_height_ratio = K_CELL_HEIGHT_RATIO;
+	protected $cell_height_ratio = LpcTcpdfConfig\K_CELL_HEIGHT_RATIO;
 
 	/**
 	 * PDF viewer preferences.
@@ -3424,7 +3424,7 @@ class LPC_TCPDF {
 			} else {
 				$this->x = $this->original_lMargin;
 			}
-			if (($headerdata['logo']) AND ($headerdata['logo'] != K_BLANK_IMAGE)) {
+			if (($headerdata['logo']) AND ($headerdata['logo'] != LpcTcpdfConfig\K_BLANK_IMAGE)) {
 				$imgtype = LPC_TCPDF_IMAGES::getImageFileType(K_PATH_IMAGES . $headerdata['logo']);
 				if (($imgtype == 'eps') OR ($imgtype == 'ai')) {
 					$this->ImageEps(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
@@ -5276,7 +5276,7 @@ class LPC_TCPDF {
 					$unicode = LPC_TCPDF_FONTS::UTF8StringToArray($txt, $this->isunicode, $this->CurrentFont); // array of UTF-8 unicode values
 					$unicode = LPC_TCPDF_FONTS::utf8Bidi($unicode, '', $this->tmprtl, $this->isunicode, $this->CurrentFont);
 					// replace thai chars (if any)
-					if (defined('K_THAI_TOPCHARS') AND (K_THAI_TOPCHARS == true)) {
+					if (defined('LpcTcpdfConfig\K_THAI_TOPCHARS') AND (LpcTcpdfConfig\K_THAI_TOPCHARS == true)) {
 						// number of chars
 						$numchars = count($unicode);
 						// po pla, for far, for fan
@@ -17136,7 +17136,7 @@ class LPC_TCPDF {
 					}
 					if (($dom[$key]['value'] == 'small') OR ($dom[$key]['value'] == 'sup') OR ($dom[$key]['value'] == 'sub')) {
 						if (!isset($dom[$key]['attribute']['size']) AND !isset($dom[$key]['style']['font-size'])) {
-							$dom[$key]['fontsize'] = $dom[$key]['fontsize'] * K_SMALL_RATIO;
+							$dom[$key]['fontsize'] = $dom[$key]['fontsize'] * LpcTcpdfConfig\K_SMALL_RATIO;
 						}
 					}
 					if (($dom[$key]['value'] == 'strong') OR ($dom[$key]['value'] == 'b')) {
@@ -19572,7 +19572,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'tcpdf': {
-				if (defined('K_TCPDF_CALLS_IN_HTML') AND (K_TCPDF_CALLS_IN_HTML === true)) {
+				if (defined('LpcTcpdfConfig\K_TCPDF_CALLS_IN_HTML') AND (LpcTcpdfConfig\K_TCPDF_CALLS_IN_HTML === true)) {
 					// Special tag used to call TCPDF methods
 					if (isset($tag['attribute']['method'])) {
 						$tcpdf_method = $tag['attribute']['method'];

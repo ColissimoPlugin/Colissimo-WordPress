@@ -7,7 +7,7 @@ class LpcExpert extends LpcAbstractShipping {
 
     public function __construct($instance_id = 0) {
         $this->id                 = self::ID;
-        $this->method_title       = __('Colissimo Expert', 'wc_colissimo');
+        $this->method_title       = __('Colissimo International', 'wc_colissimo');
         $this->method_description = __('For international delivery only', 'wc_colissimo');
 
         parent::__construct($instance_id);

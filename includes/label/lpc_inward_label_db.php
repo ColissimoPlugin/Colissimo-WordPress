@@ -169,23 +169,17 @@ END_SQL;
         global $wpdb;
 
         $tableName = $this->getTableName();
-        // phpcs:disable
-        $sql = <<<END_SQL
-INSERT INTO $tableName SET
-  order_id = %d,
-  label = %s,
-  label_format = %s,
-  label_created_at = %s,
-  cn23 = %s,
-  tracking_number = %s,
-  outward_tracking_number = %s
-END_SQL;
 
-        $outwardTrackingNumber = is_null($outwardTrackingNumber) ? get_post_meta(
-            $orderId,
-            LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY,
-            true
-        ) : $outwardTrackingNumber;
+        if (is_null($outwardTrackingNumber)) {
+            $outwardTrackingNumber = get_post_meta(
+                $orderId,
+                LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY,
+                true
+            );
+        }
+
+        // phpcs:disable
+        $sql = 'INSERT INTO ' . $tableName . ' (`order_id`, `label`, `label_format`, `label_created_at`, `cn23`, `tracking_number`, `outward_tracking_number`) VALUES (%d, %s, %s, %s, %s, %s, %s)';
 
         $sql = $wpdb->prepare(
             $sql,

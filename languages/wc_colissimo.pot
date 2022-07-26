@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.7.0\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.7.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-06-23\n"
+"POT-Creation-Date: 2022-07-26\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -201,7 +201,7 @@ msgstr ""
 msgid "If enabled, rates calculation for this shipping method will always be zero."
 msgstr ""
 
-msgid "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform"
+msgid "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
 msgstr ""
 
 msgid "Label generation settings"
@@ -1020,9 +1020,6 @@ msgstr ""
 msgid "Order status when order is partially shipped"
 msgstr ""
 
-msgid "Need help?"
-msgstr ""
-
 msgid "Contact us"
 msgstr ""
 
@@ -1305,13 +1302,13 @@ msgstr ""
 msgid "Message shown when selecting the sending method"
 msgstr ""
 
-msgid "Colissimo Expert - DDP option"
+msgid "Colissimo International - DDP option"
 msgstr ""
 
 msgid "Colissimo with signature - DDP option"
 msgstr ""
 
-msgid "This shipping method lets you configure the \"Colissimo Expert - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
+msgid "This shipping method lets you configure the \"Colissimo International - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
 msgstr ""
 
 msgid "This shipping method lets you configure the \"Colissimo with signature - DDP Option\" shipping that is available and shown only for the United Kingdom."
@@ -1359,7 +1356,7 @@ msgstr ""
 msgid "Shipping methods"
 msgstr ""
 
-msgid "Colissimo Expert"
+msgid "Colissimo International"
 msgstr ""
 
 msgid "Print bordereau"
@@ -1420,5 +1417,95 @@ msgid "Excluded shipping classes"
 msgstr ""
 
 msgid "The current shipping method will not be displayed if one product in the cart has one of these shipping classes. This option takes precedence over the option Free shipping classes"
+msgstr ""
+
+msgid "Return address"
+msgstr ""
+
+msgid "This is the address of the place where you want to receive parcels returned by your customers. The default address will be the origin address"
+msgstr ""
+
+msgid "Order %1$s is insured up to %2$s euros, this is the maximum amount for parcels delivered with %3$s shipping method"
+msgstr ""
+
+msgid "Free if at least one item in the cart has one of the free shipping classes above"
+msgstr ""
+
+msgid "If enabled, delivery will be free, even if the other items in the cart do not have one of the free shipping classes above"
+msgstr ""
+
+msgid "Colissimo support"
+msgstr ""
+
+msgid "Plugin support"
+msgstr ""
+
+msgid "Support"
+msgstr ""
+
+msgid "The street address for your return location"
+msgstr ""
+
+msgid "An additional, optional address line for your return location"
+msgstr ""
+
+msgid "The city in which your return location is located"
+msgstr ""
+
+msgid "The country and state or province, if any, in which your return location is located"
+msgstr ""
+
+msgid "The postal code, if any, in which your return location is located"
+msgstr ""
+
+msgid "The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX"
+msgstr ""
+
+msgid "The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX"
+msgstr ""
+
+msgid "Order %s: insurance is not available for this country"
+msgstr ""
+
+msgid "Ship with: %s"
+msgstr ""
+
+msgid "The order #%1$d cannot be shipped with %2$s"
+msgstr ""
+
+msgid "Shipping method changed to %1$s for %2$d orders."
+msgstr ""
+
+msgid "Shipping method changed to %s with bulk edit."
+msgstr ""
+
+msgid "The order #%d was made to be shipped to a relay point, make sure to change its shipping address!"
+msgstr ""
+
+msgid "Select automatically the nearest relay point"
+msgstr ""
+
+msgid "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address"
+msgstr ""
+
+msgid "Export %s file"
+msgstr ""
+
+msgid "Export capabilities by country to CSV"
+msgstr ""
+
+msgid "Import capabilities by country file (only CSV file accepted)"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Import / export capabilities per country"
+msgstr ""
+
+msgid "%s file has been imported"
+msgstr ""
+
+msgid "Please upload a CSV file to import capabilities by country"
 msgstr ""
 

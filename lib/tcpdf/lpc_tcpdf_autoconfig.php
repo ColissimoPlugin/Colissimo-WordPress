@@ -39,7 +39,6 @@
  * @package com.tecnick.tcpdf
  * @version 1.1.1
  */
-
 // DOCUMENT_ROOT fix for IIS Webserver
 if ((!isset($_SERVER['DOCUMENT_ROOT'])) OR (empty($_SERVER['DOCUMENT_ROOT']))) {
 	if(isset($_SERVER['SCRIPT_FILENAME'])) {
@@ -124,116 +123,117 @@ if (!defined('K_PATH_CACHE')) {
 	define ('K_PATH_CACHE', $K_PATH_CACHE);
 }
 
-if (!defined('K_BLANK_IMAGE')) {
-	define ('K_BLANK_IMAGE', '_blank.png');
+$namespace = 'LpcTcpdfConfig';
+if (!defined($namespace.'\K_BLANK_IMAGE')) {
+	define ($namespace.'\K_BLANK_IMAGE', '_blank.png');
 }
 
-if (!defined('PDF_PAGE_FORMAT')) {
-	define ('PDF_PAGE_FORMAT', 'A4');
+if (!defined($namespace.'\PDF_PAGE_FORMAT')) {
+	define ($namespace.'\PDF_PAGE_FORMAT', 'A4');
 }
 
-if (!defined('PDF_PAGE_ORIENTATION')) {
-	define ('PDF_PAGE_ORIENTATION', 'P');
+if (!defined($namespace.'\PDF_PAGE_ORIENTATION')) {
+	define ($namespace.'\PDF_PAGE_ORIENTATION', 'P');
 }
 
-if (!defined('PDF_CREATOR')) {
-	define ('PDF_CREATOR', 'LPC_TCPDF');
+if (!defined($namespace.'\PDF_CREATOR')) {
+	define ($namespace.'\PDF_CREATOR', 'LPC_TCPDF');
 }
 
-if (!defined('PDF_AUTHOR')) {
-	define ('PDF_AUTHOR', 'LPC_TCPDF');
+if (!defined($namespace.'\PDF_AUTHOR')) {
+	define ($namespace.'\PDF_AUTHOR', 'LPC_TCPDF');
 }
 
-if (!defined('PDF_HEADER_TITLE')) {
-	define ('PDF_HEADER_TITLE', 'LPC_TCPDF Example');
+if (!defined($namespace.'\PDF_HEADER_TITLE')) {
+	define ($namespace.'\PDF_HEADER_TITLE', 'LPC_TCPDF Example');
 }
 
-if (!defined('PDF_HEADER_STRING')) {
-	define ('PDF_HEADER_STRING', "by Nicola Asuni - Tecnick.com\nwww.tcpdf.org");
+if (!defined($namespace.'\PDF_HEADER_STRING')) {
+	define ($namespace.'\PDF_HEADER_STRING', "by Nicola Asuni - Tecnick.com\nwww.tcpdf.org");
 }
 
-if (!defined('PDF_UNIT')) {
-	define ('PDF_UNIT', 'mm');
+if (!defined($namespace.'\PDF_UNIT')) {
+	define ($namespace.'\PDF_UNIT', 'mm');
 }
 
-if (!defined('PDF_MARGIN_HEADER')) {
-	define ('PDF_MARGIN_HEADER', 5);
+if (!defined($namespace.'\PDF_MARGIN_HEADER')) {
+	define ($namespace.'\PDF_MARGIN_HEADER', 5);
 }
 
-if (!defined('PDF_MARGIN_FOOTER')) {
-	define ('PDF_MARGIN_FOOTER', 10);
+if (!defined($namespace.'\PDF_MARGIN_FOOTER')) {
+	define ($namespace.'\PDF_MARGIN_FOOTER', 10);
 }
 
-if (!defined('PDF_MARGIN_TOP')) {
-	define ('PDF_MARGIN_TOP', 27);
+if (!defined($namespace.'\PDF_MARGIN_TOP')) {
+	define ($namespace.'\PDF_MARGIN_TOP', 27);
 }
 
-if (!defined('PDF_MARGIN_BOTTOM')) {
-	define ('PDF_MARGIN_BOTTOM', 25);
+if (!defined($namespace.'\PDF_MARGIN_BOTTOM')) {
+	define ($namespace.'\PDF_MARGIN_BOTTOM', 25);
 }
 
-if (!defined('PDF_MARGIN_LEFT')) {
-	define ('PDF_MARGIN_LEFT', 15);
+if (!defined($namespace.'\PDF_MARGIN_LEFT')) {
+	define ($namespace.'\PDF_MARGIN_LEFT', 15);
 }
 
-if (!defined('PDF_MARGIN_RIGHT')) {
-	define ('PDF_MARGIN_RIGHT', 15);
+if (!defined($namespace.'\PDF_MARGIN_RIGHT')) {
+	define ($namespace.'\PDF_MARGIN_RIGHT', 15);
 }
 
-if (!defined('PDF_FONT_NAME_MAIN')) {
-	define ('PDF_FONT_NAME_MAIN', 'helvetica');
+if (!defined($namespace.'\PDF_FONT_NAME_MAIN')) {
+	define ($namespace.'\PDF_FONT_NAME_MAIN', 'helvetica');
 }
 
-if (!defined('PDF_FONT_SIZE_MAIN')) {
-	define ('PDF_FONT_SIZE_MAIN', 10);
+if (!defined($namespace.'\PDF_FONT_SIZE_MAIN')) {
+	define ($namespace.'\PDF_FONT_SIZE_MAIN', 10);
 }
 
-if (!defined('PDF_FONT_NAME_DATA')) {
-	define ('PDF_FONT_NAME_DATA', 'helvetica');
+if (!defined($namespace.'\PDF_FONT_NAME_DATA')) {
+	define ($namespace.'\PDF_FONT_NAME_DATA', 'helvetica');
 }
 
-if (!defined('PDF_FONT_SIZE_DATA')) {
-	define ('PDF_FONT_SIZE_DATA', 8);
+if (!defined($namespace.'\PDF_FONT_SIZE_DATA')) {
+	define ($namespace.'\PDF_FONT_SIZE_DATA', 8);
 }
 
-if (!defined('PDF_FONT_MONOSPACED')) {
-	define ('PDF_FONT_MONOSPACED', 'courier');
+if (!defined($namespace.'\PDF_FONT_MONOSPACED')) {
+	define ($namespace.'\PDF_FONT_MONOSPACED', 'courier');
 }
 
-if (!defined('PDF_IMAGE_SCALE_RATIO')) {
-	define ('PDF_IMAGE_SCALE_RATIO', 1.25);
+if (!defined($namespace.'\PDF_IMAGE_SCALE_RATIO')) {
+	define ($namespace.'\PDF_IMAGE_SCALE_RATIO', 1.25);
 }
 
-if (!defined('HEAD_MAGNIFICATION')) {
-	define('HEAD_MAGNIFICATION', 1.1);
+if (!defined($namespace.'\HEAD_MAGNIFICATION')) {
+	define($namespace.'\HEAD_MAGNIFICATION', 1.1);
 }
 
-if (!defined('K_CELL_HEIGHT_RATIO')) {
-	define('K_CELL_HEIGHT_RATIO', 1.25);
+if (!defined($namespace.'\K_CELL_HEIGHT_RATIO')) {
+	define($namespace.'\K_CELL_HEIGHT_RATIO', 1.25);
 }
 
-if (!defined('K_TITLE_MAGNIFICATION')) {
-	define('K_TITLE_MAGNIFICATION', 1.3);
+if (!defined($namespace.'\K_TITLE_MAGNIFICATION')) {
+	define($namespace.'\K_TITLE_MAGNIFICATION', 1.3);
 }
 
-if (!defined('K_SMALL_RATIO')) {
-	define('K_SMALL_RATIO', 2/3);
+if (!defined($namespace.'\K_SMALL_RATIO')) {
+	define($namespace.'\K_SMALL_RATIO', 2/3);
 }
 
-if (!defined('K_THAI_TOPCHARS')) {
-	define('K_THAI_TOPCHARS', true);
+if (!defined($namespace.'\K_THAI_TOPCHARS')) {
+	define($namespace.'\K_THAI_TOPCHARS', true);
 }
 
-if (!defined('K_TCPDF_CALLS_IN_HTML')) {
-	define('K_TCPDF_CALLS_IN_HTML', false);
+if (!defined($namespace.'\K_TCPDF_CALLS_IN_HTML')) {
+	define($namespace.'\K_TCPDF_CALLS_IN_HTML', false);
 }
 
-if (!defined('K_TCPDF_THROW_EXCEPTION_ERROR')) {
-	define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
+if (!defined($namespace.'\K_TCPDF_THROW_EXCEPTION_ERROR')) {
+	define($namespace.'\K_TCPDF_THROW_EXCEPTION_ERROR', false);
 }
 
-if (!defined('K_TIMEZONE')) {
-	define('K_TIMEZONE', @date_default_timezone_get());
+if (!defined($namespace.'\K_TIMEZONE')) {
+	define($namespace.'\K_TIMEZONE', @date_default_timezone_get());
 }
 
 //============================================================+

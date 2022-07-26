@@ -88,8 +88,8 @@ class LpcShippingMethods extends LpcComponent {
     public function getAllShippingMethodsWithName() {
         // can't use ::ID here because WC may not yet be defined
         return [
-            'lpc_expert'     => __('Colissimo Expert', 'wc_colissimo'),
-            'lpc_expert_ddp' => __('Colissimo Expert - DDP Option', 'wc_colissimo'),
+            'lpc_expert'     => __('Colissimo International', 'wc_colissimo'),
+            'lpc_expert_ddp' => __('Colissimo International - DDP Option', 'wc_colissimo'),
             'lpc_nosign'     => __('Colissimo without signature', 'wc_colissimo'),
             'lpc_relay'      => __('Colissimo relay', 'wc_colissimo'),
             'lpc_sign'       => __('Colissimo with signature', 'wc_colissimo'),

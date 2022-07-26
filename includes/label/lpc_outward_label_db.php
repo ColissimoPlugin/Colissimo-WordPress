@@ -183,16 +183,7 @@ END_SQL;
         }
 
         // phpcs:disable
-        $sql = <<<END_SQL
-INSERT INTO $tableName SET
-  order_id = %d,
-  label = %s,
-  label_format = %s,
-  label_created_at = %s,
-  cn23 = %s,
-  tracking_number = %s,
-  detail = %s
-END_SQL;
+        $sql = 'INSERT INTO ' . $tableName . ' (`order_id`, `label`, `label_format`, `label_created_at`, `cn23`, `tracking_number`, `detail`) VALUES (%d, %s, %s, %s, %s, %s, %s)';
 
         $sql = $wpdb->prepare(
             $sql,
@@ -529,11 +520,7 @@ END_SQL;
         $tableName = $this->getTableName();
 
         // phpcs:disable
-        $sql = <<<END_SQL
-INSERT INTO $tableName SET
-  order_id = %d,
-  tracking_number = %s
-END_SQL;
+        $sql = 'INSERT INTO ' . $tableName . ' (`order_id`, `tracking_number`) VALUES (%d, %s)';
 
         $sql = $wpdb->prepare(
             $sql,

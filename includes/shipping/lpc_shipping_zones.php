@@ -1,7 +1,7 @@
 <?php
 
 class LpcShippingZones extends LpcComponent {
-    const UNKNOWN_WC_COUNTRIES = ['AN', 'IC'];
+    const UNKNOWN_WC_COUNTRIES = ['AN', 'IC', 'XZ'];
     const DEFAULT_PRICES_PER_ZONE_JSON_FILE = LPC_FOLDER . 'resources' . DS . 'privilegePrices.json';
 
     private $addCustomZonesDone = false;
@@ -50,22 +50,22 @@ class LpcShippingZones extends LpcComponent {
             foreach ($zoneDefinition['countries'] as $countryCode => $countryDefinition) {
                 $countries[] = $countryCode;
 
-                if (@$countryDefinition['lpc_nosign']) {
+                if (!empty($countryDefinition['domiciless'])) {
                     $shippingMethods['lpc_nosign'] = true;
                 }
-                if (@$countryDefinition['lpc_sign']) {
+                if (!empty($countryDefinition['domicileas'])) {
                     $shippingMethods['lpc_sign'] = true;
                 }
-                if (@$countryDefinition['lpc_sign_ddp']) {
+                if (!empty($countryDefinition['domicileasddp'])) {
                     $shippingMethods['lpc_sign_ddp'] = true;
                 }
-                if (@$countryDefinition['lpc_relay']) {
+                if (!empty($countryDefinition['pr'])) {
                     $shippingMethods['lpc_relay'] = true;
                 }
-                if (@$countryDefinition['lpc_expert']) {
+                if (!empty($countryDefinition['expert'])) {
                     $shippingMethods['lpc_expert'] = true;
                 }
-                if (@$countryDefinition['lpc_expert_ddp']) {
+                if (!empty($countryDefinition['expertddp'])) {
                     $shippingMethods['lpc_expert_ddp'] = true;
                 }
             }

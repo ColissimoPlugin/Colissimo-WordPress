@@ -44,45 +44,40 @@
     },
     {
       "id": "lpc_origin_address_line_1",
-      "type": "originaddress",
+      "type": "text",
       "title": "Address line 1",
       "desc": "The street address for your warehouse location",
-      "desc_tip": true,
       "class": "",
       "default": ""
     },
     {
       "id": "lpc_origin_address_line_2",
-      "type": "originaddress",
+      "type": "text",
       "title": "Address line 2",
       "desc": "An additional, optional address line for your warehouse location",
-      "desc_tip": true,
       "class": "",
       "default": ""
     },
     {
       "id": "lpc_origin_address_city",
-      "type": "originaddress",
+      "type": "text",
       "title": "City",
       "desc": "The city in which your warehouse is located",
-      "desc_tip": true,
       "class": "",
       "default": ""
     },
     {
       "id": "lpc_origin_address_country",
-      "type": "originaddress",
+      "type": "addressCountry",
       "title": "Country / State",
       "desc": "The country and state or province, if any, in which your warehouse is located",
-      "desc_tip": true,
       "class": ""
     },
     {
       "id": "lpc_origin_address_zipcode",
-      "type": "originaddress",
+      "type": "text",
       "title": "Postcode / ZIP",
       "desc": "The postal code, if any, in which your warehouse is located",
-      "desc_tip": true,
       "class": ""
     },
     {
@@ -90,48 +85,51 @@
       "type": "sectionend"
     },
     {
-      "id": "lpc_section_dev",
+      "id": "lpc_section_return_address",
       "type": "title",
-      "title": "Debug and development"
+      "title": "Return address",
+      "desc": "This is the address of the place where you want to receive parcels returned by your customers. The default address will be the origin address"
     },
     {
-      "id": "lpc_log",
-      "type": "select",
-      "title": "Log messages",
-      "desc": "The extension will save informative or debug messages in a file when needed, please enable it only if support asks for it",
-      "desc_tip": true,
-      "class": "",
-      "default": "0",
-      "options": {
-        "0": "No",
-        "1": "Yes"
-      }
-    },
-    {
-      "id": "lpc_log",
-      "type": "seelog",
-      "title": "",
+      "id": "lpc_return_address_line_1",
+      "type": "text",
+      "title": "Address line 1",
+      "desc": "The street address for your return location",
       "class": "",
       "default": ""
     },
     {
-      "id": "lpc_status_page",
-      "type": "lpcstatus",
-      "title": "Colissimo services",
-      "text": "Check status",
+      "id": "lpc_return_address_line_2",
+      "type": "text",
+      "title": "Address line 2",
+      "desc": "An additional, optional address line for your return location",
       "class": "",
       "default": ""
     },
     {
-      "id": "lpc_contact",
-      "type": "mailto",
-      "title": "Need help?",
-      "text": "Contact us",
+      "id": "lpc_return_address_city",
+      "type": "text",
+      "title": "City",
+      "desc": "The city in which your return location is located",
       "class": "",
       "default": ""
     },
     {
-      "id": "lpc_section_dev",
+      "id": "lpc_return_address_country",
+      "type": "addressCountry",
+      "title": "Country / State",
+      "desc": "The country and state or province, if any, in which your return location is located",
+      "class": ""
+    },
+    {
+      "id": "lpc_return_address_zipcode",
+      "type": "text",
+      "title": "Postcode / ZIP",
+      "desc": "The postal code, if any, in which your return location is located",
+      "class": ""
+    },
+    {
+      "id": "lpc_section_return_address",
       "type": "sectionend"
     }
   ],
@@ -621,6 +619,24 @@
       "desc_tip": true
     },
     {
+      "id": "lpc_zpldpl_labels_urlport",
+      "type": "text",
+      "title": "URL port",
+      "class": "",
+      "default": "8000"
+    },
+    {
+      "id": "lpc_zpldpl_labels_urlprotocol",
+      "type": "select",
+      "title": "URL protocol",
+      "class": "",
+      "default": "HTTP",
+      "options": {
+        "HTTP": "HTTP",
+        "HTTPS": "HTTPS"
+      }
+    },
+    {
       "id": "lpc_section_zpldpl_labels",
       "type": "sectionend"
     }
@@ -678,7 +694,7 @@
     {
       "id": "lpc_expert",
       "type": "title",
-      "title": "Colissimo Expert"
+      "title": "Colissimo International"
     },
     {
       "id": "lpc_expert_FreeFromOrderValue",
@@ -743,6 +759,15 @@
       "type": "checkbox",
       "title": "Show internationals Relay Points",
       "desc": "Only applicable for Webservice method",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_select_default_pr",
+      "type": "checkbox",
+      "title": "Select automatically the nearest relay point",
+      "desc": "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address",
       "desc_tip": true,
       "class": "",
       "default": ""
@@ -880,6 +905,61 @@
     },
     {
       "id": "lpc_customs",
+      "type": "sectionend"
+    }
+  ],
+  "support": [
+    {
+      "id": "lpc_section_dev",
+      "type": "title",
+      "title": "Debug and development"
+    },
+    {
+      "id": "lpc_log",
+      "type": "select",
+      "title": "Log messages",
+      "desc": "The extension will save informative or debug messages in a file when needed, please enable it only if support asks for it",
+      "desc_tip": true,
+      "class": "",
+      "default": "0",
+      "options": {
+        "0": "No",
+        "1": "Yes"
+      }
+    },
+    {
+      "id": "lpc_log",
+      "type": "seelog",
+      "title": "",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_status_page",
+      "type": "lpcstatus",
+      "title": "Colissimo services",
+      "text": "Check status",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_contact_tel",
+      "type": "telsupport",
+      "title": "Colissimo support",
+      "text": "",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_contact",
+      "type": "mailto",
+      "title": "Plugin support",
+      "text": "Contact us",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_section_dev",
       "type": "sectionend"
     }
   ]

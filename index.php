@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Colissimo shipping methods for WooCommerce
  * Description: This extension gives you the possibility to use the Colissimo shipping methods in WooCommerce
- * Version: 1.7.0
+ * Version: 1.7.1
  * Author: Colissimo
  * Author URI: https://www.colissimo.entreprise.laposte.fr/fr
  * Text Domain: wc_colissimo
@@ -36,6 +36,7 @@ if (
     define('LPC_ADMIN', LPC_FOLDER . 'admin' . DS);
     define('LPC_PUBLIC', LPC_FOLDER . 'public' . DS);
     define('LPC_CONTACT_EMAIL', 'ecommerce@acyba.com');
+    define('LPC_CONTACT_PHONE', '0241742088');
 
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
     $pluginData = get_plugin_data(LPC_FOLDER . DS . 'index.php');

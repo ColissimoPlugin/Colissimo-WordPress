@@ -32,6 +32,8 @@ class LpcSettingsTab extends LpcComponent {
 
         $this->initMailto();
 
+        $this->initTelsupport();
+
         $this->initMultiSelectOrderStatus();
 
         $this->initSelectOrderStatusOnLabelGenerated();
@@ -46,7 +48,7 @@ class LpcSettingsTab extends LpcComponent {
 
         $this->initDisplayNumberInputWithWeightUnit();
 
-        $this->initOriginAddress();
+        $this->initDisplaySelectAddressCountry();
 
         $this->initCheckStatus();
 
@@ -59,6 +61,10 @@ class LpcSettingsTab extends LpcComponent {
 
     protected function initMailto() {
         add_action('woocommerce_admin_field_mailto', [$this, 'displayMailtoButton']);
+    }
+
+    protected function initTelsupport() {
+        add_action('woocommerce_admin_field_telsupport', [$this, 'displayTelsupportButton']);
     }
 
     protected function initCheckStatus() {
@@ -111,10 +117,10 @@ class LpcSettingsTab extends LpcComponent {
         );
     }
 
-    protected function initOriginAddress() {
+    protected function initDisplaySelectAddressCountry() {
         add_action(
-            'woocommerce_admin_field_originaddress',
-            [$this, 'originAddress']
+            'woocommerce_admin_field_addressCountry',
+            [$this, 'displaySelectAddressCountry']
         );
     }
 
@@ -142,6 +148,10 @@ class LpcSettingsTab extends LpcComponent {
             $field['email'] = LPC_CONTACT_EMAIL;
         }
         include LPC_FOLDER . 'admin' . DS . 'partials' . DS . 'settings' . DS . 'mailto.php';
+    }
+
+    public function displayTelsupportButton($field) {
+        include LPC_FOLDER . 'admin' . DS . 'partials' . DS . 'settings' . DS . 'supportButton.php';
     }
 
     public function displayStatusLink($field) {
@@ -239,58 +249,30 @@ class LpcSettingsTab extends LpcComponent {
         echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
     }
 
-    public function originAddress($defaultArgs) {
-        $args = [];
+    public function displaySelectAddressCountry($defaultArgs) {
+        $args          = [];
+        $countries_obj = new WC_Countries();
+        $countries     = $countries_obj->__get('countries');
 
-        if ('lpc_origin_address_country' == $defaultArgs['id']) {
-            $countries_obj = new WC_Countries();
-            $countries     = $countries_obj->__get('countries');
+        $countriesCode = array_merge(LpcCapabilitiesPerCountry::DOM1_COUNTRIES_CODE, LpcCapabilitiesPerCountry::FRANCE_COUNTRIES_CODE);
 
-            $countriesCode = array_merge(LpcCapabilitiesPerCountry::DOM1_COUNTRIES_CODE, LpcCapabilitiesPerCountry::FRANCE_COUNTRIES_CODE);
+        $args['values'][''] = '---';
 
-            $args['values'][''] = '---';
-
-            foreach ($countriesCode as $countryCode) {
-                $args['values'][$countryCode] = $countries[$countryCode];
-            }
-
-            $value = LpcHelper::get_option('lpc_origin_address_country', '');
-            if (empty($value)) {
-                $value = '';
-            }
-
-            $args['id_and_name']     = 'lpc_origin_address_country';
-            $args['label']           = $defaultArgs['title'];
-            $args['desc']            = $defaultArgs['desc'];
-            $args['selected_values'] = $value;
-
-            echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
-
-            return;
+        foreach ($countriesCode as $countryCode) {
+            $args['values'][$countryCode] = $countries[$countryCode];
         }
 
-        $args['id_and_name'] = $defaultArgs['id'];
-        $args['label']       = $defaultArgs['title'];
-        $args['desc']        = $defaultArgs['desc'];
-
-        $options = [
-            'lpc_origin_address_line_1'  => 'woocommerce_store_address',
-            'lpc_origin_address_line_2'  => 'woocommerce_store_address_2',
-            'lpc_origin_address_city'    => 'woocommerce_store_city',
-            'lpc_origin_address_zipcode' => 'woocommerce_store_postcode',
-        ];
-
-        foreach ($options as $lpcOption => $wcOption) {
-            if ($lpcOption != $args['id_and_name']) {
-                continue;
-            }
-
-            $option = LpcHelper::get_option($lpcOption, '');
-
-            $args['value'] = $option;
+        $value = LpcHelper::get_option($defaultArgs['id'], '');
+        if (empty($value)) {
+            $value = '';
         }
 
-        echo LpcHelper::renderPartial('settings' . DS . 'input_text.php', $args);
+        $args['id_and_name']     = $defaultArgs['id'];
+        $args['label']           = $defaultArgs['title'];
+        $args['desc']            = $defaultArgs['desc'];
+        $args['selected_values'] = $value;
+
+        echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
     }
 
     /**
@@ -338,6 +320,7 @@ class LpcSettingsTab extends LpcComponent {
             'shipping' => __('Shipping methods', 'wc_colissimo'),
             'custom'   => __('Custom', 'wc_colissimo'),
             'ddp'      => __('DDP', 'wc_colissimo'),
+            'support'  => __('Support', 'wc_colissimo'),
         ];
 
         echo '<ul class="subsubsub">';

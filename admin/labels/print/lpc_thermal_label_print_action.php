@@ -124,9 +124,11 @@ class LpcThermalLabelPrintAction extends LpcComponent {
             return $response;
         }
 
-        $port = LpcHelper::get_option('lpc_zpldpl_labels_port', 'USB');
-        $ipAddress = LpcHelper::get_option('lpc_zpldpl_labels_ip');
-        $protocol = LpcHelper::get_option('lpc_zpldpl_labels_protocol', 'DATAMAX');
+        $port        = LpcHelper::get_option('lpc_zpldpl_labels_port', 'USB');
+        $ipAddress   = LpcHelper::get_option('lpc_zpldpl_labels_ip');
+        $protocol    = LpcHelper::get_option('lpc_zpldpl_labels_protocol', 'DATAMAX');
+        $urlPort     = LpcHelper::get_option('lpc_zpldpl_labels_urlport', '8000');
+        $urlProtocol = strtolower(LpcHelper::get_option('lpc_zpldpl_labels_type', 'HTTP'));
 
         if ('USB' === $port && empty($protocol)) {
             $response['info'] = 'if USB is selected, a protocol has to be selected';
@@ -149,7 +151,7 @@ class LpcThermalLabelPrintAction extends LpcComponent {
         }
 
         $response['success'] = true;
-        $response['info']    = 'http://localhost:8000/imprimerEtiquetteThermique?port=' . $port . '&protocole=' . $protocol . '&adresseIp=' . $ipAddress . '&etiquette=' . $labelContent;
+        $response['info']    = $urlProtocol . '://localhost:' . $urlPort . '/imprimerEtiquetteThermique?port=' . $port . '&protocole=' . $protocol . '&adresseIp=' . $ipAddress . '&etiquette=' . $labelContent;
 
         return $response;
     }

@@ -1,4 +1,7 @@
 <?php
+
+namespace LpcTcpdfConfig;
+
 //============================================================+
 // File name   : tcpdf_config.php
 // Begin       : 2004-06-11
@@ -84,143 +87,143 @@
 /**
  * Generic name for a blank image.
  */
-define ('K_BLANK_IMAGE', '_blank.png');
+define(__NAMESPACE__ . '\K_BLANK_IMAGE', '_blank.png');
 
 /**
  * Page format.
  */
-define ('PDF_PAGE_FORMAT', 'A4');
+define(__NAMESPACE__ . '\PDF_PAGE_FORMAT', 'A4');
 
 /**
  * Page orientation (P=portrait, L=landscape).
  */
-define ('PDF_PAGE_ORIENTATION', 'P');
+define(__NAMESPACE__ . '\PDF_PAGE_ORIENTATION', 'P');
 
 /**
  * Document creator.
  */
-define ('PDF_CREATOR', 'LPC_TCPDF');
+define(__NAMESPACE__ . '\PDF_CREATOR', 'LPC_TCPDF');
 
 /**
  * Document author.
  */
-define ('PDF_AUTHOR', 'LPC_TCPDF');
+define(__NAMESPACE__ . '\PDF_AUTHOR', 'LPC_TCPDF');
 
 /**
  * Header title.
  */
-define ('PDF_HEADER_TITLE', 'LPC_TCPDF Example');
+define(__NAMESPACE__ . '\PDF_HEADER_TITLE', 'LPC_TCPDF Example');
 
 /**
  * Header description string.
  */
-define ('PDF_HEADER_STRING', "by Nicola Asuni - Tecnick.com\nwww.tcpdf.org");
+define(__NAMESPACE__ . '\PDF_HEADER_STRING', "by Nicola Asuni - Tecnick.com\nwww.tcpdf.org");
 
 /**
  * Document unit of measure [pt=point, mm=millimeter, cm=centimeter, in=inch].
  */
-define ('PDF_UNIT', 'mm');
+define(__NAMESPACE__ . '\PDF_UNIT', 'mm');
 
 /**
  * Header margin.
  */
-define ('PDF_MARGIN_HEADER', 5);
+define(__NAMESPACE__ . '\PDF_MARGIN_HEADER', 5);
 
 /**
  * Footer margin.
  */
-define ('PDF_MARGIN_FOOTER', 10);
+define(__NAMESPACE__ . '\PDF_MARGIN_FOOTER', 10);
 
 /**
  * Top margin.
  */
-define ('PDF_MARGIN_TOP', 27);
+define(__NAMESPACE__ . '\PDF_MARGIN_TOP', 27);
 
 /**
  * Bottom margin.
  */
-define ('PDF_MARGIN_BOTTOM', 25);
+define(__NAMESPACE__ . '\PDF_MARGIN_BOTTOM', 25);
 
 /**
  * Left margin.
  */
-define ('PDF_MARGIN_LEFT', 15);
+define(__NAMESPACE__ . '\PDF_MARGIN_LEFT', 15);
 
 /**
  * Right margin.
  */
-define ('PDF_MARGIN_RIGHT', 15);
+define(__NAMESPACE__ . '\PDF_MARGIN_RIGHT', 15);
 
 /**
  * Default main font name.
  */
-define ('PDF_FONT_NAME_MAIN', 'helvetica');
+define(__NAMESPACE__ . '\PDF_FONT_NAME_MAIN', 'helvetica');
 
 /**
  * Default main font size.
  */
-define ('PDF_FONT_SIZE_MAIN', 10);
+define(__NAMESPACE__ . '\PDF_FONT_SIZE_MAIN', 10);
 
 /**
  * Default data font name.
  */
-define ('PDF_FONT_NAME_DATA', 'helvetica');
+define(__NAMESPACE__ . '\PDF_FONT_NAME_DATA', 'helvetica');
 
 /**
  * Default data font size.
  */
-define ('PDF_FONT_SIZE_DATA', 8);
+define(__NAMESPACE__ . '\PDF_FONT_SIZE_DATA', 8);
 
 /**
  * Default monospaced font name.
  */
-define ('PDF_FONT_MONOSPACED', 'courier');
+define(__NAMESPACE__ . '\PDF_FONT_MONOSPACED', 'courier');
 
 /**
  * Ratio used to adjust the conversion of pixels to user units.
  */
-define ('PDF_IMAGE_SCALE_RATIO', 1.25);
+define(__NAMESPACE__ . '\PDF_IMAGE_SCALE_RATIO', 1.25);
 
 /**
  * Magnification factor for titles.
  */
-define('HEAD_MAGNIFICATION', 1.1);
+define(__NAMESPACE__ . '\HEAD_MAGNIFICATION', 1.1);
 
 /**
  * Height of cell respect font height.
  */
-define('K_CELL_HEIGHT_RATIO', 1.25);
+define(__NAMESPACE__ . '\K_CELL_HEIGHT_RATIO', 1.25);
 
 /**
  * Title magnification respect main font size.
  */
-define('K_TITLE_MAGNIFICATION', 1.3);
+define(__NAMESPACE__ . '\K_TITLE_MAGNIFICATION', 1.3);
 
 /**
  * Reduction factor for small font.
  */
-define('K_SMALL_RATIO', 2/3);
+define(__NAMESPACE__ . '\K_SMALL_RATIO', 2 / 3);
 
 /**
  * Set to true to enable the special procedure used to avoid the overlappind of symbols on Thai language.
  */
-define('K_THAI_TOPCHARS', true);
+define(__NAMESPACE__ . '\K_THAI_TOPCHARS', true);
 
 /**
  * If true allows to call TCPDF methods using HTML syntax
  * IMPORTANT: For security reason, disable this feature if you are printing user HTML content.
  */
-define('K_TCPDF_CALLS_IN_HTML', false);
+define(__NAMESPACE__ . '\K_TCPDF_CALLS_IN_HTML', false);
 
 /**
  * If true and PHP version is greater than 5, then the Error() method throw new exception instead of terminating the execution.
  */
-define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
+define(__NAMESPACE__ . '\K_TCPDF_THROW_EXCEPTION_ERROR', false);
 
 /**
  * Default timezone for datetime functions
  */
-define('K_TIMEZONE', 'UTC');
+define(__NAMESPACE__ . '\K_TIMEZONE', 'UTC');
 
 //============================================================+
 // END OF FILE

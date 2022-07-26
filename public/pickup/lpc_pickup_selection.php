@@ -120,12 +120,14 @@ class LpcPickupSelection extends LpcComponent {
         if (!$needShipping || empty($shippingMethod)) {
             return;
         }
+
         $relayMethod = false;
         foreach ($shippingMethod as $oneMethod) {
             if (strpos($oneMethod, LpcRelay::ID) !== false) {
                 $relayMethod = true;
             }
         }
+
         if (!$relayMethod) {
             return;
         }
@@ -136,9 +138,7 @@ class LpcPickupSelection extends LpcComponent {
             throw new Exception(__('Please select a pick-up point', 'wc_colissimo'));
         }
 
-        $customerPhoneNumber = isset($_REQUEST['billing_phone']) ? sanitize_text_field(
-            wp_unslash($_REQUEST['billing_phone'])
-        ) : '';
+        $customerPhoneNumber = isset($_REQUEST['billing_phone']) ? sanitize_text_field(wp_unslash($_REQUEST['billing_phone'])) : '';
 
         // Even if we don't have a shipping phone natively in WooCommerce, we can check if a shipping phone exist if the billing one is empty
         // because a plugin or a theme can add it
@@ -146,17 +146,64 @@ class LpcPickupSelection extends LpcComponent {
             $customerPhoneNumber = sanitize_text_field(wp_unslash($_REQUEST['shipping_phone']));
         }
 
-        $customerPhoneNumber = str_replace(' ', '', $customerPhoneNumber);
+        $customerPhoneNumber     = str_replace(' ', '', $customerPhoneNumber);
+        $customerData            = $wcSession->get('customer');
+        $customerShippingCountry = $customerData['shipping_country'];
 
-        if (
-            empty($customerPhoneNumber)
-        ) {
+        if (empty($customerPhoneNumber)) {
             throw new Exception(
                 __(
                     'Please define a mobile phone number for SMS notification tracking',
                     'wc_colissimo'
                 )
             );
+        }
+
+        if ('FR' === $customerShippingCountry && !preg_match('/^(\+33|0033|\+330|00330|0)(6|7)\d{8}$/', $customerPhoneNumber)) {
+            throw new Exception(
+                __(
+                    'The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX',
+                    'wc_colissimo'
+                )
+            );
+        }
+
+        if ('BE' === $customerShippingCountry) {
+            if (!preg_match('/^\+324\d{8}$/', $customerPhoneNumber)) {
+                $acceptableNumber = false;
+            } else {
+                $mobileNumbers = array_reverse(str_split($customerPhoneNumber));
+                $mobileNumbers = array_map('intval', $mobileNumbers);
+                $suiteAsc      = true;
+                $suiteDesc     = true;
+                $suiteEqual    = true;
+                foreach ($mobileNumbers as $key => $val) {
+                    if (7 === $key) {
+                        break;
+                    }
+
+                    if ($mobileNumbers[$key + 1] !== $val - 1) {
+                        $suiteAsc = false;
+                    }
+                    if ($mobileNumbers[$key + 1] !== $val + 1) {
+                        $suiteDesc = false;
+                    }
+                    if ($mobileNumbers[$key + 1] !== $val) {
+                        $suiteEqual = false;
+                    }
+                }
+
+                $acceptableNumber = !$suiteAsc && !$suiteDesc && !$suiteEqual;
+            }
+
+            if (!$acceptableNumber) {
+                throw new Exception(
+                    __(
+                        'The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX',
+                        'wc_colissimo'
+                    )
+                );
+            }
         }
     }
 

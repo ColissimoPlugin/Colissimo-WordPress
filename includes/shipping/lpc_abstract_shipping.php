@@ -40,14 +40,14 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
      */
     public function init_form_fields() {
         $this->instance_form_fields = [
-            'title'                 => [
+            'title'                                        => [
                 'title'       => __('Title', 'wc_colissimo'),
                 'type'        => 'text',
                 'description' => __('This controls the title which the user sees during checkout.', 'wc_colissimo'),
                 'default'     => $this->method_title,
                 'desc_tip'    => true,
             ],
-            'always_free'           => [
+            'always_free'                                  => [
                 'title'       => __('Always free?', 'wc_colissimo'),
                 'type'        => 'checkbox',
                 'description' => __(
@@ -58,7 +58,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 'desc_tip'    => true,
                 'label'       => ' ',
             ],
-            'title_free'            => [
+            'title_free'                                   => [
                 'title'       => __('Title if free', 'wc_colissimo'),
                 'type'        => 'text',
                 'description' => __(
@@ -68,13 +68,24 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 'default'     => $this->get_option('title_free', ''),
                 'desc_tip'    => true,
             ],
-            'excluded_classes'      => [
+            'excluded_classes'                             => [
                 'type' => 'classes_shipping',
             ],
-            'classes_free_shipping' => [
+            'classes_free_shipping'                        => [
                 'type' => 'classes_shipping',
             ],
-            'shipping_rates'        => [
+            'free_for_items_without_free_shipping_classes' => [
+                'title'       => __('Free if at least one item in the cart has one of the free shipping classes above', 'wc_colissimo'),
+                'type'        => 'checkbox',
+                'description' => __(
+                    'If enabled, delivery will be free, even if the other items in the cart do not have one of the free shipping classes above',
+                    'wc_colissimo'
+                ),
+                'default'     => $this->get_option('free_for_items_without_free_shipping_classes', 'yes'),
+                'desc_tip'    => true,
+                'label'       => ' ',
+            ],
+            'shipping_rates'                               => [
                 'type' => 'shipping_rates',
             ],
         ];
@@ -195,6 +206,10 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         return $this->get_option('use_cart_price', 'no');
     }
 
+    public function getFreeForItemsWithoutShippingClasses() {
+        return $this->get_option('free_for_items_without_free_shipping_classes', 'no');
+    }
+
     abstract public function freeFromOrderValue();
 
     public function calculate_shipping($package = []) {
@@ -290,14 +305,16 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             }
         }
 
-        $classesFreeShipping   = $this->getFreeShippingClasses();
-        $isClassesFreeShipping = !empty(array_intersect($classesFreeShipping, $cartShippingClasses));
+        $classesFreeShipping     = $this->getFreeShippingClasses();
+        $isClassesFreeShipping   = !empty(array_intersect($classesFreeShipping, $cartShippingClasses));
+        $isMethodFreeForAllItems = $this->getFreeForItemsWithoutShippingClasses();
+        $areOtherPayingClasses   = !empty(array_diff($cartShippingClasses, $classesFreeShipping));
 
         if (
             'yes' === $this->get_option('always_free')
             || ($this->freeFromOrderValue() > 0 && $totalPrice >= $this->freeFromOrderValue())
             || $isCouponFreeShipping
-            || $isClassesFreeShipping
+            || $isClassesFreeShipping && (!$areOtherPayingClasses || 'yes' === $isMethodFreeForAllItems)
         ) {
             $cost = 0.0;
         } else {

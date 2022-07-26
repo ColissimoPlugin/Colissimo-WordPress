@@ -59,8 +59,11 @@ class LpcAdminPickupWebService extends LpcComponent {
         $modal->setContent($map);
 
         $args = [
-            'modal'  => $modal,
-            'apiKey' => LpcHelper::get_option('lpc_gmap_key', ''),
+            'modal'      => $modal,
+            'apiKey'     => LpcHelper::get_option('lpc_gmap_key', ''),
+            'type'       => 'link',
+            'showButton' => true,
+            'showInfo'   => false,
         ];
 
         return LpcHelper::renderPartial('pickup' . DS . 'webservice.php', $args);
@@ -131,7 +134,7 @@ class LpcAdminPickupWebService extends LpcComponent {
                 $partialArgs['oneRelay'] = $oneRelay;
                 $partialArgs['i']        = $i ++;
 
-                $html .= LpcHelper::renderPartial('pick_up/relay.php', $partialArgs);
+                $html .= LpcHelper::renderPartial('pickup' . DS . 'relay.php', $partialArgs);
             }
 
             return $this->ajaxDispatcher->makeSuccess(

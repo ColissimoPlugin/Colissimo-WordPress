@@ -1,7 +1,7 @@
 var $affectMethodDiv;
 
 jQuery(function ($) {
-    function init() {
+    $.lpcInitWidget = function () {
         window.lpc_callback = function (point) {
             $('.lpc-modal .modal-close').click();
 
@@ -69,18 +69,18 @@ jQuery(function ($) {
 
             $('#lpc_widget_container').frameColissimoOpen(colissimoParams);
         });
-    }
+    };
 
     $(document.body)
         .on('updated_shipping_method', function () {
-            init(); // this is needed when a new shipping method is chosen
+            $.lpcInitWidget(); // this is needed when a new shipping method is chosen
         })
         .on('updated_wc_div', function () {
-            init(); // this is needed when checkout is updated (new item quantity...)
+            $.lpcInitWidget(); // this is needed when checkout is updated (new item quantity...)
         })
         .on('updated_checkout', function () {
-            init(); // this is needed when checkout is loaded or updated (new item quantity...)
+            $.lpcInitWidget(); // this is needed when checkout is loaded or updated (new item quantity...)
         });
 
-    init(); // this is needed when page is refreshed / loaded
+    $.lpcInitWidget(); // this is needed when page is refreshed / loaded
 });

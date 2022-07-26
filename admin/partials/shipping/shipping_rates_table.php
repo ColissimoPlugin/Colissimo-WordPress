@@ -237,7 +237,7 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
             } elseif (LpcExpertDDP::ID === $shippingMethod->id) {
                 esc_html_e(
                     __(
-                        'This shipping method lets you configure the "Colissimo Expert - DDP Option" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA).',
+                        'This shipping method lets you configure the "Colissimo International - DDP Option" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA).',
                         'wc_colissimo'
                     )
                 );

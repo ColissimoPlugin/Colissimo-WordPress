@@ -6,7 +6,7 @@ class LpcLabelGenerationPayload {
     const FORCED_ORIGINAL_IDENT = 'A';
     const RETURN_LABEL_LETTER_MARK = 'R';
     const RETURN_TYPE_CHOICE_NO_RETURN = 3;
-    const PRODUCT_CODE_INSURANCE_AVAILABLE = ['DOS', 'COL', 'BPR', 'A2P', 'CDS', 'CORE', 'CORI'];
+    const PRODUCT_CODE_INSURANCE_AVAILABLE = ['DOS', 'COL', 'BPR', 'A2P', 'CDS', 'CORE', 'CORI', 'CORF', 'CMT', 'PCS'];
     const CUSTOMS_CATEGORY_RETURN_OF_ARTICLES = 6;
     const LABEL_FORMAT_PDF = 'PDF';
     const LABEL_FORMAT_ZPL = 'ZPL';
@@ -408,7 +408,7 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withInsuranceValue($amount, $productCode, $countryCode, $shippingMethodUsed, $customParams = []) {
+    public function withInsuranceValue($amount, $productCode, $countryCode, $shippingMethodUsed, $orderNumber, $customParams = []) {
         if (!empty($customParams['useInsurance'])) {
             $usingInsurance = $customParams['useInsurance'];
         } else {
@@ -426,7 +426,19 @@ class LpcLabelGenerationPayload {
             return $this;
         }
 
-        if ('DOS' === $productCode && 'FR' !== $countryCode && !in_array($shippingMethodUsed, [LpcExpert::ID, LpcExpertDDP::ID])) {
+        if (is_admin()) {
+            $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
+        }
+        // Insurance is set to yes
+        if (!$this->capabilitiesPerCountry->getInsuranceAvailableForDestination($countryCode)) {
+            if (is_admin()) {
+                $lpc_admin_notices->add_notice(
+                    'insurance_unavailable_for_country',
+                    'notice-warning',
+                    sprintf(__('Order %s: insurance is not available for this country', 'wc_colissimo'), $orderNumber)
+                );
+            }
+
             return $this;
         }
 
@@ -446,6 +458,18 @@ class LpcLabelGenerationPayload {
                     'max'   => $maxInsuranceAmount,
                 ]
             );
+            if (is_admin()) {
+                $shippingMethods = $this->lpcShippingMethods->getAllShippingMethodsWithName();
+                $lpc_admin_notices->add_notice(
+                    'outward_label_generate',
+                    'notice-info',
+                    sprintf(__('Order %1$s is insured up to %2$s euros, this is the maximum amount for parcels delivered with %3$s shipping method', 'wc_colissimo'),
+                            $this->getOrderNumber(),
+                            $maxInsuranceAmount,
+                            $shippingMethods[$shippingMethodUsed]
+                    )
+                );
+            }
 
             $amount = $maxInsuranceAmount;
         }
@@ -618,6 +642,10 @@ class LpcLabelGenerationPayload {
         ];
 
         $this->payload['fields']['field'][] = $customFields;
+        $this->payload['fields']['field'][] = [
+            'key'   => 'CUSER_INFO_TEXT_3',
+            'value' => 'WOOCOMMERCE',
+        ];
 
         return $this;
     }
@@ -1023,30 +1051,67 @@ class LpcLabelGenerationPayload {
         $optionsName = [
             'street'      => [
                 'lpc'      => 'lpc_origin_address_line_1',
-                'wc'       => 'woocommerce_store_address',
+                'default'  => 'woocommerce_store_address',
                 'required' => true,
             ],
             'street2'     => [
                 'lpc'      => 'lpc_origin_address_line_2',
-                'wc'       => 'woocommerce_store_address_2',
+                'default'  => 'woocommerce_store_address_2',
                 'required' => false,
             ],
             'countryCode' => [
                 'lpc'      => 'lpc_origin_address_country',
-                'wc'       => 'woocommerce_default_country',
+                'default'  => 'woocommerce_default_country',
                 'required' => true,
             ],
             'city'        => [
                 'lpc'      => 'lpc_origin_address_city',
-                'wc'       => 'woocommerce_store_city',
+                'default'  => 'woocommerce_store_city',
                 'required' => true,
             ],
             'zipCode'     => [
                 'lpc'      => 'lpc_origin_address_zipcode',
-                'wc'       => 'woocommerce_store_postcode',
+                'default'  => 'woocommerce_store_postcode',
                 'required' => true,
             ],
         ];
+
+        return $this->getAddress($optionsName);
+    }
+
+    public function getReturnAddress() {
+        $optionsName = [
+            'street'      => [
+                'lpc'      => 'lpc_return_address_line_1',
+                'default'  => 'lpc_origin_address_line_1',
+                'required' => true,
+            ],
+            'street2'     => [
+                'lpc'      => 'lpc_return_address_line_2',
+                'default'  => 'lpc_origin_address_line_2',
+                'required' => false,
+            ],
+            'countryCode' => [
+                'lpc'      => 'lpc_return_address_country',
+                'default'  => 'lpc_origin_address_country',
+                'required' => true,
+            ],
+            'city'        => [
+                'lpc'      => 'lpc_return_address_city',
+                'default'  => 'lpc_origin_address_city',
+                'required' => true,
+            ],
+            'zipCode'     => [
+                'lpc'      => 'lpc_return_address_zipcode',
+                'default'  => 'lpc_origin_address_zipcode',
+                'required' => true,
+            ],
+        ];
+
+        return $this->getAddress($optionsName);
+    }
+
+    private function getAddress($optionsName) {
 
         $invalidAddress = false;
         $return         = ['companyName' => LpcHelper::get_option('lpc_company_name')];
@@ -1074,7 +1139,7 @@ class LpcLabelGenerationPayload {
                 $countryWithState = explode(':', WC_Admin_Settings::get_option('woocommerce_default_country'));
                 $option           = reset($countryWithState);
             } else {
-                $option = WC_Admin_Settings::get_option($optionName['wc']);
+                $option = WC_Admin_Settings::get_option($optionName['default']);
             }
 
             $return[$key] = $option;

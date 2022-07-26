@@ -14,19 +14,22 @@ class LpcPickupWidget extends LpcPickup {
     protected $pickUpWidgetApi;
     protected $lpcPickUpSelection;
     protected $lpcCapabilitiesPerCountry;
+    protected $lpcPickupWebService;
 
     public function __construct(
         LpcPickUpWidgetApi $pickUpWidgetApi = null,
         LpcPickupSelection $lpcPickUpSelection = null,
-        LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null
+        LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null,
+        LpcPickupWebService $lpcPickupWebService = null
     ) {
         $this->pickUpWidgetApi           = LpcRegister::get('pickupWidgetApi', $pickUpWidgetApi);
         $this->lpcPickUpSelection        = LpcRegister::get('pickupSelection', $lpcPickUpSelection);
         $this->lpcCapabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $lpcCapabilitiesPerCountry);
+        $this->lpcPickupWebService       = LpcRegister::get('pickupWebService', $lpcPickupWebService);
     }
 
     public function getDependencies() {
-        return ['pickupWidgetApi', 'pickupSelection', 'capabilitiesPerCountry'];
+        return ['pickupWidgetApi', 'pickupSelection', 'capabilitiesPerCountry', 'pickupWebService'];
     }
 
     public function init() {
@@ -138,7 +141,28 @@ class LpcPickupWidget extends LpcPickup {
         $widgetInfo   = wp_json_encode($widgetInfo);
         $currentRelay = $this->lpcPickUpSelection->getCurrentPickUpLocationInfo();
 
-        include LPC_PUBLIC . '/partials/pick_up/widget.php';
+        $address = [
+            'address'     => $customer['shipping_address'],
+            'zipCode'     => $customer['shipping_postcode'],
+            'city'        => $customer['shipping_city'],
+            'countryCode' => $customer['shipping_country'],
+        ];
+        if ('yes' === LpcHelper::get_option('lpc_select_default_pr', 'no')
+            && empty($currentRelay)
+            && count($address) == count(array_filter($address))) {
+            $currentRelay = $this->lpcPickupWebService->getDefaultPickupLocationInfoWS($address, '1');
+        }
+
+        $args = [
+            'widgetInfo'   => $widgetInfo,
+            'modal'        => $this->modal,
+            'currentRelay' => $currentRelay,
+            'showButton'   => is_checkout(),
+            'showInfo'     => true,
+            'type'         => 'button',
+        ];
+
+        echo LpcHelper::renderPartial('pickup' . DS . 'widget.php', $args);
     }
 
     /**

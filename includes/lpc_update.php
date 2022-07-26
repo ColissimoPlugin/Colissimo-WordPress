@@ -150,7 +150,7 @@ class LpcUpdate extends LpcComponent {
         // Update from version under 1.5
         if (version_compare($versionInstalled, '1.5') === - 1) {
             $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
-            $this->shippingZones->addCustomZonesOrUpdateOne('France');
+            $this->shippingZones->addCustomZonesOrUpdateOne('Zone France');
         }
 
         // Update from version under 1.6
@@ -181,6 +181,19 @@ class LpcUpdate extends LpcComponent {
             $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
             $this->createCapabilities();
             $this->shippingMethods->moveAlwaysFreeOption();
+        }
+
+        // Update from version under 1.7.1
+        if (version_compare($versionInstalled, '1.7.1') === - 1) {
+            foreach (WC_Shipping_Zones::get_zones() as $zone) {
+                if ('France' === $zone['zone_name']) {
+                    $newZone = WC_Shipping_Zones::get_zone($zone['id']);
+                    $newZone->set_zone_name('Zone France');
+                    $newZone->save();
+                }
+            }
+
+            $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
         }
     }
 

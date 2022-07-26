@@ -190,8 +190,8 @@ msgstr "Toujours gratuit ?"
 msgid "If enabled, rates calculation for this shipping method will always be zero."
 msgstr "Si activé, les frais de livraisons seront toujours gratuit pour cette méthode."
 
-msgid "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform"
-msgstr "Uniquement utile pour le Webservice. La clé API peut être générée depuis cloud.google.com/maps-platform"
+msgid "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
+msgstr "Uniquement utile pour le Webservice. La clé API peut être générée depuis cloud.google.com/maps-platform. N'ajoutez pas votre clé d'API s'il y a un conflit avec une autre extension qui l'utilise."
 
 msgid "Label generation settings"
 msgstr "Paramètres de génération des étiquettes"
@@ -1009,9 +1009,6 @@ msgstr "Expédition partielle"
 msgid "Order status when order is partially shipped"
 msgstr "Statut de commande quand la commande est partiellement expédiée"
 
-msgid "Need help?"
-msgstr "Besoin d'aide ?"
-
 msgid "Contact us"
 msgstr "Contactez-nous"
 
@@ -1294,14 +1291,14 @@ msgstr "Surcoût à appliquer pour les États-Unis"
 msgid "Message shown when selecting the sending method"
 msgstr "Message affiché lors de la sélection du mode de livraison"
 
-msgid "Colissimo Expert - DDP option"
-msgstr "Colissimo Expert - Option DDP"
+msgid "Colissimo International - DDP option"
+msgstr "Colissimo International - Option DDP"
 
 msgid "Colissimo with signature - DDP option"
 msgstr "Colissimo avec signature - Option DDP"
 
-msgid "This shipping method lets you configure the \"Colissimo Expert - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
-msgstr "Cette méthode de livraison vous permet de régler l'envoi \"Colissimo Expert - Option DDP\" qui est disponible et affichée uniquement pour les pays suivants : Afrique du Sud, Arabie Saoudite, Australie, Bahreïn, Canada, Chine, Corée du Sud, Égypte, Émirats Arabes Unis, États-Unis (USA), Hong Kong, Indonésie, Japon, Koweït, Mexique, Oman, Philippines, Singapour, Suisse, Thaïlande."
+msgid "This shipping method lets you configure the \"Colissimo International - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
+msgstr "Cette méthode de livraison vous permet de régler l'envoi \"Colissimo International - Option DDP\" qui est disponible et affichée uniquement pour les pays suivants : Afrique du Sud, Arabie Saoudite, Australie, Bahreïn, Canada, Chine, Corée du Sud, Égypte, Émirats Arabes Unis, États-Unis (USA), Hong Kong, Indonésie, Japon, Koweït, Mexique, Oman, Philippines, Singapour, Suisse, Thaïlande."
 
 msgid "This shipping method lets you configure the \"Colissimo with signature - DDP Option\" shipping that is available and shown only for the United Kingdom."
 msgstr "Cette méthode de livraison vous permet de régler l'envoi \"Colissimo avec signature - Option DDP\" qui n'est disponible et affiché uniquement pour le Royaume Uni."
@@ -1348,8 +1345,8 @@ msgstr "Douanes"
 msgid "Shipping methods"
 msgstr "Méthodes d'envoi"
 
-msgid "Colissimo Expert"
-msgstr "Colissimo Expert"
+msgid "Colissimo International"
+msgstr "Colissimo International"
 
 msgid "Print bordereau"
 msgstr "Imprimer bordereau"
@@ -1410,3 +1407,93 @@ msgstr "Classes d'expédition exclues"
 
 msgid "The current shipping method will not be displayed if one product in the cart has one of these shipping classes. This option takes precedence over the option Free shipping classes"
 msgstr "La méthode de livraison actuelle ne sera pas affichée si un produit du panier possède l'une de ces classes d'expédition. Cette option est prioritaire sur l'option Classes d'expédition gratuites"
+
+msgid "Return address"
+msgstr "Adresse de retour"
+
+msgid "This is the address of the place where you want to receive parcels returned by your customers. The default address will be the origin address"
+msgstr "C'est l'adresse du lieu où vous souhaitez recevoir les colis retournés par vos clients. L'adresse par défaut sera l'adresse d'origine"
+
+msgid "Order %1$s is insured up to %2$s euros, this is the maximum amount for parcels delivered with %3$s shipping method"
+msgstr "La commande %1$s est assurée à la hauteur de %2$s euros, c'est le montant maximum pour les colis livrés avec la méthode d'expédition %3$s"
+
+msgid "Free if at least one item in the cart has one of the free shipping classes above"
+msgstr "Gratuit si au moins un des produits du panier a une des classes d'expédition gratuite ci-dessus"
+
+msgid "If enabled, delivery will be free, even if the other items in the cart do not have one of the free shipping classes above"
+msgstr "Si activé, la livraison sera gratuite même si les autres produits du panier n'ont pas une des classes d'expédition gratuite ci-dessus"
+
+msgid "Colissimo support"
+msgstr "Support Colissimo"
+
+msgid "Plugin support"
+msgstr "Support de l'extension"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "The street address for your return location"
+msgstr "L'adresse où se situe votre lieu de retour"
+
+msgid "An additional, optional address line for your return location"
+msgstr "Ligne d'adresse optionnelle et additionnelle du lieu de retour"
+
+msgid "The city in which your return location is located"
+msgstr "La ville où se situe votre lieu de retour"
+
+msgid "The country and state or province, if any, in which your return location is located"
+msgstr "Le pays dans lequel est situé votre lieu de retour"
+
+msgid "The postal code, if any, in which your return location is located"
+msgstr "Le code postal où est situé votre lieu de retour"
+
+msgid "The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX"
+msgstr "Le numéro de mobile pour une destination française doit commencer par +33 ou 0, suivi de 6 ou 7 et être long de 12 ou 10 caractères. Par exemple 06XXXXXXXX ou +336XXXXXXXX"
+
+msgid "The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX"
+msgstr "Le numéro de mobile pour une destination Belge doit commencer par +324 et être long de 12 caractères. Par exemple +324XXXXXXXX"
+
+msgid "Order %s: insurance is not available for this country"
+msgstr "Commande %s : l'assurance n'est pas disponible pour ce pays"
+
+msgid "Ship with: %s"
+msgstr "Expédier avec : %s"
+
+msgid "The order #%1$d cannot be shipped with %2$s"
+msgstr "La commande #%1$d ne peut pas être expédiée avec %2$s"
+
+msgid "Shipping method changed to %1$s for %2$d orders."
+msgstr "Méthode d'expédition changée pour %1$s sur %2$d commandes."
+
+msgid "Shipping method changed to %s with bulk edit."
+msgstr "Méthode d'expédition changée pour %s avec une action de masse"
+
+msgid "The order #%d was made to be shipped to a relay point, make sure to change its shipping address!"
+msgstr "La commande #%d était prévue pour être expédiée vers un point de retrait, assurez-vous de changer son adresse d'expédition !"
+
+msgid "Select automatically the nearest relay point"
+msgstr "Sélectionner automatiquement le point de retrait le plus proche"
+
+msgid "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address"
+msgstr "Lorsque l'utilisateur sélectionne la méthode de relais lors du checkout, un point de retrait est automatiquement proposé basé sur l'adresse de livraison"
+
+msgid "Export %s file"
+msgstr "Exporter le fichier : %s"
+
+msgid "Export capabilities by country to CSV"
+msgstr "Exporter le fichier de capacités par pays au format CSV"
+
+msgid "Import capabilities by country file (only CSV file accepted)"
+msgstr "Importer le fichier de capacités par pays"
+
+msgid "Import"
+msgstr "Importer"
+
+msgid "Import / export capabilities per country"
+msgstr "Importer / exporter les capacités par pays"
+
+msgid "%s file has been imported"
+msgstr "Le fichier %s a été importé"
+
+msgid "Please upload a CSV file to import capabilities by country"
+msgstr "Veuillez téléverser un fichier CSV pour importer les capacités par pays"

@@ -64,7 +64,8 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         return [];
     }
 
-    protected function getCountriesPerZone($from = self::FROM_FR) {
+
+    public function getCountriesPerZone($from = self::FROM_FR) {
         if (self::FROM_FR === $from) {
             return json_decode(
                 file_get_contents(self::PATH_TO_COUNTRIES_PER_ZONE_JSON_FILE_FR),
@@ -183,6 +184,10 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         return $this->getInfoForDestination($countryCode, 'ftd');
     }
 
+    public function getInsuranceAvailableForDestination($countryCode) {
+        return $this->getInfoForDestination($countryCode, 'insurance');
+    }
+
     public function getReturnProductCodeForDestination($countryCode) {
         $storeCountryCode = $this->getStoreCountryCode();
 
@@ -203,11 +208,31 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         $productInfo = $this->getCapabilitiesForCountry($countryCode);
 
         if ('FR' !== $this->getStoreCountryCode()) {
-            $productInfo[LpcSignDDP::ID]   = false;
-            $productInfo[LpcExpertDDP::ID] = false;
+            $productInfo[$this->getCapabilitiesFileMethod(LpcSignDDP::ID)]   = false;
+            $productInfo[$this->getCapabilitiesFileMethod(LpcExpertDDP::ID)] = false;
         }
 
+        $info = $this->getCapabilitiesFileMethod($info);
+
         return isset($productInfo[$info]) ? $productInfo[$info] : false;
+    }
+
+    /**
+     * @param string $methodId
+     *
+     * @return string
+     */
+    public function getCapabilitiesFileMethod($methodId) {
+        $methods = [
+            LpcNoSign::ID    => 'domiciless',
+            LpcSign::ID      => 'domicileas',
+            LpcSignDDP::ID   => 'domicileasddp',
+            LpcRelay::ID     => 'pr',
+            LpcExpert::ID    => 'expert',
+            LpcExpertDDP::ID => 'expertddp',
+        ];
+
+        return empty($methods[$methodId]) ? $methodId : $methods[$methodId];
     }
 
     /**
@@ -217,7 +242,9 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
      *
      * @return array
      */
-    public function getCountriesForMethod($method) {
+    public function getCountriesForMethod($methodId) {
+        $method = $this->getCapabilitiesFileMethod($methodId);
+
         $countriesOfMethod = [];
         $countriesPerZone  = $this->getCapabilitiesPerCountry();
 

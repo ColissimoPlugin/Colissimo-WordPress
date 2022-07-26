@@ -69,7 +69,7 @@ class LpcPickupWebService extends LpcPickup {
         $customer  = $wcSession->customer;
 
         $map = LpcHelper::renderPartial(
-            'pick_up' . DS . 'webservice_map.php',
+            'pickup' . DS . 'webservice_map.php',
             [
                 'ceAddress'   => $customer['shipping_address'],
                 'ceZipCode'   => $customer['shipping_postcode'],
@@ -78,19 +78,33 @@ class LpcPickupWebService extends LpcPickup {
             ]
         );
         $this->modal->setContent($map);
+        $currentRelay = $this->lpcPickUpSelection->getCurrentPickUpLocationInfo();
+
+        $address = [
+            'address'     => $customer['shipping_address'],
+            'zipCode'     => $customer['shipping_postcode'],
+            'city'        => $customer['shipping_city'],
+            'countryCode' => $customer['shipping_country'],
+        ];
+
+        if ('yes' === LpcHelper::get_option('lpc_select_default_pr', 'no')
+            && empty($currentRelay)
+            && count($address) == count(array_filter($address))) {
+            $currentRelay = $this->getDefaultPickupLocationInfoWS($address);
+        }
 
         $args = [
             'modal'        => $this->modal,
             'apiKey'       => LpcHelper::get_option('lpc_gmap_key', ''),
-            'currentRelay' => $this->lpcPickUpSelection->getCurrentPickUpLocationInfo(),
+            'currentRelay' => $currentRelay,
+            'type'         => 'button',
+            'showButton'   => is_checkout(),
+            'showInfo'     => is_checkout(),
         ];
-        echo LpcHelper::renderPartial('pick_up' . DS . 'webservice.php', $args);
+        echo LpcHelper::renderPartial('pickup' . DS . 'webservice.php', $args);
     }
 
     public function pickupWS() {
-        require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_relays_api.php';
-        require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_generate_relays_payload.php';
-
         $address = [
             'address'     => LpcHelper::getVar('address'),
             'zipCode'     => LpcHelper::getVar('zipCode'),
@@ -98,22 +112,11 @@ class LpcPickupWebService extends LpcPickup {
             'countryCode' => LpcHelper::getVar('countryId'),
         ];
 
-        $generateRelaysPaypload = new LpcGenerateRelaysPayload();
+        $resultWs = $this->getPickupWS($address);
+        // When an exception is throw
+        if (empty($resultWs->return)) {
 
-        try {
-            $generateRelaysPaypload->withLogin()->withPassword()->withAddress($address)->withShippingDate()->withOptionInter()->checkConsistency();
-
-            $relaysApi = new LpcRelaysApi(['trace' => false]);
-
-            $relaysPayload = $generateRelaysPaypload->assemble();
-
-            $resultWs = $relaysApi->getRelays($relaysPayload);
-        } catch (\SoapFault $fault) {
-            return $this->ajaxDispatcher->makeAndLogError(['message' => $fault]);
-        } catch (Exception $exception) {
-            LpcLogger::error($exception->getMessage());
-
-            return $this->ajaxDispatcher->makeError(['message' => $exception->getMessage()]);
+            return $resultWs;
         }
 
         $return = $resultWs->return;
@@ -146,7 +149,7 @@ class LpcPickupWebService extends LpcPickup {
                 $partialArgs['oneRelay'] = $oneRelay;
                 $partialArgs['i']        = $i ++;
 
-                $html .= LpcHelper::renderPartial('pick_up/relay.php', $partialArgs);
+                $html .= LpcHelper::renderPartial('pickup' . DS . 'relay.php', $partialArgs);
             }
 
             return $this->ajaxDispatcher->makeSuccess(
@@ -183,5 +186,43 @@ class LpcPickupWebService extends LpcPickup {
                 return $this->ajaxDispatcher->makeError(['message' => __('Error')]);
             }
         }
+    }
+
+    public function getPickupWS($address, $optionInter = null) {
+        require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_generate_relays_payload.php';
+        require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_relays_api.php';
+
+        try {
+            $generateRelaysPaypload = new LpcGenerateRelaysPayload();
+            $relaysApi              = new LpcRelaysApi(['trace' => false]);
+
+            $generateRelaysPaypload->withLogin()->withPassword()->withAddress($address)->withShippingDate()->withOptionInter($optionInter)->checkConsistency();
+            $relaysPayload = $generateRelaysPaypload->assemble();
+
+            return $relaysApi->getRelays($relaysPayload);
+        } catch (\SoapFault $fault) {
+            return $this->ajaxDispatcher->makeAndLogError(['message' => $fault]);
+        } catch (Exception $exception) {
+            return $this->ajaxDispatcher->makeAndLogError(['message' => $exception->getMessage()]);
+        }
+    }
+
+    public function getDefaultPickupLocationInfoWS($address, $optionInter = null) {
+        $resultWs = $this->getPickupWS($address, $optionInter);
+        if (!empty($resultWs->return)) {
+            $return = $resultWs->return;
+
+            if ('0' == $return->errorCode) {
+                $relays = (array) $return->listePointRetraitAcheminement;
+                if (count($relays) >= 1) {
+                    $defaultRelay = (array) $relays[0];
+                    $this->lpcPickUpSelection->setCurrentPickUpLocationInfo($defaultRelay);
+
+                    return $defaultRelay;
+                }
+            }
+        }
+
+        return null;
     }
 }

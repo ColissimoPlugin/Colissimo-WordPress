@@ -2,6 +2,7 @@ jQuery(function ($) {
     function lpcOrderAffect() {
         $('.lpc_order_affect_toggle_methods').off('click').on('click', function () {
             $(this).closest('.lpc_order_affect').find('.lpc_order_affect_available_methods').toggle();
+            $.lpcInitWidget();
         });
 
         $('.lpc_order_affect_validate_method').off('click').on('click', function () {

@@ -111,6 +111,10 @@ class LpcAdminPickupWidget extends LpcComponent {
             'lpc_pick_up_widget_container'
         );
 
+        $args['showButton'] = true;
+        $args['showInfo']   = false;
+        $args['type']       = 'link';
+
         return LpcHelper::renderPartial('pickup' . DS . 'widget.php', $args);
     }
 

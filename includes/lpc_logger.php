@@ -21,23 +21,23 @@ class LpcLogger {
 
 
     public static function error($message, array $details = null) {
-        LpcLogger::log(self::ERROR_LEVEL, $message, $details);
+        self::log(self::ERROR_LEVEL, $message, $details);
     }
 
     public static function warn($message, array $details = null) {
-        LpcLogger::log(self::WARN_LEVEL, $message, $details);
+        self::log(self::WARN_LEVEL, $message, $details);
     }
 
     public static function warning($message, array $details = null) {
-        LpcLogger::warn($message, $details);
+        self::warn($message, $details);
     }
 
     public static function debug($message, array $details = null) {
-        LpcLogger::log(self::DEBUG_LEVEL, $message, $details);
+        self::log(self::DEBUG_LEVEL, $message, $details);
     }
 
     public static function info($message, array $details = null) {
-        LpcLogger::log(self::INFO_LEVEL, $message, $details);
+        self::log(self::INFO_LEVEL, $message, $details);
     }
 
     /**

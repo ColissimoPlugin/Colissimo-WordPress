@@ -20,10 +20,10 @@ class LpcInvoiceGenerateAction extends LpcComponent {
     public function generateInvoice($orderId, $filename, $destination) {
         try {
             $order = new WC_Order($orderId);
-            $pdf   = new LPC_TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->SetMargins(PDF_MARGIN_LEFT, 5, PDF_MARGIN_RIGHT);
-            $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-            $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+            $pdf   = new LPC_TCPDF(LpcTcpdfConfig\PDF_PAGE_ORIENTATION, LpcTcpdfConfig\PDF_UNIT, LpcTcpdfConfig\PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf->SetMargins(LpcTcpdfConfig\PDF_MARGIN_LEFT, 5, LpcTcpdfConfig\PDF_MARGIN_RIGHT);
+            $pdf->SetHeaderMargin(LpcTcpdfConfig\PDF_MARGIN_HEADER);
+            $pdf->SetFooterMargin(LpcTcpdfConfig\PDF_MARGIN_FOOTER);
             $pdf->SetPrintHeader(false);
             $pdf->SetPrintFooter(false);
             $pdf->addPage();

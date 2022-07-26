@@ -105,8 +105,8 @@ class LpcLabelGenerationInward extends LpcComponent {
             throw new \Exception(__('Not allowed for this destination', 'wc_colissimo'));
         }
 
-        $payload      = new LpcLabelGenerationPayload();
-        $storeAddress = $payload->getStoreAddress();
+        $payload       = new LpcLabelGenerationPayload();
+        $returnAddress = $payload->getReturnAddress();
         $payload
             ->isReturnLabel(true)
             ->withOrderNumber($order->get_order_number())
@@ -114,7 +114,7 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->withPassword()
             ->withCuserInfoText()
             ->withSender($customerAddress)
-            ->withAddressee($storeAddress)
+            ->withAddressee($returnAddress)
             ->withPackage($order, $customParams)
             ->withPreparationDelay()
             ->withInstructions($order->get_customer_note())

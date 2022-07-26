@@ -190,8 +190,8 @@ msgstr "Always free?"
 msgid "If enabled, rates calculation for this shipping method will always be zero."
 msgstr "If enabled, rates calculation for this shipping method will always be zero."
 
-msgid "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform"
-msgstr "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform"
+msgid "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
+msgstr "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
 
 msgid "Label generation settings"
 msgstr "Label generation settings"
@@ -1009,9 +1009,6 @@ msgstr "Partial expedition"
 msgid "Order status when order is partially shipped"
 msgstr "Order status when order is partially shipped"
 
-msgid "Need help?"
-msgstr "Need help?"
-
 msgid "Contact us"
 msgstr "Contact us"
 
@@ -1294,14 +1291,14 @@ msgstr "Option price for United States"
 msgid "Message shown when selecting the sending method"
 msgstr "Message shown when selecting the sending method"
 
-msgid "Colissimo Expert - DDP option"
-msgstr "Colissimo Expert - DDP option"
+msgid "Colissimo International - DDP option"
+msgstr "Colissimo International - DDP option"
 
 msgid "Colissimo with signature - DDP option"
 msgstr "Colissimo with signature - DDP option"
 
-msgid "This shipping method lets you configure the \"Colissimo Expert - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
-msgstr "This shipping method lets you configure the \"Colissimo Expert - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
+msgid "This shipping method lets you configure the \"Colissimo International - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
+msgstr "This shipping method lets you configure the \"Colissimo International - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
 
 msgid "This shipping method lets you configure the \"Colissimo with signature - DDP Option\" shipping that is available and shown only for the United Kingdom."
 msgstr "This shipping method lets you configure the \"Colissimo with signature - DDP Option\" shipping that is available and shown only for the United Kingdom."
@@ -1348,8 +1345,8 @@ msgstr "Custom"
 msgid "Shipping methods"
 msgstr "Shipping methods"
 
-msgid "Colissimo Expert"
-msgstr "Colissimo Expert"
+msgid "Colissimo International"
+msgstr "Colissimo International"
 
 msgid "Print bordereau"
 msgstr "Print bordereau"
@@ -1410,3 +1407,93 @@ msgstr "Excluded shipping classes"
 
 msgid "The current shipping method will not be displayed if one product in the cart has one of these shipping classes. This option takes precedence over the option Free shipping classes"
 msgstr "The current shipping method will not be displayed if one product in the cart has one of these shipping classes. This option takes precedence over the option Free shipping classes"
+
+msgid "Return address"
+msgstr "Return address"
+
+msgid "This is the address of the place where you want to receive parcels returned by your customers. The default address will be the origin address"
+msgstr "This is the address of the place where you want to receive parcels returned by your customers. The default address will be the origin address"
+
+msgid "Order %1$s is insured up to %2$s euros, this is the maximum amount for parcels delivered with %3$s shipping method"
+msgstr "Order %1$s is insured up to %2$s euros, this is the maximum amount for parcels delivered with %3$s shipping method"
+
+msgid "Free if at least one item in the cart has one of the free shipping classes above"
+msgstr "Free if at least one item in the cart has one of the free shipping classes above"
+
+msgid "If enabled, delivery will be free, even if the other items in the cart do not have one of the free shipping classes above"
+msgstr "If enabled, delivery will be free, even if the other items in the cart do not have one of the free shipping classes above"
+
+msgid "Colissimo support"
+msgstr "Colissimo support"
+
+msgid "Plugin support"
+msgstr "Plugin support"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "The street address for your return location"
+msgstr "The street address for your return location"
+
+msgid "An additional, optional address line for your return location"
+msgstr "An additional, optional address line for your return location"
+
+msgid "The city in which your return location is located"
+msgstr "The city in which your return location is located"
+
+msgid "The country and state or province, if any, in which your return location is located"
+msgstr "The country and state or province, if any, in which your return location is located"
+
+msgid "The postal code, if any, in which your return location is located"
+msgstr "The postal code, if any, in which your return location is located"
+
+msgid "The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX"
+msgstr "The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX"
+
+msgid "The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX"
+msgstr "The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX"
+
+msgid "Order %s: insurance is not available for this country"
+msgstr "Order %s: insurance is not available for this country"
+
+msgid "Ship with: %s"
+msgstr "Ship with: %s"
+
+msgid "The order #%1$d cannot be shipped with %2$s"
+msgstr "The order #%1$d cannot be shipped with %2$s"
+
+msgid "Shipping method changed to %1$s for %2$d orders."
+msgstr "Shipping method changed to %1$s for %2$d orders."
+
+msgid "Shipping method changed to %s with bulk edit."
+msgstr "Shipping method changed to %s with bulk edit."
+
+msgid "The order #%d was made to be shipped to a relay point, make sure to change its shipping address!"
+msgstr "The order #%d was made to be shipped to a relay point, make sure to change its shipping address!"
+
+msgid "Select automatically the nearest relay point"
+msgstr "Select automatically the nearest relay point"
+
+msgid "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address"
+msgstr "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address"
+
+msgid "Export %s file"
+msgstr "Export %s file"
+
+msgid "Export capabilities by country to CSV"
+msgstr "Export capabilities by country to CSV"
+
+msgid "Import capabilities by country file (only CSV file accepted)"
+msgstr "Import capabilities by country file (only CSV file accepted)"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Import / export capabilities per country"
+msgstr "Import / export capabilities per country"
+
+msgid "%s file has been imported"
+msgstr "%s file has been imported"
+
+msgid "Please upload a CSV file to import capabilities by country"
+msgstr "Please upload a CSV file to import capabilities by country"

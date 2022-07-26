@@ -158,11 +158,12 @@ class LpcAdminOrderAffect extends LpcComponent {
      */
     protected function getColissimoShippingMethodsAvailable(WC_Order $order) {
         $allShippingMethods                  = WC()->shipping() ? WC()->shipping()->load_shipping_methods() : [];
-        $colissimoShipppingMethodsPerCountry = $this->lpcCapabilitiesByCountry->getCapabilitiesForCountry($order->get_shipping_country());
+        $colissimoShippingMethodsPerCountry = $this->lpcCapabilitiesByCountry->getCapabilitiesForCountry($order->get_shipping_country());
         $methods                             = [];
 
         foreach ($allShippingMethods as $oneMethod) {
-            if (!empty($colissimoShipppingMethodsPerCountry[$oneMethod->id])) {
+            $method = $this->lpcCapabilitiesByCountry->getCapabilitiesFileMethod($oneMethod->id);
+            if (!empty($colissimoShippingMethodsPerCountry[$method])) {
                 $methods[$oneMethod->id] = $oneMethod;
             }
         }

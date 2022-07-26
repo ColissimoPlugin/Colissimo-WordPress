@@ -27,12 +27,17 @@ require_once LPC_ADMIN . 'labels' . DS . 'generate' . DS . 'lpc_label_inward_gen
 require_once LPC_ADMIN . 'labels' . DS . 'generate' . DS . 'lpc_label_outward_generate_action.php';
 require_once LPC_ADMIN . 'lpc_compatibility.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_action.php';
+require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_bulk_actions.php';
+if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
+    require_once LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php';
+}
 
 class LpcAdminInit {
 
     public function __construct() {
         // Add left menu
         add_action('admin_menu', [$this, 'add_menus'], 99);
+        add_action('admin_menu', [$this, 'add_dev_tool'], 99);
         LpcRegister::register('settingsTab', new LpcSettingsTab());
         LpcRegister::register('pickupRelayPointOnOrder', new LpcPickupRelayPointOnOrder());
 
@@ -61,6 +66,11 @@ class LpcAdminInit {
         LpcRegister::register('labelOutwardImport', new LpcLabelOutwardImportAction());
         LpcRegister::register('LpcCouponsRestrictions', new LpcCouponsRestrictions());
         LpcRegister::register('wooOrdersTableAction', new LpcWooOrdersTableAction());
+        LpcRegister::register('wooOrdersTableBulkActions', new LpcWooOrdersTableBulkActions());
+
+        if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
+            LpcRegister::register('capabilitiesDev', new LpcCapabilitiesFile());
+        }
 
         LpcHelper::enqueueScript('lpc_admin_notices', plugins_url('/js/lpc_admin_notices.js', __FILE__), null, ['jquery-core']);
 
@@ -86,6 +96,22 @@ class LpcAdminInit {
         add_action("load-$hook", [$this, 'lpc_load_orders_table']);
     }
 
+    public function add_dev_tool() {
+        if (!file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
+            return;
+        }
+        $capabilitiesDev = new LpcCapabilitiesFile();
+
+        $hook = add_submenu_page(
+            'woocommerce',
+            'Colissimo',
+            'Devtool',
+            'lpc_colissimo_listing',
+            'wc_colissimo_devtool',
+            [$capabilitiesDev, 'display']
+        );
+    }
+
     public function router() {
         $lpcOrdersTable = new LpcOrdersTable();
         $args           = [];
@@ -109,6 +135,9 @@ class LpcAdminInit {
             'jquery_migrate_wp56',
             'lpc_notice',
             'bordereau_delete',
+            'insurance_unavailable_for_country',
+            'shipment_change',
+            'country_capaibilities_import',
         ];
         foreach ($notifications as $oneNotification) {
             $notice_content = $lpc_admin_notices->get_notice($oneNotification);
