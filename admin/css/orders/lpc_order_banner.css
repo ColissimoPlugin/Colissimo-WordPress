@@ -82,3 +82,11 @@
 	width: 200px;
 	display: inline-block;
 }
+
+.lpc-label-status{
+	vertical-align: middle;
+}
+
+.lpc__admin__order_banner__generate_label__div input[type="checkbox"]{
+	vertical-align: bottom;
+}

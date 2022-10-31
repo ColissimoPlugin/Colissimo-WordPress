@@ -3,7 +3,7 @@
 defined('ABSPATH') || die('Restricted Access');
 
 class LpcTrackingPage extends LpcComponent {
-    const ROUTE = '^lpc/tracking/(.+)/?';
+    const ROUTE = '.*lpc/tracking/(.+)/?';
     const QUERY_VAR = 'lpc_tracking_hash';
 
     protected $lpcUnifiedTrackingApi;
@@ -17,15 +17,17 @@ class LpcTrackingPage extends LpcComponent {
     }
 
     public function init() {
+        // Whitelist our URL parameter
         add_filter(
             'query_vars',
-            function (array $rules) {
-                $rules[] = self::QUERY_VAR;
+            function (array $query_vars) {
+                $query_vars[] = self::QUERY_VAR;
 
-                return $rules;
+                return $query_vars;
             }
         );
 
+        // If our parameter is in the URL, show our tracking page
         add_action(
             'parse_request',
             function (WP $wp) {
@@ -89,10 +91,11 @@ class LpcTrackingPage extends LpcComponent {
     }
 
     public static function addRewriteRule() {
+        // Detect our permalink structure and fill in our URL parameter so that it could be detected
         add_rewrite_rule(
             self::ROUTE,
             'index.php?' . self::QUERY_VAR . '=$matches[1]',
-            'bottom'
+            'top'
         );
     }
 

@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.7.1\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.7.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-07-26\n"
+"POT-Creation-Date: 2022-10-31\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -878,7 +878,7 @@ msgstr ""
 msgid "This controls the title which the user sees during checkout if the shipping methods is free. Leave empty to always use standard title."
 msgstr ""
 
-msgid "The statuses update process has started. Depending of the numbers of orders you have, it may takes a few minutes to update all statuses. You will find more information by checking logs."
+msgid "The statuses update process has started. Depending of the numbers of orders you have, it may take a few minutes to update all statuses. You will find more information by checking logs."
 msgstr ""
 
 msgid "EORI number"
@@ -1507,5 +1507,101 @@ msgid "%s file has been imported"
 msgstr ""
 
 msgid "Please upload a CSV file to import capabilities by country"
+msgstr ""
+
+msgid "The label couldn't be generated: %s"
+msgstr ""
+
+msgid "Firstname"
+msgstr ""
+
+msgid "Lastname"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Phone number"
+msgstr ""
+
+msgid "Mobile number"
+msgstr ""
+
+msgid "Personalized amount of insurance:"
+msgstr ""
+
+msgid "Error while saving imported rates"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Please select a file"
+msgstr ""
+
+msgid "Sending service Austria"
+msgstr ""
+
+msgid "Sending service Germany"
+msgstr ""
+
+msgid "Sending service Italy"
+msgstr ""
+
+msgid "Sending service Luxembourg"
+msgstr ""
+
+msgid "Number of products"
+msgstr ""
+
+msgid "Discount in precentage"
+msgstr ""
+
+msgid "Shipping discount"
+msgstr ""
+
+msgid "Add discount"
+msgstr ""
+
+msgid "Use the multi-parcels shipping"
+msgstr ""
+
+msgid "If you want your client to receive all the parcels at the same time, activate this option and specify the exact number of parcels."
+msgstr ""
+
+msgid "Parcel n°%1$s / %2$s"
+msgstr ""
+
+msgid "Number of parcels:"
+msgstr ""
+
+msgid "Incorrect number of parcels"
+msgstr ""
+
+msgid "All labels have already been generated. To generate a new label, please uncheck the multi-parcels shipping."
+msgstr ""
+
+msgid "All labels have been generated."
+msgstr ""
+
+msgid "If you made a mistake or if you want to change the total number of parcels, you can delete generated labels."
+msgstr ""
+
+msgid "You cannot delete this label because the label %s is bound to it."
+msgstr ""
+
+msgid "Master parcel"
+msgstr ""
+
+msgid "Follower parcel"
+msgstr ""
+
+msgid "It is restricted to commercial shipments between 160€ and 1050€ included."
+msgstr ""
+
+msgid "The file you import must be a CSV with the column min_weight, max_weight, min_price, max_price, shipping_class, price"
+msgstr ""
+
+msgid "Choose an amount"
 msgstr ""
 

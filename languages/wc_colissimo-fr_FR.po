@@ -449,7 +449,7 @@ msgid "Allow customers to automatically create return labels and use them to ret
 msgstr "Autoriser les clients à créer leur étiquette de retour et l'utiliser pour le retour en boîte aux lettres"
 
 msgid "F j, Y"
-msgstr "F j, Y"
+msgstr "j F, Y"
 
 msgid "Retrieval address"
 msgstr "Adresse de retour"
@@ -497,7 +497,7 @@ msgid "Show internationals Relay Points"
 msgstr "Afficher les points relais à l'international"
 
 msgid "Only applicable for Webservice method"
-msgstr "Applicable seulement pour la méthode Webservicve"
+msgstr "Applicable seulement pour la méthode Webservice"
 
 msgid "Outward label was not generated:"
 msgstr "L'étiquette aller n'a pas été générée :"
@@ -867,7 +867,7 @@ msgstr "Titre si gratuit"
 msgid "This controls the title which the user sees during checkout if the shipping methods is free. Leave empty to always use standard title."
 msgstr "Nom de la méthode de livraison que le client verra sur le tunnel de commande si la méthode est gratuite. Laissez vide pour garder toujours le titre standard."
 
-msgid "The statuses update process has started. Depending of the numbers of orders you have, it may takes a few minutes to update all statuses. You will find more information by checking logs."
+msgid "The statuses update process has started. Depending of the numbers of orders you have, it may take a few minutes to update all statuses. You will find more information by checking logs."
 msgstr "Le processus de mise à jour des statuts a commencé. En fonction du nombre de commandes que vous avez, cela peut prendre plusieurs minutes de mettre à jour tous les status. Vous trouverez plus d'informations dans le fichier de log."
 
 msgid "EORI number"
@@ -1497,3 +1497,98 @@ msgstr "Le fichier %s a été importé"
 
 msgid "Please upload a CSV file to import capabilities by country"
 msgstr "Veuillez téléverser un fichier CSV pour importer les capacités par pays"
+
+msgid "The label couldn't be generated: %s"
+msgstr "L'étiquette n'a pas pu être générée : %s"
+
+msgid "Firstname"
+msgstr "Prénom"
+
+msgid "Lastname"
+msgstr "Nom de famille"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Phone number"
+msgstr "Téléphone fixe"
+
+msgid "Mobile number"
+msgstr "Téléphone portable"
+
+msgid "Personalized amount of insurance:"
+msgstr "Montant personnalisé de l'assurance :"
+
+msgid "Error while saving imported rates"
+msgstr "Une erreur est survenue lors de l'import des frais"
+
+msgid "Export"
+msgstr "Exporter"
+
+msgid "Please select a file"
+msgstr "Veuillez sélectionner un fichier"
+
+msgid "Sending service Austria"
+msgstr "Service d'envoi pour l'Autriche"
+
+msgid "Sending service Germany"
+msgstr "Service d'envoi pour l'Allemagne"
+
+msgid "Sending service Italy"
+msgstr "Service d'envoi pour l'Italie"
+
+msgid "Sending service Luxembourg"
+msgstr "Service d'envoi pour le Luxembourg"
+msgid "Number of products"
+msgstr "Nombre de produits"
+
+msgid "Discount in precentage"
+msgstr "Réduction en pourcentage"
+
+msgid "Shipping discount"
+msgstr "Réduction sur la livraison"
+
+msgid "Add discount"
+msgstr "Ajouter une réduction"
+
+msgid "Use the multi-parcels shipping"
+msgstr "Utiliser l'envoi en multi-colis"
+
+msgid "If you want your client to receive all the parcels at the same time, activate this option and specify the exact number of parcels."
+msgstr "Si vous souhaitez que votre client reçoive tous les colis en même temps, activez cette option et donnez le nombre exact de colis."
+
+msgid "Parcel n°%1$s / %2$s"
+msgstr "Colis n°%1$s / %2$s"
+
+msgid "Number of parcels:"
+msgstr "Nombre de colis :"
+
+msgid "Incorrect number of parcels"
+msgstr "Nombre de colis incorrect"
+
+msgid "All labels have already been generated. To generate a new label, please uncheck the multi-parcels shipping."
+msgstr "Toutes les étiquettes ont déjà été générées. Pour générer une nouvelle étiquette, veuillez décocher l'envoi en multi-colis."
+
+msgid "All labels have been generated."
+msgstr "Toutes les étiquettes ont été générées."
+
+msgid "If you made a mistake or if you want to change the total number of parcels, you can delete generated labels."
+msgstr "Si vous avez fait une erreur ou si vous souhaitez changer le nombre total de colis, vous pouvez supprimer les étiquettes générées."
+
+msgid "You cannot delete this label because the label %s is bound to it."
+msgstr "Vous ne pouvez pas supprimer cette étiquette car l'étiquette %s lui est liée."
+
+msgid "Master parcel"
+msgstr "Colis maître"
+
+msgid "Follower parcel"
+msgstr "Colis suiveur"
+
+msgid "It is restricted to commercial shipments between 160€ and 1050€ included."
+msgstr "Il est réservé aux envois commerciaux entre 160€ et 1050€ inclus."
+
+msgid "The file you import must be a CSV with the column min_weight, max_weight, min_price, max_price, shipping_class, price"
+msgstr "Le fichier que vous importez doit obligatoirement un CSV avec les colonnes min_weight, max_weight, min_price, max_price, shipping_class, price"
+
+msgid "Choose an amount"
+msgstr "Choisir un montant"

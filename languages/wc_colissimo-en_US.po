@@ -867,8 +867,8 @@ msgstr "Title if free"
 msgid "This controls the title which the user sees during checkout if the shipping methods is free. Leave empty to always use standard title."
 msgstr "This controls the title which the user sees during checkout if the shipping methods is free. Leave empty to always use standard title."
 
-msgid "The statuses update process has started. Depending of the numbers of orders you have, it may takes a few minutes to update all statuses. You will find more information by checking logs."
-msgstr "The statuses update process has started. Depending of the numbers of orders you have, it may takes a few minutes to update all statuses. You will find more information by checking logs."
+msgid "The statuses update process has started. Depending of the numbers of orders you have, it may take a few minutes to update all statuses. You will find more information by checking logs."
+msgstr "The statuses update process has started. Depending of the numbers of orders you have, it may take a few minutes to update all statuses. You will find more information by checking logs."
 
 msgid "EORI number"
 msgstr "EORI number"
@@ -1497,3 +1497,99 @@ msgstr "%s file has been imported"
 
 msgid "Please upload a CSV file to import capabilities by country"
 msgstr "Please upload a CSV file to import capabilities by country"
+
+msgid "The label couldn't be generated: %s"
+msgstr "The label couldn't be generated: %s"
+
+msgid "Firstname"
+msgstr "Firstname"
+
+msgid "Lastname"
+msgstr "Lastname"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Phone number"
+msgstr "Phone number"
+
+msgid "Mobile number"
+msgstr "Mobile number"
+
+msgid "Personalized amount of insurance:"
+msgstr "Personalized amount of insurance:"
+
+msgid "Error while saving imported rates"
+msgstr "Error while saving imported rates"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Please select a file"
+msgstr "Please select a file"
+
+msgid "Sending service Austria"
+msgstr "Sending service Austria"
+
+msgid "Sending service Germany"
+msgstr "Sending service Germany"
+
+msgid "Sending service Italy"
+msgstr "Sending service Italy"
+
+msgid "Sending service Luxembourg"
+msgstr "Sending service Luxembourg"
+
+msgid "Number of products"
+msgstr "Number of products"
+
+msgid "Discount in precentage"
+msgstr "Discount in precentage"
+
+msgid "Shipping discount"
+msgstr "Shipping discount"
+
+msgid "Add discount"
+msgstr "Add discount"
+
+msgid "Use the multi-parcels shipping"
+msgstr "Use the multi-parcels shipping"
+
+msgid "If you want your client to receive all the parcels at the same time, activate this option and specify the exact number of parcels."
+msgstr "If you want your client to receive all the parcels at the same time, activate this option and specify the exact number of parcels."
+
+msgid "Parcel n°%1$s / %2$s"
+msgstr "Parcel n°%1$s / %2$s"
+
+msgid "Number of parcels:"
+msgstr "Number of parcels:"
+
+msgid "Incorrect number of parcels"
+msgstr "Incorrect number of parcels"
+
+msgid "All labels have already been generated. To generate a new label, please uncheck the multi-parcels shipping."
+msgstr "All labels have already been generated. To generate a new label, please uncheck the multi-parcels shipping."
+
+msgid "All labels have been generated."
+msgstr "All labels have been generated."
+
+msgid "If you made a mistake or if you want to change the total number of parcels, you can delete generated labels."
+msgstr "If you made a mistake or if you want to change the total number of parcels, you can delete generated labels."
+
+msgid "You cannot delete this label because the label %s is bound to it."
+msgstr "You cannot delete this label because the label %s is bound to it."
+
+msgid "Master parcel"
+msgstr "Master parcel"
+
+msgid "Follower parcel"
+msgstr "Follower parcel"
+
+msgid "It is restricted to commercial shipments between 160€ and 1050€ included."
+msgstr "It is restricted to commercial shipments between 160€ and 1050€ included."
+
+msgid "The file you import must be a CSV with the column min_weight, max_weight, min_price, max_price, shipping_class, price"
+msgstr "The file you import must be a CSV with the column min_weight, max_weight, min_price, max_price, shipping_class, price"
+
+msgid "Choose an amount"
+msgstr "Choose an amount"

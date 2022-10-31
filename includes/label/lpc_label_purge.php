@@ -29,6 +29,9 @@ class LpcLabelPurge extends LpcComponent {
     }
 
     public function purgeLabels($orderIds) {
+        if (empty($orderIds)) {
+            return;
+        }
         LpcLogger::debug(
             __METHOD__ . ' purge labels for',
             [

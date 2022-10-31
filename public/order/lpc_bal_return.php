@@ -19,29 +19,28 @@ class LpcBalReturn extends LpcComponent {
         $this->labelGenerationInward = LpcRegister::get('labelGenerationInward');
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['labelGenerationApi', 'labelGenerationInward'];
     }
 
     public function init() {
         add_action('woocommerce_order_details_before_order_table', [$this, 'addBalReturn']);
 
+        // Whitelist our URL parameter
         add_filter(
             'query_vars',
-            function (array $rules) {
-                $rules[] = self::QUERY_VAR;
+            function (array $query_vars) {
+                $query_vars[] = self::QUERY_VAR;
 
-                return $rules;
+                return $query_vars;
             }
         );
 
+        // If our parameter is in the URL, show our tracking page
         add_action(
             'parse_request',
             function (WP $wp) {
-                if (
-                    !empty($wp->query_vars[self::QUERY_VAR])
-                    && preg_match('/(.*)lpc\/balReturn\/(.*)/m', $wp->request)
-                ) {
+                if (!empty($wp->query_vars[self::QUERY_VAR]) && preg_match('/(.*)lpc\/balReturn\/(.*)/m', $wp->request)) {
                     $this->control($wp);
                 }
             }
@@ -71,10 +70,8 @@ class LpcBalReturn extends LpcComponent {
         );
     }
 
-    public function getBalReturnUrl($orderId) {
-        $url = empty(get_option('permalink_structure')) ? '/' . self::QUERY_VAR . '=' . $orderId : self::ROUTE . $orderId;
-
-        return $url;
+    public function getBalReturnUrl($orderId): string {
+        return empty(get_option('permalink_structure')) ? '/' . self::QUERY_VAR . '=' . $orderId : self::ROUTE . $orderId;
     }
 
     /**************** Process ****************/
@@ -205,15 +202,38 @@ class LpcBalReturn extends LpcComponent {
      * @return string|null
      */
     protected function getMailBoxPickingDate() {
-        $timestamps = $this->listMailBoxPickingDatesResponse['mailBoxPickingDates'];
+        $pickingPossibleDates = $this->listMailBoxPickingDatesResponse['mailBoxPickingDates'];
 
-        if (empty($timestamps)) {
+        if (empty($pickingPossibleDates)) {
             return null;
-        } else {
-            $date = date_i18n(__('F j, Y', 'wc_colissimo'), $timestamps[0] / 1000, true);
-
-            return $date;
         }
+
+        // Make sure we show
+        $cmsOffset = get_option('timezone_string', null);
+
+        // In WP there are multiple possible formats in the same option for the timezone
+        if (empty($cmsOffset)) {
+            $cmsOffset = get_option('gmt_offset', null);
+
+            if (empty($cmsOffset)) {
+                $cmsOffset = 'UTC';
+            } elseif ($cmsOffset < 0) {
+                $cmsOffset = 'GMT' . $cmsOffset;
+            } else {
+                $cmsOffset = 'GMT+' . $cmsOffset;
+            }
+        }
+
+        $timezone = new DateTimeZone($cmsOffset);
+        if (!is_numeric($cmsOffset)) {
+            $cmsOffset = $timezone->getOffset(new DateTime());
+        }
+
+        return date_i18n(
+            __('F j, Y', 'wc_colissimo'),
+            $pickingPossibleDates[0] / 1000 + $cmsOffset,
+            true
+        );
     }
 
     /**

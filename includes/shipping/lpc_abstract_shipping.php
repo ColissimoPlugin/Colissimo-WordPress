@@ -5,8 +5,12 @@ require_once LPC_INCLUDES . 'shipping' . DS . 'lpc_capabilities_per_country.php'
 abstract class LpcAbstractShipping extends WC_Shipping_Method {
     const LPC_ALL_SHIPPING_CLASS_CODE = 'all';
     const LPC_LAPOSTE_TRACKING_LINK = 'https://www.laposte.fr/outils/suivre-vos-envois?code={lpc_tracking_number}';
+    const CUSTOMS_CATEGORY_COMMERCIAL = 3;
 
     protected $lpcCapabilitiesPerCountry;
+    /**
+     * @var mixed
+     */
 
     /**
      * LpcAbstractShipping constructor.
@@ -88,18 +92,34 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             'shipping_rates'                               => [
                 'type' => 'shipping_rates',
             ],
+            'shipping_discount'                            => [
+                'type' => 'shipping_discount',
+            ],
         ];
+    }
+
+    public function generate_shipping_discount_html() {
+        return LpcHelper::renderPartial(
+            'shipping' . DS . 'shipping_discount_table.php',
+            [
+                'shippingMethod' => $this,
+            ]
+        );
     }
 
     public function generate_shipping_rates_html() {
         $shipping        = new \WC_Shipping();
         $shippingClasses = $shipping->get_shipping_classes();
 
+        $shippingRates = LpcRegister::get('shippingRates');
+
         return LpcHelper::renderPartial(
             'shipping' . DS . 'shipping_rates_table.php',
             [
                 'shippingMethod'  => $this,
                 'shippingClasses' => $shippingClasses,
+                'exportUrl'       => $shippingRates->getUrlExport($this->instance_id),
+                'importUrl'       => $shippingRates->getUrlImport($this->instance_id),
             ]
         );
     }
@@ -122,11 +142,23 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $args['label']           = __('Excluded shipping classes', 'wc_colissimo');
             $args['selected_values'] = $this->get_option('excluded_classes', []);
             $args['multiple']        = true;
-            $args['description']     = __('The current shipping method will not be displayed if one product in the cart has one of these shipping classes. This option takes precedence over the option Free shipping classes',
-                                          'wc_colissimo');
+            $args['description']     = __(
+                'The current shipping method will not be displayed if one product in the cart has one of these shipping classes. This option takes precedence over the option Free shipping classes',
+                'wc_colissimo'
+            );
         }
 
         return LpcHelper::renderPartial('shipping' . DS . 'shipping_classes_select_field.php', $args);
+    }
+
+    public function validate_shipping_discount_field($key) {
+        $result   = [];
+        $postData = $this->get_post_data();
+        if (empty($postData[$key])) {
+            return $result;
+        }
+
+        return $postData[$key];
     }
 
     public function validate_classes_shipping_field($key) {
@@ -136,9 +168,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             return $result;
         }
 
-        $result = $postData[$key];
-
-        return $result;
+        return $postData[$key];
     }
 
     public function validate_shipping_rates_field($key) {
@@ -194,6 +224,10 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         return $this->get_option('shipping_rates', []);
     }
 
+    public function getDiscounts() {
+        return $this->get_option('shipping_discount', []);
+    }
+
     public function getFreeShippingClasses() {
         return $this->get_option('classes_free_shipping', []);
     }
@@ -232,12 +266,15 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             }
         );
 
-        $lineTotal    = 0;
-        $lineTax      = 0;
-        $lineSubTotal = 0;
-        $lineSubTax   = 0;
+        $lineTotal       = 0;
+        $lineTax         = 0;
+        $lineSubTotal    = 0;
+        $lineSubTax      = 0;
+        $articleQuantity = 0;
+        $discountToApply = 0;
 
         foreach ($package['contents'] as $item) {
+            $articleQuantity       += $item['quantity'];
             $product               = $item['data'];
             $totalWeight           += (float) $product->get_weight() * $item['quantity'];
             $cartShippingClasses[] = $product->get_shipping_class_id();
@@ -247,6 +284,15 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $lineSubTotal = $lineSubTotal + $item['line_subtotal'];
             $lineSubTax   = $lineSubTax + $item['line_subtotal_tax'];
         }
+
+        // Check if there is an available discount
+        $discounts = $this->getDiscounts();
+        foreach ($discounts as $discount) {
+            if ($discount['nb_product'] <= $articleQuantity && $discountToApply < $discount['percentage']) {
+                $discountToApply = $discount['percentage'];
+            }
+        }
+        $discountToApply = floatval($discountToApply);
 
         $excludedClasses = $this->get_option('excluded_classes', []);
         if (!empty(array_intersect($excludedClasses, $cartShippingClasses))) {
@@ -258,6 +304,12 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         $totalWithoutCouponPrice = round($lineSubTax + $lineSubTotal, 2);
 
         $totalPrice = 'yes' === LpcHelper::get_option('lpc_calculate_shipping_before_coupon', 'no') ? $totalWithoutCouponPrice : $totalPrice;
+
+        // DDP for GB must be commercial and between 160€ and 1050€
+        $isCommercialSend = self::CUSTOMS_CATEGORY_COMMERCIAL == LpcHelper::get_option('lpc_customs_defaultCustomsCategory');
+        if (LpcSignDDP::ID === $this->id && ($totalPrice < 160 || $totalPrice > 1050 || !$isCommercialSend)) {
+            return;
+        }
 
         // Remove duplicate shipping classes
         $cartShippingClasses = array_unique($cartShippingClasses);
@@ -422,6 +474,11 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $label     = 0 == $cost && !empty($titleFree) ? $titleFree : $this->title;
 
             $translatedLabel = __($label, 'wc_colissimo');
+
+            // Apply discount on shipping if there is one
+            if (0 !== $discountToApply) {
+                $cost = $cost * (1 - $discountToApply * 0.01);
+            }
 
             $rate = [
                 'id'    => $this->get_rate_id(),

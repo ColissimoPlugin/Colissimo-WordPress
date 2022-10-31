@@ -4,7 +4,7 @@ $shippingClasses = $args['shippingClasses'];
 $currentRates    = $shippingMethod->get_option('shipping_rates', []);
 ?>
 <tr valign="top">
-	<th scope="row" class="titledesc"><?php esc_html_e(__('Shipping rates', 'wc_colissimo')); ?></th>
+	<th scope="row" class="titledesc"><?php esc_html_e('Shipping rates', 'wc_colissimo'); ?></th>
 	<td class="forminp" id="<?php echo $shippingMethod->id; ?>_shipping_rates" style="overflow: auto;">
 		<table class="shippingrows widefat" cellspacing="0">
 			<thead>
@@ -17,39 +17,60 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
                     ?>
 					<th>
                         <?php esc_html_e(__('From weight', 'wc_colissimo') . $weightUnit); ?>
-						<span class="woocommerce-help-tip" data-tip="<?php esc_html_e(__('Included', 'wc_colissimo')); ?>"
-							  title="<?php esc_html_e(__('Included', 'wc_colissimo')); ?>"></span>
+						<span class="woocommerce-help-tip" data-tip="<?php esc_html_e('Included', 'wc_colissimo'); ?>"
+							  title="<?php esc_html_e('Included', 'wc_colissimo'); ?>"></span>
 					</th>
 					<th>
                         <?php esc_html_e(__('To weight', 'wc_colissimo') . $weightUnit); ?>
-						<span class="woocommerce-help-tip" data-tip="<?php esc_html_e(__('Excluded', 'wc_colissimo')); ?>"
-							  title="<?php esc_html_e(__('Excluded', 'wc_colissimo')); ?>"></span>
+						<span class="woocommerce-help-tip" data-tip="<?php esc_html_e('Excluded', 'wc_colissimo'); ?>"
+							  title="<?php esc_html_e('Excluded', 'wc_colissimo'); ?>"></span>
 					</th>
 					<th>
                         <?php esc_html_e(__('From cart price', 'wc_colissimo') . $currencyTxt); ?>
-						<span class="woocommerce-help-tip" data-tip="<?php esc_html_e(__('Included', 'wc_colissimo')); ?>"
-							  title="<?php esc_html_e(__('Included', 'wc_colissimo')); ?>"></span>
+						<span class="woocommerce-help-tip" data-tip="<?php esc_html_e('Included', 'wc_colissimo'); ?>"
+							  title="<?php esc_html_e('Included', 'wc_colissimo'); ?>"></span>
 					</th>
 					<th>
                         <?php esc_html_e(__('To cart price', 'wc_colissimo') . $currencyTxt); ?>
-						<span class="woocommerce-help-tip" data-tip="<?php esc_html_e(__('Excluded', 'wc_colissimo')); ?>"
-							  title="<?php esc_html_e(__('Exclude', 'wc_colissimo')); ?>"></span>
+						<span class="woocommerce-help-tip" data-tip="<?php esc_html_e('Excluded', 'wc_colissimo'); ?>"
+							  title="<?php esc_html_e('Exclude', 'wc_colissimo'); ?>"></span>
 					</th>
 					<th>
-                        <?php esc_html_e(__('Shipping class', 'wc_colissimo')); ?>
+                        <?php esc_html_e('Shipping class', 'wc_colissimo'); ?>
 					</th>
 					<th>
-                        <?php esc_html_e(__('Price', 'wc_colissimo')); ?>
+                        <?php esc_html_e('Price', 'wc_colissimo'); ?>
 					</th>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
-					<th colspan="7">
-						<a href="#" class="add button" id="lpc_shipping_rates_add"
-						   style="margin-left: 24px"><?php esc_html_e(__('Add rate', 'wc_colissimo')); ?></a>
-						<a href="#" class="remove button"
-						   id="lpc_shipping_rates_remove"><?php esc_html_e(__('Delete selected', 'wc_colissimo')); ?></a>
+					<th colspan="7" id="lpc_shipping_rates_actions">
+						<button type="button" class="add button" id="lpc_shipping_rates_add"
+								style="margin-left: 24px"><?php esc_html_e('Add rate', 'wc_colissimo'); ?></button>
+						<button type="button" class="remove button"
+								id="lpc_shipping_rates_remove"><?php esc_html_e('Delete selected', 'wc_colissimo'); ?></button>
+						<a class="button lpc__admin__shipping__rates__actions__export"
+						   href="<?php echo esc_url($args['exportUrl']); ?>"
+						   id="lpc_shipping_rates_export">
+                            <?php esc_html_e(__('Export', 'wc_colissimo')); ?>
+						</a>
+						<input type="file" id="lpc_shipping_rates_import" name="lpc_shipping_rates_import">
+						<button lpc-ajax-url="<?php echo esc_url($args['importUrl']); ?>"
+								type="button"
+								class="button"
+								id="lpc_shipping_rates_import_button">
+                            <?php echo __('Import', 'wc_colissimo'); ?>
+						</button>
+						<span class="woocommerce-help-tip" data-tip="
+						<?php
+                        echo __(
+                            'The file you import must be a CSV with the column min_weight, max_weight, min_price, max_price, shipping_class, price',
+                            'wc_colissimo'
+                        );
+                        ?>
+						">
+						</span>
 					</th>
 				</tr>
 			</tfoot>
@@ -195,7 +216,7 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
                                         $rate['shipping_class']
                                     ) ? 'selected="selected"' : ''; ?>>
                                     <?php
-                                    esc_html_e(__('All products', 'wc_colissimo'));
+                                    esc_html_e('All products', 'wc_colissimo');
                                     ?>
 								</option>
                                 <?php
@@ -234,6 +255,13 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
                         'wc_colissimo'
                     )
                 );
+                echo '<br />';
+                esc_html_e(
+                    __(
+                        'It is restricted to commercial shipments between 160€ and 1050€ included.',
+                        'wc_colissimo'
+                    )
+                );
             } elseif (LpcExpertDDP::ID === $shippingMethod->id) {
                 esc_html_e(
                     __(
@@ -248,7 +276,7 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
 </tr>
 <div id="lpc_shipping_classes_example" style="display: none">
 	<option selected="selected" value="<?php echo LpcAbstractShipping::LPC_ALL_SHIPPING_CLASS_CODE; ?>">
-        <?php esc_html_e(__('All products', 'wc_colissimo')); ?>
+        <?php esc_html_e('All products', 'wc_colissimo'); ?>
 	</option>
     <?php
     foreach ($shippingClasses as $oneClass) {

@@ -62,7 +62,7 @@ class LpcOutwardLabelGenerationEmail extends WC_Email {
                 $this->get_subject(),
                 $this->get_content(),
                 $this->get_headers(),
-                []
+                $this->get_attachments()
             );
 
             return $sending;

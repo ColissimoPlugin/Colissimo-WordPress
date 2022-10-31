@@ -60,10 +60,10 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
         $trackingNumber      = LpcHelper::getVar(self::TRACKING_NUMBER_VAR_NAME);
         $redirection         = LpcHelper::getVar(self::REDIRECTION_VAR_NAME);
         $inwardLabelsRelated = $this->inwardLabelDb->getLabelsInfosForOutward($trackingNumber);
+        $orderId             = $this->outwardLabelDb->getOrderIdByTrackingNumber($trackingNumber);
 
         switch ($redirection) {
             case LpcLabelQueries::REDIRECTION_WOO_ORDER_EDIT_PAGE:
-                $orderId        = $this->outwardLabelDb->getOrderIdByTrackingNumber($trackingNumber);
                 $urlRedirection = get_edit_post_link($orderId, '');
                 break;
             case LpcLabelQueries::REDIRECTION_COLISSIMO_ORDERS_LISTING:
@@ -80,6 +80,21 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
                 'method'                => __METHOD__,
             ]
         );
+
+        $multiParcelsLabels = $this->outwardLabelDb->getMultiParcelsLabels($orderId);
+        if (!empty($multiParcelsLabels[$trackingNumber]) && 'FOLLOWER' === $multiParcelsLabels[$trackingNumber]) {
+            $masterLabel = array_search('MASTER', $multiParcelsLabels);
+
+            if (!empty($masterLabel)) {
+                $this->adminNotices->add_notice(
+                    'outward_label_delete',
+                    'notice-error',
+                    sprintf(__('You cannot delete this label because the label %s is bound to it.', 'wc_colissimo'), $masterLabel)
+                );
+
+                return wp_redirect($urlRedirection);
+            }
+        }
 
         $result = $this->outwardLabelDb->delete($trackingNumber);
 
@@ -102,6 +117,11 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
                 )
             );
         } else {
+            // If it's the last following parcel, remove also the multi-parcels number
+            if (1 === count($multiParcelsLabels) && !empty($multiParcelsLabels[$trackingNumber])) {
+                update_post_meta($orderId, 'lpc_multi_parcels_amount', '');
+            }
+
             $noticeText = sprintf(__('Label %s deleted', 'wc_colissimo'), $trackingNumber);
             if (count($inwardLabelsRelated) > 0) {
                 $inwardDeletionResult = $this->inwardLabelDb->deleteForOutward($trackingNumber);

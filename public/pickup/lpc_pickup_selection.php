@@ -2,11 +2,9 @@
 
 class LpcPickupSelection extends LpcComponent {
     const AJAX_TASK_NAME = 'pickup_selection';
-
     const PICKUP_LOCATION_ID_META_KEY = '_lpc_meta_pickUpLocationId';
     const PICKUP_LOCATION_LABEL_META_KEY = '_lpc_meta_pickUpLocationLabel';
     const PICKUP_PRODUCT_CODE_META_KEY = '_lpc_meta_pickUpProductCode';
-
     const PICKUP_LOCATION_SESSION_VAR_NAME = 'lpc_pickUpInfo';
 
     protected $ajaxDispatcher;
@@ -34,7 +32,7 @@ class LpcPickupSelection extends LpcComponent {
 
     public function pickUpLocationListener() {
         $pickUpInfo = LpcHelper::getVar(self::PICKUP_LOCATION_SESSION_VAR_NAME, null, 'array');
-        WC()->session->set(self::PICKUP_LOCATION_SESSION_VAR_NAME, $pickUpInfo);
+        $this->setCurrentPickUpLocationInfo($pickUpInfo);
 
         return $this->ajaxDispatcher->makeSuccess(
             [
@@ -50,7 +48,7 @@ class LpcPickupSelection extends LpcComponent {
         return WC()->session->get(self::PICKUP_LOCATION_SESSION_VAR_NAME);
     }
 
-    public function setCurrentPickUpLocationInfo(array $pickUpInfo) {
+    public function setCurrentPickUpLocationInfo($pickUpInfo) {
         WC()->session->set(self::PICKUP_LOCATION_SESSION_VAR_NAME, $pickUpInfo);
 
         return $this;
@@ -63,22 +61,51 @@ class LpcPickupSelection extends LpcComponent {
     public function savePickUpSelectionOnOrderProcessed() {
         add_action(
             'woocommerce_checkout_order_processed',
-            function ($orderId) {
-                $shippings = wc_get_order($orderId)->get_shipping_methods();
+            function ($orderId, $posted_data = []) {
+                $order     = wc_get_order($orderId);
+                $shippings = $order->get_shipping_methods();
                 $shipping  = current($shippings);
                 if (!empty($shipping)) {
                     $shippingMethod = $shipping->get_method_id();
                     if (LpcRelay::ID == $shippingMethod) {
                         $pickUpInfo = $this->getCurrentPickUpLocationInfo();
+                        $this->updatePickupMeta($orderId, $pickUpInfo);
+                        $this->setCurrentPickUpLocationInfo(null);
+                    }
+                } elseif (!empty($posted_data['shipping_method'])) {
+                    // When activating the synced renewal on a subscription product, for some reason the shipping info isn't on the order
+                    $shippingMethod = array_pop($posted_data['shipping_method']);
+                    if (strpos($shippingMethod, LpcRelay::ID) !== false) {
+                        $pickUpInfo = $this->getCurrentPickUpLocationInfo();
 
-                        update_post_meta($orderId, self::PICKUP_LOCATION_ID_META_KEY, $pickUpInfo['identifiant']);
-                        update_post_meta($orderId, self::PICKUP_LOCATION_LABEL_META_KEY, $pickUpInfo['nom']);
-                        update_post_meta($orderId, self::PICKUP_PRODUCT_CODE_META_KEY, $pickUpInfo['typeDePoint']);
-                        WC()->session->set(self::PICKUP_LOCATION_SESSION_VAR_NAME, null);
+                        // The action woocommerce_checkout_order_created didn't update the shipping address so we do it here
+                        $this->setPickupAsShippingAddress($order, $pickUpInfo);
+                        $this->updatePickupMeta($orderId, $pickUpInfo);
+                        $this->setCurrentPickUpLocationInfo(null);
                     }
                 }
-            }
+            },
+            10,
+            2
         );
+    }
+
+    private function updatePickupMeta($orderId, $pickUpInfo) {
+        update_post_meta($orderId, self::PICKUP_LOCATION_ID_META_KEY, $pickUpInfo['identifiant']);
+        update_post_meta($orderId, self::PICKUP_LOCATION_LABEL_META_KEY, $pickUpInfo['nom']);
+        update_post_meta($orderId, self::PICKUP_PRODUCT_CODE_META_KEY, $pickUpInfo['typeDePoint']);
+    }
+
+    private function setPickupAsShippingAddress($order, $pickupData) {
+        $order->set_shipping_address_1(!empty($pickupData['adresse1']) ? $pickupData['adresse1'] : '');
+        $order->set_shipping_address_2(!empty($pickupData['adresse2']) ? $pickupData['adresse2'] : '');
+        $order->set_shipping_postcode(!empty($pickupData['codePostal']) ? $pickupData['codePostal'] : '');
+        $order->set_shipping_city(!empty($pickupData['localite']) ? $pickupData['localite'] : '');
+        $order->set_shipping_country(!empty($pickupData['codePays']) ? $pickupData['codePays'] : '');
+        $order->set_shipping_company(!empty($pickupData['nom']) ? $pickupData['nom'] : '');
+        $order->set_shipping_state('');
+
+        $order->save();
     }
 
     public function preventPlaceOrderButton($orderButton) {
@@ -108,7 +135,7 @@ class LpcPickupSelection extends LpcComponent {
 
         $textButton = __('Please select a pick-up point', 'wc_colissimo');
 
-        return '<button type="submit" disabled class="button alt" name="woocommerce_checkout_place_order" id="place_order">' . $textButton . '</button>';
+        return '<button type="submit" class="button alt" name="woocommerce_checkout_place_order" id="place_order">' . $textButton . '</button>';
     }
 
     public function preventCheckoutProcess() {
@@ -217,15 +244,7 @@ class LpcPickupSelection extends LpcComponent {
 
                 $pickupData = $this->getCurrentPickUpLocationInfo();
 
-                $order->set_shipping_address_1(!empty($pickupData['adresse1']) ? $pickupData['adresse1'] : '');
-                $order->set_shipping_address_2(!empty($pickupData['adresse2']) ? $pickupData['adresse2'] : '');
-                $order->set_shipping_postcode(!empty($pickupData['codePostal']) ? $pickupData['codePostal'] : '');
-                $order->set_shipping_city(!empty($pickupData['localite']) ? $pickupData['localite'] : '');
-                $order->set_shipping_country(!empty($pickupData['codePays']) ? $pickupData['codePays'] : '');
-                $order->set_shipping_company(!empty($pickupData['nom']) ? $pickupData['nom'] : '');
-                $order->set_shipping_state('');
-
-                $order->save();
+                $this->setPickupAsShippingAddress($order, $pickupData);
             }
         );
     }

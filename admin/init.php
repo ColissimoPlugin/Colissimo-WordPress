@@ -28,6 +28,7 @@ require_once LPC_ADMIN . 'labels' . DS . 'generate' . DS . 'lpc_label_outward_ge
 require_once LPC_ADMIN . 'lpc_compatibility.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_action.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_bulk_actions.php';
+require_once LPC_ADMIN . 'shipping' . DS . 'lpc_shipping_rates.php';
 if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
     require_once LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php';
 }
@@ -67,6 +68,7 @@ class LpcAdminInit {
         LpcRegister::register('LpcCouponsRestrictions', new LpcCouponsRestrictions());
         LpcRegister::register('wooOrdersTableAction', new LpcWooOrdersTableAction());
         LpcRegister::register('wooOrdersTableBulkActions', new LpcWooOrdersTableBulkActions());
+        LpcRegister::register('shippingRates', new LpcShippingRates());
 
         if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
             LpcRegister::register('capabilitiesDev', new LpcCapabilitiesFile());
@@ -169,9 +171,9 @@ class LpcAdminInit {
         $option = 'per_page';
 
         $args = [
-            'label' => __('Orders per page', 'wc_colissimo'),
+            'label'   => __('Orders per page', 'wc_colissimo'),
             'default' => 25,
-            'option' => 'lpc_orders_per_page',
+            'option'  => 'lpc_orders_per_page',
         ];
 
         add_screen_option($option, $args);
@@ -200,7 +202,12 @@ class LpcAdminInit {
             'lpc_shipping_rates',
             plugins_url('/' . LPC_COMPONENT . '/admin/js/shipping/lpc_shipping_rates.js'),
             null,
-            ['jquery-core']
+            ['jquery-core'],
+            'lpcShippingRates',
+            [
+                'pleaseSelectFile'    => __('Please select a file', 'wc_colissimo'),
+                'errorWhileImporting' => __('Error while saving imported rates', 'wc_colissimo'),
+            ]
         );
     }
 

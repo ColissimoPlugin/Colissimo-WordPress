@@ -24,13 +24,16 @@ class LpcUnifiedTrackingApi extends LpcComponent {
     protected $ivSize;
     protected $shippingMethods;
     protected $ajaxDispatcher;
+    /** @var LpcOutwardLabelDb */
+    protected $outwardLabelDb;
 
     protected $colissimoStatus;
 
     public function __construct(
         LpcShippingMethods $shippingMethods = null,
         LpcColissimoStatus $colissimoStatus = null,
-        LpcAjax $ajaxDispatcher = null
+        LpcAjax $ajaxDispatcher = null,
+        LpcOutwardLabelDb $outwardLabelDb = null
     ) {
         if (function_exists('openssl_cipher_iv_length')) {
             $this->ivSize = openssl_cipher_iv_length(self::CIPHER);
@@ -39,6 +42,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         $this->shippingMethods = LpcRegister::get('shippingMethods', $shippingMethods);
         $this->colissimoStatus = LpcRegister::get('colissimoStatus', $colissimoStatus);
         $this->ajaxDispatcher  = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
+        $this->outwardLabelDb  = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
     }
 
     public function init() {
@@ -46,7 +50,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
     }
 
     public function getDependencies() {
-        return ['shippingMethods', 'colissimoStatus', 'ajaxDispatcher'];
+        return ['shippingMethods', 'colissimoStatus', 'ajaxDispatcher', 'outwardLabelDb'];
     }
 
     protected function getSoapClient() {
@@ -57,6 +61,9 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         return $this->soapClient;
     }
 
+    /**
+     * @throws Exception When the response status code couldn't be retrieved.
+     */
     public function getTrackingInfo(
         $trackingNumber,
         $ip,
@@ -135,8 +142,8 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         $fromDate = date('Y-m-d', strtotime(self::UPDATE_STATUS_PERIOD));
 
         $params = [
-            LpcOrderQueries::LPC_ALIAS_TABLES_NAME['posts'] . ".post_date > '" . $fromDate . "'",
-            '(' . LpcOrderQueries::LPC_ALIAS_TABLES_NAME['postmeta'] . '.meta_value' . ' IS NULL OR ' . LpcOrderQueries::LPC_ALIAS_TABLES_NAME['postmeta'] . ".meta_value  = '0')",
+            LpcOrderQueries::LPC_ALIAS_TABLES_NAME['posts'] . '.post_date > \'' . esc_sql($fromDate) . '\'',
+            '(' . LpcOrderQueries::LPC_ALIAS_TABLES_NAME['postmeta'] . '.meta_value IS NULL OR ' . LpcOrderQueries::LPC_ALIAS_TABLES_NAME['postmeta'] . '.meta_value  = "0")',
         ];
 
         $matchingOrdersId = LpcOrderQueries::getLpcOrdersIdsByPostMeta($params);
@@ -144,7 +151,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         $orderIdsToUpdateEncoded = get_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME);
 
         if (!empty($orderIdsToUpdateEncoded)) {
-            $orderIdsToUpdate = json_decode($orderIdsToUpdateEncoded);
+            $orderIdsToUpdate = json_decode($orderIdsToUpdateEncoded, true);
 
             if (!is_array($orderIdsToUpdate)) {
                 $orderIdsToUpdate = [$orderIdsToUpdate];
@@ -192,7 +199,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         }
 
         $orderIdsToUpdateTracking = array_splice($allOrderIdsToUpdateTracking, 0, 10);
-        $orderStatusOnDelivered = LpcHelper::get_option('lpc_status_on_delivered', LpcOrderStatuses::WC_LPC_DELIVERED);
+        $orderStatusOnDelivered   = LpcHelper::get_option('lpc_status_on_delivered', LpcOrderStatuses::WC_LPC_DELIVERED);
 
         foreach ($orderIdsToUpdateTracking as $orderId) {
             if (empty($orderId)) {
@@ -205,13 +212,18 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                 continue;
             }
 
-            $trackingNumber = $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
-
-            if (empty($trackingNumber)) {
+            $trackingNumbers = $this->outwardLabelDb->getOrderLabels($orderId);
+            if (empty($trackingNumbers)) {
                 continue;
             }
 
-            try {
+            $mainTrackingNumber = $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
+
+            if (null === $ip) {
+                $ip = WC_Geolocation::get_ip_address();
+            }
+
+            foreach ($trackingNumbers as $trackingNumber) {
                 LpcLogger::debug(
                     __METHOD__ . ' updating status for',
                     [
@@ -220,12 +232,24 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                     ]
                 );
 
-                if (null === $ip) {
-                    $ip = WC_Geolocation::get_ip_address();
+                try {
+                    $currentState = $this->getTrackingInfo($trackingNumber, $ip, $lang, $login, $password);
+                } catch (Exception $e) {
+                    LpcLogger::error(
+                        __METHOD__ . ' can\'t update status',
+                        [
+                            'orderId'        => $orderId,
+                            'trackingNumber' => $trackingNumber,
+                            'errorMessage'   => $e->getMessage(),
+                        ]
+                    );
+
+                    $result['failure'][$orderId] = $e->getMessage();
+                    continue;
                 }
 
-                $currentState = $this->getTrackingInfo($trackingNumber, $ip, $lang, $login, $password);
-                $lastEvent    = end($currentState->parcel->event);
+                // Get the last event of the label and store it
+                $lastEvent = end($currentState->parcel->event);
 
                 $eventLastCode = $lastEvent->code;
                 $eventLastDate = $lastEvent->date;
@@ -240,7 +264,13 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                     $currentStateInfo = $this->colissimoStatus->getStatusInfo($currentStateInternalCode);
                     $isDelivered      = LpcOrderStatuses::WC_LPC_DELIVERED === $currentStateInfo['change_order_status'];
                 }
+                $this->outwardLabelDb->setLabelStatusId($trackingNumber, $currentStateInternalCode);
 
+                if (empty($mainTrackingNumber) || $mainTrackingNumber !== $trackingNumber) {
+                    continue;
+                }
+
+                // Store the label status on the order for the main label, and update the order accordingly
                 update_post_meta($orderId, self::LAST_EVENT_CODE_META_KEY, $eventLastCode);
                 update_post_meta($orderId, self::LAST_EVENT_DATE_META_KEY, strtotime($eventLastDate));
                 update_post_meta($orderId, self::LAST_EVENT_INTERNAL_CODE_META_KEY, $currentStateInternalCode);
@@ -277,17 +307,6 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                 }
 
                 $result['success'][$orderId] = $eventLastCode;
-            } catch (Exception $e) {
-                LpcLogger::error(
-                    __METHOD__ . ' can\'t update status',
-                    [
-                        'orderId'        => $orderId,
-                        'trackingNumber' => $trackingNumber,
-                        'errorMessage'   => $e->getMessage(),
-                    ]
-                );
-
-                $result['failure'][$orderId] = $e->getMessage();
             }
         }
 
@@ -357,6 +376,10 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         }
         $trackingHash = $this->encrypt($orderId . '-' . $trackingNumber);
 
-        return empty(get_option('permalink_structure')) ? '/' . self::QUERY_VAR . '=' . $trackingHash : '/lpc/tracking/' . $trackingHash;
+        if (empty(get_option('permalink_structure'))) {
+            return '/index.php?' . self::QUERY_VAR . '=' . $trackingHash;
+        } else {
+            return '/lpc/tracking/' . $trackingHash;
+        }
     }
 }

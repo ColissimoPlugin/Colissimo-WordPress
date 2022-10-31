@@ -122,7 +122,7 @@ class LpcHelper {
 
     /**
      * @param        $option
-     * @param string $default
+     * @param mixed  $default
      *
      * @return array|string
      */

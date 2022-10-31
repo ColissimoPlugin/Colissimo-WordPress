@@ -21,7 +21,10 @@
       "desc": "Password to connect to La Poste webservices and use the module",
       "desc_tip": true,
       "class": "",
-      "default": ""
+      "default": "",
+      "custom_attributes": {
+        "autocomplete": "new-password"
+      }
     },
     {
       "id": "lpc_parent_id_webservices",
@@ -30,7 +33,10 @@
       "desc": "If you use an advanced account, please enter the parent account ID",
       "desc_tip": true,
       "class": "",
-      "default": ""
+      "default": "",
+      "custom_attributes": {
+        "autocomplete": "new-password"
+      }
     },
     {
       "id": "lpc_section_general",
@@ -41,6 +47,27 @@
       "type": "title",
       "title": "Origin address",
       "desc": "This is the address of your warehouse, if this address is set it will override the default WooCommerce store address"
+    },
+    {
+      "id": "lpc_origin_company_name",
+      "type": "text",
+      "title": "Name of your store company",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_origin_firstname",
+      "type": "text",
+      "title": "Firstname",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_origin_lastname",
+      "type": "text",
+      "title": "Lastname",
+      "class": "",
+      "default": ""
     },
     {
       "id": "lpc_origin_address_line_1",
@@ -81,6 +108,27 @@
       "class": ""
     },
     {
+      "id": "lpc_origin_email",
+      "type": "email",
+      "title": "Email",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_origin_phone",
+      "type": "text",
+      "title": "Phone number",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_origin_mobile",
+      "type": "text",
+      "title": "Mobile number",
+      "class": "",
+      "default": ""
+    },
+    {
       "id": "lpc_section_origin_address",
       "type": "sectionend"
     },
@@ -89,6 +137,27 @@
       "type": "title",
       "title": "Return address",
       "desc": "This is the address of the place where you want to receive parcels returned by your customers. The default address will be the origin address"
+    },
+    {
+      "id": "lpc_return_company_name",
+      "type": "text",
+      "title": "Name of your store company",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_return_firstname",
+      "type": "text",
+      "title": "Firstname",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_return_lastname",
+      "type": "text",
+      "title": "Lastname",
+      "class": "",
+      "default": ""
     },
     {
       "id": "lpc_return_address_line_1",
@@ -127,6 +196,27 @@
       "title": "Postcode / ZIP",
       "desc": "The postal code, if any, in which your return location is located",
       "class": ""
+    },
+    {
+      "id": "lpc_return_email",
+      "type": "email",
+      "title": "Email",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_return_phone",
+      "type": "text",
+      "title": "Phone number",
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_return_mobile",
+      "type": "text",
+      "title": "Mobile number",
+      "class": "",
+      "default": ""
     },
     {
       "id": "lpc_section_return_address",
@@ -357,13 +447,6 @@
       "id": "lpc_section_labels",
       "type": "title",
       "title": "Labels"
-    },
-    {
-      "id": "lpc_company_name",
-      "type": "text",
-      "title": "Name of your store company",
-      "class": "",
-      "default": ""
     },
     {
       "id": "lpc_preparation_time",
@@ -675,17 +758,48 @@
       "default": ""
     },
     {
-      "id": "lpc_domicileas_SendingService",
+      "id": "lpc_domicileas_SendingService_austria",
       "type": "select",
-      "title": "Sending service",
+      "title": "Sending service Austria",
       "class": "",
       "default": "partner",
       "options": {
         "partner": "Local postal service",
         "dpd": "DPD"
-      },
-      "desc": "Sending service used for Austria, Germany, Italy and Luxembourg",
-      "desc_tip": true
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_germany",
+      "type": "select",
+      "title": "Sending service Germany",
+      "class": "",
+      "default": "partner",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_italy",
+      "type": "select",
+      "title": "Sending service Italy",
+      "class": "",
+      "default": "partner",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_luxembourg",
+      "type": "select",
+      "title": "Sending service Luxembourg",
+      "class": "",
+      "default": "partner",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
     },
     {
       "id": "lpc_domicileas",
@@ -706,17 +820,48 @@
       "default": ""
     },
     {
-      "id": "lpc_expert_SendingService",
+      "id": "lpc_expert_SendingService_austria",
       "type": "select",
-      "title": "Sending service",
+      "title": "Sending service Austria",
       "class": "",
       "default": "partner",
       "options": {
         "partner": "Local postal service",
         "dpd": "DPD"
-      },
-      "desc": "Sending service used for Austria, Germany, Italy and Luxembourg",
-      "desc_tip": true
+      }
+    },
+    {
+      "id": "lpc_expert_SendingService_germany",
+      "type": "select",
+      "title": "Sending service Germany",
+      "class": "",
+      "default": "partner",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_expert_SendingService_italy",
+      "type": "select",
+      "title": "Sending service Italy",
+      "class": "",
+      "default": "partner",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_expert_SendingService_luxembourg",
+      "type": "select",
+      "title": "Sending service Luxembourg",
+      "class": "",
+      "default": "partner",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
     },
     {
       "id": "lpc_expert",

@@ -7,6 +7,7 @@ class LpcLabelGenerationPayload {
     const RETURN_LABEL_LETTER_MARK = 'R';
     const RETURN_TYPE_CHOICE_NO_RETURN = 3;
     const PRODUCT_CODE_INSURANCE_AVAILABLE = ['DOS', 'COL', 'BPR', 'A2P', 'CDS', 'CORE', 'CORI', 'CORF', 'CMT', 'PCS'];
+    const PRODUCT_CODE_INSURANCE_RELAY = ['BPR', 'A2P', 'CMT', 'PCS'];
     const CUSTOMS_CATEGORY_RETURN_OF_ARTICLES = 6;
     const LABEL_FORMAT_PDF = 'PDF';
     const LABEL_FORMAT_ZPL = 'ZPL';
@@ -24,12 +25,17 @@ class LpcLabelGenerationPayload {
     /** @var LpcShippingMethods */
     protected $lpcShippingMethods;
 
+    /** @var LpcOutwardLabelDb */
+    protected $outwardLabelDb;
+
     public function __construct(
         LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
-        LpcShippingMethods $lpcShippingMethods = null
+        LpcShippingMethods $lpcShippingMethods = null,
+        LpcOutwardLabelDb $outwardLabelDb = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->lpcShippingMethods     = LpcRegister::get('shippingMethods', $lpcShippingMethods);
+        $this->outwardLabelDb         = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
 
         $this->payload = [
             'letter' => [
@@ -58,6 +64,14 @@ class LpcLabelGenerationPayload {
             'zipCode'     => $sender['zipCode'],
             'email'       => @$sender['email'],
         ];
+
+        if (!empty($sender['mobileNumber'])) {
+            $payloadSender['mobileNumber'] = $sender['mobileNumber'];
+        }
+
+        if (!empty($sender['phoneNumber'])) {
+            $payloadSender['phoneNumber'] = $sender['phoneNumber'];
+        }
 
         if (!empty($sender['street2'])) {
             $payloadSender['address']['line3'] = $sender['street2'];
@@ -157,10 +171,13 @@ class LpcLabelGenerationPayload {
             $this->setAddresseePhoneNumber($payloadAddressee, $addressee['mobileNumber'], $addressee['countryCode']);
         }
 
+        if (!empty($addressee['phoneNumber'])) {
+            $payloadAddressee['address']['phoneNumber'] = $addressee['phoneNumber'];
+        }
+
         $this->setFtdGivenCountryCodeId($addressee['countryCode']);
 
         if (!empty($addressee['street2'])) {
-
             // Required bypass because Colissimo Labels for Belgium or Switzerland don't display line3
             $countryCodesNoLine3 = ['BE', 'CH'];
             if (in_array($addressee['countryCode'], $countryCodesNoLine3)) {
@@ -194,7 +211,7 @@ class LpcLabelGenerationPayload {
                 $weight        = (float) $productWeight * $data['quantity'];
 
                 if ($weight < 0) {
-                    throw new \Exception(
+                    throw new Exception(
                         __('Weight cannot be negative!', 'wc_colissimo')
                     );
                 }
@@ -299,7 +316,7 @@ class LpcLabelGenerationPayload {
                     'known' => $allowedProductCodes,
                 ]
             );
-            throw new \Exception('Unknown Product code!');
+            throw new Exception('Unknown Product code!');
         }
 
         $this->payload['letter']['service']['productCode'] = $productCode;
@@ -429,6 +446,7 @@ class LpcLabelGenerationPayload {
         if (is_admin()) {
             $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
         }
+
         // Insurance is set to yes
         if (!$this->capabilitiesPerCountry->getInsuranceAvailableForDestination($countryCode)) {
             if (is_admin()) {
@@ -442,6 +460,11 @@ class LpcLabelGenerationPayload {
             return $this;
         }
 
+        // Use user defined insurance amount if exists (from Colissimo banner in order edition)
+        if (isset($customParams['insuranceAmount']) && !empty($customParams['insuranceAmount'])) {
+            $amount = $customParams['insuranceAmount'];
+        }
+
         /**
          * Filter on the insurance value when generating a label
          *
@@ -452,21 +475,23 @@ class LpcLabelGenerationPayload {
 
         if ($amount > $maxInsuranceAmount) {
             LpcLogger::warn(
-                'Given insurance value amount is too big, forced to ' . $maxInsuranceAmount,
+                'Selected insurance amount is too big, forced to ' . $maxInsuranceAmount,
                 [
                     'given' => $amount,
                     'max'   => $maxInsuranceAmount,
                 ]
             );
+
             if (is_admin()) {
                 $shippingMethods = $this->lpcShippingMethods->getAllShippingMethodsWithName();
                 $lpc_admin_notices->add_notice(
                     'outward_label_generate',
                     'notice-info',
-                    sprintf(__('Order %1$s is insured up to %2$s euros, this is the maximum amount for parcels delivered with %3$s shipping method', 'wc_colissimo'),
-                            $this->getOrderNumber(),
-                            $maxInsuranceAmount,
-                            $shippingMethods[$shippingMethodUsed]
+                    sprintf(
+                        __('Order %1$s is insured up to %2$s euros, this is the maximum amount for parcels delivered with %3$s shipping method', 'wc_colissimo'),
+                        $this->getOrderNumber(),
+                        $maxInsuranceAmount,
+                        $shippingMethods[$shippingMethodUsed]
                     )
                 );
             }
@@ -522,7 +547,7 @@ class LpcLabelGenerationPayload {
                     'shippingMethod' => $shippingMethodUsed,
                 ]
             );
-            throw new \Exception(__('Shipping state missing for label generation with this country', 'wc_colissimo'));
+            throw new Exception(__('Shipping state missing for label generation with this country', 'wc_colissimo'));
         }
 
         // Must have a phone number
@@ -533,7 +558,7 @@ class LpcLabelGenerationPayload {
                     'shippingMethod' => $shippingMethodUsed,
                 ]
             );
-            throw new \Exception(__('Please define a mobile phone number for SMS notification tracking', 'wc_colissimo'));
+            throw new Exception(__('Please define a mobile phone number for SMS notification tracking', 'wc_colissimo'));
         }
 
         // Must have dimensions
@@ -544,7 +569,7 @@ class LpcLabelGenerationPayload {
                     'shippingMethod' => $shippingMethodUsed,
                 ]
             );
-            throw new \Exception(__('Please enter the package dimensions', 'wc_colissimo'));
+            throw new Exception(__('Please enter the package dimensions', 'wc_colissimo'));
         }
 
         // Must have EORI
@@ -555,7 +580,7 @@ class LpcLabelGenerationPayload {
                     'shippingMethod' => $shippingMethodUsed,
                 ]
             );
-            throw new \Exception(__('Please enter the EORI code in the Colissimo configuration', 'wc_colissimo'));
+            throw new Exception(__('Please enter the EORI code in the Colissimo configuration', 'wc_colissimo'));
         }
 
         $this->payload['letter']['parcel']['ddp'] = 'true';
@@ -657,24 +682,41 @@ class LpcLabelGenerationPayload {
         }
 
         $destinationCountryId = $order->get_shipping_country();
-        $isCustomItems        = isset($customParams['items']);
-        $customsArticles      = [];
-        $totalItemsAmount     = 0;
-        $articleDescriptions  = [];
+        $isMasterParcel       = false;
+        if (!empty($customParams['multiParcelsCurrentNumber']) && $customParams['multiParcelsCurrentNumber'] === $customParams['multiParcelsAmount']) {
+            $isMasterParcel = true;
+        }
+        $isCustomItems       = isset($customParams['items']);
+        $customsArticles     = [];
+        $totalItemsAmount    = 0;
+        $articleDescriptions = [];
 
         foreach ($order->get_items() as $item) {
-            if ($isCustomItems && !isset($customParams['items'][$item->get_id()])) {
+            $itemId = $item->get_id();
+
+            if (!$isMasterParcel && $isCustomItems && !isset($customParams['items'][$itemId])) {
                 continue;
             }
 
             $product = $item->get_product();
 
-            $quantity = isset($customParams['items'][$item->get_id()]['qty']) ? $customParams['items'][$item->get_id()]['qty'] : $item->get_quantity();
+            $quantity = !$isMasterParcel && isset($customParams['items'][$itemId]['qty']) ? $customParams['items'][$itemId]['qty'] : $item->get_quantity();
 
-            if (isset($customParams['items'][$item->get_id()]['price'])) {
-                $unitaryValue = $customParams['items'][$item->get_id()]['price'];
+            if (isset($customParams['items'][$itemId]['price'])) {
+                $unitaryValue = $customParams['items'][$itemId]['price'];
+            } elseif (!empty(wc_get_order_item_meta($item->get_id(), '_line_total'))) {
+                $unitaryValue = wc_get_order_item_meta($item->get_id(), '_line_total');
+                if (!empty(wc_get_order_item_meta($item->get_id(), '_qty'))) {
+                    $unitaryValue /= wc_get_order_item_meta($item->get_id(), '_qty');
+                }
             } else {
-                $unitaryValue = empty($item->get_quantity()) ? 1 : wc_get_price_excluding_tax($product);
+                $productPrice = wc_get_price_excluding_tax($product);
+                $unitaryValue = empty($productPrice) ? 1 : $productPrice;
+            }
+
+            // Some users may have a free product, but the customs declaration needs a value > 0
+            if (empty($unitaryValue)) {
+                $unitaryValue = 1;
             }
 
             $totalItemsAmount += $unitaryValue * $quantity;
@@ -693,7 +735,7 @@ class LpcLabelGenerationPayload {
                 'hsCode'        => $this->getProductHsCode($product),
             ];
 
-            $itemWeight         = isset($customParams['items'][$item->get_id()]['weight']) ? $customParams['items'][$item->get_id()]['weight'] : $product->get_weight();
+            $itemWeight         = $customParams['items'][$itemId]['weight'] ?? $product->get_weight();
             $itemWeightWellUnit = wc_get_weight($itemWeight, 'kg');
 
             $customsArticle['weight'] = $itemWeightWellUnit < 0.01 ? '0.01' : (string) $itemWeightWellUnit;
@@ -810,7 +852,7 @@ class LpcLabelGenerationPayload {
         if (preg_match($frenchMobileNumberRegex, $phoneNumber) && 'FR' === $countryCode) {
             $payloadAddress['address']['mobileNumber'] = $phoneNumber;
         } elseif (preg_match($belgianMobileNumberRegex, $phoneNumber) && 'BE' === $countryCode) {
-            $phoneNumber                               = preg_replace('/(04)([0-9]{8})/', '+324$2', $phoneNumber);
+            $phoneNumber                               = preg_replace('/(04|00324)([0-9]{8})/', '+324$2', $phoneNumber);
             $payloadAddress['address']['mobileNumber'] = $phoneNumber;
         } else {
             $payloadAddress['address']['phoneNumber'] = $phoneNumber;
@@ -991,6 +1033,9 @@ class LpcLabelGenerationPayload {
         }
     }
 
+    /**
+     * @throws Exception When the address format is refused.
+     */
     protected function checkAddresseeAddress() {
         $productCodesNeedingMobileNumber = [
             'A2P',
@@ -1009,112 +1054,171 @@ class LpcLabelGenerationPayload {
 
         if ($this->isReturnLabel) {
             if (empty($address['companyName'])) {
-                throw new \Exception(
+                throw new Exception(
                     __('companyName must be set in Addressee address for return label!', 'wc_colissimo')
                 );
             }
         }
 
         if (empty($address['line2'])) {
-            throw new \Exception(
+            throw new Exception(
                 __('line2 must be set in Addressee address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['countryCode'])) {
-            throw new \Exception(
+            throw new Exception(
                 __('countryCode must be set in Addressee address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['zipCode'])) {
-            throw new \Exception(
+            throw new Exception(
                 __('zipCode must be set in Addressee address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['city'])) {
-            throw new \Exception(
+            throw new Exception(
                 __('city must be set in Addressee address!', 'wc_colissimo')
             );
         }
 
         if (in_array($this->payload['letter']['service']['productCode'], $productCodesNeedingMobileNumber)
             && empty($address['mobileNumber'])) {
-            throw new \Exception(
+            throw new Exception(
                 __('The ProductCode used requires that a mobile number is set!', 'wc_colissimo')
             );
         }
     }
 
-    public function getStoreAddress() {
+    public function getStoreAddress(): array {
         $optionsName = [
-            'street'      => [
+            'street'       => [
                 'lpc'      => 'lpc_origin_address_line_1',
                 'default'  => 'woocommerce_store_address',
                 'required' => true,
             ],
-            'street2'     => [
+            'street2'      => [
                 'lpc'      => 'lpc_origin_address_line_2',
                 'default'  => 'woocommerce_store_address_2',
                 'required' => false,
             ],
-            'countryCode' => [
+            'countryCode'  => [
                 'lpc'      => 'lpc_origin_address_country',
                 'default'  => 'woocommerce_default_country',
                 'required' => true,
             ],
-            'city'        => [
+            'city'         => [
                 'lpc'      => 'lpc_origin_address_city',
                 'default'  => 'woocommerce_store_city',
                 'required' => true,
             ],
-            'zipCode'     => [
+            'zipCode'      => [
                 'lpc'      => 'lpc_origin_address_zipcode',
                 'default'  => 'woocommerce_store_postcode',
                 'required' => true,
             ],
+            'email'        => [
+                'lpc'      => 'lpc_origin_email',
+                'default'  => '',
+                'required' => false,
+            ],
+            'phoneNumber'  => [
+                'lpc'      => 'lpc_origin_phone',
+                'default'  => '',
+                'required' => false,
+            ],
+            'mobileNumber' => [
+                'lpc'      => 'lpc_origin_mobile',
+                'default'  => '',
+                'required' => false,
+            ],
+            'firstName'    => [
+                'lpc'      => 'lpc_origin_firstname',
+                'default'  => '',
+                'required' => false,
+            ],
+            'lastName'     => [
+                'lpc'      => 'lpc_origin_lastname',
+                'default'  => '',
+                'required' => false,
+            ],
+            'companyName'  => [
+                'lpc'      => 'lpc_origin_company_name',
+                'default'  => '',
+                'required' => false,
+            ],
         ];
 
         return $this->getAddress($optionsName);
     }
 
-    public function getReturnAddress() {
+    public function getReturnAddress(): array {
         $optionsName = [
-            'street'      => [
+            'street'       => [
                 'lpc'      => 'lpc_return_address_line_1',
                 'default'  => 'lpc_origin_address_line_1',
                 'required' => true,
             ],
-            'street2'     => [
+            'street2'      => [
                 'lpc'      => 'lpc_return_address_line_2',
                 'default'  => 'lpc_origin_address_line_2',
                 'required' => false,
             ],
-            'countryCode' => [
+            'countryCode'  => [
                 'lpc'      => 'lpc_return_address_country',
                 'default'  => 'lpc_origin_address_country',
                 'required' => true,
             ],
-            'city'        => [
+            'city'         => [
                 'lpc'      => 'lpc_return_address_city',
                 'default'  => 'lpc_origin_address_city',
                 'required' => true,
             ],
-            'zipCode'     => [
+            'zipCode'      => [
                 'lpc'      => 'lpc_return_address_zipcode',
                 'default'  => 'lpc_origin_address_zipcode',
                 'required' => true,
+            ],
+            'email'        => [
+                'lpc'      => 'lpc_return_email',
+                'default'  => 'lpc_origin_email',
+                'required' => false,
+            ],
+            'phoneNumber'  => [
+                'lpc'      => 'lpc_return_phone',
+                'default'  => 'lpc_origin_phone',
+                'required' => false,
+            ],
+            'mobileNumber' => [
+                'lpc'      => 'lpc_return_mobile',
+                'default'  => 'lpc_origin_mobile',
+                'required' => false,
+            ],
+            'firstName'    => [
+                'lpc'      => 'lpc_return_firstname',
+                'default'  => 'lpc_origin_firstname',
+                'required' => false,
+            ],
+            'lastName'     => [
+                'lpc'      => 'lpc_return_lastname',
+                'default'  => 'lpc_origin_lastname',
+                'required' => false,
+            ],
+            'companyName'  => [
+                'lpc'      => 'lpc_return_company_name',
+                'default'  => 'lpc_origin_company_name',
+                'required' => false,
             ],
         ];
 
         return $this->getAddress($optionsName);
     }
 
-    private function getAddress($optionsName) {
-
+    private function getAddress($optionsName): array {
         $invalidAddress = false;
-        $return         = ['companyName' => LpcHelper::get_option('lpc_company_name')];
+        $return         = [];
 
         foreach ($optionsName as $key => $optionName) {
             $option = LpcHelper::get_option($optionName['lpc']);
@@ -1131,7 +1235,7 @@ class LpcLabelGenerationPayload {
             return $return;
         }
 
-        $return = ['companyName' => LpcHelper::get_option('lpc_company_name')];
+        $return = [];
 
         foreach ($optionsName as $key => $optionName) {
             if ('countryCode' == $key) {
@@ -1139,7 +1243,11 @@ class LpcLabelGenerationPayload {
                 $countryWithState = explode(':', WC_Admin_Settings::get_option('woocommerce_default_country'));
                 $option           = reset($countryWithState);
             } else {
-                $option = WC_Admin_Settings::get_option($optionName['default']);
+                if (0 === strpos($optionName['default'], 'lpc_')) {
+                    $option = LpcHelper::get_option($optionName['default']);
+                } else {
+                    $option = WC_Admin_Settings::get_option($optionName['default']);
+                }
             }
 
             $return[$key] = $option;
@@ -1180,7 +1288,7 @@ class LpcLabelGenerationPayload {
             return false;
         }
 
-        return in_array($productCode, ['A2P', 'BPR']) ? self::MAX_INSURANCE_AMOUNT_RELAY : self::MAX_INSURANCE_AMOUNT;
+        return in_array($productCode, self::PRODUCT_CODE_INSURANCE_RELAY) ? self::MAX_INSURANCE_AMOUNT_RELAY : self::MAX_INSURANCE_AMOUNT;
     }
 
     public function withPostalNetwork($countryCode, $productCode, $order) {
@@ -1188,15 +1296,77 @@ class LpcLabelGenerationPayload {
             $shippingMethod = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
 
             if (in_array($shippingMethod, [LpcExpert::ID, LpcExpertDDP::ID])) {
-                $network = LpcHelper::get_option('lpc_expert_SendingService');
+
+                $countries = [
+                    'AT' => 'lpc_expert_SendingService_austria',
+                    'DE' => 'lpc_expert_SendingService_germany',
+                    'IT' => 'lpc_expert_SendingService_italy',
+                    'LU' => 'lpc_expert_SendingService_luxembourg',
+                ];
+                $network   = LpcHelper::get_option($countries[$countryCode]);
             } else {
-                $network = LpcHelper::get_option('lpc_domicileas_SendingService');
+                $countries = [
+                    'AT' => 'lpc_domicileas_SendingService_austria',
+                    'DE' => 'lpc_domicileas_SendingService_germany',
+                    'IT' => 'lpc_domicileas_SendingService_italy',
+                    'LU' => 'lpc_domicileas_SendingService_luxembourg',
+                ];
+                $network   = LpcHelper::get_option($countries[$countryCode]);
             }
 
             $customSendingService = isset($_REQUEST['lpc__admin__order_banner__generate_label__sending_service']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__sending_service'])) : $network;
 
             $this->payload['letter']['service']['reseauPostal'] = 'dpd' === $customSendingService ? 0 : 1;
         }
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception When the number of parcels is incorrect or if all labels have been generated.
+     */
+    public function withMultiParcels($orderId, $customParams): LpcLabelGenerationPayload {
+        if (empty($customParams['multiParcels'])) {
+            return $this;
+        }
+
+        if (empty($customParams['multiParcelsAmount']) || $customParams['multiParcelsAmount'] < 2) {
+            throw new Exception(__('Incorrect number of parcels', 'wc_colissimo'));
+        }
+
+        if ($customParams['multiParcelsCurrentNumber'] > $customParams['multiParcelsAmount']) {
+            throw new Exception(__('All labels have already been generated. To generate a new label, please uncheck the multi-parcels shipping.', 'wc_colissimo'));
+        }
+
+        if ($customParams['multiParcelsCurrentNumber'] < $customParams['multiParcelsAmount']) {
+            // Follower parcels first
+            $this->payload['fields']['field'][] = [
+                'key'   => 'TYPE_MULTI_PARCEL',
+                'value' => 'FOLLOWER',
+            ];
+        } else {
+            // Master parcel last
+            $this->payload['fields']['field'][] = [
+                'key'   => 'TYPE_MULTI_PARCEL',
+                'value' => 'MASTER',
+            ];
+
+            $followerLabels                     = $this->outwardLabelDb->getMultiParcelsLabels($orderId);
+            $this->payload['fields']['field'][] = [
+                'key'   => 'LIST_FOLLOWER_PARCEL',
+                'value' => implode('/', array_keys($followerLabels)),
+            ];
+        }
+
+        $this->payload['fields']['field'][] = [
+            'key'   => 'PARCEL_ITERATION_NUMBER',
+            'value' => $customParams['multiParcelsCurrentNumber'],
+        ];
+
+        $this->payload['fields']['field'][] = [
+            'key'   => 'TOTAL_NUMBER_PARCEL',
+            'value' => $customParams['multiParcelsAmount'],
+        ];
 
         return $this;
     }

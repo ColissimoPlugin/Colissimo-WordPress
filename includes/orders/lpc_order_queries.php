@@ -69,15 +69,15 @@ class LpcOrderQueries {
     public static function getLpcOrdersIdsByPostMeta($params = []) {
         global $wpdb;
 
-        $lpc_shipping_method_names = self::getLpcShippingMethodsNameSqlReady();
-        $prefix                    = $wpdb->prefix;
+        $prefix = $wpdb->prefix;
 
         $query = "SELECT DISTINCT wc_order_items.order_id FROM {$prefix}woocommerce_order_items AS wc_order_items
                     JOIN {$prefix}woocommerce_order_itemmeta  AS wc_order_itemmeta ON wc_order_itemmeta.order_item_id = wc_order_items.order_item_id
                     JOIN {$prefix}posts AS posts ON posts.ID = wc_order_items.order_id
                     LEFT JOIN {$prefix}postmeta AS postmeta ON postmeta.post_id = wc_order_items.order_id AND postmeta.meta_key='_lpc_is_delivered'";
 
-        $params[] = "wc_order_itemmeta.meta_key='method_id' AND wc_order_itemmeta.meta_value IN $lpc_shipping_method_names";
+        $params[] = "wc_order_itemmeta.meta_key='method_id' AND wc_order_itemmeta.meta_value LIKE 'lpc_%'";
+        $params[] = 'posts.post_type = "shop_order"';
 
         $query .= ' WHERE (' . implode(') AND (', $params) . ') ';
 
@@ -123,16 +123,17 @@ class LpcOrderQueries {
 
         $metaSql = get_meta_sql($metaQuery, 'post', $wpdb->posts, 'ID');
 
-        $lpc_shipping_method_names = self::getLpcShippingMethodsNameSqlReady();
-        $prefix                    = $wpdb->prefix;
+        $prefix = $wpdb->prefix;
 
         $query = "SELECT DISTINCT wc_order_items.order_id FROM {$prefix}woocommerce_order_items AS wc_order_items
                     JOIN {$prefix}woocommerce_order_itemmeta  AS wc_order_itemmeta ON wc_order_itemmeta.order_item_id = wc_order_items.order_item_id
-                    JOIN {$prefix}posts on wc_order_items.order_id={$prefix}posts.ID";
+                    JOIN {$prefix}posts ON wc_order_items.order_id={$prefix}posts.ID";
 
         $query .= $metaSql['join'];
 
-        $query .= " WHERE (wc_order_itemmeta.meta_key='method_id' AND wc_order_itemmeta.meta_value IN $lpc_shipping_method_names) " . $metaSql['where'];
+        $query .= ' WHERE (wc_order_itemmeta.meta_key = "method_id" 
+                        AND wc_order_itemmeta.meta_value LIKE "lpc_%" 
+                        AND ' . $prefix . 'posts.post_type = "shop_order") ' . $metaSql['where'];
 
         // phpcs:disable
         $results = $wpdb->get_results($query);
@@ -147,13 +148,6 @@ class LpcOrderQueries {
         }
 
         return $ordersId;
-    }
-
-    public static function getLpcShippingMethodsNameSqlReady() {
-        $lpc_shipping_methods = LpcRegister::get('shippingMethods')->getAllShippingMethods();
-        array_walk($lpc_shipping_methods, ['self', 'formatTextForSql']);
-
-        return '(' . implode(',', $lpc_shipping_methods) . ')';
     }
 
     public static function getLpcOrdersPostMetaList($metaName) {
@@ -171,9 +165,10 @@ class LpcOrderQueries {
          			JOIN {$wpdb->prefix}woocommerce_order_itemmeta
               			ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id = {$wpdb->prefix}woocommerce_order_items.order_item_id
 					WHERE {$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id'
-	  					AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value IN ('lpc_expert', 'lpc_expert_ddp', 'lpc_nosign', 'lpc_relay', 'lpc_sign', 'lpc_sign_ddp')
+	  					AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE %s
 						AND {$wpdb->prefix}postmeta.meta_key = %s
 					ORDER BY {$wpdb->prefix}postmeta.meta_value ASC",
+            'lpc_%',
             $metaName
         );
 
@@ -186,11 +181,11 @@ class LpcOrderQueries {
         return $wpdb->get_col(
             "SELECT DISTINCT {$wpdb->prefix}woocommerce_order_items.order_item_name
 					FROM {$wpdb->prefix}woocommerce_order_items
-         				JOIN {$wpdb->prefix}woocommerce_order_itemmeta
-              				ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id = {$wpdb->prefix}woocommerce_order_items.order_item_id
+                    JOIN {$wpdb->prefix}woocommerce_order_itemmeta
+                        ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id = {$wpdb->prefix}woocommerce_order_items.order_item_id
 					WHERE {$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id'
-  					AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value IN ('lpc_expert', 'lpc_expert_ddp', 'lpc_nosign', 'lpc_relay', 'lpc_sign', 'lpc_sign_ddp')
-  					AND {$wpdb->prefix}woocommerce_order_items.order_item_type = 'shipping'
+                        AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE 'lpc_%'
+                        AND {$wpdb->prefix}woocommerce_order_items.order_item_type = 'shipping'
   					ORDER BY {$wpdb->prefix}woocommerce_order_items.order_item_name ASC;"
         );
     }
@@ -205,8 +200,9 @@ class LpcOrderQueries {
         				ON {$wpdb->prefix}posts.id = {$wpdb->prefix}woocommerce_order_items.order_id
         			JOIN {$wpdb->prefix}woocommerce_order_itemmeta
         				ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id = {$wpdb->prefix}woocommerce_order_items.order_item_id
-					WHERE {$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id'
-  						AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value IN ('lpc_expert', 'lpc_expert_ddp', 'lpc_nosign', 'lpc_relay', 'lpc_sign', 'lpc_sign_ddp')
+					WHERE {$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id' 
+					    AND {$wpdb->prefix}posts.post_type = 'shop_order' 
+  						AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE 'lpc_%'
 					ORDER BY {$wpdb->prefix}posts.post_status ASC"
         );
     }
@@ -289,7 +285,7 @@ class LpcOrderQueries {
                 $where = "woocommerce_order_items . order_item_type = 'shipping'";
                 break;
             case 'shipping-status':
-                $where = "postmeta . meta_key = '_lpc_last_event_internal_code'";
+                $where = "postmeta . meta_key = '" . esc_sql(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY) . "'";
                 break;
             case 'lpc-bordereau':
                 $where = "postmeta . meta_key = 'lpc_bordereau_id'";
@@ -310,10 +306,8 @@ class LpcOrderQueries {
         $filters = [];
         global $wpdb;
 
-        $lpc_shipping_method_names = self::getLpcShippingMethodsNameSqlReady();
-
-        $filters[] = "{$wpdb->prefix}woocommerce_order_itemmeta.meta_key='method_id'";
-        $filters[] = "{$wpdb->prefix}woocommerce_order_itemmeta.meta_value IN $lpc_shipping_method_names";
+        $filters[] = "{$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id'";
+        $filters[] = "{$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE 'lpc_%'";
 
         if ($requestFilters['search']) {
             $search = $requestFilters['search'];
@@ -468,7 +462,7 @@ class LpcOrderQueries {
                 $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id IN (
 				SELECT {$wpdb->prefix}postmeta.post_id
 				FROM {$wpdb->prefix}postmeta
-				WHERE {$wpdb->prefix}postmeta.meta_key = '_lpc_last_event_internal_code'
+				WHERE {$wpdb->prefix}postmeta.meta_key = '" . esc_sql(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY) . "'
 					AND {$wpdb->prefix}postmeta.meta_value IN ('" . implode("', '", $status) . "'))";
             }
         }
@@ -486,9 +480,9 @@ class LpcOrderQueries {
             }
         }
 
-        $return = !empty($filters) ? ' WHERE ' . implode(' AND ', $filters) : '';
+        // Make sure we take only orders and not subscriptions
+        $filters[] = $wpdb->prefix . 'posts.post_type = "shop_order"';
 
-        return $return;
+        return ' WHERE ' . implode(' AND ', $filters);
     }
-
 }

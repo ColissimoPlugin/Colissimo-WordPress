@@ -82,6 +82,11 @@
 	color: green;
 }
 
+.lpc__orders_listing__id--bordereau{
+	width: 136px;
+	display: inline-block;
+}
+
 #lpc__orders_listing__title__bordereau, .lpc__orders_listing__id--bordereau{
 	color: #3857e9;
 }
@@ -100,9 +105,16 @@
 
 .lpc__orders_listing__tracking_number--inward{
 	color: blue;
+	width: 120px;
+	display: inline-block;
 }
 
 .lpc__orders_listing__tracking_number--outward{
+	width: 140px;
+	display: inline-block;
+}
+
+.lpc__orders_listing__tracking_number--outward, .lpc__orders_listing__tracking_number--outward a{
 	color: green;
 }
 
@@ -116,6 +128,14 @@
 	font-size: 1rem;
 	cursor: pointer;
 	margin: 0 0.1rem;
+}
+
+.column-lpc-date, .column-lpc-woo-status{
+	max-width: 75px !important;
+}
+
+.column-lpc-customer, .column-lpc-address, .column-lpc-shipping-method{
+	max-width: 120px !important;
 }
 
 .woocommerce_page_wc_colissimo_view th#lpc-bordereau, .woocommerce_page_wc_colissimo_view td.lpc-bordereau{
@@ -169,11 +189,20 @@
 	width: 11rem;
 }
 
-.woocommerce_page_wc_colissimo_view th#lpc-shipping-status, .woocommerce_page_wc_colissimo_view td.lpc-shipping-status{
-	max-width: 8rem;
-	width: 8rem;
-}
-
 #colissimo-tracking_number_import{
 	display: none;
+}
+
+.lpc-label-status::before{
+	color: #50575e;
+}
+
+.lpc_outward_label_error{
+	color: red;
+}
+
+.lpc_outward_label_error_icon, .lpc_inward_label_error_icon{
+	color: #ffcf30;
+	vertical-align: middle;
+	cursor: default !important;
 }

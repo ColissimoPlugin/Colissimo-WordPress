@@ -47,7 +47,7 @@ class MTOMSoapClient extends SoapClient {
      * @return string|null The XML SOAP response with <xop> tag replaced by base64 corresponding attachment
      * @throws Exception
      */
-	public function __doRequest($request, $location, $action, $version, $one_way = 0) {
+	public function __doRequest($request, $location, $action, $version, $one_way = false): ?string {
 		$response = parent::__doRequest($request, $location, $action, $version, $one_way);
 
 		$xml_response = null;

@@ -4,8 +4,8 @@ require_once LPC_INCLUDES . 'label' . DS . 'lpc_label_generation_payload.php';
 
 class LpcLabelGenerationInward extends LpcComponent {
     const ACTION_NAME = 'lpc_order_generate_inward_label';
-
     const INWARD_PARCEL_NUMBER_META_KEY = 'lpc_inward_parcel_number';
+    const ORDERS_INWARD_PARCEL_FAILED = 'lpc_orders_inward_parcel_failed';
 
     protected $capabilitiesPerCountry;
     protected $labelGenerationApi;
@@ -30,6 +30,17 @@ class LpcLabelGenerationInward extends LpcComponent {
             $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
         }
 
+        $time         = time();
+        $orderId      = $order->get_order_number();
+        $ordersFailed = get_option(self::ORDERS_INWARD_PARCEL_FAILED, []);
+        if (!empty($ordersFailed)) {
+            update_option(
+                self::ORDERS_INWARD_PARCEL_FAILED,
+                array_filter($ordersFailed, function ($error) use ($time) {
+                    return $error['time'] < $time - 604800;
+                })
+            );
+        }
         try {
             $payload  = $this->buildPayload($order, $customParams);
             $response = $this->labelGenerationApi->generateLabel($payload);
@@ -37,17 +48,29 @@ class LpcLabelGenerationInward extends LpcComponent {
                 $lpc_admin_notices->add_notice(
                     'inward_label_generate',
                     'notice-success',
-                    sprintf(__('Order %s : Inward label generated', 'wc_colissimo'), $order->get_order_number())
+                    sprintf(__('Order %s : Inward label generated', 'wc_colissimo'), $orderId)
                 );
             }
+
+            if (!empty($ordersFailed[$customParams['outward_label_number']])) {
+                unset($ordersFailed[$customParams['outward_label_number']]);
+                update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed);
+            }
         } catch (Exception $e) {
+            $errorMessage = $e->getMessage();
             if (is_admin()) {
                 $lpc_admin_notices->add_notice(
                     'inward_label_generate',
                     'notice-error',
-                    sprintf(__('Order %s : Inward label was not generated:', 'wc_colissimo'), $order->get_order_number()) . ' ' . $e->getMessage()
+                    sprintf(__('Order %s : Inward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $errorMessage
                 );
             }
+
+            $ordersFailed[$customParams['outward_label_number']] = [
+                'message' => $errorMessage,
+                'time'    => $time,
+            ];
+            update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed);
 
             return;
         }

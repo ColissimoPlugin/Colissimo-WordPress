@@ -14,13 +14,13 @@
 	<div class="lpc_balreturn_address woocommerce-address-fields__field-wrapper">
 		<form method="POST" action="<?php echo $args['urlBalReturn']; ?>">
             <?php
-            if ($args['listMailBoxPickingDatesResponse']) {
+            if ($args['listMailBoxPickingDatesResponse'] && !empty($args['mailBoxPickingDate'])) {
                 ?>
-				<input type="hidden" id="lpc_bal_companyName" name="address[companyName]" value="<?php echo $args['address']['companyName']; ?>" />
-				<input type="hidden" id="lpc_bal_street" name="address[street]" value="<?php echo $args['address']['street']; ?>" />
-				<input type="hidden" id="lpc_bal_zipCode" name="address[zipCode]" value="<?php echo $args['address']['zipCode']; ?>" />
-				<input type="hidden" id="lpc_bal_city" name="address[city]" value="<?php echo $args['address']['city']; ?>" />
-				<input type="hidden" id="lpc_bal_pickingDate" name="pickingDate" value="<?php $args['listMailBoxPickingDatesResponse']['mailBoxPickingDates'][0]; ?>" />
+				<input type="hidden" id="lpc_bal_companyName" name="address[companyName]" value="<?php esc_attr_e($args['address']['companyName']); ?>" />
+				<input type="hidden" id="lpc_bal_street" name="address[street]" value="<?php esc_attr_e($args['address']['street']); ?>" />
+				<input type="hidden" id="lpc_bal_zipCode" name="address[zipCode]" value="<?php esc_attr_e($args['address']['zipCode']); ?>" />
+				<input type="hidden" id="lpc_bal_city" name="address[city]" value="<?php esc_attr_e($args['address']['city']); ?>" />
+				<input type="hidden" id="lpc_bal_pickingDate" name="pickingDate" value="<?php esc_attr_e($args['listMailBoxPickingDatesResponse']['mailBoxPickingDates'][0]); ?>" />
 				<p>
                     <?php
                     echo sprintf(

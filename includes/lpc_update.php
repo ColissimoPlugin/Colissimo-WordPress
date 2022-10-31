@@ -166,12 +166,12 @@ class LpcUpdate extends LpcComponent {
             update_option(LpcOutwardLabelEmailManager::EMAIL_OUTWARD_TRACKING_OPTION, $newlpc_email_outward_tracking);
         }
 
-        // Update from version under 1.6.3
+        // Update from version under 1.6.4
         if (version_compare($versionInstalled, '1.6.4') === - 1) {
             $this->outwardLabelDb->updateToVersion164();
         }
 
-        // Update from version under 1.6.4
+        // Update from version under 1.6.5
         if (version_compare($versionInstalled, '1.6.5') === - 1) {
             $this->outwardLabelDb->updateToVersion165();
         }
@@ -194,6 +194,29 @@ class LpcUpdate extends LpcComponent {
             }
 
             $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
+        }
+
+        // Update from version under 1.7.2
+        if (version_compare($versionInstalled, '1.7.2') === - 1) {
+            $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
+            $this->outwardLabelDb->updateToVersion172();
+            $countries  = [
+                'SendingService_austria',
+                'SendingService_germany',
+                'SendingService_italy',
+                'SendingService_luxembourg',
+            ];
+            $expert     = LpcHelper::get_option('lpc_expert_SendingService', 'partner');
+            $domicileas = LpcHelper::get_option('lpc_domicileas_SendingService', 'partner');
+            foreach ($countries as $country) {
+                update_option('lpc_expert_' . $country, $expert);
+                update_option('lpc_domicileas_' . $country, $domicileas);
+            }
+
+            $companyName = LpcHelper::get_option('lpc_company_name');
+            if (!empty($companyName)) {
+                update_option('lpc_origin_company_name', $companyName);
+            }
         }
     }
 

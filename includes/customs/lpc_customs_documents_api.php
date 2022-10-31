@@ -9,6 +9,7 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
     }
 
     /**
+     * @param array  $orderLabels  All the labels and their type for the current order, for multi-parcels
      * @param string $documentType The type among the ones provided in the WS documentation (see lpc_admin_order_banner.php)
      * @param string $parcelNumber The label number
      * @param string $document     The "binary data" of the uploaded file according to the doc (@/tmp/xxxx.pdf in the examples)
@@ -17,13 +18,13 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
      * @return string
      * @throws Exception When an error occurs.
      */
-    public function storeDocument($documentType, $parcelNumber, $document, $documentName) {
+    public function storeDocument(array $orderLabels, string $documentType, string $parcelNumber, string $document, string $documentName): string {
         $accountNumber = LpcHelper::get_option('lpc_id_webservices');
         $login         = LpcHelper::get_option('lpc_id_webservices');
         $password      = LpcHelper::get_option('lpc_pwd_webservices');
 
         if (function_exists('curl_file_create')) {
-            $document         = curl_file_create($document);
+            $document         = curl_file_create($document, mime_content_type($document), $documentName);
             $unsafeFileUpload = false;
         } else {
             $document         = '@' . realpath($document);
@@ -38,11 +39,15 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
             'filename'      => $parcelNumber . '-' . $documentType . '.' . pathinfo($documentName, PATHINFO_EXTENSION),
         ];
 
-        $multiColis = false;
-        if ($multiColis) {
-            // TODO: Parcel numbers of the colis suiveurs
-            $parcelNumbers               = ['6C14828576999', '6C14830940832'];
-            $payload['parcelNumberList'] = implode(',', $parcelNumbers);
+        // If it is a master parcel, add the follower parcels tracking numbers
+        if (!empty($orderLabels[$parcelNumber]) && 'MASTER' === $orderLabels[$parcelNumber]) {
+            $followerParcels = [];
+            foreach ($orderLabels as $label => $type) {
+                if ('FOLLOWER' === $type) {
+                    $followerParcels[] = $label;
+                }
+            }
+            $payload['parcelNumberList'] = implode(',', $followerParcels);
         }
 
         LpcLogger::debug(

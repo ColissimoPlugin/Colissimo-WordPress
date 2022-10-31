@@ -39,6 +39,8 @@ CREATE TABLE $table_name (
     bordereau_id     BIGINT(20)          NULL,
     detail           LONGTEXT            NULL,
     printed          TINYINT(1)          NOT NULL DEFAULT 0,
+    status_id        INT UNSIGNED        NULL,
+    label_type       VARCHAR(10)         NOT NULL DEFAULT "CLASSIC",
     PRIMARY KEY (id),
     INDEX order_id (order_id),
     INDEX tracking_number (tracking_number)
@@ -170,34 +172,31 @@ END_SQL;
         $orderId,
         $label,
         $trackingNumber,
+        $type,
         $cn23 = null,
         $labelFormat = LpcLabelGenerationPayload::LABEL_FORMAT_PDF,
         $detail = []
     ) {
         global $wpdb;
 
-        $tableName = $this->getTableName();
-
         if (is_array($detail)) {
             $detail = json_encode($detail);
         }
 
-        // phpcs:disable
-        $sql = 'INSERT INTO ' . $tableName . ' (`order_id`, `label`, `label_format`, `label_created_at`, `cn23`, `tracking_number`, `detail`) VALUES (%d, %s, %s, %s, %s, %s, %s)';
-
-        $sql = $wpdb->prepare(
-            $sql,
-            $orderId,
-            $label,
-            $labelFormat,
-            current_time('mysql'),
-            $cn23,
-            $trackingNumber,
-            $detail
+        return $wpdb->query(
+            $wpdb->prepare(
+                'INSERT INTO ' . $wpdb->prefix . 'lpc_outward_label (`order_id`, `label`, `label_format`, `label_created_at`, `cn23`, `tracking_number`, `detail`, `label_type`) 
+                VALUES (%d, %s, %s, %s, %s, %s, %s, %s)',
+                $orderId,
+                $label,
+                $labelFormat,
+                current_time('mysql'),
+                $cn23,
+                $trackingNumber,
+                $detail,
+                $type
+            )
         );
-
-        return $wpdb->query($sql);
-        // phpcs:enable
     }
 
     public function getLabelFor($trackingNumber) {
@@ -227,13 +226,11 @@ END_SQL;
             $format = !empty($outwardLabelAndFormat[0]->label_format) ? $outwardLabelAndFormat[0]->label_format : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
         }
 
-        $result = [
+        return [
             'format'   => $format,
             'label'    => $label,
             'order_id' => $orderId,
         ];
-
-        return $result;
     }
 
     public function getCn23For($trackingNumber) {
@@ -380,7 +377,6 @@ END_SQL;
     public function updateToVersion165() {
         global $wpdb;
         $tableName = $this->getTableName();
-        $prefix    = $wpdb->prefix;
 
         // phpcs:disable
         $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
@@ -397,6 +393,26 @@ ALTER TABLE $tableName ADD COLUMN `printed` TINYINT(1) NOT NULL DEFAULT 0
 END_SQL;
 
         $wpdb->query($query);
+        // phpcs:enable
+    }
+
+    public function updateToVersion172() {
+        global $wpdb;
+        $tableName = $this->getTableName();
+
+        // phpcs:disable
+        $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
+        $updatedColumns = array_filter($columns,
+            function ($column) {
+                return in_array($column->Field, ['status_id', 'label_type']);
+            }
+        );
+        if (!empty($updatedColumns)) {
+            return;
+        }
+
+        $wpdb->query('ALTER TABLE ' . $tableName . ' ADD COLUMN `status_id` INT UNSIGNED NULL');
+        $wpdb->query('ALTER TABLE ' . $tableName . ' ADD COLUMN `label_type` VARCHAR(10) NOT NULL DEFAULT "CLASSIC"');
         // phpcs:enable
     }
 
@@ -516,7 +532,6 @@ END_SQL;
         }
 
         global $wpdb;
-
         $tableName = $this->getTableName();
 
         // phpcs:disable
@@ -534,13 +549,61 @@ END_SQL;
 
     public function deleteBordereau($bordereauID) {
         global $wpdb;
-
         $table_name = $this->getTableName();
+
         //phpcs:disable
         $sql = <<<END_SQL
 UPDATE $table_name SET bordereau_id = NULL WHERE bordereau_id = $bordereauID
 END_SQL;
 
         return $wpdb->query($sql);
+        // phpcs:enable
+    }
+
+    public function getLabel($trackingNumber) {
+        global $wpdb;
+        $table_name = $this->getTableName();
+
+        // phpcs:disable
+        return $wpdb->get_row('SELECT * FROM ' . $table_name . ' WHERE `tracking_number` = \'' . esc_sql($trackingNumber) . '\'');
+        // phpcs:enable
+    }
+
+    public function setLabelStatusId($trackingNumber, $statusId) {
+        if (empty($trackingNumber)) {
+            return;
+        }
+
+        global $wpdb;
+        $table_name = $this->getTableName();
+
+        // phpcs:disable
+        $wpdb->query('UPDATE ' . $table_name . ' SET `status_id` = ' . intval($statusId) . ' WHERE `tracking_number` = \'' . esc_sql($trackingNumber) . '\'');
+        // phpcs:enable
+    }
+
+    public function getMultiParcelsLabels($orderId): array {
+        if (empty($orderId)) {
+            return [];
+        }
+
+        global $wpdb;
+
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                'SELECT `tracking_number`, `label_type` 
+                FROM ' . $wpdb->prefix . 'lpc_outward_label 
+                WHERE `label_type` IN ("FOLLOWER", "MASTER") 
+                    AND `order_id` = %d',
+                $orderId
+            )
+        );
+
+        $labels = [];
+        foreach ($results as $oneResult) {
+            $labels[$oneResult->tracking_number] = $oneResult->label_type;
+        }
+
+        return $labels;
     }
 }

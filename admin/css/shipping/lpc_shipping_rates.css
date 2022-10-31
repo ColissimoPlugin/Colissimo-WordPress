@@ -10,11 +10,20 @@
 	text-align: center;
 }
 
-.shippingrows .table_rates td.check-column{
+.shippingrows .table_rates td.check-column, .shippingrows .table_discount td.check-column{
 	vertical-align: middle;
 	padding: inherit;
 }
 
-.shippingrows .table_rates td.check-column input[type="checkbox"]{
+.shippingrows .table_rates td.check-column input[type="checkbox"], .shippingrows .table_discount td.check-column input[type="checkbox"]{
 	margin-left: 11px;
+}
+
+#lpc_shipping_rates_import{
+	width: 200px;
+}
+
+#lpc_shipping_rates_actions .woocommerce-help-tip{
+	height: 100%;
+	vertical-align: middle;
 }

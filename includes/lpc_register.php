@@ -15,6 +15,9 @@ class LpcRegister {
         return $component;
     }
 
+    /**
+     * @throws Exception When the required object couldn't be found.
+     */
     public static function get($key, $override = null) {
         if (empty($override)) {
             if (empty(self::$components[$key])) {

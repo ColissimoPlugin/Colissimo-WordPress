@@ -48,7 +48,7 @@ class LpcUpdateStatusesAction extends LpcComponent {
             'inward_label_sent',
             'notice-success',
             __(
-                'The statuses update process has started. Depending of the numbers of orders you have, it may takes a few minutes to update all statuses. You will find more information by checking logs.',
+                'The statuses update process has started. Depending of the numbers of orders you have, it may take a few minutes to update all statuses. You will find more information by checking logs.',
                 'wc_colissimo'
             )
         );

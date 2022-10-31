@@ -77,7 +77,6 @@ class LpcOrdersTable extends WP_List_Table {
             'lpc-country'         => __('Country', 'wc_colissimo'),
             'lpc-shipping-method' => __('Shipping method', 'wc_colissimo'),
             'lpc-woo-status'      => __('Order status', 'wc_colissimo'),
-            'lpc-shipping-status' => __('Status', 'wc_colissimo'),
             'lpc-label'           => sprintf(
                 '%s (<span id="lpc__orders_listing__title__outward">%s</span> / <span id="lpc__orders_listing__title__inward">%s</span> / <span id="lpc__orders_listing__title__bordereau">%s</span>)',
                 __('Labels', 'wc_colissimo'),
@@ -150,11 +149,12 @@ END_HTML;
         return $item[$column_name];
     }
 
-    protected function get_data($current_page = 0, $per_page = 0, $args = [], $filters = []) {
+    protected function get_data($current_page = 0, $per_page = 0, $args = [], $filters = []): array {
         $data      = [];
         $ordersIds = LpcOrderQueries::getLpcOrders($current_page, $per_page, $args, $filters);
 
-        $trackingNumbers = $this->getTrackingNumbersFormated($ordersIds);
+        $trackingNumbers     = $this->getTrackingNumbersFormatted($ordersIds);
+        $ordersOutwardFailed = get_option(LpcLabelGenerationOutward::ORDERS_OUTWARD_PARCEL_FAILED, []);
 
         foreach ($ordersIds as $orderId) {
             if (strpos(get_post_status($orderId), 'draft') !== false) {
@@ -173,31 +173,41 @@ END_HTML;
                 : '';
             $address .= '<br>' . $wc_order->get_shipping_postcode() . ' ' . $wc_order->get_shipping_city();
 
-            $outwardLabel = $wc_order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
             if (current_user_can('lpc_manage_labels')) {
                 $labels = '<div class="lpc_generate_outward_label lpc_generate_label">
 								<span class="dashicons dashicons-plus lpc_generate_label_dashicon" '
                           . $this->labelQueries->getLabelOutwardGenerateAttr($orderId) . '></span>'
                           . __('Generate outward label', 'wc_colissimo') . '
 								</div><br>';
+
+                if (!empty($ordersOutwardFailed[$orderId])) {
+                    $labels .= '<div class="lpc_outward_label_error">';
+                    $labels .= '<span class="dashicons dashicons-warning lpc_outward_label_error_icon"></span>';
+                    $labels .= sprintf(__('The label couldn\'t be generated: %s', 'wc_colissimo'), __($ordersOutwardFailed[$orderId]['message'], 'wc_colissimo'));
+                    $labels .= '</div><br>';
+                }
             } else {
                 $labels = '';
             }
-            $labels .= isset($trackingNumbers[$orderId]) ? $trackingNumbers[$orderId] : '';
+            $labels .= $trackingNumbers[$orderId] ?? '';
+
+            /**
+             * Filter on the date format shown in the Colissimo listing
+             *
+             * @since 1.6
+             */
+            $date = apply_filters('woocommerce_admin_order_date_format', __('M j, Y', 'woocommerce'));
 
             $data[] = [
                 'data-id'             => $orderId,
                 'cb'                  => '<input type="checkbox" />',
                 'lpc-id'              => $this->getSeeOrderLink($orderId),
-                'lpc-date'            => $wc_order->get_date_created()->date('m-d-Y'),
-                'lpc-customer'        =>
-                    $wc_order->get_shipping_first_name()
-                    . ' ' . $wc_order->get_shipping_last_name(),
+                'lpc-date'            => $wc_order->get_date_created()->date_i18n($date),
+                'lpc-customer'        => $wc_order->get_shipping_first_name() . ' ' . $wc_order->get_shipping_last_name(),
                 'lpc-address'         => $address,
                 'lpc-country'         => $wc_order->get_shipping_country(),
                 'lpc-shipping-method' => $wc_order->get_shipping_method(),
                 'lpc-woo-status'      => wc_get_order_status_name($wc_order->get_status()),
-                'lpc-shipping-status' => $this->getColissimoStatus($wc_order, $outwardLabel),
                 'lpc-label'           => $labels,
             ];
         }
@@ -205,22 +215,29 @@ END_HTML;
         return $data;
     }
 
-    protected function getColissimoStatus($order, $label) {
-        if (!empty($label)) {
-            $trackingLink = $this->unifiedTrackingApi->getTrackingPageUrlForOrder($order->get_id());
-
-            $internalEventCode = $order->get_meta(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY);
-
-            if (empty($internalEventCode)) {
-                return '-';
-            }
-
-            $eventLabel = $this->colissimoStatus->getStatusInfo($internalEventCode)['label'];
-
-            return '<a href="' . $trackingLink . '" target="_blank">' . $eventLabel . '</a>';
+    protected function getLabelTrackingInfo($outwardTrackingNumber): array {
+        if (empty($outwardTrackingNumber)) {
+            return [];
         }
 
-        return '-';
+        $label = $this->outwardLabelDb->getLabel($outwardTrackingNumber);
+
+        if (empty($label)) {
+            return [];
+        }
+
+        $result = [
+            'trackingLink' => $this->labelQueries->getOutwardLabelLink($label->order_id, $outwardTrackingNumber),
+            'status'       => '',
+        ];
+
+        if (empty($label->status_id)) {
+            return $result;
+        }
+
+        $result['status'] = $this->colissimoStatus->getStatusInfo($label->status_id)['label'];
+
+        return $result;
     }
 
     protected function getBorderauxDownloadLinks(WC_Order $order) {
@@ -284,7 +301,7 @@ END_HTML;
     }
 
     public function get_sortable_columns() {
-        $sortable_columns = [
+        return [
             'lpc-id'              => ['id', true],
             'lpc-date'            => ['date', false],
             'lpc-customer'        => ['customer', false],
@@ -292,11 +309,8 @@ END_HTML;
             'lpc-country'         => ['country', false],
             'lpc-shipping-method' => ['shipping-method', false],
             'lpc-woo-status'      => ['woo-status', false],
-            'lpc-shipping-status' => ['shipping-status', false],
             'lpc-bordereau'       => ['bordereau', false],
         ];
-
-        return $sortable_columns;
     }
 
     protected function extra_tablenav($which) {
@@ -331,7 +345,7 @@ END_HTML;
 			<div id="lpc__orders_listing__page__more_options--options" style="display: none">
                 <?php
                 $this->countryFilters();
-                $this->shipppingMethodFilters();
+                $this->shippingMethodFilters();
                 $this->wooStatusFilters();
                 $this->statusFilters();
                 $this->labelFilters();
@@ -383,7 +397,7 @@ END_HTML;
     protected function statusFilters() {
         $displayedStatus = false === get_option('lpc_orders_filters_status') ? [''] : get_option('lpc_orders_filters_status');
 
-        $status = LpcOrderQueries::getLpcOrdersPostMetaList('_lpc_last_event_internal_code');
+        $status = LpcOrderQueries::getLpcOrdersPostMetaList(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY);
 
         if (!empty($status)) {
             ?>
@@ -412,7 +426,7 @@ END_HTML;
         }
     }
 
-    protected function shipppingMethodFilters() {
+    protected function shippingMethodFilters() {
         $displayedShippingMethods = false === get_option('lpc_orders_filters_shipping_method') ? [''] : get_option('lpc_orders_filters_shipping_method');
 
         $shippingMethods = LpcOrderQueries::getLpcOrdersShippingMethods();
@@ -708,12 +722,12 @@ END_PRINT_SCRIPT;
         echo '<h1 class="wp-heading-inline">' . __('Colissimo Orders', 'wc_colissimo') . '</h1>';
         $buttonUpdateStatusAction = $this->updateStatuses->getUpdateAllStatusesUrl();
         $buttonUpdateStatusLabel  = __('Update Colissimo statuses', 'wc_colissimo');
-        echo '<a href="' . $buttonUpdateStatusAction . '" class="page-title-action">' . $buttonUpdateStatusLabel . '</a>';
+        echo '<a id="colissimo_action_update" href="' . $buttonUpdateStatusAction . '" class="page-title-action">' . $buttonUpdateStatusLabel . '</a>';
 
         if (current_user_can('lpc_manage_bordereau')) {
             $buttonGenerateBordereauAction = $this->bordereauGeneration->getGenerationBordereauEndDayUrl();
             $buttonGenerateBordereauLabel  = __('Generate end of day bordereau', 'wc_colissimo');
-            echo '<a href="' . $buttonGenerateBordereauAction . '" class="page-title-action">' . $buttonGenerateBordereauLabel . '</a>';
+            echo '<a id="colissimo_action_bordereau" href="' . $buttonGenerateBordereauAction . '" class="page-title-action">' . $buttonGenerateBordereauLabel . '</a>';
         }
 
         if (current_user_can('lpc_manage_labels') && WC_Admin_Settings::get_option('display_import_tracking_number', 'no') === 'yes') {
@@ -743,10 +757,11 @@ END_PRINT_SCRIPT;
         ];
     }
 
-    protected function getTrackingNumbersFormated($ordersId = []) {
+    protected function getTrackingNumbersFormatted($ordersId = []) {
         $trackingNumbersByOrders         = [];
         $renderedTrackingNumbersByOrders = [];
         $labelFormatByTrackingNumber     = [];
+        $ordersInwardFailed              = get_option(LpcLabelGenerationInward::ORDERS_INWARD_PARCEL_FAILED, []);
 
         $this->labelQueries->getTrackingNumbersByOrdersId($trackingNumbersByOrders, $labelFormatByTrackingNumber, $ordersId);
 
@@ -754,16 +769,30 @@ END_PRINT_SCRIPT;
             if ('insured' === $oneOrderId) {
                 continue;
             }
+
             $renderedTrackingNumbersByOrders[$oneOrderId] = '<div class="lpc__orders_listing__tracking-numbers">';
             foreach ($oneOrder as $outLabel => $inLabel) {
                 if ('no_outward' !== $outLabel) {
-                    $format = $labelFormatByTrackingNumber[$outLabel];
+                    $format        = $labelFormatByTrackingNumber[$outLabel];
+                    $labelTracking = $this->getLabelTrackingInfo($outLabel);
 
-                    $renderedTrackingNumbersByOrders[$oneOrderId] .=
-                        '<span class="lpc__orders_listing__tracking-number">' .
-                        '<span class="lpc__orders_listing__tracking_number--outward">' . $outLabel . '</span>' .
-                        $this->labelQueries->getOutwardLabelsActionsIcons($outLabel, $format, LpcLabelQueries::REDIRECTION_COLISSIMO_ORDERS_LISTING)
-                        . '</span><br>';
+                    if (empty($labelTracking)) {
+                        $shownLabel = $outLabel;
+                    } else {
+                        $shownLabel = '<a target="_blank" href="' . esc_url($labelTracking['trackingLink']) . '">' . $outLabel . '</a>';
+                    }
+
+                    $renderedTrackingNumbersByOrders[$oneOrderId] .= '<span class="lpc__orders_listing__tracking-number">';
+                    $renderedTrackingNumbersByOrders[$oneOrderId] .= '<span class="lpc__orders_listing__tracking_number--outward">' . $shownLabel . '</span>';
+                    $renderedTrackingNumbersByOrders[$oneOrderId] .= $this->labelQueries->getOutwardLabelsActionsIcons(
+                        $outLabel,
+                        $format,
+                        LpcLabelQueries::REDIRECTION_COLISSIMO_ORDERS_LISTING
+                    );
+                    if (!empty($labelTracking['status'])) {
+                        $renderedTrackingNumbersByOrders[$oneOrderId] .= '<br />' . esc_html($labelTracking['status']);
+                    }
+                    $renderedTrackingNumbersByOrders[$oneOrderId] .= '</span><br>';
 
                     $bordereauID = $this->outwardLabelDb->getBordereauFromTrackingNumber($outLabel);
                     if (!empty($bordereauID[0])) {
@@ -801,6 +830,16 @@ END_PRINT_SCRIPT;
                                                                      . $this->labelQueries->getLabelInwardGenerateAttr($oneOrderId, $outLabel) . '></i>'
                                                                      . __('Generate inward label', 'wc_colissimo') . '
 																</div><br>';
+
+                    if (!empty($ordersInwardFailed[$outLabel])) {
+                        $renderedTrackingNumbersByOrders[$oneOrderId] .= '<div class="lpc_outward_label_error">';
+                        $renderedTrackingNumbersByOrders[$oneOrderId] .= '<span class="dashicons dashicons-warning lpc_inward_label_error_icon"></span>';
+                        $renderedTrackingNumbersByOrders[$oneOrderId] .= sprintf(
+                            __('The label couldn\'t be generated: %s', 'wc_colissimo'),
+                            __($ordersInwardFailed[$outLabel]['message'], 'wc_colissimo')
+                        );
+                        $renderedTrackingNumbersByOrders[$oneOrderId] .= '</div><br>';
+                    }
                 }
 
                 $renderedTrackingNumbersByOrders[$oneOrderId] .= '<br>';

@@ -101,8 +101,9 @@ jQuery(function ($) {
                         type: 'GET',
                         url: info.url,
                         dataType: 'html'
-                    }).error(function () {
+                    }).error(function (xhr, status, error) {
                         console.error('error on label ' + info.trackingNumber);
+                        console.error('Error message: ' + xhr.responseText);
                         if ($('#lpc_thermal_print_error_message').length === 0) {
                             displayErrors(lpcLabelsActions.errorMsgPrintThermal);
                         }

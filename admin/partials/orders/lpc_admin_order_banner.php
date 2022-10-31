@@ -1,21 +1,30 @@
 <?php
-$trackingNumbers = isset($args['lpc_tracking_numbers']) ? $args['lpc_tracking_numbers'] : [];
-$labelFormat = isset($args['lpc_label_formats']) ? $args['lpc_label_formats'] : [];
-$orderItems = isset($args['lpc_order_items']) && is_array($args['lpc_order_items']) ? $args['lpc_order_items'] : [];
-$weightUnity = LpcHelper::get_option('woocommerce_weight_unit', '');
-$currency = get_woocommerce_currency_symbol(get_woocommerce_currency());
-$shippingCosts = isset($args['lpc_shipping_costs']) ? $args['lpc_shipping_costs'] : 0;
-$bordereauLinks = isset($args['lpc_bordereauLinks']) ? $args['lpc_bordereauLinks'] : [];
-$customsDocumentsNeeded = isset($args['lpc_customs_needed']) && $args['lpc_customs_needed'];
-$sendingServiceNeeded = isset($args['lpc_sending_service_needed']) && $args['lpc_sending_service_needed'];
-$sendingServiceConfig = isset($args['lpc_sending_service_config']) ? $args['lpc_sending_service_config'] : 'partner';
-$insured = isset($args['lpc_customs_insured']) ? $args['lpc_customs_insured'] : [];
-$productCode = isset($args['lpc_product_code']) ? $args['lpc_product_code'] : '';
-$ddp = isset($args['lpc_ddp']) ? $args['lpc_ddp'] : false;
-$onDemandServiceLink = '<a href="' . $args['lpc_ondemand_service_url'] . '" target="_blank">' . __('here', 'wc_colissimo') . '</a>';
-$onDemandMacLink = '<a href="' . $args['lpc_ondemand_mac_url'] . '">Mac</a>';
-$onDemandWindowsLink = '<a href="' . $args['lpc_ondemand_windows_url'] . '">Windows</a>';
-$collectionAllowed = isset($args['lpc_collection_allowed']) && $args['lpc_collection_allowed'];
+$trackingNumbers          = $args['lpc_tracking_numbers'] ?? [];
+$labelFormat              = $args['lpc_label_formats'] ?? [];
+$orderItems               = isset($args['lpc_order_items']) && is_array($args['lpc_order_items']) ? $args['lpc_order_items'] : [];
+$weightUnity              = LpcHelper::get_option('woocommerce_weight_unit', '');
+$currency                 = get_woocommerce_currency_symbol(get_woocommerce_currency());
+$shippingCosts            = $args['lpc_shipping_costs'] ?? 0;
+$bordereauLinks           = $args['lpc_bordereauLinks'] ?? [];
+$customsDocumentsNeeded   = isset($args['lpc_customs_needed']) && $args['lpc_customs_needed'];
+$sendingServiceNeeded     = isset($args['lpc_sending_service_needed']) && $args['lpc_sending_service_needed'];
+$sendingServiceConfig     = $args['lpc_sending_service_config'] ?? 'partner';
+$insured                  = $args['lpc_customs_insured'] ?? [];
+$productCode              = $args['lpc_product_code'] ?? '';
+$ddp                      = $args['lpc_ddp'] ?? false;
+$onDemandServiceLink      = '<a href="' . $args['lpc_ondemand_service_url'] . '" target="_blank">' . __('here', 'wc_colissimo') . '</a>';
+$onDemandMacLink          = '<a href="' . $args['lpc_ondemand_mac_url'] . '">Mac</a>';
+$onDemandWindowsLink      = '<a href="' . $args['lpc_ondemand_windows_url'] . '">Windows</a>';
+$collectionAllowed        = isset($args['lpc_collection_allowed']) && $args['lpc_collection_allowed'];
+$totalQuantity            = 0;
+$isMultiParcelsAuthorized = !empty($args['lpc_multi_parcels_authorized']);
+$parcelsAmount            = empty($args['lpc_multi_parcels_amount']) ? 0 : $args['lpc_multi_parcels_amount'];
+$multiParcelsExisting     = empty($args['lpc_multi_parcels_existing']) ? [] : $args['lpc_multi_parcels_existing'];
+$parcelCurrentNumber      = count($multiParcelsExisting) + 1;
+$multiParcelsLabels       = [
+    'MASTER'   => __('Master parcel', 'wc_colissimo'),
+    'FOLLOWER' => __('Follower parcel', 'wc_colissimo'),
+];
 ?>
 
 <div class="lpc__admin__order_banner">
@@ -34,9 +43,9 @@ $collectionAllowed = isset($args['lpc_collection_allowed']) && $args['lpc_collec
 			</div>
         <?php } ?>
         <?php if ($collectionAllowed) { ?>
-		<div data-lpc-tab="on_demand" class="lpc__admin__order_banner__tab lpc__admin__order_banner__header__ondemand nav-tab">
-            <?php echo __('Colissimo collection', 'wc_colissimo'); ?>
-		</div>
+			<div data-lpc-tab="on_demand" class="lpc__admin__order_banner__tab lpc__admin__order_banner__header__ondemand nav-tab">
+                <?php echo __('Colissimo collection', 'wc_colissimo'); ?>
+			</div>
         <?php } ?>
 	</div>
 	<div class="lpc__admin__order_banner__content lpc__admin__order_banner__generate_label" style="display: none">
@@ -55,7 +64,8 @@ $collectionAllowed = isset($args['lpc_collection_allowed']) && $args['lpc_collec
                     <?php
                     $allItemsId = [];
                     foreach ($orderItems as $oneItem) {
-                        $allItemsId[] = $oneItem['id'];
+                        $totalQuantity += $oneItem['base_qty'];
+                        $allItemsId[]  = $oneItem['id'];
                         ?>
 						<tr>
 							<td class="lpc__admin__order_banner__generate_label__item__td__checkbox check-column">
@@ -82,7 +92,7 @@ $collectionAllowed = isset($args['lpc_collection_allowed']) && $args['lpc_collec
 										class="lpc__admin__order_banner__generate_label__item__qty"
 										data-item-id="<?php echo $oneItem['id']; ?>"
 										value="<?php echo $oneItem['qty']; ?>"
-										step="1"
+										step="any"
 										min="0"
 										name="<?php echo $oneItem['id'] . '-qty'; ?>"
 										id="<?php echo $oneItem['id'] . '-qty'; ?>"
@@ -103,7 +113,7 @@ $collectionAllowed = isset($args['lpc_collection_allowed']) && $args['lpc_collec
 			<div class="lpc__admin__order_banner__generate_label__edit_value__container">
 				<span class="woocommerce-help-tip" data-tip="
 				<?php
-                echo __(
+                esc_attr_e(
                     'Editing prices and weights may create inconsistency between CN23 or labels and invoice. Edit these values only if you really need it.',
                     'wc_colissimo'
                 );
@@ -243,12 +253,84 @@ $collectionAllowed = isset($args['lpc_collection_allowed']) && $args['lpc_collec
 			</div>
 			<div class="lpc__admin__order_banner__generate_label__insurance">
 				<label for="lpc_use_insurance">
-                    <?php echo __('Use Colissimo Insurance?', 'wc_colissimo'); ?> :
+                    <?php echo __('Use Colissimo Insurance?', 'wc_colissimo'); ?>
 				</label>
 				<input type="checkbox" <?php echo 'yes' == LpcHelper::get_option('lpc_using_insurance') ? 'checked' : ''; ?>
 					   name="lpc__admin__order_banner__generate_label__using__insurance__input"
+					   class="lpc__admin__order_banner__generate_label__using__insurance__input"
 					   id="lpc_use_insurance">
 			</div>
+			<div class="lpc__admin__order_banner__generate_label__insurance__amount">
+				<label for="lpc_insurance_amount">
+                    <?php echo __('Personalized amount of insurance:', 'wc_colissimo'); ?>
+				</label>
+				<select
+						class="lpc__admin__order_banner__generate_label__insurrance__amount"
+						name="lpc__admin__order_banner__generate_label__insurrance__amount"
+						id="lpc_insurance_amount"
+                    <?php echo 'yes' == LpcHelper::get_option('lpc_using_insurance') ? '' : ' disabled="true" '; ?>>
+					<option value=""><?php esc_html_e('Choose an amount', 'wc_colissimo'); ?></option>
+					<option value="150">150€</option>
+					<option value="300">300€</option>
+					<option value="500">500€</option>
+					<option value="1000">1000€</option>
+                    <?php
+                    if (!in_array($productCode, LpcLabelGenerationPayload::PRODUCT_CODE_INSURANCE_RELAY)) {
+                        ?>
+						<option value="2000">2000€</option>
+						<option value="5000">5000€</option>
+                        <?php
+                    }
+                    ?>
+				</select>
+			</div>
+            <?php if (1 < $totalQuantity && $isMultiParcelsAuthorized) { ?>
+				<div class="lpc__admin__order_banner__generate_label__multi__parcels">
+					<label for="lpc_multi_parcels">
+                        <?php esc_html_e('Use the multi-parcels shipping', 'wc_colissimo'); ?>
+						<span class="woocommerce-help-tip" data-tip="
+						<?php
+                        esc_attr_e(
+                            'If you want your client to receive all the parcels at the same time, activate this option and specify the exact number of parcels.',
+                            'wc_colissimo'
+                        );
+                        ?>
+						">
+						</span>
+					</label>
+					<input type="checkbox"
+						   name="lpc__admin__order_banner__generate_label__multi__parcels__input"
+						   class="lpc__admin__order_banner__generate_label__multi__parcels__input"
+						   id="lpc_multi_parcels"
+                        <?php echo empty($parcelsAmount) ? '' : 'checked="checked"'; ?>>
+				</div>
+				<div class="lpc__admin__order_banner__generate_label__multi__parcels__number">
+                    <?php if (empty($parcelsAmount)) { ?>
+						<label for="lpc_multi_parcels_number">
+                            <?php esc_html_e('Number of parcels:', 'wc_colissimo'); ?>
+						</label>
+						<input type="number"
+							   min="2"
+							   max="<?php echo intval(min($totalQuantity, 4)); ?>"
+							   name="lpc__admin__order_banner__generate_label__parcels_amount"
+							   id="lpc_multi_parcels_number"
+							   disabled="disabled">
+                    <?php } elseif ($parcelCurrentNumber <= $parcelsAmount) { ?>
+                        <?php echo sprintf(__('Parcel n°%1$s / %2$s', 'wc_colissimo'), $parcelCurrentNumber, $parcelsAmount); ?>
+						<span class="woocommerce-help-tip" data-tip="
+						<?php
+                        esc_attr_e(
+                            'If you made a mistake or if you want to change the total number of parcels, you can delete generated labels.',
+                            'wc_colissimo'
+                        );
+                        ?>
+						">
+						</span>
+                    <?php } else { ?>
+                        <?php esc_html_e('All labels have been generated.', 'wc_colissimo'); ?>
+                    <?php } ?>
+				</div>
+            <?php } ?>
 			<div class="lpc__admin__order_banner__generate_label__generate-label-button__container">
 				<select name="lpc__admin__order_banner__generate_label__outward_or_inward">
 					<option value="outward"><?php echo __('Outward label', 'wc_colissimo'); ?></option>
@@ -287,14 +369,34 @@ $collectionAllowed = isset($args['lpc_collection_allowed']) && $args['lpc_collec
 							<td>
                                 <?php
                                 if ('no_outward' !== $outwardTrackingNumber) {
-                                    $trackingLink = $args['lpc_label_queries']->getOutwardLabelLink($args['postId'], $outwardTrackingNumber); ?>
+                                    $trackingLink = $args['lpc_label_queries']->getOutwardLabelLink($args['postId'], $outwardTrackingNumber);
+                                    ?>
 									<a target="_blank" href="<?php echo esc_url($trackingLink); ?>">
-                                        <?php esc_html_e($outwardTrackingNumber);
+                                        <?php
+                                        esc_html_e($outwardTrackingNumber);
+
+                                        $additionalInformation = [];
                                         if (in_array($outwardTrackingNumber, $insured)) {
-                                            echo ' (' . __('Insured', 'wc_colissimo') . ')';
+                                            $additionalInformation[] = __('Insured', 'wc_colissimo');
+                                        }
+
+                                        if (!empty($multiParcelsExisting[$outwardTrackingNumber])) {
+                                            $additionalInformation[] = $multiParcelsLabels[$multiParcelsExisting[$outwardTrackingNumber]];
+                                        }
+
+                                        if (!empty($additionalInformation)) {
+                                            echo ' (' . implode(', ', $additionalInformation) . ')';
                                         }
                                         ?>
 									</a>
+                                    <?php
+                                    $label = $args['outwardLabelDb']->getLabel($outwardTrackingNumber);
+
+                                    if (!empty($label->status_id)) {
+                                        $labelStatus = $args['colissimoStatus']->getStatusInfo($label->status_id)['label'];
+                                        echo '<br />' . esc_html($labelStatus);
+                                    }
+                                    ?>
 									<br>
                                     <?php echo $args['lpc_label_queries']->getOutwardLabelsActionsIcons(
                                         $outwardTrackingNumber,

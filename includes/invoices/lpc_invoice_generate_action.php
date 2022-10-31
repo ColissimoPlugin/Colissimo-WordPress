@@ -170,13 +170,12 @@ class LpcInvoiceGenerateAction extends LpcComponent {
             }
         }
 
-        $output_html = '';
-        $output_html .= '<div><span style="font-weight: bold;font-size: 1.2em;">' . LpcHelper::get_option('lpc_company_name', '') . '</span><br>' . get_option(
-                'woocommerce_store_address'
-            ) . '<br>' . $store_address2 . get_option('woocommerce_store_postcode') . ' <br>' . get_option('woocommerce_store_city') . ' <br>' . WC()->countries->countries[get_option(
-                'woocommerce_default_country'
-            )] . ' <br>' . $vatNumberOutput . '
-					     </div>';
+        $output_html = '<div><span style="font-weight: bold;font-size: 1.2em;">' . LpcHelper::get_option('lpc_origin_company_name', '') . '</span><br>';
+        $output_html .= get_option('woocommerce_store_address') . '<br>';
+        $output_html .= $store_address2 . get_option('woocommerce_store_postcode') . ' <br>';
+        $output_html .= get_option('woocommerce_store_city') . ' <br>';
+        $output_html .= WC()->countries->countries[get_option('woocommerce_default_country')] . ' <br>';
+        $output_html .= $vatNumberOutput . '</div>';
 
         return $output_html;
     }

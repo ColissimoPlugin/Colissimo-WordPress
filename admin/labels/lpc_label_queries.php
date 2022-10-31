@@ -192,10 +192,6 @@ class LpcLabelQueries extends LpcComponent {
 
         $actions = '';
 
-        if (current_user_can('lpc_send_emails')) {
-            $actions .= '<span class="dashicons dashicons-email-alt lpc_label_action_send_email" ' . $this->getLabelInwardSendAttr($trackingNumber, $redirection) . '></span>';
-        }
-
         if (current_user_can('lpc_download_labels')) {
             $actions .= '<span class="dashicons dashicons-download lpc_label_action_download" ' .
                         $this->getLabelInwardDownloadAttr($trackingNumber, $format) . '></span>';
@@ -208,6 +204,10 @@ class LpcLabelQueries extends LpcComponent {
 
         if (current_user_can('lpc_delete_labels')) {
             $actions .= '<span class="dashicons dashicons-trash lpc_label_action_delete" ' . $this->getLabelInwardDeletionAttr($trackingNumber, $redirection) . '></span>';
+        }
+
+        if (current_user_can('lpc_send_emails')) {
+            $actions .= '<span class="dashicons dashicons-email-alt lpc_label_action_send_email" ' . $this->getLabelInwardSendAttr($trackingNumber, $redirection) . '></span>';
         }
 
         return $actions;

@@ -6,6 +6,8 @@ jQuery(function ($) {
     bindEditValues();
     initCustomDocuments();
     setSendingService();
+    manageInsuranceAmount();
+    manageMultiParcels();
 
     function initTabSystem() {
         $('.lpc__admin__order_banner__tab').off('click').on('click', function () {
@@ -57,7 +59,7 @@ jQuery(function ($) {
         $adminOrderBanner.find('.lpc__admin__order_banner__generate_label__item__weight').each(function () {
             let itemId = $(this).attr('data-item-id');
             if ($('#' + itemId + '-checkbox').prop('checked')) {
-                let qty = parseInt($('#' + itemId + '-qty').val());
+                let qty = parseFloat($('#' + itemId + '-qty').val());
 
                 let productWeight = parseFloat($(this).val());
                 totalWeight += productWeight * qty;
@@ -110,6 +112,30 @@ jQuery(function ($) {
                 $(this).addClass('woocommerce-input-toggle--disabled');
             }
 
+        });
+    }
+
+    function manageInsuranceAmount() {
+        $('.lpc__admin__order_banner__generate_label__using__insurance__input').off('click').on('click', function () {
+            let $insuranceAmountInput = $('#lpc_insurance_amount');
+            if (this.checked) {
+                $insuranceAmountInput.prop('disabled', false);
+            } else {
+                $insuranceAmountInput.val('');
+                $insuranceAmountInput.prop('disabled', true);
+            }
+        });
+    }
+
+    function manageMultiParcels() {
+        $('.lpc__admin__order_banner__generate_label__multi__parcels__input').off('click').on('click', function () {
+            const $parcelsAmountInput = $('#lpc_multi_parcels_number');
+            if (this.checked) {
+                $parcelsAmountInput.prop('disabled', false);
+            } else {
+                $parcelsAmountInput.val('');
+                $parcelsAmountInput.prop('disabled', true);
+            }
         });
     }
 
