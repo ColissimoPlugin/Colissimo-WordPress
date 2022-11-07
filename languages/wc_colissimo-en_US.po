@@ -517,41 +517,38 @@ msgstr "The ProductCode used requires that a pickupLocationId is set!"
 msgid "The ProductCode used requires that a pickupLocationId is *not* set!"
 msgstr "The ProductCode used requires that a pickupLocationId is *not* set!"
 
-msgid "The ProductCode used requires that a commercialName is set!"
-msgstr "The ProductCode used requires that a commercialName is set!"
+msgid "You must specify the name of your store company in the Origin address!"
+msgstr "You must specify the name of your store company in the Origin address!"
 
-msgid "companyName must be set in Sender address!"
-msgstr "companyName must be set in Sender address!"
+msgid "The name of your store company must be set in Origin address!"
+msgstr "The name of your store company must be set in Origin address!"
 
-msgid "line2 must be set in Sender address!"
-msgstr "line2 must be set in Sender address!"
+msgid "The address line 1 must be set in the Origin address!"
+msgstr "The address line 1 must be set in the Origin address!"
 
-msgid "countryCode must be set in Sender address!"
-msgstr "countryCode must be set in Sender address!"
+msgid "The Country / State must be set in the Origin address!"
+msgstr "The Country / State must be set in the Origin address!"
 
-msgid "zipCode must be set in Sender address!"
-msgstr "zipCode must be set in Sender address!"
+msgid "The Postcode / ZIP must be set in the Origin address!"
+msgstr "The Postcode / ZIP must be set in the Origin address!"
 
-msgid "city must be set in Sender address!"
-msgstr "city must be set in Sender address!"
+msgid "The city must be set in the Origin address!"
+msgstr "The city must be set in the Origin address!"
 
-msgid "companyName or (firstName + lastName) must be set in Addressee address!"
-msgstr "companyName or (firstName + lastName) must be set in Addressee address!"
+msgid "The name of the company or (firstname + lastname) must be set in the addressee's address!"
+msgstr "The name of the company or (firstname + lastname) must be set in the addressee's address!"
 
-msgid "companyName must be set in Addressee address for return label!"
-msgstr "companyName must be set in Addressee address for return label!"
+msgid "The address line 1 must be set in the Addressee address!"
+msgstr "The address line 1 must be set in the Addressee address!"
 
-msgid "line2 must be set in Addressee address!"
-msgstr "line2 must be set in Addressee address!"
+msgid "The Country / State must be set in the Addressee address!"
+msgstr "The Country / State must be set in the Addressee address!"
 
-msgid "countryCode must be set in Addressee address!"
-msgstr "countryCode must be set in Addressee address!"
+msgid "The Postcode / ZIP must be set in the Addressee address!"
+msgstr "The Postcode / ZIP must be set in the Addressee address!"
 
-msgid "zipCode must be set in Addressee address!"
-msgstr "zipCode must be set in Addressee address!"
-
-msgid "city must be set in Addressee address!"
-msgstr "city must be set in Addressee address!"
+msgid "The city must be set in the Addressee address!"
+msgstr "The city must be set in the Addressee address!"
 
 msgid "The ProductCode used requires that a mobile number is set!"
 msgstr "The ProductCode used requires that a mobile number is set!"

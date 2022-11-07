@@ -994,7 +994,7 @@ class LpcLabelGenerationPayload {
             && (!isset($this->payload['letter']['service']['commercialName'])
                 || empty($this->payload['letter']['service']['commercialName']))) {
             throw new Exception(
-                __('The ProductCode used requires that a commercialName is set!', 'wc_colissimo')
+                __('You must specify the name of your store company in the Origin address!', 'wc_colissimo')
             );
         }
     }
@@ -1004,31 +1004,31 @@ class LpcLabelGenerationPayload {
 
         if (empty($address['companyName'])) {
             throw new Exception(
-                __('companyName must be set in Sender address!', 'wc_colissimo')
+                __('The name of your store company must be set in Origin address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['line2'])) {
             throw new Exception(
-                __('line2 must be set in Sender address!', 'wc_colissimo')
+                __('The address line 1 must be set in the Origin address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['countryCode'])) {
             throw new Exception(
-                __('countryCode must be set in Sender address!', 'wc_colissimo')
+                __('The Country / State must be set in the Origin address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['zipCode'])) {
             throw new Exception(
-                __('zipCode must be set in Sender address!', 'wc_colissimo')
+                __('The Postcode / ZIP must be set in the Origin address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['city'])) {
             throw new Exception(
-                __('city must be set in Sender address!', 'wc_colissimo')
+                __('The city must be set in the Origin address!', 'wc_colissimo')
             );
         }
     }
@@ -1048,39 +1048,31 @@ class LpcLabelGenerationPayload {
             && (empty($address['firstName']) || empty($address['lastName']))
         ) {
             throw new Exception(
-                __('companyName or (firstName + lastName) must be set in Addressee address!', 'wc_colissimo')
+                __('The name of the company or (firstname + lastname) must be set in the addressee\'s address!', 'wc_colissimo')
             );
-        }
-
-        if ($this->isReturnLabel) {
-            if (empty($address['companyName'])) {
-                throw new Exception(
-                    __('companyName must be set in Addressee address for return label!', 'wc_colissimo')
-                );
-            }
         }
 
         if (empty($address['line2'])) {
             throw new Exception(
-                __('line2 must be set in Addressee address!', 'wc_colissimo')
+                __('The address line 1 must be set in the Addressee address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['countryCode'])) {
             throw new Exception(
-                __('countryCode must be set in Addressee address!', 'wc_colissimo')
+                __('The Country / State must be set in the Addressee address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['zipCode'])) {
             throw new Exception(
-                __('zipCode must be set in Addressee address!', 'wc_colissimo')
+                __('The Postcode / ZIP must be set in the Addressee address!', 'wc_colissimo')
             );
         }
 
         if (empty($address['city'])) {
             throw new Exception(
-                __('city must be set in Addressee address!', 'wc_colissimo')
+                __('The city must be set in the Addressee address!', 'wc_colissimo')
             );
         }
 
@@ -1243,10 +1235,14 @@ class LpcLabelGenerationPayload {
                 $countryWithState = explode(':', WC_Admin_Settings::get_option('woocommerce_default_country'));
                 $option           = reset($countryWithState);
             } else {
-                if (0 === strpos($optionName['default'], 'lpc_')) {
-                    $option = LpcHelper::get_option($optionName['default']);
+                if (empty($optionName['default'])) {
+                    $option = LpcHelper::get_option($optionName['lpc']);
                 } else {
-                    $option = WC_Admin_Settings::get_option($optionName['default']);
+                    if (0 === strpos($optionName['default'], 'lpc_')) {
+                        $option = LpcHelper::get_option($optionName['default']);
+                    } else {
+                        $option = WC_Admin_Settings::get_option($optionName['default']);
+                    }
                 }
             }
 
