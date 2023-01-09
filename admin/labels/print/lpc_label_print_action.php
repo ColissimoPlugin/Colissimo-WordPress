@@ -114,6 +114,8 @@ class LpcLabelPrintAction extends LpcComponent {
 
                 if ($isOutward) {
                     $this->outwardLabelDb->updatePrintedLabel($trackingNumber);
+                } else {
+                    $this->inwardLabelDb->updatePrintedLabel($trackingNumbers);
                 }
             }
 

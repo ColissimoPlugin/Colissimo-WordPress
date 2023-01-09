@@ -10,19 +10,22 @@ class LpcLabelGenerationInward extends LpcComponent {
     protected $capabilitiesPerCountry;
     protected $labelGenerationApi;
     protected $inwardLabelDb;
+    protected $shippingMethods;
 
     public function __construct(
         LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
         LpcLabelGenerationApi $labelGenerationApi = null,
-        LpcInwardLabelDb $inwardLabelDb = null
+        LpcInwardLabelDb $inwardLabelDb = null,
+        LpcShippingMethods $shippingMethods = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->labelGenerationApi     = LpcRegister::get('labelGenerationApi', $labelGenerationApi);
         $this->inwardLabelDb          = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
+        $this->shippingMethods        = LpcRegister::get('shippingMethods', $shippingMethods);
     }
 
     public function getDependencies() {
-        return ['capabilitiesPerCountry', 'labelGenerationApi', 'inwardLabelDb'];
+        return ['capabilitiesPerCountry', 'labelGenerationApi', 'inwardLabelDb', 'shippingMethods'];
     }
 
     public function generate(WC_Order $order, $customParams = []) {
@@ -128,8 +131,9 @@ class LpcLabelGenerationInward extends LpcComponent {
             throw new \Exception(__('Not allowed for this destination', 'wc_colissimo'));
         }
 
-        $payload       = new LpcLabelGenerationPayload();
-        $returnAddress = $payload->getReturnAddress();
+        $payload            = new LpcLabelGenerationPayload();
+        $returnAddress      = $payload->getReturnAddress();
+        $shippingMethodUsed = $this->shippingMethods->getColissimoShippingMethodOfOrder($order);
         $payload
             ->isReturnLabel(true)
             ->withOrderNumber($order->get_order_number())
@@ -143,7 +147,8 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->withInstructions($order->get_customer_note())
             ->withProductCode($productCode)
             ->withOutputFormat()
-            ->withCustomsDeclaration($order, $customParams);
+            ->withCustomsDeclaration($order, $customParams)
+            ->withInsuranceValue($order->get_subtotal(), $productCode, $order->get_shipping_country(), $shippingMethodUsed, $order->get_order_number(), $customParams, true);
 
         return $payload->checkConsistency();
     }

@@ -206,10 +206,11 @@ END_SQL;
         $label   = '';
         $format  = '';
         $orderId = '';
+        $printed = false;
 
         // phpcs:disable
         $query = <<<END_SQL
-SELECT label, label_format, order_id
+SELECT label, label_format, order_id, printed
 FROM $tableName
 WHERE tracking_number = "%s"
 END_SQL;
@@ -222,6 +223,7 @@ END_SQL;
         if (!empty($outwardLabelAndFormat[0])) {
             $label   = $outwardLabelAndFormat[0]->label;
             $orderId = $outwardLabelAndFormat[0]->order_id;
+            $printed = !empty($outwardLabelAndFormat[0]->printed);
 
             $format = !empty($outwardLabelAndFormat[0]->label_format) ? $outwardLabelAndFormat[0]->label_format : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
         }
@@ -230,6 +232,7 @@ END_SQL;
             'format'   => $format,
             'label'    => $label,
             'order_id' => $orderId,
+            'printed'  => $printed,
         ];
     }
 

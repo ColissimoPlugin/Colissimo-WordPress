@@ -53,6 +53,12 @@ class LpcSettingsTab extends LpcComponent {
         $this->initCheckStatus();
 
         $this->initDefaultCountry();
+
+        $this->fixSavePassword();
+    }
+
+    protected function fixSavePassword() {
+        add_filter('woocommerce_admin_settings_sanitize_option_lpc_pwd_webservices', [$this, 'fixWordPressSanitizePassword'], 10, 3);
     }
 
     protected function initSeeLog() {
@@ -129,6 +135,10 @@ class LpcSettingsTab extends LpcComponent {
             'woocommerce_admin_field_defaultcountry',
             [$this, 'defaultCountry']
         );
+    }
+
+    public function fixWordPressSanitizePassword($value, $option, $rawValue) {
+        return $rawValue;
     }
 
     /**

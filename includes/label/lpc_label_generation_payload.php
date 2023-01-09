@@ -123,6 +123,9 @@ class LpcLabelGenerationPayload {
         } else {
             $this->payload['contractNumber'] = $contractNumber;
 
+            // Option removed the 15 November 2022 14h25 because pickup and bordereau APIs didn't work with it
+
+            /*
             $parentAccountId = LpcHelper::get_option('lpc_parent_id_webservices');
             if (!empty($parentAccountId)) {
                 $this->payload['fields']['field'][] = [
@@ -130,6 +133,7 @@ class LpcLabelGenerationPayload {
                     'value' => $parentAccountId,
                 ];
             }
+            */
         }
 
         return $this;
@@ -425,11 +429,12 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withInsuranceValue($amount, $productCode, $countryCode, $shippingMethodUsed, $orderNumber, $customParams = []) {
+    public function withInsuranceValue($amount, $productCode, $countryCode, $shippingMethodUsed, $orderNumber, $customParams = [], $inward = false) {
         if (!empty($customParams['useInsurance'])) {
             $usingInsurance = $customParams['useInsurance'];
         } else {
-            $usingInsurance = LpcHelper::get_option('lpc_using_insurance', 'no');
+            $option         = $inward ? 'lpc_using_insurance_inward' : 'lpc_using_insurance';
+            $usingInsurance = LpcHelper::get_option($option, 'no');
         }
 
         /**
@@ -743,12 +748,16 @@ class LpcLabelGenerationPayload {
             $customsArticles[] = $customsArticle;
         }
 
+        $outwardCustomCategory = LpcHelper::get_option('lpc_customs_defaultCustomsCategory');
+        if (isset($customParams['customsCategory'])) {
+            $outwardCustomCategory = $customParams['customsCategory'];
+        }
         $customsDeclarationPayload = [
             'includeCustomsDeclarations' => 1,
             'contents'                   => [
                 'article'  => $customsArticles,
                 'category' => [
-                    'value' => $this->isReturnLabel ? self::CUSTOMS_CATEGORY_RETURN_OF_ARTICLES : LpcHelper::get_option('lpc_customs_defaultCustomsCategory'),
+                    'value' => $this->isReturnLabel ? self::CUSTOMS_CATEGORY_RETURN_OF_ARTICLES : $outwardCustomCategory,
                 ],
             ],
             'invoiceNumber'              => $order->get_order_number(),
@@ -802,6 +811,15 @@ class LpcLabelGenerationPayload {
          * @since 1.6
          */
         $transportationAmount = apply_filters('lpc_payload_letter_service_total_amount', $shippingCosts, $this->getOrderNumber(), $this->getIsReturnLabel());
+        if (empty($transportationAmount)) {
+            // The Colissimo API rejects labels with a free shipping for the CN23
+            throw new Exception(
+                __(
+                    'The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option.',
+                    'wc_colissimo'
+                )
+            );
+        }
 
         // payload want centi-currency for these fields.
         $this->payload['letter']['service']['totalAmount']          = (int) ($transportationAmount * 100);

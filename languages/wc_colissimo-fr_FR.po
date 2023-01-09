@@ -17,7 +17,7 @@ msgid "Colissimo relay"
 msgstr "Colissimo relais"
 
 msgid "Delivery in a relay"
-msgstr "Livraison en point relais"
+msgstr "Livraison en point de retrait"
 
 msgid "Labels"
 msgstr "Etiquettes"
@@ -56,10 +56,10 @@ msgid "Choose a PickUp point"
 msgstr "Choisir un point de retrait"
 
 msgid "Password to connect to La Poste webservices and use the module"
-msgstr "Mot de passe pour se connecter aux webservies de La Poste et utiliser le module"
+msgstr "Mot de passe pour se connecter aux webservices de La Poste et utiliser le module"
 
 msgid "Relay point"
-msgstr "Point relais"
+msgstr "Point de retrait"
 
 msgid "Customize widget"
 msgstr "Personnalisation du widget"
@@ -95,19 +95,19 @@ msgid "See logs"
 msgstr "Voir les logs"
 
 msgid "Login and password required to get relay points"
-msgstr "Un login et un mot de passe sont requis pour récupérer les points relais"
+msgstr "Un identifiant et un mot de passe sont requis pour récupérer les points de retrait"
 
 msgid "Zipcode required to get relay points"
-msgstr "Le code postal est requis pour les points relais"
+msgstr "Le code postal est requis pour les points de retrait"
 
 msgid "City required to get relay points"
-msgstr "La ville est requise pour les points relais"
+msgstr "La ville est requise pour les points de retrait"
 
 msgid "Country code required to get relay points"
-msgstr "Le code pays est requis pour les points relais"
+msgstr "Le code pays est requis pour les points de retrait"
 
 msgid "Shipping date required to get relay points"
-msgstr "La date d'expédition est requise pour les points relais"
+msgstr "La date d'expédition est requise pour les points de retrait"
 
 msgid "The international option can't be enabled if the country destination is France"
 msgstr "L'option internationale ne peut pas être activée si le pays de destination est la France"
@@ -134,25 +134,19 @@ msgid "Wrong ajax call type"
 msgstr "Mauvais type d'appel ajax"
 
 msgid "The web service returned 0 relay"
-msgstr "Le web service n'a trouvé aucun point relais"
+msgstr "Le web service n'a trouvé aucun point de retrait"
 
 msgid "No relay available"
-msgstr "Aucun point relais disponible"
+msgstr "Aucun point de retrait disponible"
 
 msgid "No relay selected"
-msgstr "Aucun point relais sélectionné"
+msgstr "Aucun point de retrait sélectionné"
 
 msgid "Confirm relay"
-msgstr "Confirmer le point relais"
+msgstr "Confirmer le point de retrait"
 
 msgid "Do you confirm the shipment to this relay:"
-msgstr "Confirmez-vous la livraison à ce point relais :"
-
-msgid "Use web service instead of widget?"
-msgstr "Utiliser le web service plutôt que le widget ?"
-
-msgid "If enabled, the web service will be used to choose a relay point, else the standard Colissimo widget will be used."
-msgstr "Si activé, le web service sera utilisé pour choisir un point relais, sinon ce sera le widget standard de Colissimo."
+msgstr "Confirmez-vous la livraison à ce point de retrait :"
 
 msgid "Rates"
 msgstr "Frais"
@@ -190,8 +184,8 @@ msgstr "Toujours gratuit ?"
 msgid "If enabled, rates calculation for this shipping method will always be zero."
 msgstr "Si activé, les frais de livraisons seront toujours gratuit pour cette méthode."
 
-msgid "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
-msgstr "Uniquement utile pour le Webservice. La clé API peut être générée depuis cloud.google.com/maps-platform. N'ajoutez pas votre clé d'API s'il y a un conflit avec une autre extension qui l'utilise."
+msgid "The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
+msgstr "La clé API peut être générée depuis cloud.google.com/maps-platform. N'ajoutez pas votre clé d'API s'il y a un conflit avec une autre extension qui l'utilise."
 
 msgid "Label generation settings"
 msgstr "Paramètres de génération des étiquettes"
@@ -210,9 +204,6 @@ msgstr "Nom de votre magasin"
 
 msgid "Use Colissimo Insurance?"
 msgstr "Utiliser l'assurance Colissimo ?"
-
-msgid "If enabled, each label generation will use Colissimo Insurance feature by default."
-msgstr "Si activé, les étiquettes automatiquement générées utiliseront l'assurance Colissimo."
 
 msgid "Generate Colissimo Outward label"
 msgstr "Générer l'étiquette de livraison Colissimo"
@@ -493,11 +484,11 @@ msgstr "Votre numéro de suivi de retour est :"
 msgid "An error occured while confirming the mailBox pick-up."
 msgstr "AUne erreur est survenue lors de la confirmation du retour boîte aux lettres."
 
-msgid "Show internationals Relay Points"
-msgstr "Afficher les points relais à l'international"
+msgid "Show international Relay Points"
+msgstr "Afficher les points de retrait à l'international"
 
-msgid "Only applicable for Webservice method"
-msgstr "Applicable seulement pour la méthode Webservice"
+msgid "Only applicable for map type other than Colissimo widget"
+msgstr "Applicable seulement pour les types de carte autres que le widget Colissimo"
 
 msgid "Outward label was not generated:"
 msgstr "L'étiquette aller n'a pas été générée :"
@@ -665,7 +656,7 @@ msgid "Print thermal error on some orders. Please check browser console for more
 msgstr "Erreur à l'impression thermique pour certaines commandes. Pour plus d'informations, merci de consulter la console du navigateur"
 
 msgid "Please select a pick-up point"
-msgstr "Veuillez choisir un point relais"
+msgstr "Veuillez choisir un point de retrait"
 
 msgid "Orders per page"
 msgstr "Commandes par page"
@@ -847,7 +838,7 @@ msgstr[0] "Colissimo Anomalie <span class=\"count\">(%s)</span>"
 msgstr[1] "Colissimo Anomalie <span class=\"count\">(%s)</span>"
 
 msgid "Choose this relay"
-msgstr "Choisir ce point relais"
+msgstr "Choisir ce point de retrait"
 
 msgid "Colissimo shipping methods for WooCommerce : Our plugin is fully compatible with WordPress 5.6. If you have installed \"Enable jQuery Migrate Helper\" to use our plugin with WordPress 5.5, it's no longer required."
 msgstr "Colissimo méthodes de livraison pour WooCommerce : Notre plugin est entièrement compatible avec WordPress 5.6. Si vous avez installé \"Enable jQuery Migrate Helper\" pour utiliser notre plugin avec WordPress 5.5, cela n'est plus requis."
@@ -1472,7 +1463,7 @@ msgid "Select automatically the nearest relay point"
 msgstr "Sélectionner automatiquement le point de retrait le plus proche"
 
 msgid "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address"
-msgstr "Lorsque l'utilisateur sélectionne la méthode de relais lors du checkout, un point de retrait est automatiquement proposé basé sur l'adresse de livraison"
+msgstr "Lorsque l'utilisateur sélectionne la méthode en point de retrait lors de sa commande, un point de retrait est automatiquement proposé basé sur l'adresse de livraison"
 
 msgid "Export %s file"
 msgstr "Exporter le fichier : %s"
@@ -1589,3 +1580,39 @@ msgstr "Le fichier que vous importez doit obligatoirement un CSV avec les colonn
 
 msgid "Choose an amount"
 msgstr "Choisir un montant"
+
+msgid "Customs category"
+msgstr "Catégorie de nature des envois"
+
+msgid "Use Colissimo Insurance for outward label?"
+msgstr "Utiliser l'assurance Colissimo pour les étiquettes aller ?"
+
+msgid "If enabled, each outward label generation will use Colissimo Insurance feature by default."
+msgstr "Si activé, les étiquettes aller automatiquement générées utiliseront l'assurance Colissimo."
+
+msgid "Use Colissimo Insurance for inward label?"
+msgstr "Utiliser l'assurance Colissimo pour les étiquettes retour ?"
+
+msgid "If enabled, each inward label generation will use Colissimo Insurance feature by default."
+msgstr "Si activé, les étiquettes retour automatiquement générées utiliseront l'assurance Colissimo."
+
+msgid "Pickup map type"
+msgstr "Type de carte pour les points de retrait"
+
+msgid "Google Maps (requires an API key)"
+msgstr "Google Maps (requiert une clé d'API)"
+
+msgid "Colissimo widget"
+msgstr "Widget Colissimo"
+
+msgid "Add the invoice when downloading the label"
+msgstr "Ajouter la facture quand l'étiquette est téléchargée"
+
+msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
+msgstr "Sur le listing Colissimo quand vous téléchargez une seule étiquette, si cette option est cochée alors la facture sera ajoutée au fichier PDF"
+
+msgid "Open Street maps (free)"
+msgstr "Open Street maps (gratuit)"
+
+msgid "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."
+msgstr "Les frais de livraison ne doivent pas être gratuits pour que la déclaration de douanes soit valide, vous pouvez le modifier manuellement en activant l'option Modifier les prix et les poids."

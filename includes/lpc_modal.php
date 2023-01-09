@@ -39,6 +39,7 @@ class LpcModal {
     public function enqueueScripts() {
         wp_enqueue_script('lpc_modal');
         wp_enqueue_style('lpc_modal');
+        wp_enqueue_style('dashicons');
     }
 
     public function loadScripts() {

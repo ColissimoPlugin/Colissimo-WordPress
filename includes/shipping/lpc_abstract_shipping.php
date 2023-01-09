@@ -184,15 +184,15 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $maxPrice  = (float) str_replace(',', '.', $rate['max_price']);
 
             $minWeight = max($minWeight, 0);
-            $maxWeight = max($minWeight, $maxWeight, 0);
+            $maxWeight = max($maxWeight, 0);
             $minPrice  = max($minPrice, 0);
-            $maxPrice  = max($maxPrice, $minPrice, 0);
+            $maxPrice  = max($maxPrice, 0);
 
             $item = [
                 'min_weight'     => $minWeight,
-                'max_weight'     => $maxWeight,
+                'max_weight'     => empty($maxWeight) ? '' : $maxWeight,
                 'min_price'      => $minPrice,
-                'max_price'      => $maxPrice,
+                'max_price'      => empty($maxPrice) ? '' : $maxPrice,
                 'shipping_class' => $rate['shipping_class'],
                 'price'          => (float) str_replace(',', '.', $rate['price']),
             ];
@@ -262,6 +262,10 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             function (&$rate) {
                 if (isset($rate['shipping_class']) && !is_array($rate['shipping_class'])) {
                     $rate['shipping_class'] = [$rate['shipping_class']];
+                }
+
+                if (empty($rate['shipping_class'])) {
+                    $rate['shipping_class'] = [];
                 }
             }
         );
@@ -400,9 +404,9 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
 
                     if (
                         $totalWeight >= $oneRate['min_weight']
-                        && $totalWeight < $oneRate['max_weight']
+                        && (empty($oneRate['max_weight']) || $totalWeight < $oneRate['max_weight'])
                         && $totalPrice >= $oneRate['min_price']
-                        && $totalPrice < $oneRate['max_price']
+                        && (empty($oneRate['max_price']) || $totalPrice < $oneRate['max_price'])
                         && (
                             $classMatches
                             || in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $oneRate['shipping_class'])

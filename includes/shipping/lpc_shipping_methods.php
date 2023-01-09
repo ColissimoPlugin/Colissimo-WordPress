@@ -160,5 +160,4 @@ class LpcShippingMethods extends LpcComponent {
         delete_option('lpc_expert_IsAlwaysFree');
         delete_option('lpc_relay_IsAlwaysFree');
     }
-
 }

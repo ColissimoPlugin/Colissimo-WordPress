@@ -174,22 +174,24 @@ class LpcAdminOrderBanner extends LpcComponent {
 
         $countryCode = $order->get_shipping_country();
 
-        $args['postId']                 = $orderId;
-        $args['lpc_tracking_numbers']   = $trackingNumbersForOrder;
-        $args['lpc_label_formats']      = $labelFormat;
-        $args['lpc_label_queries']      = $this->lpcLabelQueries;
-        $args['lpc_bordereau_queries']  = $this->lpcBordereauQueries;
-        $args['lpc_redirection']        = LpcLabelQueries::REDIRECTION_WOO_ORDER_EDIT_PAGE;
-        $args['lpc_packaging_weight']   = LpcHelper::get_option('lpc_packaging_weight', 0);
-        $args['lpc_shipping_costs']     = empty($order->get_shipping_total()) ? 0 : $order->get_shipping_total();
-        $args['lpc_bordereauLinks']     = $bordereauLinks;
-        $args['lpc_customs_needed']     = false;
-        $args['lpc_customs_insured']    = $trackingNumbers['insured'] ?? [];
-        $args['lpc_ddp']                = in_array($shippingMethod, [LpcSignDDP::ID, LpcExpertDDP::ID]);
-        $args['order_id']               = $order->get_id();
-        $args['lpc_collection_allowed'] = 'FR' === $countryCode;
-        $args['outwardLabelDb']         = $this->outwardLabelDb;
-        $args['colissimoStatus']        = $this->colissimoStatus;
+        $args['postId']                       = $orderId;
+        $args['lpc_tracking_numbers']         = $trackingNumbersForOrder;
+        $args['lpc_label_formats']            = $labelFormat;
+        $args['lpc_label_queries']            = $this->lpcLabelQueries;
+        $args['lpc_bordereau_queries']        = $this->lpcBordereauQueries;
+        $args['lpc_redirection']              = LpcLabelQueries::REDIRECTION_WOO_ORDER_EDIT_PAGE;
+        $args['lpc_packaging_weight']         = LpcHelper::get_option('lpc_packaging_weight', 0);
+        $args['lpc_shipping_costs']           = empty($order->get_shipping_total()) ? 0 : $order->get_shipping_total();
+        $args['lpc_bordereauLinks']           = $bordereauLinks;
+        $args['lpc_customs_needed']           = false;
+        $args['lpc_customs_insured']          = $trackingNumbers['insured'] ?? [];
+        $args['lpc_ddp']                      = in_array($shippingMethod, [LpcSignDDP::ID, LpcExpertDDP::ID]);
+        $args['order_id']                     = $order->get_id();
+        $args['lpc_collection_allowed']       = 'FR' === $countryCode;
+        $args['outwardLabelDb']               = $this->outwardLabelDb;
+        $args['colissimoStatus']              = $this->colissimoStatus;
+        $args['lpc_cn23_needed']              = $this->capabilitiesPerCountry->getIsCn23RequiredForDestination($order);
+        $args['lpc_default_customs_category'] = LpcHelper::get_option('lpc_customs_defaultCustomsCategory', 5);
 
         if (!empty($trackingNumbersForOrder)) {
             $date = date('Y-m-d');
@@ -321,6 +323,9 @@ class LpcAdminOrderBanner extends LpcComponent {
         $description        = isset($_REQUEST['lpc__admin__order_banner__generate_label__package_description']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__package_description'])) : '';
         $multiParcels       = isset($_REQUEST['lpc__admin__order_banner__generate_label__multi__parcels__input']);
         $multiParcelsAmount = isset($_REQUEST['lpc__admin__order_banner__generate_label__parcels_amount']) ? intval($_REQUEST['lpc__admin__order_banner__generate_label__parcels_amount']) : 0;
+        $customCategory     = isset($_REQUEST['lpc__admin__order_banner__generate_label__cn23__type'])
+            ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__cn23__type']))
+            : LpcHelper::get_option('lpc_customs_defaultCustomsCategory', 5);
 
         if (!empty($multiParcels)) {
             $orderId = $order->get_id();
@@ -347,6 +352,7 @@ class LpcAdminOrderBanner extends LpcComponent {
             'multiParcels'              => $multiParcels,
             'multiParcelsAmount'        => $multiParcelsAmount,
             'multiParcelsCurrentNumber' => $multiParcelsCurrentNumber ?? 0,
+            'customsCategory'           => $customCategory,
         ];
 
         $outwardOrInward = isset($_REQUEST['lpc__admin__order_banner__generate_label__outward_or_inward']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__outward_or_inward'])) : '';

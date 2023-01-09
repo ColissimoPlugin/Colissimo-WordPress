@@ -42,10 +42,10 @@ class LpcAdminInit {
         LpcRegister::register('settingsTab', new LpcSettingsTab());
         LpcRegister::register('pickupRelayPointOnOrder', new LpcPickupRelayPointOnOrder());
 
-        if ('yes' === LpcHelper::get_option('lpc_prUseWebService', 'no')) {
-            LpcRegister::register('adminPickupWebService', new LpcAdminPickupWebService());
-        } else {
+        if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
             LpcRegister::register('adminPickupWidget', new LpcAdminPickupWidget());
+        } else {
+            LpcRegister::register('adminPickupWebService', new LpcAdminPickupWebService());
         }
 
         LpcRegister::register('labelPackagerDownloadAction', new LpcLabelPackagerDownloadAction());
@@ -140,6 +140,7 @@ class LpcAdminInit {
             'insurance_unavailable_for_country',
             'shipment_change',
             'country_capaibilities_import',
+            'shipping_statuses_updated',
         ];
         foreach ($notifications as $oneNotification) {
             $notice_content = $lpc_admin_notices->get_notice($oneNotification);

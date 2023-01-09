@@ -692,6 +692,7 @@ END_DOWNLOAD_LINK;
         }
 
         $this->outwardLabelDb->updatePrintedLabel($trackingNumbers);
+        $this->inwardLabelDb->updatePrintedLabel($trackingNumbers);
 
         echo <<<END_PRINT_SCRIPT
 <script type="text/javascript">

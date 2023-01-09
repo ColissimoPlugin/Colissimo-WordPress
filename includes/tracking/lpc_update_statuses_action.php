@@ -43,9 +43,8 @@ class LpcUpdateStatusesAction extends LpcComponent {
         $this->unifiedTrackingApi->updateAllStatuses();
 
         $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
-
         $lpc_admin_notices->add_notice(
-            'inward_label_sent',
+            'shipping_statuses_updated',
             'notice-success',
             __(
                 'The statuses update process has started. Depending of the numbers of orders you have, it may take a few minutes to update all statuses. You will find more information by checking logs.',

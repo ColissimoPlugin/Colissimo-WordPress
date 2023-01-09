@@ -1,4 +1,4 @@
-var lpcGoogleMap, lpcMarkers = [], lpcOpenedInfoWindow, lpcConfirmRelayDescText, lpcConfirmRelayText, lpcChooseRelayText, $affectMethodDiv;
+var lpcGoogleMap, lpcMap, lpcMarkers = [], lpcGmapsOpenedInfoWindow, lpcConfirmRelayDescText, lpcConfirmRelayText, lpcChooseRelayText, $affectMethodDiv;
 
 jQuery(function ($) {
     $(document.body)
@@ -16,33 +16,50 @@ jQuery(function ($) {
     function lpcInitMap(origin) {
         $affectMethodDiv = $(origin).closest('.lpc_order_affect_available_methods');
 
-        let mapOptions = {
-            zoom: 10,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            center: {
-                lat: 48.866667,
-                lng: 2.333333
-            },
-            disableDefaultUI: true
-        };
-        lpcGoogleMap = new google.maps.Map(document.getElementById('lpc_map'), mapOptions);
+        let initialLatitude = 48.866667;
+        let initialLongitude = 2.333333;
 
-        // TODO: if we have the client's address from WC, do we want to center on this location instead?
         // Center the map on the client's position
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                lpcGoogleMap.setCenter(initialLocation);
+                if (lpcPickUpSelection.mapType === 'gmaps') {
+                    initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    lpcGoogleMap.setCenter(initialLocation);
+                } else if (lpcPickUpSelection.mapType === 'leaflet') {
+                    initialLatitude = position.coords.latitude;
+                    initialLongitude = position.coords.longitude;
+                }
             });
+        }
+
+        if (lpcPickUpSelection.mapType === 'gmaps') {
+            lpcGoogleMap = new google.maps.Map(document.getElementById('lpc_map'), {
+                zoom: 10,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                center: {
+                    lat: initialLatitude,
+                    lng: initialLongitude
+                },
+                disableDefaultUI: true
+            });
+        } else if (lpcPickUpSelection.mapType === 'leaflet') {
+            lpcMap = L.map('lpc_map').setView([
+                initialLatitude,
+                initialLongitude
+            ], 14);
+            // Default map for open street map: https://tile.openstreetmap.org/{z}/{x}/{y}.png
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+            }).addTo(lpcMap);
         }
 
         let $templateContent = $('#tmpl-lpc_pick_up_web_service').html();
         let $templateContentHtml = $($.parseHTML($templateContent));
 
         let $selectors = [];
-        $selectors['address'] = '#lpc_modal_relays_search_address .lpc_modal_relays_search_input';
-        $selectors['zipcode'] = '#lpc_modal_relays_search_zipcode .lpc_modal_relays_search_input';
-        $selectors['city'] = '#lpc_modal_relays_search_city .lpc_modal_relays_search_input';
+        $selectors['address'] = '#lpc_modal_relays_search_address';
+        $selectors['zipcode'] = '#lpc_modal_relays_search_zipcode';
+        $selectors['city'] = '#lpc_modal_relays_search_city';
         $selectors['country'] = '#lpc_modal_relays_country_id';
 
         let $templateAddress = $templateContentHtml.find($selectors['address']).val();
@@ -56,7 +73,7 @@ jQuery(function ($) {
         $($selectors['country']).val($templateCountry);
 
         // Load the relays when opening the map if the client already entered an address
-        if ($('#lpc_modal_relays_search_zipcode input').val().length && $('#lpc_modal_relays_search_city input').val().length) {
+        if ($('#lpc_modal_relays_search_zipcode').val().length && $('#lpc_modal_relays_search_city').val().length) {
             lpcLoadRelays();
         }
 
@@ -67,9 +84,9 @@ jQuery(function ($) {
 
     // Load relays for an address
     function lpcLoadRelays() {
-        let $address = $('#lpc_modal_relays_search_address input').val();
-        let $zipcode = $('#lpc_modal_relays_search_zipcode input').val();
-        let $city = $('#lpc_modal_relays_search_city input').val();
+        let $address = $('#lpc_modal_relays_search_address').val();
+        let $zipcode = $('#lpc_modal_relays_search_zipcode').val();
+        let $city = $('#lpc_modal_relays_search_city').val();
 
         let $errorDiv = $('#lpc_layer_error_message');
         let $listRelaysDiv = $('#lpc_layer_list_relays');
@@ -86,16 +103,18 @@ jQuery(function ($) {
             countryId = 'FR';
         }
 
+        const addressData = {
+            address: $address,
+            zipCode: $zipcode,
+            city: $city,
+            countryId: countryId
+        };
+
         $.ajax({
             url: lpcPickUpSelection.ajaxURL,
             type: 'POST',
             dataType: 'json',
-            data: {
-                address: $address,
-                zipCode: $zipcode,
-                city: $city,
-                countryId: countryId
-            },
+            data: addressData,
             beforeSend: function () {
                 $errorDiv.hide();
                 $listRelaysDiv.hide();
@@ -109,7 +128,7 @@ jQuery(function ($) {
                     lpcConfirmRelayDescText = response.confirmRelayDescText;
                     lpcConfirmRelayText = response.confirmRelayText;
                     lpcChooseRelayText = response.chooseRelayText;
-                    lpcAddRelaysOnMap();
+                    lpcAddRelaysOnMap(addressData);
                     lpcMapResize();
                 } else {
                     $errorDiv.html(response.message);
@@ -120,11 +139,17 @@ jQuery(function ($) {
     }
 
     // Display the markers on the map
-    function lpcAddRelaysOnMap() {
+    function lpcAddRelaysOnMap(addressData) {
         // Clean old markers from the map
-        lpcMarkers.forEach(function (element) {
-            element.setMap(null);
-        });
+        if ('gmaps' === lpcPickUpSelection.mapType) {
+            lpcMarkers.forEach(function (element) {
+                element.setMap(null);
+            });
+        } else if ('leaflet' === lpcPickUpSelection.mapType) {
+            lpcMarkers.forEach(function (element) {
+                element.removeFrom(lpcMap);
+            });
+        }
         lpcMarkers.length = 0;
 
         let markers = $('.lpc_layer_relay');
@@ -134,34 +159,141 @@ jQuery(function ($) {
             return;
         }
 
-        // Get the new markers and place them on the map
-        let bounds = new google.maps.LatLngBounds();
-        markers.each(function (index, element) {
-            let relayPosition = new google.maps.LatLng($(element).attr('data-lpc-relay-latitude'), $(element).attr('data-lpc-relay-longitude'));
+        const address = `${addressData.countryId} ${addressData.city} ${addressData.zipCode} ${addressData.address}`;
+        const colissimoPositionMarker = 'https://ws.colissimo.fr/widget-colissimo/images/ionic-md-locate.svg';
 
-            let markerLpc = new google.maps.Marker({
-                map: lpcGoogleMap,
-                position: relayPosition,
-                title: $(this)
-                    .find('.lpc_layer_relay_name')
-                    .text(),
-                icon: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+        // Get the new markers and place them on the map
+        if ('gmaps' === lpcPickUpSelection.mapType) {
+            let bounds = new google.maps.LatLngBounds();
+            const gmapsIcon = {
+                url: lpcPickUpSelection.mapMarker,
+                size: new google.maps.Size(36, 58),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(9, 32),
+                scaledSize: new google.maps.Size(18, 32)
+            };
+            markers.each(function (index, element) {
+                let relayPosition = new google.maps.LatLng($(element).attr('data-lpc-relay-latitude'), $(element).attr('data-lpc-relay-longitude'));
+
+                let markerLpc = new google.maps.Marker({
+                    map: lpcGoogleMap,
+                    position: relayPosition,
+                    title: $(this).find('.lpc_layer_relay_name').text(),
+                    icon: gmapsIcon
+                });
+
+                // Add the information window on each marker
+                let infowindowLpc = new google.maps.InfoWindow({
+                    content: lpcGetRelayInfo($(this)),
+                    pixelOffset: new google.maps.Size(-9, -5)
+                });
+                lpcGmapsAttachClickInfoWindow(markerLpc, infowindowLpc, index);
+                lpcAttachClickChooseRelay(element);
+
+                lpcMarkers.push(markerLpc);
+                bounds.extend(relayPosition);
             });
 
-            // Add the information window on each marker
-            let infowindowLpc = lpcInfoWindowGenerator($(this));
-            lpcAttachClickInfoWindow(markerLpc, infowindowLpc, index);
-            lpcAttachClickChooseRelay(element);
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({'address': address}, function (results, status) {
+                if (status !== google.maps.GeocoderStatus.OK) {
+                    return;
+                }
 
-            lpcMarkers.push(markerLpc);
-            bounds.extend(relayPosition);
-        });
+                lpcMarkers.push(new google.maps.Marker({
+                    map: lpcGoogleMap,
+                    position: new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()),
+                    icon: {
+                        url: colissimoPositionMarker,
+                        size: new google.maps.Size(25, 25),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(12, 12)
+                    }
+                }));
+            });
 
-        lpcGoogleMap.fitBounds(bounds);
+            lpcGoogleMap.fitBounds(bounds);
+        } else if ('leaflet' === lpcPickUpSelection.mapType) {
+            const markerIcon = L.icon({
+                iconUrl: lpcPickUpSelection.mapMarker,
+                iconSize: [
+                    18,
+                    32
+                ],
+                iconAnchor: [
+                    9,
+                    32
+                ],
+                popupAnchor: [
+                    0,
+                    -34
+                ]
+            });
+
+            let lowestLatitude = 999;
+            let lowestLongitude = 999;
+            let highestLatitude = -999;
+            let highestLongitude = -999;
+
+            markers.each(function (index, element) {
+                const latitude = $(element).attr('data-lpc-relay-latitude');
+                const longitude = $(element).attr('data-lpc-relay-longitude');
+
+                lowestLatitude = Math.min(latitude, lowestLatitude);
+                lowestLongitude = Math.min(longitude, lowestLongitude);
+                highestLatitude = Math.max(latitude, highestLatitude);
+                highestLongitude = Math.max(longitude, highestLongitude);
+
+                let marker = L.marker([
+                    latitude,
+                    longitude
+                ], {icon: markerIcon}).addTo(lpcMap);
+
+                // Add the information window on each marker
+                marker.bindPopup(lpcGetRelayInfo($(this)));
+                lpcMarkers.push(marker);
+                lpcAttachClickChooseRelay(element);
+            });
+
+            $.get('https://nominatim.openstreetmap.org/search?format=json&q=' + address, function (data) {
+                if (data.length === 0) {
+                    return;
+                }
+
+                let addressMarker = L.marker([
+                    data[0].lat,
+                    data[0].lon
+                ], {
+                    icon: L.icon({
+                        iconUrl: colissimoPositionMarker,
+                        iconSize: [
+                            25,
+                            25
+                        ],
+                        iconAnchor: [
+                            12,
+                            12
+                        ]
+                    })
+                }).addTo(lpcMap);
+                lpcMarkers.push(addressMarker);
+            });
+
+            lpcMap.fitBounds([
+                [
+                    lowestLatitude,
+                    lowestLongitude
+                ],
+                [
+                    highestLatitude,
+                    highestLongitude
+                ]
+            ]);
+        }
     }
 
     // Create marker popup content
-    function lpcInfoWindowGenerator(relay) {
+    function lpcGetRelayInfo(relay) {
         let indexRelay = relay.find('.lpc_relay_choose').attr('data-relayindex');
 
         let contentString = '<div class="info_window_lpc">';
@@ -172,35 +304,39 @@ jQuery(function ($) {
         contentString += '<a href="#" class="lpc_relay_choose lpc_relay_popup_choose" data-relayindex=' + indexRelay + '>' + lpcChooseRelayText + '</a>';
         contentString += '</div>';
 
-        return new google.maps.InfoWindow({
-            content: contentString
-        });
+        return contentString;
     }
 
     // Add display relay detail click event
-    function lpcAttachClickInfoWindow(marker, infoWindow, index) {
+    function lpcGmapsAttachClickInfoWindow(marker, infoWindow, index) {
         // TODO: in the Gmaps documentation but addListener is deprecated
         marker.addListener('click', function () {
-            lpcClickHandler(marker, infoWindow);
+            lpcGmapsClickHandler(marker, infoWindow);
         });
 
         $('#lpc_layer_relay_' + index).click(function () {
-            lpcClickHandler(marker, infoWindow);
+            lpcGmapsClickHandler(marker, infoWindow);
         });
     }
 
     // Display details on markers
-    function lpcClickHandler(marker, infoWindow) {
-        if (lpcOpenedInfoWindow) {
-            lpcOpenedInfoWindow.close();
+    function lpcGmapsClickHandler(marker, infoWindow) {
+        if (lpcGmapsOpenedInfoWindow) {
+            lpcGmapsOpenedInfoWindow.close();
+            lpcGmapsOpenedInfoWindow = null;
+            return;
         }
 
         infoWindow.open(lpcGoogleMap, marker);
-        lpcOpenedInfoWindow = infoWindow;
+        lpcGmapsOpenedInfoWindow = infoWindow;
     }
 
     function lpcMapResize() {
-        google.maps.event.trigger(lpcGoogleMap, 'resize');
+        if ('gmaps' === lpcPickUpSelection.mapType) {
+            google.maps.event.trigger(lpcGoogleMap, 'resize');
+        } else if ('leaflet' === lpcPickUpSelection.mapType) {
+            lpcMap.invalidateSize();
+        }
     }
 
     function lpcAttachClickChooseRelay(element) {

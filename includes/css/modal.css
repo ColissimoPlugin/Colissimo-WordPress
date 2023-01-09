@@ -32,6 +32,10 @@
 		height: 100%;
 		min-width: 100%;
 	}
+
+	.lpc-modal .wc-backbone-modal .wc-backbone-modal-content article{
+		max-height: 85% !important;
+	}
 }
 
 .lpc-modal .wc-backbone-modal-backdrop{

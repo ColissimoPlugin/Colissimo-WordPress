@@ -22,7 +22,9 @@ class LpcAdminPickupWebService extends LpcComponent {
             function ($currentScreen) {
                 if (is_admin() && 'post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type) {
                     $args = [
-                        'ajaxURL' => $this->ajaxDispatcher->getUrlForTask('pickupWS'),
+                        'ajaxURL'   => $this->ajaxDispatcher->getUrlForTask('pickupWS'),
+                        'mapType'   => LpcHelper::get_option('lpc_pickup_map_type', 'widget'),
+                        'mapMarker' => plugins_url('/images/map_marker.png', LPC_INCLUDES . 'init.php'),
                     ];
 
                     LpcHelper::enqueueScript(
@@ -43,7 +45,7 @@ class LpcAdminPickupWebService extends LpcComponent {
         );
     }
 
-    public function addGoogleMaps(WC_Order $order) {
+    public function addWebserviceMap(WC_Order $order) {
         $modal = new LpcModal(null, 'Choose a PickUp point', 'lpc_pick_up_web_service');
 
         $map = LpcHelper::renderPartial(
@@ -64,6 +66,7 @@ class LpcAdminPickupWebService extends LpcComponent {
             'type'       => 'link',
             'showButton' => true,
             'showInfo'   => false,
+            'mapType'    => LpcHelper::get_option('lpc_pickup_map_type', 'leaflet'),
         ];
 
         return LpcHelper::renderPartial('pickup' . DS . 'webservice.php', $args);

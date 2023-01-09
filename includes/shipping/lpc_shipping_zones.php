@@ -2,7 +2,7 @@
 
 class LpcShippingZones extends LpcComponent {
     const UNKNOWN_WC_COUNTRIES = ['AN', 'IC', 'XZ'];
-    const DEFAULT_PRICES_PER_ZONE_JSON_FILE = LPC_FOLDER . 'resources' . DS . 'privilegePrices.json';
+    const DEFAULT_PRICES_PER_ZONE_JSON_FILE = LPC_FOLDER . 'resources' . DS . 'defaultPrices.json';
 
     private $addCustomZonesDone = false;
     protected $lpcCapabilitiesPerCountry;
@@ -145,7 +145,6 @@ class LpcShippingZones extends LpcComponent {
                             'min_weight'     => $this->convertWeightFromGram($onePrice['weight_min'], $weightUnit),
                             'max_weight'     => $this->convertWeightFromGram($onePrice['weight_max'], $weightUnit),
                             'min_price'      => 0,
-                            'max_price'      => 99999,
                             'shipping_class' => [0 => 'all'],
                             'price'          => $onePrice['price'],
                         ];

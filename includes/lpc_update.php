@@ -218,6 +218,18 @@ class LpcUpdate extends LpcComponent {
                 update_option('lpc_origin_company_name', $companyName);
             }
         }
+
+        // Update from version under 1.7.4
+        if (version_compare($versionInstalled, '1.7.4') === - 1) {
+            update_option('lpc_parent_id_webservices', '');
+            $this->inwardLabelDb->updateToVersion174();
+
+            $mapType = LpcHelper::get_option('lpc_pickup_map_type');
+            if (empty($mapType)) {
+                $isWebservice = LpcHelper::get_option('lpc_prUseWebService', 'no');
+                update_option('lpc_pickup_map_type', !empty($isWebservice) && 'yes' === $isWebservice ? 'gmaps' : 'widget');
+            }
+        }
     }
 
     /** Functions for update to 1.3 **/

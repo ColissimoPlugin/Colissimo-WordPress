@@ -1,19 +1,25 @@
 <div id="lpc_layer_relays">
 	<div class="content">
 		<div id="lpc_search_address">
-			<label id="lpc_modal_relays_search_address">
-                <?php echo __('Address', 'wc_colissimo'); ?>
-				<input type="text" class="lpc_modal_relays_search_input" value="<?php echo $args['ceAddress']; ?>">
-			</label>
+			<input
+					id="lpc_modal_relays_search_address"
+					type="text"
+					class="lpc_modal_relays_search_input"
+					value="<?php echo $args['ceAddress']; ?>"
+					placeholder="<?php echo __('Address', 'wc_colissimo'); ?>">
 			<div id="lpc_modal_address_details">
-				<label id="lpc_modal_relays_search_zipcode">
-                    <?php echo __('Zipcode', 'wc_colissimo'); ?>
-					<input type="text" class="lpc_modal_relays_search_input" value="<?php echo $args['ceZipCode']; ?>">
-				</label>
-				<label id="lpc_modal_relays_search_city">
-                    <?php echo __('City', 'wc_colissimo'); ?>
-					<input type="text" class="lpc_modal_relays_search_input" value="<?php echo $args['ceTown']; ?>">
-				</label>
+				<input
+						type="text"
+						id="lpc_modal_relays_search_zipcode"
+						class="lpc_modal_relays_search_input"
+						value="<?php echo $args['ceZipCode']; ?>"
+						placeholder="<?php echo __('Zipcode', 'wc_colissimo'); ?>">
+				<input
+						type="text"
+						id="lpc_modal_relays_search_city"
+						class="lpc_modal_relays_search_input"
+						value="<?php echo $args['ceTown']; ?>"
+						placeholder="<?php echo __('City', 'wc_colissimo'); ?>">
 				<input type="hidden" id="lpc_modal_relays_country_id" value="<?php echo $args['ceCountryId']; ?>">
 				<button id="lpc_layer_button_search" type="button"><?php echo __('Search', 'wc_colissimo'); ?></button>
 			</div>

@@ -21,7 +21,7 @@ class LpcPickupWebService extends LpcPickup {
     }
 
     public function init() {
-        if ('no' === LpcHelper::get_option('lpc_prUseWebService', 'no')) {
+        if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
             return;
         }
 
@@ -38,6 +38,8 @@ class LpcPickupWebService extends LpcPickup {
                     $args = [
                         'ajaxURL'            => $this->ajaxDispatcher->getUrlForTask('pickupWS'),
                         'pickUpSelectionUrl' => $this->lpcPickUpSelection->getAjaxUrl(),
+                        'mapType'            => LpcHelper::get_option('lpc_pickup_map_type', 'widget'),
+                        'mapMarker'          => plugins_url('/images/map_marker.png', LPC_INCLUDES . 'init.php'),
                     ];
 
                     wp_localize_script('lpc_pick_up_ws', 'lpcPickUpSelection', $args);
@@ -51,7 +53,7 @@ class LpcPickupWebService extends LpcPickup {
             }
         );
 
-        add_action('woocommerce_after_shipping_rate', [$this, 'addGoogleMaps']);
+        add_action('woocommerce_after_shipping_rate', [$this, 'addWebserviceMap']);
     }
 
     /**
@@ -60,7 +62,7 @@ class LpcPickupWebService extends LpcPickup {
      * @param     $method
      * @param int $index
      */
-    public function addGoogleMaps($method, $index = 0) {
+    public function addWebserviceMap($method, $index = 0) {
         if ($this->getMode($method->get_method_id(), $method->get_id()) !== self::WEB_SERVICE) {
             return;
         }
@@ -100,6 +102,7 @@ class LpcPickupWebService extends LpcPickup {
             'type'         => 'button',
             'showButton'   => is_checkout(),
             'showInfo'     => is_checkout(),
+            'mapType'      => LpcHelper::get_option('lpc_pickup_map_type', 'leaflet'),
         ];
         echo LpcHelper::renderPartial('pickup' . DS . 'webservice.php', $args);
     }

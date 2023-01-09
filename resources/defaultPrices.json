@@ -1,0 +1,1790 @@
+{
+  "ZFR": {
+    "lpc_nosign": [
+      {
+        "weight_min": 0,
+        "weight_max": 251,
+        "price": 5.96
+      },
+      {
+        "weight_min": 251,
+        "weight_max": 501,
+        "price": 6.71
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 751,
+        "price": 7.5
+      },
+      {
+        "weight_min": 751,
+        "weight_max": 1001,
+        "price": 8.14
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 9.13
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 10.01
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 10.92
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 11.8
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 12.35
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 13.21
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 14.07
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 14.96
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 15.83
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 11001,
+        "price": 16.38
+      },
+      {
+        "weight_min": 11001,
+        "weight_max": 12001,
+        "price": 17.23
+      },
+      {
+        "weight_min": 12001,
+        "weight_max": 13001,
+        "price": 18.08
+      },
+      {
+        "weight_min": 13001,
+        "weight_max": 14001,
+        "price": 18.95
+      },
+      {
+        "weight_min": 14001,
+        "weight_max": 15001,
+        "price": 19.8
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 16001,
+        "price": 20.65
+      },
+      {
+        "weight_min": 16001,
+        "weight_max": 17001,
+        "price": 21.5
+      },
+      {
+        "weight_min": 17001,
+        "weight_max": 18001,
+        "price": 22.35
+      },
+      {
+        "weight_min": 18001,
+        "weight_max": 19001,
+        "price": 23.22
+      },
+      {
+        "weight_min": 19001,
+        "weight_max": 20001,
+        "price": 24.06
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 21001,
+        "price": 24.68
+      },
+      {
+        "weight_min": 21001,
+        "weight_max": 22001,
+        "price": 25.52
+      },
+      {
+        "weight_min": 22001,
+        "weight_max": 23001,
+        "price": 26.37
+      },
+      {
+        "weight_min": 23001,
+        "weight_max": 24001,
+        "price": 27.22
+      },
+      {
+        "weight_min": 24001,
+        "weight_max": 25001,
+        "price": 28.05
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 26001,
+        "price": 28.91
+      },
+      {
+        "weight_min": 26001,
+        "weight_max": 27001,
+        "price": 29.75
+      },
+      {
+        "weight_min": 27001,
+        "weight_max": 28001,
+        "price": 30.6
+      },
+      {
+        "weight_min": 28001,
+        "weight_max": 29001,
+        "price": 31.46
+      },
+      {
+        "weight_min": 29001,
+        "weight_max": 30001,
+        "price": 32.28
+      }
+    ],
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 251,
+        "price": 6.96
+      },
+      {
+        "weight_min": 251,
+        "weight_max": 501,
+        "price": 7.71
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 751,
+        "price": 8.5
+      },
+      {
+        "weight_min": 751,
+        "weight_max": 1001,
+        "price": 9.14
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 10.13
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 11.01
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 11.92
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 12.8
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 13.35
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 14.21
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 15.07
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 15.96
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 16.83
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 11001,
+        "price": 17.38
+      },
+      {
+        "weight_min": 11001,
+        "weight_max": 12001,
+        "price": 18.23
+      },
+      {
+        "weight_min": 12001,
+        "weight_max": 13001,
+        "price": 19.08
+      },
+      {
+        "weight_min": 13001,
+        "weight_max": 14001,
+        "price": 19.95
+      },
+      {
+        "weight_min": 14001,
+        "weight_max": 15001,
+        "price": 20.8
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 16001,
+        "price": 21.65
+      },
+      {
+        "weight_min": 16001,
+        "weight_max": 17001,
+        "price": 22.5
+      },
+      {
+        "weight_min": 17001,
+        "weight_max": 18001,
+        "price": 23.35
+      },
+      {
+        "weight_min": 18001,
+        "weight_max": 19001,
+        "price": 24.22
+      },
+      {
+        "weight_min": 19001,
+        "weight_max": 20001,
+        "price": 25.06
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 21001,
+        "price": 25.68
+      },
+      {
+        "weight_min": 21001,
+        "weight_max": 22001,
+        "price": 26.52
+      },
+      {
+        "weight_min": 22001,
+        "weight_max": 23001,
+        "price": 27.37
+      },
+      {
+        "weight_min": 23001,
+        "weight_max": 24001,
+        "price": 28.22
+      },
+      {
+        "weight_min": 24001,
+        "weight_max": 25001,
+        "price": 29.05
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 26001,
+        "price": 29.91
+      },
+      {
+        "weight_min": 26001,
+        "weight_max": 27001,
+        "price": 30.75
+      },
+      {
+        "weight_min": 27001,
+        "weight_max": 28001,
+        "price": 31.6
+      },
+      {
+        "weight_min": 28001,
+        "weight_max": 29001,
+        "price": 32.46
+      },
+      {
+        "weight_min": 29001,
+        "weight_max": 30001,
+        "price": 33.28
+      }
+    ],
+    "lpc_relay": [
+      {
+        "weight_min": 0,
+        "weight_max": 251,
+        "price": 4.56
+      },
+      {
+        "weight_min": 251,
+        "weight_max": 501,
+        "price": 5.31
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 751,
+        "price": 6.1
+      },
+      {
+        "weight_min": 751,
+        "weight_max": 1001,
+        "price": 6.74
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 7.73
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 8.61
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 9.52
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 10.4
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 10.95
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 11.81
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 12.67
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 13.56
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 14.43
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 11001,
+        "price": 14.98
+      },
+      {
+        "weight_min": 11001,
+        "weight_max": 12001,
+        "price": 15.83
+      },
+      {
+        "weight_min": 12001,
+        "weight_max": 13001,
+        "price": 16.68
+      },
+      {
+        "weight_min": 13001,
+        "weight_max": 14001,
+        "price": 17.55
+      },
+      {
+        "weight_min": 14001,
+        "weight_max": 15001,
+        "price": 18.4
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 16001,
+        "price": 19.25
+      },
+      {
+        "weight_min": 16001,
+        "weight_max": 17001,
+        "price": 20.1
+      },
+      {
+        "weight_min": 17001,
+        "weight_max": 18001,
+        "price": 20.95
+      },
+      {
+        "weight_min": 18001,
+        "weight_max": 19001,
+        "price": 21.82
+      },
+      {
+        "weight_min": 19001,
+        "weight_max": 20001,
+        "price": 22.66
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 21001,
+        "price": 23.28
+      },
+      {
+        "weight_min": 21001,
+        "weight_max": 22001,
+        "price": 24.12
+      },
+      {
+        "weight_min": 22001,
+        "weight_max": 23001,
+        "price": 24.97
+      },
+      {
+        "weight_min": 23001,
+        "weight_max": 24001,
+        "price": 25.82
+      },
+      {
+        "weight_min": 24001,
+        "weight_max": 25001,
+        "price": 26.65
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 26001,
+        "price": 27.51
+      },
+      {
+        "weight_min": 26001,
+        "weight_max": 27001,
+        "price": 28.35
+      },
+      {
+        "weight_min": 27001,
+        "weight_max": 28001,
+        "price": 29.2
+      },
+      {
+        "weight_min": 28001,
+        "weight_max": 29001,
+        "price": 30.06
+      },
+      {
+        "weight_min": 29001,
+        "weight_max": 30001,
+        "price": 30.88
+      }
+    ]
+  },
+  "Z1": {
+    "lpc_nosign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 8.29
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 10.23
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 10.98
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 11.82
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 12.65
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 13.42
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 14.19
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 14.96
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 15.73
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 16.51
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 17.28
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 21.69
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 26.1
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 30.53
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 34.94
+      }
+    ],
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 8.88
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 10.84
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 11.6
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 12.44
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 13.29
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 14.06
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 14.84
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 15.61
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 16.4
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 17.18
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 17.96
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 22.41
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 26.87
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 31.34
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 35.8
+      }
+    ],
+    "lpc_relay": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 7.88
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 9.84
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 10.6
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 11.44
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 12.29
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 13.06
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 13.84
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 14.61
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 15.4
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 16.18
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 16.96
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 21.41
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 25.87
+      }
+    ]
+  },
+  "Z2": {
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 10.2
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 12.97
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 14.5
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 15.45
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 16.29
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 17.18
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 18.01
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 18.97
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 19.8
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 20.63
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 21.48
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 26.11
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 30.62
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 35.12
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 39.66
+      }
+    ],
+    "lpc_sign_ddp": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 10.2
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 12.97
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 14.5
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 15.45
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 16.29
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 17.18
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 18.01
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 18.97
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 19.8
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 20.63
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 21.48
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 26.11
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 30.62
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 35.12
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 39.66
+      }
+    ],
+    "lpc_relay": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 9.2
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 11.97
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 13.5
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 14.45
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 15.29
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 16.18
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 17.01
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 17.97
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 18.8
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 19.63
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 20.48
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 25.11
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 29.62
+      }
+    ]
+  },
+  "Z3": {
+    "lpc_nosign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 10.97
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 13.76
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 15.45
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 16.88
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 18.64
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 20.42
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 27.05
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 28.62
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 30.08
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 31.55
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 33
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 41.29
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 49.46
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 57.66
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 59.99
+      }
+    ],
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 11.36
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 14.12
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 15.79
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 17.21
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 18.95
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 20.71
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 27.27
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 28.83
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 30.28
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 31.73
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 33.17
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 41.38
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 49.46
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 57.59
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 59.89
+      }
+    ],
+    "lpc_relay": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 10.36
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 13.12
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 14.79
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 16.21
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 17.95
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 19.71
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 26.27
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 27.83
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 29.28
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 30.73
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 32.17
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 40.38
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 48.46
+      }
+    ]
+  },
+  "Z4": {
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 13.31
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 16.29
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 17.92
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 19.66
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 21.99
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 26.59
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 30.07
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 34.26
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 39.35
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 42.29
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 45.91
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 62.09
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 72.84
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 86.28
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 100.1
+      }
+    ],
+    "lpc_relay": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 12.31
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 15.29
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 16.92
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 18.66
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 20.99
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 25.59
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 29.07
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 33.26
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 38.35
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 41.29
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 44.91
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 61.09
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 71.84
+      }
+    ]
+  },
+  "Z5": {
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 26.2
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 28.97
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 39.72
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 50.46
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 57.83
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 61.73
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 78.92
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 91.36
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 101.22
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 105.48
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 110.74
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 162.15
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 177.59
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 227.96
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 262.7
+      }
+    ]
+  },
+  "Z6": {
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 30.04
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 35.34
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 48.53
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 61.98
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 75.17
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 86.43
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 99.29
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 112.27
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 125.14
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 138.31
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 151.18
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 209.48
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 269.04
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 327.33
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 385.62
+      }
+    ]
+  },
+  "OM1": {
+    "lpc_nosign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 9.59
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 14.55
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 19.82
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 25.11
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 30.4
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 34.12
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 40.98
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 46.24
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 50.35
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 55.37
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 61.38
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 86
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 110.67
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 138.44
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 167.29
+      }
+    ],
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 13.09
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 16.78
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 22.63
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 28.48
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 33.09
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 38.4
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 46.02
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 51.87
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 55.19
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 60.78
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 66.38
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 94.33
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 117.61
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 143.57
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 170.68
+      }
+    ]
+  },
+  "OM2": {
+    "lpc_nosign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 11.4
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 17.7
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 31.46
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 45.2
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 56.4
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 69.55
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 86.49
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 100.24
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 110.98
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 122.18
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 135.33
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 206.8
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 262.97
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 324.95
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 389.5
+      }
+    ],
+    "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": 19.21
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": 23.76
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": 36.97
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": 52.06
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": 62.89
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": 76
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": 93.18
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": 104.87
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": 115.32
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": 128.42
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": 141.52
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": 213.13
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": 269.03
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": 330.95
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": 395.5
+      }
+    ]
+  }
+}

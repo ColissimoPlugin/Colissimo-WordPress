@@ -176,8 +176,9 @@ class LpcLabelQueries extends LpcComponent {
         }
 
         if (current_user_can('lpc_print_labels')) {
-            $actions .= '<span class="dashicons ' . $printerIcon . ' lpc_label_action_print ' . $disableActions . '" ' .
-                        $this->getLabelOutwardPrintAttr($trackingNumber, $format) . $disableText . ' ></span>';
+            $printedClass = $label['printed'] ? 'lpc_label_printed' : '';
+            $actions      .= '<span class="dashicons ' . $printerIcon . ' lpc_label_action_print ' . $disableActions . ' ' . $printedClass . '" ' .
+                             $this->getLabelOutwardPrintAttr($trackingNumber, $format) . $disableText . ' ></span>';
         }
 
         if (current_user_can('lpc_delete_labels')) {
@@ -189,6 +190,7 @@ class LpcLabelQueries extends LpcComponent {
 
     public function getInwardLabelsActionsIcons($trackingNumber, $format, $redirection) {
         $printerIcon = $GLOBALS['wp_version'] >= '5.5' ? 'dashicons-printer' : 'dashicons-media-default';
+        $label       = $this->inwardLabelDb->getLabelFor($trackingNumber);
 
         $actions = '';
 
@@ -198,8 +200,9 @@ class LpcLabelQueries extends LpcComponent {
         }
 
         if (current_user_can('lpc_print_labels')) {
-            $actions .= '<span class="dashicons ' . $printerIcon . ' lpc_label_action_print" ' .
-                        $this->getLabelInwardPrintAttr($trackingNumber, $format) . '></span>';
+            $printedClass = $label['printed'] ? 'lpc_label_printed' : '';
+            $actions      .= '<span class="dashicons ' . $printerIcon . ' lpc_label_action_print ' . $printedClass . '" ' .
+                             $this->getLabelInwardPrintAttr($trackingNumber, $format) . '></span>';
         }
 
         if (current_user_can('lpc_delete_labels')) {

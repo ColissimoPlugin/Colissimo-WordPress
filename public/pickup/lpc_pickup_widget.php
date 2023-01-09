@@ -33,7 +33,7 @@ class LpcPickupWidget extends LpcPickup {
     }
 
     public function init() {
-        if ('no' === LpcHelper::get_option('lpc_prUseWebService', 'no')) {
+        if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
             $this->addWidgetOnCart();
         }
     }

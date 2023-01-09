@@ -25,6 +25,8 @@ $multiParcelsLabels       = [
     'MASTER'   => __('Master parcel', 'wc_colissimo'),
     'FOLLOWER' => __('Follower parcel', 'wc_colissimo'),
 ];
+$cn23Needed               = $args['lpc_cn23_needed'];
+$defaultCustoms           = $args['lpc_default_customs_category'];
 ?>
 
 <div class="lpc__admin__order_banner">
@@ -284,6 +286,23 @@ $multiParcelsLabels       = [
                     ?>
 				</select>
 			</div>
+            <?php if ($cn23Needed) { ?>
+				<div class="lpc__admin__order_banner__generate_label__type">
+					<label for="lpc_cn23_type">
+                        <?php echo __('Customs category', 'wc_colissimo'); ?>
+					</label>
+					<select
+							class="lpc__admin__order_banner__generate_label__cn23__type"
+							name="lpc__admin__order_banner__generate_label__cn23__type"
+							id="lpc_cn23_type">
+						<option value="1" <?php echo 1 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Gift', 'wc_colissimo'); ?></option>
+						<option value="2" <?php echo 2 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Commercial sample', 'wc_colissimo'); ?></option>
+						<option value="3" <?php echo 3 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Commercial shipment', 'wc_colissimo'); ?></option>
+						<option value="4" <?php echo 4 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Document', 'wc_colissimo'); ?></option>
+						<option value="5" <?php echo 5 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Other', 'wc_colissimo'); ?></option>
+					</select>
+				</div>
+            <?php } ?>
             <?php if (1 < $totalQuantity && $isMultiParcelsAuthorized) { ?>
 				<div class="lpc__admin__order_banner__generate_label__multi__parcels">
 					<label for="lpc_multi_parcels">

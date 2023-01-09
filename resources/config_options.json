@@ -27,18 +27,6 @@
       }
     },
     {
-      "id": "lpc_parent_id_webservices",
-      "type": "text",
-      "title": "Parent account ID",
-      "desc": "If you use an advanced account, please enter the parent account ID",
-      "desc_tip": true,
-      "class": "",
-      "default": "",
-      "custom_attributes": {
-        "autocomplete": "new-password"
-      }
-    },
-    {
       "id": "lpc_section_general",
       "type": "sectionend"
     },
@@ -463,8 +451,17 @@
     {
       "id": "lpc_using_insurance",
       "type": "checkbox",
-      "title": "Use Colissimo Insurance?",
-      "desc": "If enabled, each label generation will use Colissimo Insurance feature by default.",
+      "title": "Use Colissimo Insurance for outward label?",
+      "desc": "If enabled, each outward label generation will use Colissimo Insurance feature by default.",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_using_insurance_inward",
+      "type": "checkbox",
+      "title": "Use Colissimo Insurance for inward label?",
+      "desc": "If enabled, each inward label generation will use Colissimo Insurance feature by default.",
       "desc_tip": true,
       "class": "",
       "default": ""
@@ -599,6 +596,14 @@
       "type": "checkbox",
       "title": "Add the invoice in the label archive",
       "desc": "In the Colissimo listing on the bulk action download label information, if this option is checked it adds the invoice to the archive",
+      "desc_tip": true,
+      "default": "yes"
+    },
+    {
+      "id": "add_invoice_download_label",
+      "type": "checkbox",
+      "title": "Add the invoice when downloading the label",
+      "desc": "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file",
       "desc_tip": true,
       "default": "yes"
     },
@@ -882,19 +887,22 @@
       "default": ""
     },
     {
-      "id": "lpc_prUseWebService",
-      "type": "checkbox",
-      "title": "Use web service instead of widget?",
-      "desc": "If enabled, the web service will be used to choose a relay point, else the standard Colissimo widget will be used.",
-      "desc_tip": true,
+      "id": "lpc_pickup_map_type",
+      "type": "select",
+      "title": "Pickup map type",
       "class": "",
-      "default": ""
+      "default": "widget",
+      "options": {
+        "widget": "Colissimo widget",
+        "gmaps": "Google Maps (requires an API key)",
+        "leaflet": "Open Street maps (free)"
+      }
     },
     {
       "id": "lpc_gmap_key",
       "type": "text",
       "title": "Google maps API key",
-      "desc": "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform",
+      "desc": "The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it.",
       "desc_tip": true,
       "class": "",
       "default": ""
@@ -902,8 +910,8 @@
     {
       "id": "lpc_show_international",
       "type": "checkbox",
-      "title": "Show internationals Relay Points",
-      "desc": "Only applicable for Webservice method",
+      "title": "Show international Relay Points",
+      "desc": "Only applicable for map type other than Colissimo widget",
       "desc_tip": true,
       "class": "",
       "default": ""

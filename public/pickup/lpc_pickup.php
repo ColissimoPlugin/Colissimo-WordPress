@@ -23,10 +23,10 @@ abstract class LpcPickup extends LpcComponent {
             return '';
         }
 
-        if ('yes' === LpcHelper::get_option('lpc_prUseWebService', 'no')) {
-            return self::WEB_SERVICE;
-        } else {
+        if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
             return self::WIDGET;
+        } else {
+            return self::WEB_SERVICE;
         }
     }
 }

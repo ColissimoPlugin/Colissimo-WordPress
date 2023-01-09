@@ -206,3 +206,7 @@
 	vertical-align: middle;
 	cursor: default !important;
 }
+
+.lpc_label_printed{
+	color: green;
+}

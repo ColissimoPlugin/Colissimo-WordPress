@@ -96,6 +96,8 @@ class LpcThermalLabelPrintAction extends LpcComponent {
 
             if ($isOutward) {
                 $this->outwardLabelDb->updatePrintedLabel($trackingNumber);
+            } else {
+                $this->inwardLabelDb->updatePrintedLabel($trackingNumber);
             }
         }
 

@@ -60,14 +60,20 @@ class LpcLabelOutwardDownloadAction extends LpcComponent {
 
             $filesToMerge[] = sys_get_temp_dir() . DS . $labelFileName;
 
-            $lpcInvoiceGenerateAction = LpcRegister::get('invoiceGenerateAction');
-            $invoiceFilename          = sys_get_temp_dir() . DS . 'invoice.pdf';
-            $lpcInvoiceGenerateAction->generateInvoice($label['order_id'], $invoiceFilename, MergePdf::DESTINATION__DISK);
-            $filesToMerge[] = $invoiceFilename;
+            $needInvoice = 'yes' === LpcHelper::get_option('add_invoice_download_label', 'yes');
+
+            if ($needInvoice) {
+                $lpcInvoiceGenerateAction = LpcRegister::get('invoiceGenerateAction');
+                $invoiceFilename          = sys_get_temp_dir() . DS . 'invoice.pdf';
+                $lpcInvoiceGenerateAction->generateInvoice($label['order_id'], $invoiceFilename, MergePdf::DESTINATION__DISK);
+                $filesToMerge[] = $invoiceFilename;
+            }
 
             $cn23Content = $this->outwardLabelDb->getCn23For($trackingNumber);
             if ($cn23Content) {
-                $filesToMerge[]  = $invoiceFilename;
+                if ($needInvoice) {
+                    $filesToMerge[] = $invoiceFilename;
+                }
                 $cn23ContentFile = fopen(sys_get_temp_dir() . DS . 'outward_cn23.pdf', 'w');
                 fwrite($cn23ContentFile, $cn23Content);
                 fclose($cn23ContentFile);

@@ -45,7 +45,7 @@ class LpcCouponsRestrictions extends LpcComponent {
             $values = array_map('sanitize_text_field', wp_unslash($_POST['lpc_coupon_restriction']));
             $values = in_array('', $values) ? [''] : $values;
             $coupon->update_meta_data('lpc_coupon_restriction', $values);
-            $coupon->save();
+            $coupon->save_meta_data();
         } elseif (!empty($coupon->get_meta('lpc_coupon_restriction'))) {
             delete_post_meta($post_id, 'lpc_coupon_restriction');
         }

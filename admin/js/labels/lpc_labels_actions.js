@@ -21,6 +21,7 @@ jQuery(function ($) {
         if (isLabelDisabledAction(this)) {
             return;
         }
+        $(this).addClass('lpc_label_printed');
         let specificAction = $(this).attr('data-link');
         let trackingNumber = $(this).attr('data-tracking-number');
         switch ($(this).attr('data-format')) {

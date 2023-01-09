@@ -140,7 +140,7 @@ class LpcShippingRates extends LpcComponent {
                 if ('shipping_class' === $header) {
                     $newValue = explode(' ', $newLine[$key]);
                 } else {
-                    $newValue = (float) $newLine[$key];
+                    $newValue = strlen($newLine[$key]) === 0 ? '' : (float) $newLine[$key];
                 }
                 $rate[$header] = $newValue;
             }
@@ -148,7 +148,7 @@ class LpcShippingRates extends LpcComponent {
         }
 
         $shippingMethod = WC_Shipping_Zones::get_shipping_method(LpcHelper::getVar('method_id'));
-        $optionName     = $shippingMethod->get_instance_option_key('shipping_rates');
+        $optionName     = $shippingMethod->get_instance_option_key();
         $currentOptions = get_option($optionName, []);
 
         usort(

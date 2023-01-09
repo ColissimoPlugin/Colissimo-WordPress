@@ -20,10 +20,10 @@ class LpcAdminOrderAffect extends LpcComponent {
     ) {
         $this->lpcShippingMethods       = LpcRegister::get('shippingMethods', $shippingMethods);
         $this->lpcCapabilitiesByCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
-        if ('yes' === LpcHelper::get_option('lpc_prUseWebService', 'no')) {
-            $this->lpcAdminPickupWebService = LpcRegister::get('adminPickupWebService', $lpcAdminPickupWebService);
-        } else {
+        if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
             $this->lpcAdminPickupWidget = LpcRegister::get('adminPickupWidget', $lpcAdminPickupWidget);
+        } else {
+            $this->lpcAdminPickupWebService = LpcRegister::get('adminPickupWebService', $lpcAdminPickupWebService);
         }
     }
 
@@ -72,9 +72,9 @@ class LpcAdminOrderAffect extends LpcComponent {
 
         $args['lpc_shipping_methods'] = $methods;
 
-        $args['link_choose_relay'] = 'yes' === LpcHelper::get_option('lpc_prUseWebService', 'no')
-            ? $this->lpcAdminPickupWebService->addGoogleMaps($order)
-            : $this->lpcAdminPickupWidget->addWidget($order);
+        $args['link_choose_relay'] = 'widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')
+            ? $this->lpcAdminPickupWidget->addWidget($order)
+            : $this->lpcAdminPickupWebService->addWebserviceMap($order);
 
         echo LpcHelper::renderPartial('orders' . DS . 'lpc_order_affect_methods.php', $args);
     }
@@ -86,10 +86,7 @@ class LpcAdminOrderAffect extends LpcComponent {
             !is_admin()
             || $slug != $post->post_type
             || !isset($_REQUEST['lpc_order_affect_update_method'])
-            || (
-                isset($_REQUEST['lpc_order_affect_update_method'])
-                && empty(sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_update_method'])))
-            )
+            || empty(sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_update_method'])))
         ) {
             return;
         }
@@ -157,9 +154,9 @@ class LpcAdminOrderAffect extends LpcComponent {
      * @return array
      */
     protected function getColissimoShippingMethodsAvailable(WC_Order $order) {
-        $allShippingMethods                  = WC()->shipping() ? WC()->shipping()->load_shipping_methods() : [];
+        $allShippingMethods                 = WC()->shipping() ? WC()->shipping()->load_shipping_methods() : [];
         $colissimoShippingMethodsPerCountry = $this->lpcCapabilitiesByCountry->getCapabilitiesForCountry($order->get_shipping_country());
-        $methods                             = [];
+        $methods                            = [];
 
         foreach ($allShippingMethods as $oneMethod) {
             $method = $this->lpcCapabilitiesByCountry->getCapabilitiesFileMethod($oneMethod->id);

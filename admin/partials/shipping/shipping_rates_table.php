@@ -76,8 +76,6 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
 			</tfoot>
 			<tbody class="table_rates">
                 <?php
-
-
                 // From version 1.4, every shipping rates can have multiple shipping classes
                 $isFromPre14Configuration = false;
                 array_walk(
@@ -146,8 +144,8 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
                     // Migration process from version 1.1 or lower
                     if (isset($rate['weight'])) {
                         if ('yes' === $shippingMethod->get_instance_option('use_cart_price', 'no')) {
+                            // The old configuration only had the "weight" name, that could contain either a weight or a price so it's normal to do price = weight
                             $rate['min_price'] = $rate['weight'];
-
                             $rate['max_price'] = $i === $len - 1
                                 ? $shippingMethod->get_instance_option('max_weight', 99999)
                                 : $currentRates[$counter + 1]['weight'];
@@ -174,7 +172,6 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
 								   class="input-number regular-input"
 								   step="any"
 								   min="0"
-								   required
 								   value="<?php echo isset($rate['min_weight']) ? esc_attr($rate['min_weight']) : ''; ?>"
 								   name="shipping_rates[<?php echo $i; ?>][min_weight]" />
 						</td>
@@ -183,7 +180,6 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
 								   class="input-number regular-input"
 								   step="any"
 								   min="0"
-								   required
 								   value="<?php echo isset($rate['max_weight']) ? esc_attr($rate['max_weight']) : ''; ?>"
 								   name="shipping_rates[<?php echo $i; ?>][max_weight]" />
 						</td>
@@ -192,7 +188,6 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
 								   class="input-number regular-input"
 								   step="any"
 								   min="0"
-								   required
 								   value="<?php echo isset($rate['min_price']) ? esc_attr($rate['min_price']) : ''; ?>"
 								   name="shipping_rates[<?php echo $i; ?>][min_price]" />
 						</td>
@@ -201,7 +196,6 @@ $currentRates    = $shippingMethod->get_option('shipping_rates', []);
 								   class="input-number regular-input"
 								   step="any"
 								   min="0"
-								   required
 								   value="<?php echo isset($rate['max_price']) ? esc_attr($rate['max_price']) : ''; ?>"
 								   name="shipping_rates[<?php echo $i; ?>][max_price]" />
 						</td>

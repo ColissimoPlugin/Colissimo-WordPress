@@ -36,6 +36,7 @@ CREATE TABLE $table_name (
     cn23                    MEDIUMBLOB          NULL,
     tracking_number         VARCHAR(255)        NULL,
     outward_tracking_number VARCHAR(255)        NULL,
+    printed                 TINYINT(1)          NOT NULL DEFAULT 0,
     PRIMARY KEY (id),
     INDEX order_id (order_id),
     INDEX tracking_number (tracking_number),
@@ -203,10 +204,11 @@ END_SQL;
         $label   = '';
         $format  = '';
         $orderId = '';
+        $printed = false;
 
         // phpcs:disable
         $query = <<<END_SQL
-SELECT label, label_format, order_id
+SELECT label, label_format, order_id, printed
 FROM $tableName
 WHERE tracking_number = "%s"
 END_SQL;
@@ -219,17 +221,17 @@ END_SQL;
         if (!empty($inwardLabelAndFormat[0])) {
             $label   = $inwardLabelAndFormat[0]->label;
             $orderId = $inwardLabelAndFormat[0]->order_id;
+            $printed = !empty($inwardLabelAndFormat[0]->printed);
 
             $format = !empty($inwardLabelAndFormat[0]->label_format) ? $inwardLabelAndFormat[0]->label_format : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
         }
 
-        $result = [
+        return [
             'format'   => $format,
             'label'    => $label,
             'order_id' => $orderId,
+            'printed'  => $printed,
         ];
-
-        return $result;
     }
 
     public function getLabelByOutwardNumber($trackingNumber) {
@@ -400,6 +402,52 @@ TRUNCATE TABLE $tableName
 END_SQL;
 
         return $wpdb->query($query);
+        // phpcs:enable
+    }
+
+    public function updateToVersion174() {
+        global $wpdb;
+        $tableName = $this->getTableName();
+
+        // phpcs:disable
+        $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
+        $updatedColumns = array_filter($columns,
+            function ($column) {
+                return 'printed' === $column->Field;
+            });
+        if (!empty($updatedColumns)) {
+            return;
+        }
+
+        $query = <<<END_SQL
+ALTER TABLE $tableName ADD COLUMN `printed` TINYINT(1) NOT NULL DEFAULT 0
+END_SQL;
+
+        $wpdb->query($query);
+        // phpcs:enable
+    }
+
+    public function updatePrintedLabel($trackingNumbers) {
+        if (empty($trackingNumbers)) {
+            return;
+        }
+
+        if (!is_array($trackingNumbers)) {
+            $trackingNumbers = [$trackingNumbers];
+        }
+
+        global $wpdb;
+
+        $table_name = $this->getTableName();
+
+        $whereIn = '"' . implode('","', $trackingNumbers) . '"';
+
+        //phpcs:disable
+        $query = <<<END_SQL
+UPDATE $table_name SET printed = 1 WHERE tracking_number IN ($whereIn)
+END_SQL;
+
+        $wpdb->query($query);
         // phpcs:enable
     }
 }

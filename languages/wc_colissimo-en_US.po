@@ -148,12 +148,6 @@ msgstr "Confirm relay"
 msgid "Do you confirm the shipment to this relay:"
 msgstr "Do you confirm the shipment to this relay:"
 
-msgid "Use web service instead of widget?"
-msgstr "Use web service instead of widget?"
-
-msgid "If enabled, the web service will be used to choose a relay point, else the standard Colissimo widget will be used."
-msgstr "If enabled, the web service will be used to choose a relay point, else the standard Colissimo widget will be used."
-
 msgid "Rates"
 msgstr "Rates"
 
@@ -190,8 +184,8 @@ msgstr "Always free?"
 msgid "If enabled, rates calculation for this shipping method will always be zero."
 msgstr "If enabled, rates calculation for this shipping method will always be zero."
 
-msgid "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
-msgstr "Only needed for Webservice method. The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
+msgid "The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
+msgstr "The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
 
 msgid "Label generation settings"
 msgstr "Label generation settings"
@@ -210,9 +204,6 @@ msgstr "Name of your store company"
 
 msgid "Use Colissimo Insurance?"
 msgstr "Use Colissimo Insurance?"
-
-msgid "If enabled, each label generation will use Colissimo Insurance feature by default."
-msgstr "If enabled, each label generation will use Colissimo Insurance feature by default."
 
 msgid "Generate Colissimo Outward label"
 msgstr "Generate Colissimo Outward label"
@@ -493,11 +484,11 @@ msgstr "Your return tracking number is:"
 msgid "An error occured while confirming the mailBox pick-up."
 msgstr "An error occured while confirming the mailBox pick-up."
 
-msgid "Show internationals Relay Points"
-msgstr "Show internationals Relay Points"
+msgid "Show international Relay Points"
+msgstr "Show international Relay Points"
 
-msgid "Only applicable for Webservice method"
-msgstr "Only applicable for Webservice method"
+msgid "Only applicable for map type other than Colissimo widget"
+msgstr "Only applicable for map type other than Colissimo widget"
 
 msgid "Outward label was not generated:"
 msgstr "Outward label was not generated:"
@@ -1590,3 +1581,39 @@ msgstr "The file you import must be a CSV with the column min_weight, max_weight
 
 msgid "Choose an amount"
 msgstr "Choose an amount"
+
+msgid "Customs category"
+msgstr "Customs category"
+
+msgid "Use Colissimo Insurance for outward label?"
+msgstr "Use Colissimo Insurance for outward label?"
+
+msgid "If enabled, each outward label generation will use Colissimo Insurance feature by default."
+msgstr "If enabled, each outward label generation will use Colissimo Insurance feature by default."
+
+msgid "Use Colissimo Insurance for inward label?"
+msgstr "Use Colissimo Insurance for inward label?"
+
+msgid "If enabled, each inward label generation will use Colissimo Insurance feature by default."
+msgstr "If enabled, each inward label generation will use Colissimo Insurance feature by default."
+
+msgid "Pickup map type"
+msgstr "Pickup map type"
+
+msgid "Google Maps (requires an API key)"
+msgstr "Google Maps (requires an API key)"
+
+msgid "Colissimo widget"
+msgstr "Colissimo widget"
+
+msgid "Add the invoice when downloading the label"
+msgstr "Add the invoice when downloading the label"
+
+msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
+msgstr "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
+
+msgid "Open Street maps (free)"
+msgstr "Open Street maps (free)"
+
+msgid "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."
+msgstr "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."

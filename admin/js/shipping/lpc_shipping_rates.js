@@ -1,19 +1,34 @@
 jQuery(function ($) {
     $('#lpc_shipping_rates_add').click(function () {
-        let newRowId = $('tr').length;
-        let shippingClassesOptions = $('#lpc_shipping_classes_example').html();
+        const $ratesRows = $('.table_rates tr');
+        const newRowId = $ratesRows.length;
+        const shippingClassesOptions = $('#lpc_shipping_classes_example').html();
+        let newRateMinWeight = $ratesRows.length > 0 ? $ratesRows.last().find('[name*="max_weight"]').val() : 0;
+        let newRateMinPrice = $ratesRows.length > 0 ? $ratesRows.last().find('[name*="max_price"]').val() : 0;
+
+        if (0 === newRateMinWeight.length) {
+            newRateMinWeight = 0;
+        }
+        if (0 === newRateMinPrice.length) {
+            newRateMinPrice = 0;
+        }
+
         let newRow = $('<tr>')
             .append($('<td class="check-column"><input type="checkbox" /></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" required name="shipping_rates['
+            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" value="'
+                      + newRateMinWeight
+                      + '" name="shipping_rates['
                       + newRowId
                       + '][min_weight]"/></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" required name="shipping_rates['
+            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" name="shipping_rates['
                       + newRowId
                       + '][max_weight]"/></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" required name="shipping_rates['
+            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" value="'
+                      + newRateMinPrice
+                      + '" name="shipping_rates['
                       + newRowId
                       + '][min_price]"/></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" required name="shipping_rates['
+            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" name="shipping_rates['
                       + newRowId
                       + '][max_price]"/></td>'))
             .append($(

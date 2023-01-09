@@ -275,7 +275,7 @@
             "GP": {"domiciless": true, "domicileas": true, "domicileasddp": false, "pr": false, "expert": false, "expertddp": false, "return": true, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "MQ": {"domiciless": true, "domicileas": true, "domicileasddp": false, "pr": false, "expert": false, "expertddp": false, "return": true, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "PM": {"domiciless": true, "domicileas": true, "domicileasddp": false, "pr": false, "expert": false, "expertddp": false, "return": "CORI", "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
-            "RE": {"domiciless": true, "domicileas": true, "domicileasddp": false, "pr": false, "expert": false, "expertddp": false, "return": "CORI", "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
+            "RE": {"domiciless": true, "domicileas": true, "domicileasddp": false, "pr": false, "expert": false, "expertddp": false, "return": "CORE", "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "YT": {"domiciless": true, "domicileas": true, "domicileasddp": false, "pr": false, "expert": false, "expertddp": false, "return": "CORI", "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false}
         }
     },

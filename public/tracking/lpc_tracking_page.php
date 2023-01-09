@@ -62,6 +62,11 @@ class LpcTrackingPage extends LpcComponent {
                     );
                 }
             } catch (Exception $e) {
+                if ($e->getMessage() === 'Numéro de colis inconnu') {
+                    wp_redirect(get_permalink(wc_get_page_id('myaccount')) . 'orders');
+                    exit;
+                }
+
                 header('HTTP/1.0 500 Internal Server Error');
                 wp_die(
                     sprintf(
