@@ -47,7 +47,7 @@ class LpcTrackingPage extends LpcComponent {
 
         $trackingHash = $wp->query_vars[self::QUERY_VAR];
         $decryptedVar = $this->lpcUnifiedTrackingApi->decrypt($trackingHash);
-        list($orderId, $trackingNumber) = explode('-', $decryptedVar);
+        [$orderId, $trackingNumber] = explode('-', $decryptedVar);
 
         try {
             $order = new WC_Order($orderId);

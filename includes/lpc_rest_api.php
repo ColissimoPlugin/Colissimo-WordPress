@@ -142,10 +142,10 @@ abstract class LpcRestApi extends LpcComponent {
             }
 
             $headers = [];
-            list($headerLines, $body) = explode("\r\n\r\n", $message, 2);
+            [$headerLines, $body] = explode("\r\n\r\n", $message, 2);
 
             foreach (explode("\r\n", $headerLines) as $headerLine) {
-                list($key, $value) = preg_split('/:\s+/', $headerLine, 2);
+                [$key, $value] = preg_split('/:\s+/', $headerLine, 2);
                 $headers[strtolower($key)] = $value;
             }
 
