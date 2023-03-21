@@ -40,7 +40,7 @@ a.lpc_pick_up_widget_show_map{
 }
 
 /* Specific CSS for the new widget */
-.lpc-modal .wc-backbone-modal-main{
+.lpc-modal .lpc-lib-modal-main{
 	padding-top: 0;
 }
 

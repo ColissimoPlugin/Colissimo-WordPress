@@ -15,7 +15,19 @@ class LpcSettingsTab extends LpcComponent {
      */
     protected $configOptions;
 
-    protected $seeLogModal;
+    /** @var LpcAdminNotices */
+    protected $adminNotices;
+    /** @var LpcPickUpWidgetApi */
+    private $pickUpWidgetApi;
+
+    public function __construct(LpcAdminNotices $adminNotices = null, LpcPickUpWidgetApi $pickUpWidgetApi = null) {
+        $this->adminNotices    = LpcRegister::get('lpcAdminNotices', $adminNotices);
+        $this->pickUpWidgetApi = LpcRegister::get('pickupWidgetApi', $pickUpWidgetApi);
+    }
+
+    public function getDependencies() {
+        return ['lpcAdminNotices'];
+    }
 
     public function init() {
         // Add configuration tab in Woocommerce
@@ -26,34 +38,25 @@ class LpcSettingsTab extends LpcComponent {
         add_action('woocommerce_update_options_' . self::LPC_SETTINGS_TAB_ID, [$this, 'saveLpcSettings']);
         // Settings tabs
         add_action('woocommerce_sections_' . self::LPC_SETTINGS_TAB_ID, [$this, 'settingsSections']);
+        // Invalid weight warning
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningPackagingWeight']);
+        // Invalid credentials warning
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningCredentials']);
 
-        // Define the log modal field
         $this->initSeeLog();
-
         $this->initMailto();
-
         $this->initTelsupport();
-
         $this->initMultiSelectOrderStatus();
-
         $this->initSelectOrderStatusOnLabelGenerated();
-
         $this->initSelectOrderStatusOnPackageDelivered();
-
         $this->initSelectOrderStatusOnBordereauGenerated();
-
         $this->initSelectOrderStatusPartialExpedition();
-
         $this->initSelectOrderStatusDelivered();
-
         $this->initDisplayNumberInputWithWeightUnit();
-
         $this->initDisplaySelectAddressCountry();
-
         $this->initCheckStatus();
-
         $this->initDefaultCountry();
-
+        $this->initMultiSelectRelayType();
         $this->fixSavePassword();
     }
 
@@ -356,10 +359,29 @@ class LpcSettingsTab extends LpcComponent {
         }
 
         try {
-            $currentTab = $this->getCurrentSection();
-            WC_Admin_Settings::save_fields($this->configOptions[$currentTab]);
+            $currentSection = $this->getCurrentSection();
+            $this->checkColissimoCredentials($currentSection);
+            WC_Admin_Settings::save_fields($this->configOptions[$currentSection]);
+            // Handle relay types reset
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+            if (empty($_REQUEST['_wpnonce']) || !wp_verify_nonce(wp_unslash($_REQUEST['_wpnonce']), 'woocommerce-settings')) {
+                die('Invalid Token');
+            }
+            if ('shipping' == $currentSection && !isset($_POST['lpc_relay_point_type'])) {
+                $relayTypeOption = [
+                    'id'   => 'lpc_relay_point_type',
+                    'type' => 'multiselectrelaytype',
+                ];
+                WC_Admin_Settings::save_fields([$relayTypeOption], ['lpc_relay_point_type' => ['A2P', 'BPR', 'CMT', 'PCS', 'BDP']]);
+            }
         } catch (Exception $exc) {
-            LpcLogger::error("Can't save field setting.", $this->configOp);
+            LpcLogger::error(
+                'Can\'t save field setting.',
+                [
+                    'error'   => $exc->getMessage(),
+                    'options' => $this->configOptions,
+                ]
+            );
         }
     }
 
@@ -395,5 +417,126 @@ class LpcSettingsTab extends LpcComponent {
         global $current_section;
 
         return empty($current_section) ? 'main' : $current_section;
+    }
+
+    public function warningPackagingWeight() {
+        $currentTab = LpcHelper::getVar('tab');
+
+        if ('lpc' !== $currentTab) {
+            return;
+        }
+
+        $packagingWeight = wc_get_weight(LpcHelper::get_option('lpc_packaging_weight', '0'), 'kg');
+
+        if ($packagingWeight > 1) {
+            WC_Admin_Settings::add_error(
+                __(
+                    'The packaging weight you configured is high, the shipping methods may not show up on your store if the packaging weight + the cart weight are greater than 30kg.',
+                    'wc_colissimo'
+                )
+            );
+        }
+    }
+
+    private function checkColissimoCredentials(string $currentSection) {
+        if ('main' !== $currentSection) {
+            return;
+        }
+
+        $oldLogin    = LpcHelper::get_option('lpc_id_webservices');
+        $newLogin    = LpcHelper::getVar('lpc_id_webservices');
+        $oldPassword = LpcHelper::get_option('lpc_pwd_webservices');
+        $newPassword = LpcHelper::getVar('lpc_pwd_webservices');
+
+        if ($oldLogin === $newLogin && $oldPassword === $newPassword) {
+            return;
+        }
+
+        $token = $this->pickUpWidgetApi->authenticate($newLogin, $newPassword);
+
+        if (!empty($token)) {
+            WC_Admin_Settings::add_message(__('Valid Colissimo credentials', 'wc_colissimo'));
+        }
+
+        $this->logCredentialsValidity($token);
+    }
+
+    public function warningCredentials() {
+        $currentTab = LpcHelper::getVar('tab');
+
+        if ('lpc' !== $currentTab) {
+            return;
+        }
+
+        $testedCredentials = LpcHelper::get_option('lpc_current_credentials_tested');
+
+        if (!$testedCredentials) {
+            $login    = LpcHelper::get_option('lpc_id_webservices');
+            $password = LpcHelper::get_option('lpc_pwd_webservices');
+
+            if (empty($login) || empty($password)) {
+                $this->adminNotices->add_notice(
+                    'credentials_validity',
+                    'notice-info',
+                    __('Please enter your Colissimo credentials to be able to generate labels and show the pickup map.', 'wc_colissimo')
+                );
+
+                return;
+            }
+
+            $token = $this->pickUpWidgetApi->authenticate($login, $password);
+            $this->logCredentialsValidity($token);
+        }
+
+        $validCredentials = LpcHelper::get_option('lpc_current_credentials_valid');
+
+        if (!$validCredentials) {
+            WC_Admin_Settings::add_error(
+                __(
+                    'Your ID must be a 6 digits number and your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract.',
+                    'wc_colissimo'
+                ) . "\n" .
+                __('Your Colissimo credentials are incorrect, you won\'t be able to generate labels or show the pickup map to your customers.', 'wc_colissimo')
+            );
+        }
+    }
+
+    private function logCredentialsValidity($token) {
+        update_option('lpc_current_credentials_tested', true);
+        update_option('lpc_current_credentials_valid', !empty($token));
+    }
+
+    protected function initMultiSelectRelayType() {
+        add_action('woocommerce_admin_field_multiselectrelaytype', [$this, 'displayMultiSelectRelayType']);
+    }
+
+    public function displayMultiSelectRelayType() {
+        $relayTypesValues = [
+            'fr'    => [
+                'label'  => 'France',
+                'values' => [
+                    'A2P' => __('Pickup station', 'wc_colissimo'),
+                    'BPR' => __('Post office', 'wc_colissimo'),
+                ],
+            ],
+            'inter' => [
+                'label'  => __('International', 'wc_colissimo'),
+                'values' => [
+                    'CMT' => __('Relay point', 'wc_colissimo'),
+                    'PCS' => __('Pickup station', 'wc_colissimo'),
+                    'BDP' => __('Post office', 'wc_colissimo'),
+                ],
+            ],
+        ];
+
+        $args                    = [];
+        $args['id_and_name']     = 'lpc_relay_point_type';
+        $args['label']           = 'Type of displayed relays';
+        $args['tips']            = 'Only applicable for map type other than Colissimo widget';
+        $args['values']          = $relayTypesValues;
+        $args['selected_values'] = get_option($args['id_and_name']);
+        $args['multiple']        = true;
+        $args['optgroup']        = true;
+        echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
     }
 }

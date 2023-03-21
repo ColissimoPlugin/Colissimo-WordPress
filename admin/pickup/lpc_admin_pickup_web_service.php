@@ -40,13 +40,19 @@ class LpcAdminPickupWebService extends LpcComponent {
                         'lpc_admin_pick_up_ws',
                         plugins_url('/css/pickup/webservice.css', LPC_INCLUDES . 'init.php')
                     );
+                    LpcHelper::enqueueStyle(
+                        'lpc_admin_pick_up',
+                        plugins_url('/css/pickup/pickup.css', LPC_INCLUDES . 'init.php')
+                    );
                 }
             }
         );
     }
 
     public function addWebserviceMap(WC_Order $order) {
-        $modal = new LpcModal(null, 'Choose a PickUp point', 'lpc_pick_up_web_service');
+        $lpcImageUrl  = plugins_url('/images/colissimo_cropped.png', LPC_INCLUDES . 'init.php');
+        $imageHtmlTag = '<img src="' . $lpcImageUrl . '" style="max-width: 90px; display:inline; vertical-align: middle;">';
+        $modal        = new LpcModal(null, $imageHtmlTag, 'lpc_pick_up_web_service');
 
         $map = LpcHelper::renderPartial(
             'pickup' . DS . 'webservice_map.php',
@@ -119,6 +125,21 @@ class LpcAdminPickupWebService extends LpcComponent {
             $listRelaysWS = $return->listePointRetraitAcheminement;
             $html         = '';
 
+            // Choose displayed relay types
+            $relayTypes = LpcHelper::get_option('lpc_relay_point_type', 'all');
+            if (empty($relayTypes)) {
+                $relayTypes = 'all';
+            }
+            if ('all' != $relayTypes) {
+                $listRelaysWS = array_filter($listRelaysWS, function ($relay) use ($relayTypes) {
+                    return in_array($relay->typeDePoint, $relayTypes);
+                });
+            }
+
+            // Limit number of displayed relays
+            $maxRelayPoint = LpcHelper::get_option('lpc_max_relay_point', 20);
+            $listRelaysWS  = array_slice($listRelaysWS, 0, $maxRelayPoint);
+
             $i           = 0;
             $partialArgs = [
                 'relaysNb'    => count($listRelaysWS),
@@ -142,10 +163,8 @@ class LpcAdminPickupWebService extends LpcComponent {
 
             return $this->ajaxDispatcher->makeSuccess(
                 [
-                    'html'                 => $html,
-                    'chooseRelayText'      => __('Choose this relay', 'wc_colissimo'),
-                    'confirmRelayText'     => __('Confirm relay', 'wc_colissimo'),
-                    'confirmRelayDescText' => __('Do you confirm the shipment to this relay:', 'wc_colissimo'),
+                    'html'            => $html,
+                    'chooseRelayText' => __('Choose this relay', 'wc_colissimo'),
                 ]
             );
         } else {

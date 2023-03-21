@@ -9,7 +9,7 @@
       "id": "lpc_id_webservices",
       "type": "text",
       "title": "ID",
-      "desc": "ID of your account for La Poste webservices",
+      "desc": "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr",
       "desc_tip": true,
       "class": "",
       "default": ""
@@ -887,6 +887,19 @@
       "default": ""
     },
     {
+      "id": "lpc_show_list_only_mobile",
+      "type": "select",
+      "title": "Default display in mobile",
+      "desc": "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list.",
+      "desc_tip": true,
+      "class": "",
+      "default": "map",
+      "options": {
+        "map": "Map and list",
+        "list": "List only"
+      }
+    },
+    {
       "id": "lpc_pickup_map_type",
       "type": "select",
       "title": "Pickup map type",
@@ -895,7 +908,7 @@
       "options": {
         "widget": "Colissimo widget",
         "gmaps": "Google Maps (requires an API key)",
-        "leaflet": "Open Street maps (free)"
+        "leaflet": "Leaflet (free)"
       }
     },
     {
@@ -906,6 +919,26 @@
       "desc_tip": true,
       "class": "",
       "default": ""
+    },
+    {
+      "id": "lpc_max_relay_point",
+      "type": "number",
+      "title": "Maximum number of displayed relays",
+      "desc": "Only applicable for map type other than Colissimo widget",
+      "desc_tip": true,
+      "class": "",
+      "default": "20",
+      "custom_attributes": {
+        "min": "1",
+        "max": "20"
+      }
+    },
+    {
+      "id": "lpc_relay_point_type",
+      "type": "multiselectrelaytype",
+      "title": "",
+      "desc": "",
+      "class": ""
     },
     {
       "id": "lpc_show_international",

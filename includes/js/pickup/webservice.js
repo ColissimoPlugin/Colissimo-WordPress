@@ -1,4 +1,14 @@
-var lpcGoogleMap, lpcMap, lpcMarkers = [], lpcGmapsOpenedInfoWindow, lpcConfirmRelayDescText, lpcConfirmRelayText, lpcChooseRelayText, $affectMethodDiv;
+var lpcGoogleMap, lpcMap, lpcMarkers = [], lpcMapOpenedInfoWindow, lpcChooseRelayText, $affectMethodDiv;
+const coordinates = {
+    latitude: 48.866667,
+    longitude: 2.333333
+};
+const lowestCoordinates = {
+    lowestLatitude: 999,
+    lowestLongitude: 999,
+    highestLatitude: -999,
+    highestLongitude: -999
+};
 
 jQuery(function ($) {
     $(document.body)
@@ -12,12 +22,43 @@ jQuery(function ($) {
             initLpcModal(); // this is needed when checkout is loaded or updated (new item quantity...)
         });
 
+    function initButtonSwitchMobileLayout() {
+        const mapContainer = document.getElementById('lpc_left');
+        const button = document.getElementById('lpc_layer_relay_switch_mobile');
+        const article = document.querySelector('.lpc-lib-modal-article');
+
+        if (!button) {
+            return;
+        }
+
+        const classList = 'dashicons-editor-ul';
+        const classMap = 'dashicons-location-alt';
+
+        button.addEventListener('click', function () {
+            mapContainer.classList.toggle('lpc_mobile_display_none');
+            button.querySelector('span').classList.toggle(classList);
+            button.querySelector('span').classList.toggle(classMap);
+            article.scrollTop = 0;
+
+            lpcMapResize();
+            if (lpcPickUpSelection.mapType === 'leaflet') {
+                lpcMap.fitBounds([
+                    [
+                        lowestCoordinates.lowestLatitude,
+                        lowestCoordinates.lowestLongitude
+                    ],
+                    [
+                        lowestCoordinates.highestLatitude,
+                        lowestCoordinates.highestLongitude
+                    ]
+                ]);
+            }
+        });
+    }
+
     // Function called when the popup is opened to initialize the Gmap
     function lpcInitMap(origin) {
         $affectMethodDiv = $(origin).closest('.lpc_order_affect_available_methods');
-
-        let initialLatitude = 48.866667;
-        let initialLongitude = 2.333333;
 
         // Center the map on the client's position
         if (navigator.geolocation) {
@@ -26,8 +67,8 @@ jQuery(function ($) {
                     initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                     lpcGoogleMap.setCenter(initialLocation);
                 } else if (lpcPickUpSelection.mapType === 'leaflet') {
-                    initialLatitude = position.coords.latitude;
-                    initialLongitude = position.coords.longitude;
+                    coordinates.latitude = position.coords.latitude;
+                    coordinates.longitude = position.coords.longitude;
                 }
             });
         }
@@ -37,17 +78,16 @@ jQuery(function ($) {
                 zoom: 10,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 center: {
-                    lat: initialLatitude,
-                    lng: initialLongitude
+                    lat: coordinates.latitude,
+                    lng: coordinates.longitude
                 },
                 disableDefaultUI: true
             });
         } else if (lpcPickUpSelection.mapType === 'leaflet') {
             lpcMap = L.map('lpc_map').setView([
-                initialLatitude,
-                initialLongitude
+                coordinates.latitude,
+                coordinates.longitude
             ], 14);
-            // Default map for open street map: https://tile.openstreetmap.org/{z}/{x}/{y}.png
             L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
             }).addTo(lpcMap);
@@ -80,6 +120,7 @@ jQuery(function ($) {
         $('#lpc_layer_button_search').on('click', function () {
             lpcLoadRelays();
         });
+        initButtonSwitchMobileLayout();
     }
 
     // Load relays for an address
@@ -125,11 +166,10 @@ jQuery(function ($) {
                 if (response.type === 'success') {
                     $listRelaysDiv.html(response.html);
                     $listRelaysDiv.show();
-                    lpcConfirmRelayDescText = response.confirmRelayDescText;
-                    lpcConfirmRelayText = response.confirmRelayText;
                     lpcChooseRelayText = response.chooseRelayText;
                     lpcAddRelaysOnMap(addressData);
                     lpcMapResize();
+                    setDisplayHours();
                 } else {
                     $errorDiv.html(response.message);
                     $errorDiv.show();
@@ -230,19 +270,14 @@ jQuery(function ($) {
                 ]
             });
 
-            let lowestLatitude = 999;
-            let lowestLongitude = 999;
-            let highestLatitude = -999;
-            let highestLongitude = -999;
-
             markers.each(function (index, element) {
                 const latitude = $(element).attr('data-lpc-relay-latitude');
                 const longitude = $(element).attr('data-lpc-relay-longitude');
 
-                lowestLatitude = Math.min(latitude, lowestLatitude);
-                lowestLongitude = Math.min(longitude, lowestLongitude);
-                highestLatitude = Math.max(latitude, highestLatitude);
-                highestLongitude = Math.max(longitude, highestLongitude);
+                lowestCoordinates.lowestLatitude = Math.min(latitude, lowestCoordinates.lowestLatitude);
+                lowestCoordinates.lowestLongitude = Math.min(longitude, lowestCoordinates.lowestLongitude);
+                lowestCoordinates.highestLatitude = Math.max(latitude, lowestCoordinates.highestLatitude);
+                lowestCoordinates.highestLongitude = Math.max(longitude, lowestCoordinates.highestLongitude);
 
                 let marker = L.marker([
                     latitude,
@@ -252,6 +287,7 @@ jQuery(function ($) {
                 // Add the information window on each marker
                 marker.bindPopup(lpcGetRelayInfo($(this)));
                 lpcMarkers.push(marker);
+                lpcLeafletAttachClickInfoWindow(marker, index);
                 lpcAttachClickChooseRelay(element);
             });
 
@@ -281,12 +317,12 @@ jQuery(function ($) {
 
             lpcMap.fitBounds([
                 [
-                    lowestLatitude,
-                    lowestLongitude
+                    lowestCoordinates.lowestLatitude,
+                    lowestCoordinates.lowestLongitude
                 ],
                 [
-                    highestLatitude,
-                    highestLongitude
+                    lowestCoordinates.highestLatitude,
+                    lowestCoordinates.highestLongitude
                 ]
             ]);
         }
@@ -301,7 +337,11 @@ jQuery(function ($) {
         contentString += '<span class="lpc_store_address">' + relay.find('.lpc_layer_relay_address_street').text() + '<br>' + relay.find(
             '.lpc_layer_relay_address_zipcode').text() + ' ' + relay.find('.lpc_layer_relay_address_city').text() + '</span>';
         contentString += '<span class="lpc_store_schedule">' + relay.find('.lpc_layer_relay_schedule').html() + '</span>';
-        contentString += '<a href="#" class="lpc_relay_choose lpc_relay_popup_choose" data-relayindex=' + indexRelay + '>' + lpcChooseRelayText + '</a>';
+        contentString += '<button href="#" type="button" class="lpc_relay_choose lpc_relay_popup_choose" data-relayindex='
+                         + indexRelay
+                         + '>'
+                         + lpcChooseRelayText
+                         + '</button>';
         contentString += '</div>';
 
         return contentString;
@@ -314,21 +354,52 @@ jQuery(function ($) {
             lpcGmapsClickHandler(marker, infoWindow);
         });
 
-        $('#lpc_layer_relay_' + index).click(function () {
+        $('#lpc_layer_relay_' + index + ' .lpc_show_relay_details').click(function () {
             lpcGmapsClickHandler(marker, infoWindow);
         });
     }
 
     // Display details on markers
     function lpcGmapsClickHandler(marker, infoWindow) {
-        if (lpcGmapsOpenedInfoWindow) {
-            lpcGmapsOpenedInfoWindow.close();
-            lpcGmapsOpenedInfoWindow = null;
+        // Display map if we are in list only display
+        displayMapOnDisplayRelayDetails();
+
+        // Display or hide relay info
+        if (lpcMapOpenedInfoWindow) {
+            lpcMapOpenedInfoWindow.close();
+            lpcMapOpenedInfoWindow = null;
             return;
         }
-
         infoWindow.open(lpcGoogleMap, marker);
-        lpcGmapsOpenedInfoWindow = infoWindow;
+        lpcMapOpenedInfoWindow = infoWindow;
+    }
+
+    // Add display relay detail click event
+    function lpcLeafletAttachClickInfoWindow(marker, index) {
+        marker.on('click', function () {
+            lpcLeafletClickHandler(marker);
+        });
+        $('#lpc_layer_relay_' + index + ' .lpc_show_relay_details').on('click', function () {
+            lpcLeafletClickHandler(marker);
+        });
+    }
+
+    // Display details on markers
+    function lpcLeafletClickHandler(marker) {
+        // Display map if we are in list only display
+        displayMapOnDisplayRelayDetails();
+
+        // Display or hide relay info
+        if (lpcMapOpenedInfoWindow) {
+            let tmpId = lpcMapOpenedInfoWindow._leaflet_id;
+            lpcMapOpenedInfoWindow.closePopup();
+            lpcMapOpenedInfoWindow = null;
+            if (marker._leaflet_id === tmpId) {
+                return;
+            }
+        }
+        marker.openPopup();
+        lpcMapOpenedInfoWindow = marker;
     }
 
     function lpcMapResize() {
@@ -336,6 +407,38 @@ jQuery(function ($) {
             google.maps.event.trigger(lpcGoogleMap, 'resize');
         } else if ('leaflet' === lpcPickUpSelection.mapType) {
             lpcMap.invalidateSize();
+        }
+    }
+
+    // Display the map again
+    function displayMapOnDisplayRelayDetails() {
+        const button = document.getElementById('lpc_layer_relay_switch_mobile');
+        const classList = 'dashicons-editor-ul';
+        const classMap = 'dashicons-location-alt';
+        const article = document.querySelector('.lpc-lib-modal-article');
+        if (button && button.querySelector('span').classList.contains(classMap)) {
+            // If list mode, display the map
+            const mapContainer = document.getElementById('lpc_left');
+            mapContainer.classList.toggle('lpc_mobile_display_none');
+            button.querySelector('span').classList.toggle(classList);
+            button.querySelector('span').classList.toggle(classMap);
+
+            lpcMapResize();
+            if (lpcPickUpSelection.mapType === 'leaflet') {
+                lpcMap.fitBounds([
+                    [
+                        lowestCoordinates.lowestLatitude,
+                        lowestCoordinates.lowestLongitude
+                    ],
+                    [
+                        lowestCoordinates.highestLatitude,
+                        lowestCoordinates.highestLongitude
+                    ]
+                ]);
+            }
+        }
+        if (button) {
+            article.scrollTop = 0;
         }
     }
 
@@ -365,31 +468,33 @@ jQuery(function ($) {
         let lpcRelayZipcodeTmp = relayClicked.find('.lpc_layer_relay_address_zipcode').text();
         let lpcRelayCountryTmp = relayClicked.find('.lpc_layer_relay_address_country').text();
         let lpcRelayTypeTmp = relayClicked.find('.lpc_layer_relay_type').text();
+        let lpcRelayDistanceTmp = relayClicked.find('.lpc_layer_relay_distance_value').text();
 
-        if (confirm(lpcConfirmRelayText
-                    + '\n\n'
-                    + lpcConfirmRelayDescText
-                    + '\n'
-                    + lpcRelayNameTmp
-                    + '\n'
-                    + lpcRelayAddressTmp
-                    + '\n'
-                    + lpcRelayZipcodeTmp
-                    + ' '
-                    + lpcRelayCityTmp)) {
-            lpcChooseRelay(lpcRelayIdTmp,
-                lpcRelayNameTmp,
-                lpcRelayAddressTmp,
-                lpcRelayZipcodeTmp,
-                lpcRelayCityTmp,
-                lpcRelayTypeTmp,
-                lpcRelayCountryTmp,
-                relayClicked
-            );
-        }
+        let relayHours = {
+            horairesOuvertureLundi: relayClicked.find('.lpc_layer_relay_hour_monday').text(),
+            horairesOuvertureMardi: relayClicked.find('.lpc_layer_relay_hour_tuesday').text(),
+            horairesOuvertureMercredi: relayClicked.find('.lpc_layer_relay_hour_wednesday').text(),
+            horairesOuvertureJeudi: relayClicked.find('.lpc_layer_relay_hour_thursday').text(),
+            horairesOuvertureVendredi: relayClicked.find('.lpc_layer_relay_hour_friday').text(),
+            horairesOuvertureSamedi: relayClicked.find('.lpc_layer_relay_hour_saturday').text(),
+            horairesOuvertureDimanche: relayClicked.find('.lpc_layer_relay_hour_sunday').text()
+        };
+
+        lpcChooseRelay(
+            lpcRelayIdTmp,
+            lpcRelayNameTmp,
+            lpcRelayAddressTmp,
+            lpcRelayZipcodeTmp,
+            lpcRelayCityTmp,
+            lpcRelayTypeTmp,
+            lpcRelayCountryTmp,
+            relayClicked,
+            lpcRelayDistanceTmp,
+            relayHours
+        );
     }
 
-    function lpcChooseRelay(lpcRelayId, lpcRelayName, lpcRelayAddress, lpcRelayZipcode, lpcRelayCity, lpcRelayTypeTmp, lpcRelayCountry, relayClicked) {
+    function lpcChooseRelay(lpcRelayId, lpcRelayName, lpcRelayAddress, lpcRelayZipcode, lpcRelayCity, lpcRelayTypeTmp, lpcRelayCountry, relayClicked, lpcRelayDistanceTmp, relayHours) {
         let $errorDiv = $('#lpc_layer_error_message');
         let relayData = {
             identifiant: lpcRelayId,
@@ -399,7 +504,15 @@ jQuery(function ($) {
             localite: lpcRelayCity,
             libellePays: lpcRelayCountry,
             typeDePoint: lpcRelayTypeTmp,
-            codePays: relayClicked.attr('data-lpc-relay-country_code')
+            codePays: relayClicked.attr('data-lpc-relay-country_code'),
+            distanceEnMetre: lpcRelayDistanceTmp,
+            horairesOuvertureLundi: relayHours.horairesOuvertureLundi,
+            horairesOuvertureMardi: relayHours.horairesOuvertureMardi,
+            horairesOuvertureMercredi: relayHours.horairesOuvertureMercredi,
+            horairesOuvertureJeudi: relayHours.horairesOuvertureJeudi,
+            horairesOuvertureVendredi: relayHours.horairesOuvertureVendredi,
+            horairesOuvertureSamedi: relayHours.horairesOuvertureSamedi,
+            horairesOuvertureDimanche: relayHours.horairesOuvertureDimanche
         };
 
         if ($affectMethodDiv.length === 0) {
@@ -437,6 +550,16 @@ jQuery(function ($) {
         }
 
         $('.lpc-modal .modal-close').click();
+    }
+
+    function setDisplayHours() {
+        $('.lpc_layer_relay_hours_header').on('click', function () {
+            $(this).closest('.lpc_layer_relay_display_hours').find('.lpc_layer_relay_hours_details').toggle();
+            $(this)
+                .closest('.lpc_layer_relay_display_hours')
+                .find('.lpc_layer_relay_hours_icon')
+                .toggleClass('lpc_layer_relay_hours_icon_down lpc_layer_relay_hours_icon_up');
+        });
     }
 
     window.lpcInitMapWebService = lpcInitMap;

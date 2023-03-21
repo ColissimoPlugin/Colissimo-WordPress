@@ -57,7 +57,7 @@ jQuery(function ($) {
 
             $affectMethodDiv = $(this).closest('.lpc_order_affect_available_methods');
 
-            $(this).WCBackboneModal({
+            LpcModal({
                 template: 'lpc_pick_up_widget_container'
             });
 

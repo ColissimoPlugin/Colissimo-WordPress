@@ -37,8 +37,8 @@ msgstr "General configuration"
 msgid "ID"
 msgstr "ID"
 
-msgid "ID of your account for La Poste webservices"
-msgstr "ID of your account for La Poste webservices"
+msgid "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
+msgstr "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
 
 msgid "Colissimo logs"
 msgstr "Colissimo logs"
@@ -88,8 +88,8 @@ msgstr "Choose"
 msgid "At"
 msgstr "At"
 
-msgid "Display"
-msgstr "Display"
+msgid "Display on map"
+msgstr "Display on map"
 
 msgid "See logs"
 msgstr "See logs"
@@ -141,12 +141,6 @@ msgstr "No relay available"
 
 msgid "No relay selected"
 msgstr "No relay selected"
-
-msgid "Confirm relay"
-msgstr "Confirm relay"
-
-msgid "Do you confirm the shipment to this relay:"
-msgstr "Do you confirm the shipment to this relay:"
 
 msgid "Rates"
 msgstr "Rates"
@@ -1612,8 +1606,62 @@ msgstr "Add the invoice when downloading the label"
 msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
 msgstr "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
 
-msgid "Open Street maps (free)"
-msgstr "Open Street maps (free)"
+msgid "Leaflet (free)"
+msgstr "Leaflet (free)"
 
 msgid "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."
 msgstr "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."
+
+msgid "Your site's cron system is disabled, the shipping statuses won't be updated."
+msgstr "Your site's cron system is disabled, the shipping statuses won't be updated."
+
+msgid "The packaging weight you configured is high, the shipping methods may not show up on your store if the packaging weight + the cart weight are greater than 30kg."
+msgstr "The packaging weight you configured is high, the shipping methods may not show up on your store if the packaging weight + the cart weight are greater than 30kg."
+
+msgid "Maximum number of displayed relays"
+msgstr "Maximum number of displayed relays"
+
+msgid "Your ID must be a 6 digits number and your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract."
+msgstr "Your ID must be a 6 digits number and your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract."
+
+msgid "Valid Colissimo credentials"
+msgstr "Valid Colissimo credentials"
+
+msgid "Your Colissimo credentials are incorrect, you won't be able to generate labels or show the pickup map to your customers."
+msgstr "Your Colissimo credentials are incorrect, you won't be able to generate labels or show the pickup map to your customers."
+
+msgid "Please enter your Colissimo credentials to be able to generate labels and show the pickup map."
+msgstr "Please enter your Colissimo credentials to be able to generate labels and show the pickup map."
+
+msgid "Pickup station"
+msgstr "Pickup station"
+
+msgid "Post office"
+msgstr "Post office"
+
+msgid "International"
+msgstr "International"
+
+msgid "Type of displayed relays"
+msgstr "Type of displayed relays"
+
+msgid "SELECTED RELAY"
+msgstr "SELECTED RELAY"
+
+msgid "AT %dm"
+msgstr "AT %dm"
+
+msgid "Opening hours"
+msgstr "Opening hours"
+
+msgid "Default display in mobile"
+msgstr "Default display in mobile"
+
+msgid "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
+msgstr "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
+
+msgid "Map and list"
+msgstr "Map and list"
+
+msgid "List only"
+msgstr "List only"

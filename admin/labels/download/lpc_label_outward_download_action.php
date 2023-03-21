@@ -52,38 +52,58 @@ class LpcLabelOutwardDownloadAction extends LpcComponent {
             }
 
             $fileToDownloadName = 'Colissimo.outward(' . $trackingNumber . ').pdf';
-            $labelFileName      = 'outward_label.pdf';
+            $labelFile          = 'outward_label.pdf';
             $filesToMerge       = [];
-            $labelContentFile   = fopen(sys_get_temp_dir() . DS . $labelFileName, 'w');
+            $tempDir            = sys_get_temp_dir() . DS;
+            $labelContentFile   = fopen($tempDir . $labelFile, 'w');
             fwrite($labelContentFile, $labelContent);
             fclose($labelContentFile);
 
-            $filesToMerge[] = sys_get_temp_dir() . DS . $labelFileName;
+            $labelFilename  = $tempDir . $labelFile;
+            $filesToMerge[] = $labelFilename;
 
             $needInvoice = 'yes' === LpcHelper::get_option('add_invoice_download_label', 'yes');
 
+            $invoiceFilename = null;
             if ($needInvoice) {
                 $lpcInvoiceGenerateAction = LpcRegister::get('invoiceGenerateAction');
-                $invoiceFilename          = sys_get_temp_dir() . DS . 'invoice.pdf';
+                $invoiceFilename          = $tempDir . 'invoice.pdf';
                 $lpcInvoiceGenerateAction->generateInvoice($label['order_id'], $invoiceFilename, MergePdf::DESTINATION__DISK);
                 $filesToMerge[] = $invoiceFilename;
             }
 
-            $cn23Content = $this->outwardLabelDb->getCn23For($trackingNumber);
+            $cn23Filename = null;
+            $cn23Content  = $this->outwardLabelDb->getCn23For($trackingNumber);
             if ($cn23Content) {
                 if ($needInvoice) {
                     $filesToMerge[] = $invoiceFilename;
                 }
-                $cn23ContentFile = fopen(sys_get_temp_dir() . DS . 'outward_cn23.pdf', 'w');
+                $cn23ContentFile = fopen($tempDir . 'outward_cn23.pdf', 'w');
                 fwrite($cn23ContentFile, $cn23Content);
                 fclose($cn23ContentFile);
-                $filesToMerge[] = sys_get_temp_dir() . DS . 'outward_cn23.pdf';
+                $cn23Filename   = $tempDir . 'outward_cn23.pdf';
+                $filesToMerge[] = $cn23Filename;
             }
-            MergePdf::merge($filesToMerge, MergePdf::DESTINATION__DISK_DOWNLOAD, __DIR__ . DS . $fileToDownloadName);
+
+            /**
+             * Filter on the content of the downloaded PDF label
+             *
+             * @since 1.7.6
+             */
+            $filesToMerge = apply_filters(
+                'lpc_pdf_label',
+                $filesToMerge,
+                $label,
+                $labelFilename,
+                $invoiceFilename,
+                $cn23Filename
+            );
+
+            MergePdf::merge($filesToMerge, MergePdf::DESTINATION__DISK_DOWNLOAD, $tempDir . $fileToDownloadName);
             foreach ($filesToMerge as $fileToMerge) {
                 unlink($fileToMerge);
             }
-            unlink(__DIR__ . DS . $fileToDownloadName);
+            unlink($tempDir . $fileToDownloadName);
         } catch (Exception $e) {
             header('HTTP/1.0 404 Not Found');
 

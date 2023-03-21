@@ -39,8 +39,11 @@ class LpcPickupWidget extends LpcPickup {
     }
 
     protected function addWidgetOnCart() {
+        $lpcImageUrl  = plugins_url('/images/colissimo_cropped.png', LPC_INCLUDES . 'init.php');
+        $imageHtmlTag = '<img src="' . $lpcImageUrl . '" style="max-width: 90px; display:inline; vertical-align: middle;">';
+
         $modalContent = '<div id="lpc_widget_container" class="widget_colissimo"></div>';
-        $this->modal  = new LpcModal($modalContent, __('Choose a PickUp point', 'wc_colissimo'), 'lpc_pick_up_widget_container');
+        $this->modal  = new LpcModal($modalContent, $imageHtmlTag, 'lpc_pick_up_widget_container');
 
         add_action(
             'wp_enqueue_scripts',
@@ -67,6 +70,9 @@ class LpcPickupWidget extends LpcPickup {
 
                     wp_register_style('lpc_pickup_widget', plugins_url('/css/pickup/widget.css', LPC_INCLUDES . 'init.php'), [], LPC_VERSION);
                     wp_enqueue_style('lpc_pickup_widget');
+
+                    wp_register_style('lpc_pickup', plugins_url('/css/pickup/pickup.css', LPC_INCLUDES . 'init.php'), [], LPC_VERSION);
+                    wp_enqueue_style('lpc_pickup');
 
                     wp_register_style('lpc_mapbox', self::MAP_CSS_URL, [], LPC_VERSION);
                     wp_enqueue_style('lpc_mapbox');

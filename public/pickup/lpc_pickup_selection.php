@@ -37,7 +37,7 @@ class LpcPickupSelection extends LpcComponent {
         return $this->ajaxDispatcher->makeSuccess(
             [
                 'html' => LpcHelper::renderPartial(
-                    'pick_up' . DS . 'pick_up_info.php',
+                    'pickup' . DS . 'pick_up_info.php',
                     ['relay' => $pickUpInfo]
                 ),
             ]
@@ -65,6 +65,7 @@ class LpcPickupSelection extends LpcComponent {
                 $order     = wc_get_order($orderId);
                 $shippings = $order->get_shipping_methods();
                 $shipping  = current($shippings);
+
                 if (!empty($shipping)) {
                     $shippingMethod = $shipping->get_method_id();
                     if (LpcRelay::ID == $shippingMethod) {

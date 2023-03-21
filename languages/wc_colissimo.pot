@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.7.5\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.8.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-01-13\n"
+"POT-Creation-Date: 2023-03-21\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -48,7 +48,7 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
-msgid "ID of your account for La Poste webservices"
+msgid "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
 msgstr ""
 
 msgid "Colissimo logs"
@@ -99,7 +99,7 @@ msgstr ""
 msgid "At"
 msgstr ""
 
-msgid "Display"
+msgid "Display on map"
 msgstr ""
 
 msgid "See logs"
@@ -151,12 +151,6 @@ msgid "No relay available"
 msgstr ""
 
 msgid "No relay selected"
-msgstr ""
-
-msgid "Confirm relay"
-msgstr ""
-
-msgid "Do you confirm the shipment to this relay:"
 msgstr ""
 
 msgid "Rates"
@@ -1623,9 +1617,63 @@ msgstr ""
 msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
 msgstr ""
 
-msgid "Open Street maps (free)"
+msgid "Leaflet (free)"
 msgstr ""
 
 msgid "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."
+msgstr ""
+
+msgid "Your site's cron system is disabled, the shipping statuses won't be updated."
+msgstr ""
+
+msgid "The packaging weight you configured is high, the shipping methods may not show up on your store if the packaging weight + the cart weight are greater than 30kg."
+msgstr ""
+
+msgid "Maximum number of displayed relays"
+msgstr ""
+
+msgid "Your ID must be a 6 digits number and your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract."
+msgstr ""
+
+msgid "Valid Colissimo credentials"
+msgstr ""
+
+msgid "Your Colissimo credentials are incorrect, you won't be able to generate labels or show the pickup map to your customers."
+msgstr ""
+
+msgid "Please enter your Colissimo credentials to be able to generate labels and show the pickup map."
+msgstr ""
+
+msgid "Pickup station"
+msgstr ""
+
+msgid "Post office"
+msgstr ""
+
+msgid "International"
+msgstr ""
+
+msgid "Type of displayed relays"
+msgstr ""
+
+msgid "SELECTED RELAY"
+msgstr ""
+
+msgid "AT %dm"
+msgstr ""
+
+msgid "Opening hours"
+msgstr ""
+
+msgid "Default display in mobile"
+msgstr ""
+
+msgid "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
+msgstr ""
+
+msgid "Map and list"
+msgstr ""
+
+msgid "List only"
 msgstr ""
 

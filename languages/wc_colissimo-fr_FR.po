@@ -37,8 +37,8 @@ msgstr "Configuration générale"
 msgid "ID"
 msgstr "ID"
 
-msgid "ID of your account for La Poste webservices"
-msgstr "Identifiant de votre compte pour les webservices La Poste"
+msgid "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
+msgstr "Identifiant de votre compte pour les webservices La Poste. Doit être un nombre à 6 chiffres et avoir un contrat Facilité ou Privilège valide sur colissimo.entreprise.laposte.fr"
 
 msgid "Colissimo logs"
 msgstr "Logs Colissimo"
@@ -88,8 +88,8 @@ msgstr "Choisir"
 msgid "At"
 msgstr "À"
 
-msgid "Display"
-msgstr "Afficher"
+msgid "Display on map"
+msgstr "Afficher sur la carte"
 
 msgid "See logs"
 msgstr "Voir les logs"
@@ -141,12 +141,6 @@ msgstr "Aucun point de retrait disponible"
 
 msgid "No relay selected"
 msgstr "Aucun point de retrait sélectionné"
-
-msgid "Confirm relay"
-msgstr "Confirmer le point de retrait"
-
-msgid "Do you confirm the shipment to this relay:"
-msgstr "Confirmez-vous la livraison à ce point de retrait :"
 
 msgid "Rates"
 msgstr "Frais"
@@ -1611,8 +1605,62 @@ msgstr "Ajouter la facture quand l'étiquette est téléchargée"
 msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
 msgstr "Sur le listing Colissimo quand vous téléchargez une seule étiquette, si cette option est cochée alors la facture sera ajoutée au fichier PDF"
 
-msgid "Open Street maps (free)"
-msgstr "Open Street maps (gratuit)"
+msgid "Leaflet (free)"
+msgstr "Leaflet (gratuit)"
 
 msgid "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."
 msgstr "Les frais de livraison ne doivent pas être gratuits pour que la déclaration de douanes soit valide, vous pouvez le modifier manuellement en activant l'option Modifier les prix et les poids."
+
+msgid "Your site's cron system is disabled, the shipping statuses won't be updated."
+msgstr "Le système de cron de votre site est désactivé, les statuts de livraison ne pourront pas être mis à jour."
+
+msgid "The packaging weight you configured is high, the shipping methods may not show up on your store if the packaging weight + the cart weight are greater than 30kg."
+msgstr "Le poids de l'emballage que vous avez configuré est élevé, les méthodes d'expédition peuvent ne pas s'afficher sur votre boutique si le poids de l'emballage + le poids du panier dépassent 30kg."
+
+msgid "Maximum number of displayed relays"
+msgstr "Nombre maximum de points de retrait affichés"
+
+msgid "Your ID must be a 6 digits number and your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract."
+msgstr "Votre ID doit être un nombre à 6 chiffres et vos identifiants doivent correspondre à un compte sur https://www.colissimo.entreprise.laposte.fr avec un contrat Facilité ou Privilège valide."
+
+msgid "Valid Colissimo credentials"
+msgstr "Identifiants Colissimo valides"
+
+msgid "Your Colissimo credentials are incorrect, you won't be able to generate labels or show the pickup map to your customers."
+msgstr "Vos idendifiants Colissimo sont incorrects, vous ne pourrez pas générer d'étiquette ou afficher la carte des points de retrait à vos clients."
+
+msgid "Please enter your Colissimo credentials to be able to generate labels and show the pickup map."
+msgstr "Veuillez entrer vos identifiants Colissimo pour pouvoir générer des étiquettes et afficher la carte des points de retrait."
+
+msgid "Pickup station"
+msgstr "Relais pickup"
+
+msgid "Post office"
+msgstr "Bureau de poste"
+
+msgid "International"
+msgstr "International"
+
+msgid "Type of displayed relays"
+msgstr "Type de points de retrait affichés"
+
+msgid "SELECTED RELAY"
+msgstr "POINT DE RETRAIT CHOISI"
+
+msgid "AT %dm"
+msgstr "A %dm"
+
+msgid "Opening hours"
+msgstr "Heures d'ouverture"
+
+msgid "Default display in mobile"
+msgstr "Affichage par défaut en mobile"
+
+msgid "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
+msgstr "Quand l'utilisateur est sur un appareil mobile avec GoogleMaps ou Leaflet, l'affichage par défaut peut être la liste des points de retrait ou la carte et la liste."
+
+msgid "Map and list"
+msgstr "Carte et liste"
+
+msgid "List only"
+msgstr "Liste uniquement"

@@ -141,6 +141,16 @@ abstract class LpcRestApi extends LpcComponent {
                 break;
             }
 
+            if (strpos($message, "\r\n\r\n") === false) {
+                LpcLogger::error(
+                    'Incomplete response from Colissimo API',
+                    [
+                        'response' => $message,
+                    ]
+                );
+                continue;
+            }
+
             $headers = [];
             [$headerLines, $body] = explode("\r\n\r\n", $message, 2);
 
@@ -149,13 +159,15 @@ abstract class LpcRestApi extends LpcComponent {
                 $headers[strtolower($key)] = $value;
             }
 
-            if ('application/json' === $headers['content-type']) {
+            if (!empty($headers['content-type']) && 'application/json' === $headers['content-type']) {
                 $body = json_decode($body, true);
             }
 
-            $parts[$headers['content-id']] = '<jsonInfos>' === $headers['content-id']
-                ? json_decode($body, true)
-                : $body;
+            if (!empty($headers['content-id'])) {
+                $parts[$headers['content-id']] = '<jsonInfos>' === $headers['content-id']
+                    ? json_decode($body, true)
+                    : $body;
+            }
         }
 
         return $parts;

@@ -1,11 +1,11 @@
 .lpc-modal section, .lpc-modal article{
-	height: 100%;
+	height: 99%;
 }
 
 
 /******************************************/
-/* lpc modal (based on wc-backbone-modal) */
-.lpc-modal .wc-backbone-modal .wc-backbone-modal-content{
+/* lpc modal (based on lpc-lib-modal) */
+.lpc-modal .lpc-lib-modal .lpc-lib-modal-content{
 	position: fixed;
 	background: #fff;
 	z-index: 100000;
@@ -18,27 +18,79 @@
 	height: 80%;
 }
 
-.lpc-modal .wc-backbone-modal .wc-backbone-modal-content article{
+.lpc-modal .lpc-lib-modal .lpc-lib-modal-content article{
 	overflow: auto;
 }
 
-.lpc-modal .wc-backbone-modal .select2-container{
+.lpc-modal .lpc-lib-modal .select2-container{
 	width: 100% !important;
 }
 
+#lpc_layer_button_search_desktop{
+	display: inline-block;
+}
+
+#lpc_layer_button_search_mobile{
+	display: none;
+	vertical-align: text-bottom;
+}
+
 @media screen and (max-width: 782px){
-	.lpc-modal .wc-backbone-modal .wc-backbone-modal-content{
+	.lpc-modal .lpc-lib-modal .lpc-lib-modal-content{
 		width: 100%;
 		height: 100%;
 		min-width: 100%;
 	}
 
-	.lpc-modal .wc-backbone-modal .wc-backbone-modal-content article{
-		max-height: 85% !important;
+	#lpc_layer_button_search_desktop{
+		display: none;
+	}
+
+	#lpc_layer_button_search_mobile{
+		display: inline-block;
+	}
+
+	.lpc-modal .lpc-lib-modal .lpc-lib-modal-content article{
+		max-height: 93% !important;
+	}
+
+	#lpc_layer_relay_switch_mobile{
+		display: block !important;
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		z-index: 100000;
+		border-radius: 50px;
+		background: #ee7203;
+		height: 50px;
+		width: 50px;
+		box-shadow: 0 0 20px 0px rgb(255 255 255 / 10%);
+	}
+
+	#lpc_layer_relay_switch_mobile .lpc_layer_relay_switch_mobile_icon{
+		height: 100%;
+		width: 100%;
+	}
+
+	#lpc_layer_relay_switch_mobile .lpc_layer_relay_switch_mobile_icon:before{
+		color: white;
+		position: absolute;
+		top: 47%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 30px;
+	}
+
+	.lpc_mobile_display_none{
+		display: none;
 	}
 }
 
-.lpc-modal .wc-backbone-modal-backdrop{
+#lpc_layer_relay_switch_mobile{
+	display: none;
+}
+
+.lpc-modal .lpc-lib-modal-backdrop{
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -50,132 +102,126 @@
 	z-index: 99900;
 }
 
-.lpc-modal .wc-backbone-modal-main{
+.lpc-modal .lpc-lib-modal-main{
 	padding-bottom: 10px;
 }
 
-.lpc-modal .wc-backbone-modal-main header,
-.lpc-modal .wc-backbone-modal-main article{
+.lpc-modal .lpc-lib-modal-main header,
+.lpc-modal .lpc-lib-modal-main article{
 	display: block;
 	position: relative;
 }
 
-.lpc-modal .wc-backbone-modal-main .wc-backbone-modal-header{
+.lpc-modal .lpc-lib-modal-main .lpc-lib-modal-header{
 	height: auto;
 	background: #fcfcfc;
-	padding: 1em 1.5em;
+	padding: 0.6em 1.5em;
 	border-bottom: 1px solid #ddd;
 }
 
-.lpc-modal .wc-backbone-modal-main .wc-backbone-modal-header h1{
+.lpc-modal .lpc-lib-modal-main .lpc-lib-modal-header h1{
 	margin: 0;
 	font-size: 18px;
 	font-weight: 700;
 	line-height: 1.5em;
 }
 
-.lpc-modal .wc-backbone-modal-main .wc-backbone-modal-header .modal-close-link{
+.lpc-modal .lpc-lib-modal-main .lpc-lib-modal-header .modal-close-link{
 	cursor: pointer;
 	color: #777;
-	height: 54px;
 	width: 54px;
 	padding: 0;
 	position: absolute;
 	top: 0;
 	right: 0;
 	text-align: center;
-	border: 0;
-	border-left: 1px solid #ddd;
 	background-color: transparent;
 	transition: color 0.1s ease-in-out, background 0.1s ease-in-out;
+	height: 100%;
+	border: none;
 }
 
-.lpc-modal .wc-backbone-modal-main .wc-backbone-modal-header .modal-close-link::before{
+.lpc-modal .lpc-lib-modal-main .lpc-lib-modal-header .modal-close-link::before{
 	font: normal 22px/50px 'dashicons' !important;
 	color: #666;
 	display: block;
 	content: '\f335';
 	font-weight: 300;
+	font-size: 18px !important;
 }
 
-.lpc-modal .wc-backbone-modal-main .wc-backbone-modal-header .modal-close-link:hover, .wc-backbone-modal-main .wc-backbone-modal-header .modal-close-link:focus{
-	background: #ddd;
-	border-color: #ccc;
-	color: #000;
-}
-
-.lpc-modal .wc-backbone-modal-main .wc-backbone-modal-header .modal-close-link:focus{
+.lpc-modal .lpc-lib-modal-main .lpc-lib-modal-header .modal-close-link:focus{
 	outline: none;
 }
 
-.lpc-modal .wc-backbone-modal-main article{
-	padding: 1.5em;
+.lpc-modal .lpc-lib-modal-main article{
+	padding: 1em 1.5em;
 }
 
-.lpc-modal .wc-backbone-modal-main article p{
+.lpc-modal .lpc-lib-modal-main article p{
 	margin: 1.5em 0;
 }
 
-.lpc-modal .wc-backbone-modal-main article p:first-child{
+.lpc-modal .lpc-lib-modal-main article p:first-child{
 	margin-top: 0;
 }
 
-.lpc-modal .wc-backbone-modal-main article p:last-child{
+.lpc-modal .lpc-lib-modal-main article p:last-child{
 	margin-bottom: 0;
 }
 
-.lpc-modal .wc-backbone-modal-main article .pagination{
+.lpc-modal .lpc-lib-modal-main article .pagination{
 	padding: 10px 0 0;
 	text-align: center;
 }
 
-.lpc-modal .wc-backbone-modal-main article table.widefat{
+.lpc-modal .lpc-lib-modal-main article table.widefat{
 	margin: 0;
 	width: 100%;
 	border: 0;
 	box-shadow: none;
 }
 
-.lpc-modal .wc-backbone-modal-main article table.widefat thead th{
+.lpc-modal .lpc-lib-modal-main article table.widefat thead th{
 	padding: 0 1em 1em 1em;
 	text-align: left;
 }
 
-.lpc-modal .wc-backbone-modal-main article table.widefat thead th:first-child{
+.lpc-modal .lpc-lib-modal-main article table.widefat thead th:first-child{
 	padding-left: 0;
 }
 
-.lpc-modal .wc-backbone-modal-main article table.widefat thead th:last-child{
+.lpc-modal .lpc-lib-modal-main article table.widefat thead th:last-child{
 	padding-right: 0;
 	text-align: right;
 }
 
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody td,
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody th{
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody td,
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody th{
 	padding: 1em;
 	text-align: left;
 	vertical-align: middle;
 }
 
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody td:first-child,
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody th:first-child{
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody td:first-child,
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody th:first-child{
 	padding-left: 0;
 }
 
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody td:last-child,
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody th:last-child{
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody td:last-child,
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody th:last-child{
 	padding-right: 0;
 	text-align: right;
 }
 
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody td select,
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody td .select2-container,
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody th select,
-.lpc-modal .wc-backbone-modal-main article table.widefat tbody th .select2-container{
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody td select,
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody td .select2-container,
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody th select,
+.lpc-modal .lpc-lib-modal-main article table.widefat tbody th .select2-container{
 	width: 100%;
 }
 
-.lpc-modal .wc-backbone-modal-main footer{
+.lpc-modal .lpc-lib-modal-main footer{
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -187,11 +233,15 @@
 	box-shadow: 0 -4px 4px -4px rgba(0, 0, 0, 0.1);
 }
 
-.lpc-modal .wc-backbone-modal-main footer .inner{
+.lpc-modal .lpc-lib-modal-main footer .inner{
 	text-align: right;
 	line-height: 23px;
 }
 
-.lpc-modal .wc-backbone-modal-main footer .inner .button{
+.lpc-modal .lpc-lib-modal-main footer .inner .button{
 	margin-bottom: 0;
+}
+
+#lpc_map .leaflet-control-zoom a{
+	text-decoration: none;
 }

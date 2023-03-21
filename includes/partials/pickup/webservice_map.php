@@ -1,5 +1,17 @@
 <div id="lpc_layer_relays">
 	<div class="content">
+
+        <?php
+        $classMap   = '';
+        $mobileIcon = 'dashicons-editor-ul';
+        if ('list' === LpcHelper::get_option('lpc_show_list_only_mobile')) {
+            $classMap   = 'class="lpc_mobile_display_none"';
+            $mobileIcon = 'dashicons-location-alt';
+        }
+        ?>
+		<span id="lpc_layer_relay_switch_mobile">
+			<span class="lpc_layer_relay_switch_mobile_icon dashicons <?php echo $mobileIcon; ?>"></span>
+		</span>
 		<div id="lpc_search_address">
 			<input
 					id="lpc_modal_relays_search_address"
@@ -21,13 +33,17 @@
 						value="<?php echo $args['ceTown']; ?>"
 						placeholder="<?php echo __('City', 'wc_colissimo'); ?>">
 				<input type="hidden" id="lpc_modal_relays_country_id" value="<?php echo $args['ceCountryId']; ?>">
-				<button id="lpc_layer_button_search" type="button"><?php echo __('Search', 'wc_colissimo'); ?></button>
+				<button id="lpc_layer_button_search" type="button">
+					<span id="lpc_layer_button_search_desktop"><?php echo __('Search', 'wc_colissimo'); ?></span>
+					<span class="dashicons dashicons-search" id="lpc_layer_button_search_mobile"></span>
+				</button>
 			</div>
 		</div>
 
-		<div id="lpc_left">
+		<div id="lpc_left" <?php echo $classMap; ?>>
 			<div id="lpc_map"></div>
 		</div>
+
 		<div id="lpc_right">
 			<div class="blockUI" id="lpc_layer_relays_loader" style="display: none;"></div>
 			<div id="lpc_layer_error_message" style="display: none;"></div>

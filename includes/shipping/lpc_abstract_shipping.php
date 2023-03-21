@@ -249,6 +249,10 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
     public function calculate_shipping($package = []) {
         $cost = null;
 
+        if (!$this->checkPickupAvailability()) {
+            return;
+        }
+
         if (!$this->lpcCapabilitiesPerCountry->getInfoForDestination($package['destination']['country'], $this->id)) {
             return;
         }
@@ -491,6 +495,25 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             ];
 
             $this->add_rate($rate);
+        }
+    }
+
+    private function checkPickupAvailability(): bool {
+        if (LpcRelay::ID !== $this->id) {
+            return true;
+        }
+
+        $testedCredentials = LpcHelper::get_option('lpc_current_credentials_tested');
+        if ($testedCredentials) {
+            return (bool) LpcHelper::get_option('lpc_current_credentials_valid', false);
+        } else {
+            $pickUpWidgetApi = LpcRegister::get('pickupWidgetApi');
+            $token           = $pickUpWidgetApi->authenticate();
+
+            update_option('lpc_current_credentials_tested', true);
+            update_option('lpc_current_credentials_valid', !empty($token));
+
+            return !empty($token);
         }
     }
 }

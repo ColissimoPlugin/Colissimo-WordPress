@@ -32,7 +32,7 @@
             "PT": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
             "SM": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "VA": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
-            "MF": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false}
+            "MF": {"domiciless": true, "domicileas": true, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false}
         }
     },
     "Z3": {

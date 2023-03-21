@@ -44,6 +44,7 @@ class LpcAdminPickupWidget extends LpcComponent {
                     );
 
                     LpcHelper::enqueueStyle('lpc_pickup_widget', plugins_url('/css/pickup/widget.css', LPC_INCLUDES . 'init.php'));
+                    LpcHelper::enqueueStyle('lpc_pickup', plugins_url('/css/pickup/pickup.css', LPC_INCLUDES . 'init.php'));
                 }
             }
         );
@@ -106,8 +107,11 @@ class LpcAdminPickupWidget extends LpcComponent {
 
         $args['widgetInfo'] = wp_json_encode($args['widgetInfo']);
 
+        $lpcImageUrl  = plugins_url('/images/colissimo_cropped.png', LPC_INCLUDES . 'init.php');
+        $imageHtmlTag = '<img src="' . $lpcImageUrl . '" style="max-width: 90px; display:inline; vertical-align: middle;">';
+
         $args['modal'] = new LpcModal(
-            '<div id="lpc_widget_container" class="widget_colissimo"></div>', __('Choose a PickUp point', 'wc_colissimo'),
+            '<div id="lpc_widget_container" class="widget_colissimo"></div>', $imageHtmlTag,
             'lpc_pick_up_widget_container'
         );
 

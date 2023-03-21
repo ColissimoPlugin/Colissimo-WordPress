@@ -25,7 +25,10 @@ class LpcPickupWebService extends LpcPickup {
             return;
         }
 
-        $this->modal = new LpcModal(null, 'Choose a PickUp point', 'lpc_pick_up_web_service');
+        $lpcImageUrl  = plugins_url('/images/colissimo_cropped.png', LPC_INCLUDES . 'init.php');
+        $imageHtmlTag = '<img src="' . $lpcImageUrl . '" style="max-width: 90px; display:inline; vertical-align: middle;">';
+
+        $this->modal = new LpcModal(null, $imageHtmlTag, 'lpc_pick_up_web_service');
 
         $this->ajaxDispatcher->register('pickupWS', [$this, 'pickupWS']);
 
@@ -45,9 +48,11 @@ class LpcPickupWebService extends LpcPickup {
                     wp_localize_script('lpc_pick_up_ws', 'lpcPickUpSelection', $args);
 
                     wp_register_style('lpc_pick_up_ws', plugins_url('/css/pickup/webservice.css', LPC_INCLUDES . 'init.php'), [], LPC_VERSION);
+                    wp_register_style('lpc_pick_up', plugins_url('/css/pickup/pickup.css', LPC_INCLUDES . 'init.php'), [], LPC_VERSION);
 
                     wp_enqueue_script('lpc_pick_up_ws');
                     wp_enqueue_style('lpc_pick_up_ws');
+                    wp_enqueue_style('lpc_pick_up');
                     $this->modal->loadScripts();
                 }
             }
@@ -134,6 +139,21 @@ class LpcPickupWebService extends LpcPickup {
             $listRelaysWS = $return->listePointRetraitAcheminement;
             $html         = '';
 
+            // Choose displayed relay types
+            $relayTypes = LpcHelper::get_option('lpc_relay_point_type', 'all');
+            if (empty($relayTypes)) {
+                $relayTypes = 'all';
+            }
+            if ('all' != $relayTypes) {
+                $listRelaysWS = array_filter($listRelaysWS, function ($relay) use ($relayTypes) {
+                    return in_array($relay->typeDePoint, $relayTypes);
+                });
+            }
+
+            // Limit number of displayed relays
+            $maxRelayPoint = LpcHelper::get_option('lpc_max_relay_point', 20);
+            $listRelaysWS  = array_slice($listRelaysWS, 0, $maxRelayPoint);
+
             $i           = 0;
             $partialArgs = [
                 'relaysNb'    => count($listRelaysWS),
@@ -157,10 +177,8 @@ class LpcPickupWebService extends LpcPickup {
 
             return $this->ajaxDispatcher->makeSuccess(
                 [
-                    'html'                 => $html,
-                    'chooseRelayText'      => __('Choose this relay', 'wc_colissimo'),
-                    'confirmRelayText'     => __('Confirm relay', 'wc_colissimo'),
-                    'confirmRelayDescText' => __('Do you confirm the shipment to this relay:', 'wc_colissimo'),
+                    'html'            => $html,
+                    'chooseRelayText' => __('Choose this relay', 'wc_colissimo'),
                 ]
             );
         } elseif (in_array($return->errorCode, [301, 300, 203])) {

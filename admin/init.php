@@ -141,6 +141,8 @@ class LpcAdminInit {
             'shipment_change',
             'country_capaibilities_import',
             'shipping_statuses_updated',
+            'disabled_cron',
+            'credentials_validity',
         ];
         foreach ($notifications as $oneNotification) {
             $notice_content = $lpc_admin_notices->get_notice($oneNotification);
@@ -178,6 +180,15 @@ class LpcAdminInit {
         ];
 
         add_screen_option($option, $args);
+
+        if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
+            $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
+            $lpc_admin_notices->add_notice(
+                'disabled_cron',
+                'notice-warning',
+                __('Your site\'s cron system is disabled, the shipping statuses won\'t be updated.', 'wc_colissimo')
+            );
+        }
     }
 
     public function lpc_set_option($status, $option, $value) {

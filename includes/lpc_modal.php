@@ -20,16 +20,9 @@ class LpcModal {
 
     public function registerScripts() {
         wp_register_script(
-            'wc-backbone-modal',
-            plugins_url('backbone-modal.min.js', LpcHelper::getWooCommerceDir() . '/assets/js/admin/backbone-modal.min.js'),
-            ['wp-backbone'],
-            LPC_VERSION
-        );
-
-        wp_register_script(
             'lpc_modal',
             plugins_url('/js/modal.js', __FILE__),
-            ['wc-backbone-modal'],
+            [],
             LPC_VERSION,
             true
         );

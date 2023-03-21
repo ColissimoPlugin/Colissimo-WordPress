@@ -9,7 +9,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
     const FROM_DOM1 = 'dom1';
     const DOM1_COUNTRIES_CODE = ['BL', 'GF', 'GP', 'MQ', 'PM', 'RE', 'YT', 'MF'];
     const DOM2_COUNTRIES_CODE = ['NC', 'PF', 'TF', 'WF'];
-    const FRANCE_COUNTRIES_CODE = ['FR', 'MC'];
+    const FRANCE_COUNTRIES_CODE = ['FR', 'MC', 'AD'];
 
     private $capabilitiesByCountry;
     private $shippingMethods;
