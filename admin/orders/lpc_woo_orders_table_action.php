@@ -54,7 +54,7 @@ class LpcWooOrdersTableAction extends LpcComponent {
             LpcLogger::error(__METHOD__, [$e->getMessage()]);
         }
 
-        wp_redirect('edit.php?post_type=shop_order');
+        wp_redirect($this->getUrlWithWooCommerceFilters('edit.php?post_type=shop_order'));
     }
 
     public function addAction($actions, $order) {
@@ -69,10 +69,21 @@ class LpcWooOrdersTableAction extends LpcComponent {
         return $actions;
     }
 
-
     public function generateUrl($orderId) {
-        return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME)
-               . '&' . self::ORDER_ID_VAR_NAME . '=' . (int) $orderId;
+        $url = $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME) . '&' . self::ORDER_ID_VAR_NAME . '=' . (int) $orderId;
+
+        return $this->getUrlWithWooCommerceFilters($url);
     }
 
+    private function getUrlWithWooCommerceFilters(string $url): string {
+        $wcFilters = ['s', 'shop_order_subtype', 'post_status', '_customer_user', 'm'];
+        foreach ($wcFilters as $oneParameter) {
+            $parameterValue = LpcHelper::getVar($oneParameter);
+            if (!empty($parameterValue)) {
+                $url .= '&' . $oneParameter . '=' . $parameterValue;
+            }
+        }
+
+        return $url;
+    }
 }

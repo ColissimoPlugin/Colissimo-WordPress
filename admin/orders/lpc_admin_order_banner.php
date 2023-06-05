@@ -91,8 +91,15 @@ class LpcAdminOrderBanner extends LpcComponent {
     }
 
     public function bannerContent($post) {
-        $orderId        = $post->ID;
-        $order          = wc_get_order($post);
+        $orderId = $post->ID;
+        $order   = wc_get_order($post);
+        if (empty($order) || !method_exists($order, 'get_shipping_methods')) {
+            $warningMessage = __('This order could not be loaded by WooCommerce', 'wc_colissimo');
+            echo '<div class="lpc__admin__order_banner__warning"><span>' . $warningMessage . '</span></div>';
+
+            return;
+        }
+
         $shippingMethod = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
 
         if (empty($shippingMethod)) {

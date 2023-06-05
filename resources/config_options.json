@@ -479,6 +479,14 @@
       "default": "no"
     },
     {
+      "id": "lpc_calculate_shipping_before_taxes",
+      "type": "checkbox",
+      "title": "Calculate shipping method before applying taxes",
+      "desc": "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any tax.",
+      "desc_tip": true,
+      "default": "no"
+    },
+    {
       "id": "lpc_deliveryLabelFormat",
       "type": "select",
       "title": "Delivery label format",

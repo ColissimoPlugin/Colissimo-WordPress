@@ -124,6 +124,16 @@ class LpcLabelGenerationInward extends LpcComponent {
             'mobileNumber' => $order->get_billing_phone(),
         ];
 
+        // For Luxembourg, the zip code must not have the "L-" prefix
+        if ('LU' === strtoupper($customerAddress['countryCode'])) {
+            $customerAddress['zipCode'] = ltrim($customerAddress['zipCode'], 'lL-');
+        }
+
+        $shippingPhone = $order->get_shipping_phone();
+        if (!empty($shippingPhone)) {
+            $customerAddress['mobileNumber'] = $shippingPhone;
+        }
+
         $productCode = $this->capabilitiesPerCountry->getReturnProductCodeForDestination($order->get_shipping_country());
 
         if (empty($productCode)) {

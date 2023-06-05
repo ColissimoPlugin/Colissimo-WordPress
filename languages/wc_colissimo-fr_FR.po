@@ -1091,7 +1091,7 @@ msgid "Exclude shipping methods"
 msgstr "Exclure ces méthodes de livraison"
 
 msgid "When the user will enter this coupon code, the following delivery methods won't be available."
-msgstr "Quand un utilisateur entrera ce coupon, les méthodes suivantes ne seront pas affichées"
+msgstr "Quand un utilisateur entrera ce code promo, les méthodes suivantes ne seront pas affichées"
 
 msgid "Display a button to import your tracking number in Colissimo listing"
 msgstr "Afficher un bouton pour importer vos numéros de suivi dans le listing Colissimo"
@@ -1127,7 +1127,7 @@ msgid "Every Fifteen Minutes"
 msgstr "Toutes les quinze minutes"
 
 msgid "Calculate shipping method before applying coupons"
-msgstr "Calculer les méthodes de livraisons avant que les coupons ne soient appliqués"
+msgstr "Calculer les méthodes de livraison avant que les codes promo ne soient appliqués"
 
 msgid "Delete labels"
 msgstr "Supprimer toutes les étiquettes"
@@ -1190,7 +1190,7 @@ msgid "This option allows you to set a default country for products without coun
 msgstr "Cette option vous permet d'ajouter un pays par défaut pour les produits sans pays d'origine"
 
 msgid "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any coupon."
-msgstr "Si cette option est activée, les méthodes et les frais d'expédition disponibles seront calculés sur la base du prix du panier avant l'application de tout coupon."
+msgstr "Si cette option est activée, les méthodes et les frais d'expédition disponibles seront calculés sur la base du prix du panier avant l'application de tout code promo."
 
 msgid "There has been an error while downloading the return label, please contact us for more information."
 msgstr "Il y a eu une erreur lors de la génération de l'étiquette retour, veuillez nous contacter pour plus d'information."
@@ -1664,3 +1664,18 @@ msgstr "Carte et liste"
 
 msgid "List only"
 msgstr "Liste uniquement"
+
+msgid "The product couldn't be found."
+msgstr "Le produit n'a pas pu être trouvé."
+
+msgid "This order could not be loaded by WooCommerce"
+msgstr "Cette commande n'a pas pu être chargée par WooCommerce"
+
+msgid "The DIVI option General => Performance => Defer jQuery And jQuery Migrate is activated. Please disable it to prevent DIVI from breaking the Colissimo widget, or change the pickup map type."
+msgstr "L'option DIVI Général => Performance => Différer jQuery et jQuery Migrate est activée. Veuillez la désactiver pour empêcher DIVI de casser le widget Colissimo, ou changez de type de carte de points de retrait"
+
+msgid "Calculate shipping method before applying taxes"
+msgstr "Calculer les méthodes de livraison avant que les taxes ne soient appliquées"
+
+msgid "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any tax."
+msgstr "Si cette option est activée, les méthodes d'expédition disponibles et les frais seront calculés sur la base du prix du panier avant l'application de toute taxe."

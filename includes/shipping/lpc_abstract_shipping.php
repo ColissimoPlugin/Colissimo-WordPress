@@ -108,8 +108,15 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
     }
 
     public function generate_shipping_rates_html() {
-        $shipping        = new \WC_Shipping();
+        $shipping = new \WC_Shipping();
+        global $sitepress;
+        if (!empty($sitepress)) {
+            $removed = remove_filter('terms_clauses', [$sitepress, 'terms_clauses']);
+        }
         $shippingClasses = $shipping->get_shipping_classes();
+        if (!empty($sitepress) && $removed) {
+            add_filter('terms_clauses', [$sitepress, 'terms_clauses'], 10, 3);
+        }
 
         $shippingRates = LpcRegister::get('shippingRates');
 
@@ -125,9 +132,16 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
     }
 
     public function generate_classes_shipping_html($key) {
-        $shipping        = new \WC_Shipping();
+        $shipping = new \WC_Shipping();
+        global $sitepress;
+        if (!empty($sitepress)) {
+            $removed = remove_filter('terms_clauses', [$sitepress, 'terms_clauses']);
+        }
         $shippingClasses = $shipping->get_shipping_classes();
-        $args            = [];
+        if (!empty($sitepress) && $removed) {
+            add_filter('terms_clauses', [$sitepress, 'terms_clauses'], 10, 3);
+        }
+        $args = [];
 
         if ('classes_free_shipping' === $key) {
             $args['values']          = $shippingClasses;
@@ -282,8 +296,11 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         $discountToApply = 0;
 
         foreach ($package['contents'] as $item) {
-            $articleQuantity       += $item['quantity'];
-            $product               = $item['data'];
+            $articleQuantity += $item['quantity'];
+            $product         = $item['data'];
+            if (empty($product)) {
+                continue;
+            }
             $totalWeight           += (float) $product->get_weight() * $item['quantity'];
             $cartShippingClasses[] = $product->get_shipping_class_id();
 
@@ -307,9 +324,13 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             return;
         }
 
-        // For the future, if we want to calculate price on HorsTaxes checkout, we only need to calculate on $lineTotal
-        $totalPrice              = round($lineTax + $lineTotal, 2);
-        $totalWithoutCouponPrice = round($lineSubTax + $lineSubTotal, 2);
+        if (LpcHelper::get_option('lpc_calculate_shipping_before_taxes', 'no') === 'yes') {
+            $totalPrice              = round($lineTotal, 2);
+            $totalWithoutCouponPrice = round($lineSubTotal, 2);
+        } else {
+            $totalPrice              = round($lineTax + $lineTotal, 2);
+            $totalWithoutCouponPrice = round($lineSubTax + $lineSubTotal, 2);
+        }
 
         $totalPrice = 'yes' === LpcHelper::get_option('lpc_calculate_shipping_before_coupon', 'no') ? $totalWithoutCouponPrice : $totalPrice;
 

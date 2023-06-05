@@ -1665,3 +1665,18 @@ msgstr "Map and list"
 
 msgid "List only"
 msgstr "List only"
+
+msgid "The product couldn't be found."
+msgstr "The product couldn't be found."
+
+msgid "This order could not be loaded by WooCommerce"
+msgstr "This order could not be loaded by WooCommerce"
+
+msgid "The DIVI option General => Performance => Defer jQuery And jQuery Migrate is activated. Please disable it to prevent DIVI from breaking the Colissimo widget, or change the map type."
+msgstr "The DIVI option General => Performance => Defer jQuery And jQuery Migrate is activated. Please disable it to prevent DIVI from breaking the Colissimo widget, or change the map type."
+
+msgid "Calculate shipping method before applying taxes"
+msgstr "Calculate shipping method before applying taxes"
+
+msgid "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any tax."
+msgstr "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any tax."

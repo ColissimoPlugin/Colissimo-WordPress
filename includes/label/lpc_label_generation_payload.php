@@ -209,8 +209,13 @@ class LpcLabelGenerationPayload {
         } else {
             $totalWeight = 0;
             foreach ($order->get_items() as $item) {
-                $data          = $item->get_data();
-                $product       = $item->get_product();
+                $data    = $item->get_data();
+                $product = $item->get_product();
+                if (empty($product)) {
+                    throw new Exception(
+                        __('The product couldn\'t be found.', 'wc_colissimo')
+                    );
+                }
                 $productWeight = $product->get_weight() < 0.01 ? 0.01 : $product->get_weight();
                 $weight        = (float) $productWeight * $data['quantity'];
 
@@ -704,6 +709,11 @@ class LpcLabelGenerationPayload {
             }
 
             $product = $item->get_product();
+            if (empty($product)) {
+                throw new Exception(
+                    __('The product couldn\'t be found.', 'wc_colissimo')
+                );
+            }
 
             $quantity = !$isMasterParcel && isset($customParams['items'][$itemId]['qty']) ? $customParams['items'][$itemId]['qty'] : $item->get_quantity();
 
@@ -726,7 +736,13 @@ class LpcLabelGenerationPayload {
 
             $totalItemsAmount += $unitaryValue * $quantity;
 
-            $description           = substr($item->get_name(), 0, 64);
+            // Handle emojis in product name
+            $description        = $item->get_name();
+            $encodedDescription = wp_json_encode($description);
+            if (strpos($encodedDescription, '\u') !== false) {
+                $description = trim(preg_replace('#\\\u.{4}#Ui', '', trim($encodedDescription, '"')));
+            }
+            $description           = substr($description, 0, 64);
             $articleDescriptions[] = $description;
 
             $customsArticle = [

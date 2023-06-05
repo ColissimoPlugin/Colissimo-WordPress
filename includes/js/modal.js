@@ -14,7 +14,7 @@ function LpcModal(options) {
             console.error('Error while getting the template of the modal');
         }
 
-        template.insertAdjacentHTML('afterend', `<div id="${modalId}">${template.innerHTML}</div>`);
+        document.body.insertAdjacentHTML('beforeend', `<div id="${modalId}">${template.innerHTML}</div>`);
         modal = document.getElementById(modalId);
     } else {
         modal.style.display = 'block';

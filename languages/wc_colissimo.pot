@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.8.0\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.8.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-03-21\n"
+"POT-Creation-Date: 2023-06-05\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -1675,5 +1675,20 @@ msgid "Map and list"
 msgstr ""
 
 msgid "List only"
+msgstr ""
+
+msgid "The product couldn't be found."
+msgstr ""
+
+msgid "This order could not be loaded by WooCommerce"
+msgstr ""
+
+msgid "The DIVI option General => Performance => Defer jQuery And jQuery Migrate is activated. Please disable it to prevent DIVI from breaking the Colissimo widget, or change the map type."
+msgstr ""
+
+msgid "Calculate shipping method before applying taxes"
+msgstr ""
+
+msgid "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any tax."
 msgstr ""
 

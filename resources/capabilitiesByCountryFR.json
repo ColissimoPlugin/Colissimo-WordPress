@@ -40,7 +40,7 @@
         "countries": {
             "CH": {"domiciless": "DOM", "domicileas": "DOS", "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": "DOS", "return": "CORI", "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "CZ": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
-            "DK": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
+            "DK": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
             "EE": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
             "FO": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "GL": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
@@ -49,7 +49,7 @@
             "LT": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
             "LV": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
             "PL": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
-            "SE": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": false, "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
+            "SE": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
             "SI": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false},
             "SK": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": true, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": false, "insurance": true, "flashss": false, "flashas": false}
         }

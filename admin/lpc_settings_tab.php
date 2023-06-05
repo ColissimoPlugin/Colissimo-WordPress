@@ -42,6 +42,8 @@ class LpcSettingsTab extends LpcComponent {
         add_action('load-woocommerce_page_wc-settings', [$this, 'warningPackagingWeight']);
         // Invalid credentials warning
         add_action('load-woocommerce_page_wc-settings', [$this, 'warningCredentials']);
+        // DIVI breaking the pickup map in widget mode
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningDivi']);
 
         $this->initSeeLog();
         $this->initMailto();
@@ -243,7 +245,7 @@ class LpcSettingsTab extends LpcComponent {
         $args['id_and_name'] = 'lpc_packaging_weight';
         $args['label']       = 'Packaging weight (%s)';
         $args['value']       = get_option($args['id_and_name']);
-        $args['desc']        = 'The packaging weight will be added to the products weight on label generation.';
+        $args['desc']        = __('The packaging weight will be added to the products weight on label generation.', 'wc_colissimo');
         echo LpcHelper::renderPartial('settings' . DS . 'number_input_weight.php', $args);
     }
 
@@ -499,6 +501,37 @@ class LpcSettingsTab extends LpcComponent {
                 __('Your Colissimo credentials are incorrect, you won\'t be able to generate labels or show the pickup map to your customers.', 'wc_colissimo')
             );
         }
+    }
+
+    public function warningDivi() {
+        $currentTab = LpcHelper::getVar('tab');
+
+        if ('lpc' !== $currentTab) {
+            return;
+        }
+
+        $mapType = LpcHelper::get_option('lpc_pickup_map_type', 'widget');
+        if ('widget' !== $mapType) {
+            return;
+        }
+
+        $theme = wp_get_theme();
+        if ('Divi' !== $theme->name || !function_exists('et_get_option')) {
+            return;
+        }
+
+        global $shortname;
+        $option = et_get_option($shortname . '_enable_jquery_body', 'on');
+        if ('on' !== $option) {
+            return;
+        }
+
+        WC_Admin_Settings::add_error(
+            __(
+                'The DIVI option General => Performance => Defer jQuery And jQuery Migrate is activated. Please disable it to prevent DIVI from breaking the Colissimo widget, or change the pickup map type.',
+                'wc_colissimo'
+            )
+        );
     }
 
     private function logCredentialsValidity($token) {

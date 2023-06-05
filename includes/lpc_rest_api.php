@@ -29,7 +29,7 @@ abstract class LpcRestApi extends LpcComponent {
                 break;
             case self::DATA_TYPE_JSON:
             default:
-                $data       = wp_json_encode($params);
+                $data = wp_json_encode($params);
                 $httpHeader = ['Content-Type: application/json'];
                 break;
         }

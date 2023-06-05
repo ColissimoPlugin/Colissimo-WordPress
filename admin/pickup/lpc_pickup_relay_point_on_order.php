@@ -8,8 +8,8 @@ class LpcPickupRelayPointOnOrder extends LpcComponent {
     }
 
     public function displayRelayPointInfo($id, WC_Order_Item $item) {
-        $methodId = @$item->get_data()['method_id'];
-        if (LpcRelay::ID === $methodId) {
+        $itemData = @$item->get_data();
+        if (!empty($itemData['method_id']) && LpcRelay::ID === $itemData['method_id']) {
             $orderId = $item->get_order_id();
             echo LpcHelper::renderPartial(
                 'pickup/relay_point_info_on_order.php',
