@@ -5,13 +5,17 @@ class LpcDbDefinition extends LpcComponent {
     protected $outwardLabelDb;
     /** @var LpcInwardLabelDb */
     protected $inwardLabelDb;
+    /** @var LpcBordereauDb */
+    protected $bordereauDb;
 
     public function __construct(
         LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcInwardLabelDb $inwardLabelDb = null
+        LpcInwardLabelDb $inwardLabelDb = null,
+        LpcBordereauDb $bordereauDb = null
     ) {
         $this->outwardLabelDb = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
         $this->inwardLabelDb  = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
+        $this->bordereauDb    = LpcRegister::get('bordereauDb', $bordereauDb);
     }
 
     public function init() {
@@ -36,5 +40,8 @@ class LpcDbDefinition extends LpcComponent {
 
         $inwardSql = $this->inwardLabelDb->getTableDefinition();
         dbDelta($inwardSql);
+
+        $bordereauSql = $this->bordereauDb->getTableDefinition();
+        dbDelta($bordereauSql);
     }
 }

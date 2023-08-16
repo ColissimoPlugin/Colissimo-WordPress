@@ -19,6 +19,9 @@ class LpcAdminOrderBanner extends LpcComponent {
     /** @var LpcAdminNotices */
     protected $lpcAdminNotices;
 
+    /** @var LpcAdminOrderAffect */
+    protected $lpcAdminOrderAffect;
+
     /** @var LpcOutwardLabelDb */
     protected $outwardLabelDb;
 
@@ -34,6 +37,12 @@ class LpcAdminOrderBanner extends LpcComponent {
     /** @var LpcColissimoStatus */
     protected $colissimoStatus;
 
+    /** @var LpcAdminPickupWidget */
+    protected $lpcAdminPickupWidget;
+
+    /** @var LpcAdminPickupWebService */
+    protected $lpcAdminPickupWebService;
+
     public function __construct(
         LpcLabelQueries $lpcLabelQueries = null,
         LpcBordereauQueries $lpcBordereauQueries = null,
@@ -45,7 +54,10 @@ class LpcAdminOrderBanner extends LpcComponent {
         LpcBordereauDownloadAction $bordereauDownloadAction = null,
         LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
         LpcCustomsDocumentsApi $customsDocumentsApi = null,
-        LpcColissimoStatus $colissimoStatus = null
+        LpcColissimoStatus $colissimoStatus = null,
+        LpcAdminOrderAffect $lpcAdminOrderAffect = null,
+        LpcAdminPickupWebService $lpcAdminPickupWebService = null,
+        LpcAdminPickupWidget $lpcAdminPickupWidget = null
     ) {
         $this->lpcLabelQueries           = LpcRegister::get('labelQueries', $lpcLabelQueries);
         $this->lpcBordereauQueries       = LpcRegister::get('bordereauQueries', $lpcBordereauQueries);
@@ -58,6 +70,12 @@ class LpcAdminOrderBanner extends LpcComponent {
         $this->capabilitiesPerCountry    = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->customsDocumentsApi       = LpcRegister::get('customsDocumentsApi', $customsDocumentsApi);
         $this->colissimoStatus           = LpcRegister::get('colissimoStatus', $colissimoStatus);
+        $this->lpcAdminOrderAffect       = LpcRegister::get('lpcAdminOrderAffect', $lpcAdminOrderAffect);
+        if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
+            $this->lpcAdminPickupWidget = LpcRegister::get('adminPickupWidget', $lpcAdminPickupWidget);
+        } else {
+            $this->lpcAdminPickupWebService = LpcRegister::get('adminPickupWebService', $lpcAdminPickupWebService);
+        }
     }
 
     public function init() {
@@ -102,9 +120,35 @@ class LpcAdminOrderBanner extends LpcComponent {
 
         $shippingMethod = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
 
+        $methods = $this->lpcAdminOrderAffect->getColissimoShippingMethodsAvailable($order);
+
+        if ('lpc_relay' !== $shippingMethod) {
+            unset($methods[$shippingMethod]);
+        }
+
+        $methods = array_map(
+            function ($value) {
+                return $value->get_method_title();
+            },
+            $methods
+        );
+
+        $args['lpc_shipping_methods'] = $methods;
+
+        $args['link_choose_relay'] = 'widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')
+            ? $this->lpcAdminPickupWidget->addWidget($order)
+            : $this->lpcAdminPickupWebService->addWebserviceMap($order);
+
+        $args['lpc_partial_name'] = 'lpc_order_affect_methods_banner';
+
+        if (!empty($shippingMethod)) {
+            $args['button_text'] = __('Change Colissimo shipping method', 'wc_colissimo');
+        }
+
+        echo LpcHelper::renderPartial('orders' . DS . 'lpc_order_affect_methods.php', $args);
+
         if (empty($shippingMethod)) {
             $warningMessage = __('This order is not shipped by Colissimo', 'wc_colissimo');
-
             echo '<div class="lpc__admin__order_banner__warning"><span>' . $warningMessage . '</span></div>';
 
             return;
@@ -113,7 +157,7 @@ class LpcAdminOrderBanner extends LpcComponent {
         $trackingNumbers = [];
         $labelFormat     = [];
 
-        $this->lpcLabelQueries->getTrackingNumbersByOrdersId($trackingNumbers, $labelFormat, [$orderId]);
+        $this->lpcLabelQueries->getTrackingNumbersByOrdersId($trackingNumbers, $labelFormat, $labelInfoByTrackingNumber, [$orderId]);
 
         $trackingNumbersForOrder = !empty($trackingNumbers[$orderId]) ? $trackingNumbers[$orderId] : [];
 
@@ -201,9 +245,7 @@ class LpcAdminOrderBanner extends LpcComponent {
         $args['lpc_default_customs_category'] = LpcHelper::get_option('lpc_customs_defaultCustomsCategory', 5);
 
         if (!empty($trackingNumbersForOrder)) {
-            $date = date('Y-m-d');
-
-            if (in_array($countryCode, ['GF', 'GP', 'MQ', 'YT']) || ('RE' === $countryCode && $date > '2022-05-31')) {
+            if (in_array($countryCode, ['GF', 'GP', 'MQ', 'RE', 'YT'])) {
                 $args['lpc_customs_needed'] = $this->capabilitiesPerCountry->getIsCn23RequiredForDestination($order);
             }
 

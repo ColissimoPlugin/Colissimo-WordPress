@@ -78,10 +78,11 @@ class LpcPickupWebService extends LpcPickup {
         $map = LpcHelper::renderPartial(
             'pickup' . DS . 'webservice_map.php',
             [
-                'ceAddress'   => $customer['shipping_address'],
-                'ceZipCode'   => $customer['shipping_postcode'],
-                'ceTown'      => $customer['shipping_city'],
-                'ceCountryId' => $customer['shipping_country'],
+                'ceAddress'     => $customer['shipping_address'],
+                'ceZipCode'     => $customer['shipping_postcode'],
+                'ceTown'        => $customer['shipping_city'],
+                'ceCountryId'   => $customer['shipping_country'],
+                'maxRelayPoint' => LpcHelper::get_option('lpc_max_relay_point', 20),
             ]
         );
         $this->modal->setContent($map);
@@ -120,6 +121,8 @@ class LpcPickupWebService extends LpcPickup {
             'countryCode' => LpcHelper::getVar('countryId'),
         ];
 
+        $loadMore = (int) LpcHelper::getVar('loadMore', 0) === 1;
+
         $resultWs = $this->getPickupWS($address);
         // When an exception is throw
         if (empty($resultWs->return)) {
@@ -151,7 +154,7 @@ class LpcPickupWebService extends LpcPickup {
             }
 
             // Limit number of displayed relays
-            $maxRelayPoint = LpcHelper::get_option('lpc_max_relay_point', 20);
+            $maxRelayPoint = $loadMore ? 20 : LpcHelper::get_option('lpc_max_relay_point', 20);
             $listRelaysWS  = array_slice($listRelaysWS, 0, $maxRelayPoint);
 
             $i           = 0;
@@ -179,6 +182,7 @@ class LpcPickupWebService extends LpcPickup {
                 [
                     'html'            => $html,
                     'chooseRelayText' => __('Choose this relay', 'wc_colissimo'),
+                    'loadMore'        => $loadMore ? 1 : 0,
                 ]
             );
         } elseif (in_array($return->errorCode, [301, 300, 203])) {

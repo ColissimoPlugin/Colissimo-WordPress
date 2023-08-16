@@ -29,18 +29,18 @@ class LpcOutwardLabelDb extends LpcDb {
 
         return <<<END_SQL
 CREATE TABLE $table_name (
-    id               INT UNSIGNED        NOT NULL AUTO_INCREMENT,
-    order_id         BIGINT(20) UNSIGNED NOT NULL,
-    label            MEDIUMBLOB          NULL,
-    label_format     VARCHAR(255)        NULL,
-    label_created_at DATETIME            NULL,
-    cn23             MEDIUMBLOB          NULL,
-    tracking_number  VARCHAR(255)        NULL,
-    bordereau_id     BIGINT(20)          NULL,
-    detail           LONGTEXT            NULL,
-    printed          TINYINT(1)          NOT NULL DEFAULT 0,
-    status_id        INT UNSIGNED        NULL,
-    label_type       VARCHAR(10)         NOT NULL DEFAULT "CLASSIC",
+    id               INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+    order_id         INT(20) UNSIGNED NOT NULL,
+    label            MEDIUMBLOB       NULL,
+    label_format     VARCHAR(10)      NULL,
+    label_created_at DATETIME         NULL,
+    cn23             MEDIUMBLOB       NULL,
+    tracking_number  VARCHAR(20)      NULL,
+    bordereau_id     INT(20) UNSIGNED NULL,
+    detail           TEXT             NULL,
+    printed          TINYINT(1)       NOT NULL DEFAULT 0,
+    status_id        INT UNSIGNED     NULL,
+    label_type       VARCHAR(10)      NOT NULL DEFAULT "CLASSIC",
     PRIMARY KEY (id),
     INDEX order_id (order_id),
     INDEX tracking_number (tracking_number)
@@ -278,7 +278,8 @@ END_SQL;
                         tracking_number,
                         label_format,
                         id,
-                        detail
+                        detail,
+                        label_created_at
 					FROM {$tableName}
 					WHERE order_id IN ('" . implode("', '", $ordersId) . "') {$where}
 					ORDER BY order_id DESC, label_created_at DESC";
@@ -419,6 +420,19 @@ END_SQL;
         // phpcs:enable
     }
 
+    public function updateToVersion182() {
+        $tableName = $this->getTableName();
+
+        // phpcs:disable
+        global $wpdb;
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `order_id` `order_id` INT(20) UNSIGNED NOT NULL');
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `label_format` `label_format` VARCHAR(10) NULL');
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `tracking_number` `tracking_number` VARCHAR(20) NULL');
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `bordereau_id` `bordereau_id` INT(20) UNSIGNED NULL');
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `detail` `detail` TEXT NULL');
+        // phpcs:enable
+    }
+
     public function addBordereauIdOnBordereauGeneration($outwardLabelIds, $bordereauId) {
         if (empty($outwardLabelIds) || empty($bordereauId)) {
             return;
@@ -450,7 +464,10 @@ END_SQL;
         global $wpdb;
         $tableName = $this->getTableName();
 
-        $todayFirstHour = date('Y-m-d 00:00:00', time());
+        $daysPerPeriod  = intval(LpcHelper::get_option('lpc_label_slip_day_to_substract', 1));
+        $dayToSubstract = empty($daysPerPeriod) ? 0 : $daysPerPeriod - 1;
+
+        $todayFirstHour = date('Y-m-d 00:00:00', strtotime('-' . $dayToSubstract . ' day', time()));
 
         // phpcs:disable
         $query = <<<END_SQL

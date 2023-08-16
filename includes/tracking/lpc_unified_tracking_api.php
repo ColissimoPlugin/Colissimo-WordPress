@@ -139,7 +139,16 @@ class LpcUnifiedTrackingApi extends LpcComponent {
     }
 
     public function updateAllStatuses($login = null, $password = null, $ip = null, $lang = null) {
-        $fromDate = date('Y-m-d', strtotime(self::UPDATE_STATUS_PERIOD));
+        $timePeriod = self::UPDATE_STATUS_PERIOD;
+
+        /**
+         * Filter allowing to modify the time period for which the tracking status should be updated.
+         *
+         * @since 1.9.0
+         */
+        $timePeriod = apply_filters('lpc_update_delivery_status_period', $timePeriod);
+
+        $fromDate = date('Y-m-d', strtotime($timePeriod));
 
         $params = [
             LpcOrderQueries::LPC_ALIAS_TABLES_NAME['posts'] . '.post_date > \'' . esc_sql($fromDate) . '\'',
@@ -198,7 +207,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
             return;
         }
 
-        $orderIdsToUpdateTracking = array_splice($allOrderIdsToUpdateTracking, 0, 10);
+        $orderIdsToUpdateTracking = array_splice($allOrderIdsToUpdateTracking, 0, 20);
         $orderStatusOnDelivered   = LpcHelper::get_option('lpc_status_on_delivered', LpcOrderStatuses::WC_LPC_DELIVERED);
 
         foreach ($orderIdsToUpdateTracking as $orderId) {

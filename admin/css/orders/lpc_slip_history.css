@@ -1,0 +1,9 @@
+.lpc-actions .dashicons{
+	font-size: 1rem;
+	cursor: pointer;
+	margin: 0 5px;
+}
+
+.lpc-actions .dashicons-printer{
+	color: #50575e !important;
+}

@@ -219,9 +219,11 @@ class LpcLabelGenerationOutward extends LpcComponent {
             $recipient['zipCode'] = ltrim($recipient['zipCode'], 'lL-');
         }
 
-        $shippingPhone = $order->get_shipping_phone();
-        if (!empty($shippingPhone)) {
-            $recipient['mobileNumber'] = $shippingPhone;
+        if (method_exists($order, 'get_shipping_phone')) {
+            $shippingPhone = $order->get_shipping_phone();
+            if (!empty($shippingPhone)) {
+                $recipient['mobileNumber'] = $shippingPhone;
+            }
         }
 
         $productCode = $this->capabilitiesPerCountry->getProductCodeForOrder($order);

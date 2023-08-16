@@ -45,6 +45,7 @@ class LpcSettingsTab extends LpcComponent {
         // DIVI breaking the pickup map in widget mode
         add_action('load-woocommerce_page_wc-settings', [$this, 'warningDivi']);
 
+        $this->initOnboarding();
         $this->initSeeLog();
         $this->initMailto();
         $this->initTelsupport();
@@ -60,14 +61,23 @@ class LpcSettingsTab extends LpcComponent {
         $this->initDefaultCountry();
         $this->initMultiSelectRelayType();
         $this->fixSavePassword();
+        $this->intiVideoTutorials();
+    }
+
+    protected function intiVideoTutorials() {
+        add_action('woocommerce_admin_field_videotutorials', [$this, 'displayVideoTutorials']);
     }
 
     protected function fixSavePassword() {
         add_filter('woocommerce_admin_settings_sanitize_option_lpc_pwd_webservices', [$this, 'fixWordPressSanitizePassword'], 10, 3);
     }
 
+    protected function initOnboarding() {
+        add_action('woocommerce_admin_field_onboarding', [$this, 'displayOnboarding']);
+    }
+
     protected function initSeeLog() {
-        add_action('woocommerce_admin_field_seelog', [$this, 'displayDebugButton']);
+        add_action('woocommerce_admin_field_lpcmodal', [$this, 'displayModalButton']);
     }
 
     protected function initMailto() {
@@ -146,14 +156,24 @@ class LpcSettingsTab extends LpcComponent {
         return $rawValue;
     }
 
+    public function displayOnboarding($field) {
+        wp_register_style('lpc_onboarding', plugins_url('/css/settings/lpc_settings_home.css', __FILE__), [], LPC_VERSION);
+        wp_enqueue_style('lpc_onboarding');
+        include LPC_FOLDER . 'admin' . DS . 'partials' . DS . 'settings' . DS . 'onboarding.php';
+    }
+
     /**
-     * Define the "seelogs" field type for the main configuration page
+     * Define the "lpcmodal" field type for the main configuration page
      *
      * @param $field object containing parameters defined in the config_options.json
      */
-    public function displayDebugButton($field) {
-        $modalContent = '<pre>' . LpcLogger::get_logs() . '</pre>';
-        $modal        = new LpcModal($modalContent, 'Colissimo logs', 'lpc-debug-log');
+    public function displayModalButton($field) {
+        if ('hooks' === $field['content']) {
+            $modalContent = file_get_contents(LPC_FOLDER . 'resources' . DS . 'hooksDescriptions.php');
+        } else {
+            $modalContent = '<pre>' . LpcLogger::get_logs() . '</pre>';
+        }
+        $modal = new LpcModal($modalContent, __($field['title'], 'wc_colissimo'), 'lpc-' . $field['content']);
         $modal->loadScripts();
         include LPC_FOLDER . 'admin' . DS . 'partials' . DS . 'settings' . DS . 'debug.php';
     }
@@ -290,6 +310,13 @@ class LpcSettingsTab extends LpcComponent {
         echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
     }
 
+    public function displayVideoTutorials() {
+        $args                = [];
+        $args['id_and_name'] = 'lpc_video_tutorials';
+        $args['label']       = 'Video tutorials';
+        echo LpcHelper::renderPartial('settings' . DS . 'video_tutorials.php', $args);
+    }
+
     /**
      * Build tab
      *
@@ -317,7 +344,7 @@ class LpcSettingsTab extends LpcComponent {
 
         $section = $this->getCurrentSection();
         if (!in_array($section, array_keys($this->configOptions))) {
-            $section = 'main';
+            $section = 'home';
         }
 
         WC_Admin_Settings::output_fields($this->configOptions[$section]);
@@ -330,12 +357,14 @@ class LpcSettingsTab extends LpcComponent {
         $currentTab = $this->getCurrentSection();
 
         $sections = [
+            'home'     => __('Home', 'wc_colissimo'),
             'main'     => __('General', 'wc_colissimo'),
             'label'    => __('Label', 'wc_colissimo'),
             'shipping' => __('Shipping methods', 'wc_colissimo'),
             'custom'   => __('Custom', 'wc_colissimo'),
             'ddp'      => __('DDP', 'wc_colissimo'),
             'support'  => __('Support', 'wc_colissimo'),
+            'video'    => __('Video tutorials', 'wc_colissimo'),
         ];
 
         echo '<ul class="subsubsub">';
@@ -418,7 +447,7 @@ class LpcSettingsTab extends LpcComponent {
     protected function getCurrentSection() {
         global $current_section;
 
-        return empty($current_section) ? 'main' : $current_section;
+        return empty($current_section) ? 'home' : $current_section;
     }
 
     public function warningPackagingWeight() {

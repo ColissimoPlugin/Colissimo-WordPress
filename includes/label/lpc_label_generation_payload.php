@@ -14,6 +14,7 @@ class LpcLabelGenerationPayload {
     const LABEL_FORMAT_DPL = 'DPL';
     const LABEL_FORMATS = [self::LABEL_FORMAT_PDF, self::LABEL_FORMAT_ZPL, self::LABEL_FORMAT_DPL];
     const COUNTRIES_NEEDING_STATE = ['CA', 'US'];
+    const DEFAULT_FORMAT = 'PDF_A4_300dpi';
 
     protected $payload;
     protected $isReturnLabel;
@@ -395,11 +396,14 @@ class LpcLabelGenerationPayload {
         return $this->withDepositDate($depositDate);
     }
 
-    public function withOutputFormat($outputFormat = null) {
-        if (null === $outputFormat) {
-            $outputFormat = $this->getIsReturnLabel()
-                ? LpcHelper::get_option('lpc_returnLabelFormat')
-                : LpcHelper::get_option('lpc_deliveryLabelFormat');
+    public function withOutputFormat($shippingMethodUsed = null) {
+        if ($this->getIsReturnLabel()) {
+            $outputFormat = LpcHelper::get_option('lpc_returnLabelFormat');
+            if (in_array($shippingMethodUsed, [LpcExpert::ID, LpcExpertDDP::ID])) {
+                $outputFormat = self::DEFAULT_FORMAT;
+            }
+        } else {
+            $outputFormat = LpcHelper::get_option('lpc_deliveryLabelFormat');
         }
 
         /**
@@ -598,47 +602,6 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withCODAmount($amount) {
-        /**
-         * Filter on the COD amount when generating a label
-         *
-         * @since 1.6
-         */
-        $amount = (float) apply_filters('lpc_payload_letter_parcel_cod', $amount, $this->getOrderNumber(), $this->getIsReturnLabel());
-
-        if ($amount > 0) {
-            $this->payload['letter']['parcel']['COD'] = true;
-            // payload want centi-euros for this field.
-            $this->payload['letter']['parcel']['CODAmount'] = (int) ($amount * 100);
-        } else {
-            LpcLogger::warn(
-                'CODAmount was not applied because it was negative or zero!',
-                [
-                    'given' => $amount,
-                ]
-            );
-        }
-
-        return $this;
-    }
-
-    public function withReturnReceipt($value = true) {
-        /**
-         * Filter on the return label's value
-         *
-         * @since 1.6
-         */
-        $value = apply_filters('lpc_payload_letter_parcel_return_receipt', $value, $this->getOrderNumber(), $this->getIsReturnLabel());
-
-        if ($value) {
-            $this->payload['letter']['parcel']['returnReceipt'] = true;
-        } else {
-            unset($this->payload['letter']['parcel']['returnReceipt']);
-        }
-
-        return $this;
-    }
-
     public function withInstructions($instructions) {
         if (LpcHelper::get_option('lpc_add_customer_notes', 'no') === 'no') {
             return $this;
@@ -768,8 +731,17 @@ class LpcLabelGenerationPayload {
         if (isset($customParams['customsCategory'])) {
             $outwardCustomCategory = $customParams['customsCategory'];
         }
+
+        $this->payload['fields']['field'][] = [
+            'key'   => 'OUTPUT_PRINT_TYPE_CN23',
+            'value' => LpcHelper::get_option('lpc_cn23_format', self::DEFAULT_FORMAT),
+        ];
+
+        $numberOfCopies = intval(LpcHelper::get_option('lpc_cn23_number', 4));
+
         $customsDeclarationPayload = [
             'includeCustomsDeclarations' => 1,
+            'numberOfCopies'             => empty($numberOfCopies) ? 4 : $numberOfCopies,
             'contents'                   => [
                 'article'  => $customsArticles,
                 'category' => [
@@ -819,7 +791,7 @@ class LpcLabelGenerationPayload {
 
         $this->payload['letter']['customsDeclarations'] = $customsDeclarationPayload;
 
-        $shippingCosts = isset($customParams['shippingCosts']) ? $customParams['shippingCosts'] : $order->get_shipping_total();
+        $shippingCosts = $customParams['shippingCosts'] ?? $order->get_shipping_total();
 
         /**
          * Filter on the total shipping cost

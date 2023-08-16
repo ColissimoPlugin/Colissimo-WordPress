@@ -28,6 +28,7 @@ require_once LPC_INCLUDES . 'tracking' . DS . 'lpc_colissimo_status.php';
 require_once LPC_INCLUDES . 'tracking' . DS . 'lpc_unified_tracking_api.php';
 require_once LPC_INCLUDES . 'tracking' . DS . 'lpc_update_statuses_action.php';
 require_once LPC_INCLUDES . 'orders' . DS . 'lpc_order_queries.php';
+require_once LPC_INCLUDES . 'bordereau' . DS . 'lpc_bordereau_db.php';
 require_once LPC_INCLUDES . 'bordereau' . DS . 'lpc_bordereau_generation_api.php';
 require_once LPC_INCLUDES . 'bordereau' . DS . 'lpc_bordereau_generation.php';
 require_once LPC_INCLUDES . 'invoices' . DS . 'lpc_invoice_generate_action.php';
@@ -41,8 +42,11 @@ class LpcIncludeInit {
     public function __construct() {
         LpcRegister::register('lpcAdminNotices', new LpcAdminNotices());
 
+        LpcRegister::register('bordereauGenerationApi', new LpcBordereauGenerationApi());
+
         LpcRegister::register('outwardLabelDb', new LpcOutwardLabelDb());
         LpcRegister::register('inwardLabelDb', new LpcInwardLabelDb());
+        LpcRegister::register('bordereauDb', new LpcBordereauDb());
         LpcRegister::register('dbDefinition', new LpcDbDefinition());
 
         LpcRegister::register('ajaxDispatcher', new LpcAjax());
@@ -71,7 +75,6 @@ class LpcIncludeInit {
         LpcRegister::register('lpcOutwardLabelEmailManager', new LpcOutwardLabelEmailManager());
         LpcRegister::register('lpcRegisterWCEmail', new LpcRegisterWCEmail());
 
-        LpcRegister::register('bordereauGenerationApi', new LpcBordereauGenerationApi());
         LpcRegister::register('bordereauGeneration', new LpcBordereauGeneration());
 
         LpcRegister::register('labelPurge', new LpcLabelPurge());

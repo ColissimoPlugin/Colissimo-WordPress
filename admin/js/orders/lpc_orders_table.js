@@ -39,6 +39,8 @@ jQuery(function ($) {
             return this.value.length === 0;
         }).prop('checked', true);
 
+        $('#lpc__orders_listing__page__more_options--options [type="date"]').val('');
+
         $('#filter-action').click();
     });
 

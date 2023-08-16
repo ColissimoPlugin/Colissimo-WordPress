@@ -38,6 +38,9 @@
 					<span class="dashicons dashicons-search" id="lpc_layer_button_search_mobile"></span>
 				</button>
 			</div>
+            <?php if ($args['maxRelayPoint'] < 20) { ?>
+				<a href="#" id="lpc_modal_relays_display_more"><?php esc_html_e('Display more pickup points', 'wc_colissimo'); ?></a>
+            <?php } ?>
 		</div>
 
 		<div id="lpc_left" <?php echo $classMap; ?>>

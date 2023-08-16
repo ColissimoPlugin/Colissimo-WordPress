@@ -114,6 +114,10 @@
 	display: inline-block;
 }
 
+.lpc__orders_listing__tracking-number .woocommerce-help-tip{
+	vertical-align: top;
+}
+
 .lpc__orders_listing__tracking_number--outward, .lpc__orders_listing__tracking_number--outward a{
 	color: green;
 }

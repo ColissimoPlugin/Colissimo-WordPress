@@ -215,7 +215,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
 
         $info = $this->getCapabilitiesFileMethod($info);
 
-        return isset($productInfo[$info]) ? $productInfo[$info] : false;
+        return $productInfo[$info] ?? false;
     }
 
     /**

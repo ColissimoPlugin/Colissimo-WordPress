@@ -76,6 +76,8 @@ class LpcAdminOrderAffect extends LpcComponent {
             ? $this->lpcAdminPickupWidget->addWidget($order)
             : $this->lpcAdminPickupWebService->addWebserviceMap($order);
 
+        $args['lpc_partial_name'] = 'lpc_order_affect_methods_woocommerce';
+
         echo LpcHelper::renderPartial('orders' . DS . 'lpc_order_affect_methods.php', $args);
     }
 
@@ -96,11 +98,10 @@ class LpcAdminOrderAffect extends LpcComponent {
         $relayInformation       = isset($_REQUEST['lpc_order_affect_relay_informations']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_relay_informations'])) : '';
         $order                  = wc_get_order($post_id);
 
-        if (empty($orderShippingItemId) || empty($order) || empty($lpcNewShippingMethodId)) {
+        if (empty($order) || empty($lpcNewShippingMethodId)) {
             return;
         }
 
-        $shippingItem         = $order->get_item($orderShippingItemId);
         $lpcMethods           = $this->getColissimoShippingMethodsAvailable($order);
         $lpcNewShippingMethod = $lpcMethods[$lpcNewShippingMethodId];
 
@@ -136,14 +137,27 @@ class LpcAdminOrderAffect extends LpcComponent {
             $order->save();
         }
 
-        $shippingItem->set_props(
-            [
-                'method_id'    => $lpcNewShippingMethod->id,
-                'method_title' => $lpcNewShippingMethod->get_method_title(),
-            ]
-        );
+        if (empty($orderShippingItemId)) {
+            $shippingItem = new WC_Order_Item_Shipping();
+            $shippingItem->set_props(
+                [
+                    'method_id'    => $lpcNewShippingMethod->id,
+                    'method_title' => $lpcNewShippingMethod->get_method_title(),
+                ]
+            );
 
-        $shippingItem->save();
+            $order->add_item($shippingItem);
+            $order->save();
+        } else {
+            $shippingItem = $order->get_item($orderShippingItemId);
+            $shippingItem->set_props(
+                [
+                    'method_id'    => $lpcNewShippingMethod->id,
+                    'method_title' => $lpcNewShippingMethod->get_method_title(),
+                ]
+            );
+            $shippingItem->save();
+        }
     }
 
     /**
@@ -153,7 +167,7 @@ class LpcAdminOrderAffect extends LpcComponent {
      *
      * @return array
      */
-    protected function getColissimoShippingMethodsAvailable(WC_Order $order) {
+    public function getColissimoShippingMethodsAvailable(WC_Order $order) {
         $allShippingMethods                 = WC()->shipping() ? WC()->shipping()->load_shipping_methods() : [];
         $colissimoShippingMethodsPerCountry = $this->lpcCapabilitiesByCountry->getCapabilitiesForCountry($order->get_shipping_country());
         $methods                            = [];

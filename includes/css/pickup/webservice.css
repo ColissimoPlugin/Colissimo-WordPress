@@ -39,10 +39,30 @@ a#lpc_pick_up_web_service_show_map{
 
 #lpc_search_address{
 	text-align: left;
+	display: flex;
+	margin-bottom: 1rem;
+	gap: 3px;
 }
 
 #lpc_modal_address_details{
 	display: inline-block;
+}
+
+#lpc_modal_relays_search_address{
+	width: 100%;
+}
+
+@media all and (max-width: 800px){
+	#lpc_search_address{
+		flex-flow: row wrap;
+		gap: .3rem;
+		margin-bottom: .3rem;
+	}
+
+	#lpc_modal_relays_search_address, #lpc_modal_address_details, #lpc_modal_relays_display_more{
+		flex: 1;
+		flex-basis: 100%;
+	}
 }
 
 @media all and (min-width: 800px){
@@ -57,10 +77,6 @@ a#lpc_pick_up_web_service_show_map{
 
 #lpc_modal_relays_search_city{
 	width: 180px;
-}
-
-.lpc_modal_relays_search_input, #lpc_layer_button_search{
-	margin-bottom: 1rem;
 }
 
 #lpc_layer_relays_loader{
@@ -82,6 +98,10 @@ a#lpc_pick_up_web_service_show_map{
 	position: absolute;
 }
 
+#lpc_modal_relays_display_more{
+	align-self: center;
+	margin-left: auto;
+}
 
 /* Relay listing */
 

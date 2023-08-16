@@ -7,7 +7,6 @@ require_once LPC_FOLDER . DS . 'lib' . DS . 'MergePdf.class.php';
 class LpcLabelPrintAction extends LpcComponent {
     const AJAX_TASK_NAME = 'label/print';
     const TRACKING_NUMBERS_VAR_NAME = 'lpc_tracking_numbers';
-    const NEED_INVOICE_VAR_NAME = 'lpc_need_invoice';
 
     const PRINT_LABEL_TYPE_OUTWARD_AND_INWARD = 'both';
 
@@ -52,7 +51,7 @@ class LpcLabelPrintAction extends LpcComponent {
         }
 
         $stringTrackingNumbers = LpcHelper::getVar(self::TRACKING_NUMBERS_VAR_NAME);
-        $needInvoice           = (bool) LpcHelper::getVar(self::NEED_INVOICE_VAR_NAME, false);
+        $needInvoice           = 'yes' === LpcHelper::get_option('add_invoice_print_label', 'yes');
 
         $trackingNumbers = explode(',', $stringTrackingNumbers);
         try {
@@ -160,8 +159,7 @@ class LpcLabelPrintAction extends LpcComponent {
         $stringTrackingNumbers = implode(',', $trackingNumbers);
 
         return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME)
-               . '&' . self::TRACKING_NUMBERS_VAR_NAME . '=' . $stringTrackingNumbers
-               . '&' . self::NEED_INVOICE_VAR_NAME . '=' . $needInvoice;
+               . '&' . self::TRACKING_NUMBERS_VAR_NAME . '=' . $stringTrackingNumbers;
     }
 
     protected function getLabel($trackingNumber, &$isOutward) {

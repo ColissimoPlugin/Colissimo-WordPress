@@ -22,6 +22,8 @@ require_once LPC_ADMIN . 'bordereau' . DS . 'lpc_bordereau_download_action.php';
 require_once LPC_ADMIN . 'bordereau' . DS . 'lpc_bordereau_queries.php';
 require_once LPC_ADMIN . 'bordereau' . DS . 'lpc_bordereau_delete_action.php';
 require_once LPC_ADMIN . 'bordereau' . DS . 'lpc_bordereau_print_action.php';
+require_once LPC_ADMIN . 'bordereau' . DS . 'lpc_bordereau_creation_table.php';
+require_once LPC_ADMIN . 'bordereau' . DS . 'lpc_bordereau_history_table.php';
 require_once LPC_ADMIN . 'coupons' . DS . 'lpc_coupons_restrictions.php';
 require_once LPC_ADMIN . 'labels' . DS . 'generate' . DS . 'lpc_label_inward_generate_action.php';
 require_once LPC_ADMIN . 'labels' . DS . 'generate' . DS . 'lpc_label_outward_generate_action.php';
@@ -80,6 +82,13 @@ class LpcAdminInit {
         add_filter('set-screen-option', [$this, 'lpc_set_option'], 10, 3);
         add_action('woocommerce_settings_page_init', [$this, 'lpc_load_settings_script']);
         add_action('add_meta_boxes_shop_order', [$this, 'lpc_add_meta_boxes']);
+        add_filter('woocommerce_screen_ids', [$this, 'lpc_set_wc_screen_ids']);
+    }
+
+    public function lpc_set_wc_screen_ids($screen) {
+        $screen[] = 'woocommerce_page_wc_colissimo_view';
+
+        return $screen;
     }
 
     /**
@@ -115,12 +124,21 @@ class LpcAdminInit {
     }
 
     public function router() {
-        $lpcOrdersTable = new LpcOrdersTable();
-        $args           = [];
-        $args['table']  = $lpcOrdersTable;
-        $args['get']    = $_GET;
+        $args        = [];
+        $args['get'] = $_GET;
+        $args['tab'] = $args['get']['tab'] ?? 'orders';
 
-        echo LpcHelper::renderPartial('orders' . DS . 'lpc_orders_list_table.php', $args);
+        if ('orders' === $args['tab']) {
+            $args['table'] = new LpcOrdersTable();
+            echo LpcHelper::renderPartial('orders' . DS . 'lpc_orders_list_table.php', $args);
+        } elseif ('slip-creation' === $args['tab']) {
+            $args['table_today'] = new LpcBordereauCreationTable(true);
+            $args['table_all']   = new LpcBordereauCreationTable(false);
+            echo LpcHelper::renderPartial('orders' . DS . 'lpc_orders_slip_creation.php', $args);
+        } elseif ('slip-history' === $args['tab']) {
+            $args['table'] = new LpcBordereauHistoryTable();
+            echo LpcHelper::renderPartial('orders' . DS . 'lpc_orders_slip_history.php', $args);
+        }
     }
 
     public function lpc_notifications() {
@@ -160,6 +178,12 @@ class LpcAdminInit {
             null,
             ['jquery-core']
         );
+        LpcHelper::enqueueScript(
+            'lpc_order_slip_creation',
+            plugins_url('/js/orders/lpc_order_slip_creation.js', LPC_ADMIN . 'init.php'),
+            null,
+            ['jquery-core']
+        );
 
         LpcLabelQueries::enqueueLabelsActionsScript();
 
@@ -167,6 +191,16 @@ class LpcAdminInit {
         LpcHelper::enqueueStyle(
             'lpc_orders_table',
             plugins_url('/css/orders/lpc_orders_table.css', LPC_ADMIN . 'init.php'),
+            null
+        );
+        LpcHelper::enqueueStyle(
+            'lpc_orders_slip_creation',
+            plugins_url('/css/orders/lpc_orders_slip_creation.css', LPC_ADMIN . 'init.php'),
+            null
+        );
+        LpcHelper::enqueueStyle(
+            'lpc_slip_history',
+            plugins_url('/css/orders/lpc_slip_history.css', LPC_ADMIN . 'init.php'),
             null
         );
 
@@ -188,6 +222,11 @@ class LpcAdminInit {
                 'notice-warning',
                 __('Your site\'s cron system is disabled, the shipping statuses won\'t be updated.', 'wc_colissimo')
             );
+        } else {
+            $purgeLabels = LpcHelper::get_option('lpc_day_purge', 0);
+            if (!empty($purgeLabels) && !wp_next_scheduled('purge_colissimo_labels')) {
+                wp_schedule_event(time(), 'daily', 'purge_colissimo_labels');
+            }
         }
     }
 

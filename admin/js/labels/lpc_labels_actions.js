@@ -106,7 +106,7 @@ jQuery(function ($) {
                         console.error('error on label ' + info.trackingNumber);
                         console.error('Error message: ' + xhr.responseText);
                         if ($('#lpc_thermal_print_error_message').length === 0) {
-                            displayErrors(lpcLabelsActions.errorMsgPrintThermal);
+                            displayErrors(lpcLabelsActions.errorMsgPrintThermal + ' ' + xhr.responseText + ' URL: ' + info.url);
                         }
                     });
                 }

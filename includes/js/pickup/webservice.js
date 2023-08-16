@@ -120,21 +120,24 @@ jQuery(function ($) {
         $('#lpc_layer_button_search').on('click', function () {
             lpcLoadRelays();
         });
+
+        $('#lpc_modal_relays_display_more').on('click', function () {
+            lpcLoadRelays(true);
+        });
         initButtonSwitchMobileLayout();
     }
 
     // Load relays for an address
-    function lpcLoadRelays() {
-        let $address = $('#lpc_modal_relays_search_address').val();
-        let $zipcode = $('#lpc_modal_relays_search_zipcode').val();
-        let $city = $('#lpc_modal_relays_search_city').val();
-
-        let $errorDiv = $('#lpc_layer_error_message');
-        let $listRelaysDiv = $('#lpc_layer_list_relays');
-
-        let $loader = $('#lpc_layer_relays_loader');
-
+    function lpcLoadRelays(loadMore = false) {
+        const address = $('#lpc_modal_relays_search_address').val();
+        const zipCode = $('#lpc_modal_relays_search_zipcode').val();
+        const city = $('#lpc_modal_relays_search_city').val();
         let countryId = $('#lpc_modal_relays_country_id').val();
+
+        const $errorDiv = $('#lpc_layer_error_message');
+        const $listRelaysDiv = $('#lpc_layer_list_relays');
+
+        const $loader = $('#lpc_layer_relays_loader');
 
         if ('' === countryId || undefined === countryId) {
             countryId = $('#shipping_country').val();
@@ -145,10 +148,11 @@ jQuery(function ($) {
         }
 
         const addressData = {
-            address: $address,
-            zipCode: $zipcode,
-            city: $city,
-            countryId: countryId
+            address,
+            zipCode,
+            city,
+            countryId,
+            loadMore: loadMore ? 1 : 0
         };
 
         $.ajax({
@@ -170,6 +174,15 @@ jQuery(function ($) {
                     lpcAddRelaysOnMap(addressData);
                     lpcMapResize();
                     setDisplayHours();
+
+                    const $loadMoreButton = $('#lpc_modal_relays_display_more');
+
+                    if (response.loadMore && $loadMoreButton.length !== 0) {
+                        $loadMoreButton.hide();
+                    } else {
+                        $loadMoreButton.show();
+                    }
+
                 } else {
                     $errorDiv.html(response.message);
                     $errorDiv.show();
@@ -549,7 +562,7 @@ jQuery(function ($) {
                                   + relayData['localite']);
         }
 
-        $('.lpc-modal .modal-close').click();
+        $('.lpc-modal .modal-close').trigger('click');
     }
 
     function setDisplayHours() {

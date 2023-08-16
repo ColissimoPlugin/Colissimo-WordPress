@@ -129,9 +129,11 @@ class LpcLabelGenerationInward extends LpcComponent {
             $customerAddress['zipCode'] = ltrim($customerAddress['zipCode'], 'lL-');
         }
 
-        $shippingPhone = $order->get_shipping_phone();
-        if (!empty($shippingPhone)) {
-            $customerAddress['mobileNumber'] = $shippingPhone;
+        if (method_exists($order, 'get_shipping_phone')) {
+            $shippingPhone = $order->get_shipping_phone();
+            if (!empty($shippingPhone)) {
+                $customerAddress['mobileNumber'] = $shippingPhone;
+            }
         }
 
         $productCode = $this->capabilitiesPerCountry->getReturnProductCodeForDestination($order->get_shipping_country());
@@ -156,7 +158,7 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->withPreparationDelay()
             ->withInstructions($order->get_customer_note())
             ->withProductCode($productCode)
-            ->withOutputFormat()
+            ->withOutputFormat($shippingMethodUsed)
             ->withCustomsDeclaration($order, $customParams)
             ->withInsuranceValue($order->get_subtotal(), $productCode, $order->get_shipping_country(), $shippingMethodUsed, $order->get_order_number(), $customParams, true);
 

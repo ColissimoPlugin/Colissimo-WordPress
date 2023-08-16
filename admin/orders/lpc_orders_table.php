@@ -46,6 +46,8 @@ class LpcOrdersTable extends WP_List_Table {
     protected $lpcLabelPurge;
     /** @var LpcBordereauQueries */
     protected $bordereauQueries;
+    /** @var LpcBordereauDb */
+    protected $bordereauDb;
 
     public function __construct() {
         parent::__construct();
@@ -65,6 +67,7 @@ class LpcOrdersTable extends WP_List_Table {
         $this->inwardLabelDb               = LpcRegister::get('inwardLabelDb');
         $this->lpcLabelPurge               = LpcRegister::get('labelPurge');
         $this->bordereauQueries            = LpcRegister::get('bordereauQueries');
+        $this->bordereauDb                 = LpcRegister::get('bordereauDb');
     }
 
     public function get_columns() {
@@ -100,16 +103,22 @@ END_HTML;
         $this->process_bulk_action();
 
         $optionsFiltersMatchRequestsKey = [
-            'lpc_orders_filters_country'         => 'order_country',
-            'lpc_orders_filters_shipping_method' => 'order_shipping_method',
-            'lpc_orders_filters_status'          => 'order_status',
-            'lpc_orders_filters_label_type'      => 'label_type',
-            'lpc_orders_filters_woo_status'      => 'order_woo_status',
+            'lpc_orders_filters_country'          => 'order_country',
+            'lpc_orders_filters_shipping_method'  => 'order_shipping_method',
+            'lpc_orders_filters_status'           => 'order_status',
+            'lpc_orders_filters_label_type'       => 'label_type',
+            'lpc_orders_filters_woo_status'       => 'order_woo_status',
+            'lpc_orders_filters_label_start_date' => 'label_start_date',
+            'lpc_orders_filters_label_end_date'   => 'label_end_date',
         ];
 
         foreach ($optionsFiltersMatchRequestsKey as $oneOptionFilter => $oneRequestKey) {
             if (isset($_REQUEST[$oneRequestKey])) {
-                $requestValue = array_map('sanitize_text_field', wp_unslash($_REQUEST[$oneRequestKey]));
+                if (is_array($_REQUEST[$oneRequestKey])) {
+                    $requestValue = array_map('sanitize_text_field', wp_unslash($_REQUEST[$oneRequestKey]));
+                } else {
+                    $requestValue = sanitize_text_field(wp_unslash($_REQUEST[$oneRequestKey]));
+                }
 
                 if (false === update_option($oneOptionFilter, $requestValue)) {
                     add_option($oneOptionFilter, $requestValue);
@@ -151,7 +160,13 @@ END_HTML;
 
     protected function get_data($current_page = 0, $per_page = 0, $args = [], $filters = []): array {
         $data      = [];
-        $ordersIds = LpcOrderQueries::getLpcOrders($current_page, $per_page, $args, $filters);
+        $orders    = LpcOrderQueries::getLpcOrders($current_page, $per_page, $args, $filters);
+        $ordersIds = array_map(
+            function ($order) {
+                return $order['order_id'];
+            },
+            $orders
+        );
 
         $trackingNumbers     = $this->getTrackingNumbersFormatted($ordersIds);
         $ordersOutwardFailed = get_option(LpcLabelGenerationOutward::ORDERS_OUTWARD_PARCEL_FAILED, []);
@@ -201,7 +216,7 @@ END_HTML;
             $data[] = [
                 'data-id'             => $orderId,
                 'cb'                  => '<input type="checkbox" />',
-                'lpc-id'              => $this->getSeeOrderLink($orderId),
+                'lpc-id'              => self::getSeeOrderLink($orderId),
                 'lpc-date'            => $wc_order->get_date_created()->date_i18n($date),
                 'lpc-customer'        => $wc_order->get_shipping_first_name() . ' ' . $wc_order->get_shipping_last_name(),
                 'lpc-address'         => $address,
@@ -240,24 +255,7 @@ END_HTML;
         return $result;
     }
 
-    protected function getBorderauxDownloadLinks(WC_Order $order) {
-        $bordereauNumber = $order->get_meta(LpcBordereauGeneration::BORDEREAU_ID_META_KEY);
-        $return          = '';
-        if (!empty($bordereauNumber)) {
-            $bordereauNumber = explode(',', $bordereauNumber);
-
-            foreach ($bordereauNumber as $bordereauId) {
-                $bordereauDownloadUrl = $this->bordereauDownloadAction->getUrlForBordereau($bordereauId);
-                $return               .= <<<END_HTML
-<a href="$bordereauDownloadUrl" target="_blank">$bordereauId</a>
-END_HTML;
-            }
-
-            return $return;
-        }
-    }
-
-    protected function getSeeOrderLink($orderId) {
+    public static function getSeeOrderLink($orderId) {
         $orderUrl = admin_url('post.php?post=' . $orderId . '&action=edit');
 
         return '<a href="' . $orderUrl . '">' . $orderId . '</a>';
@@ -322,9 +320,11 @@ END_HTML;
             array_walk(
                 $filters,
                 function ($filter, $key) use (&$filtersNumbers) {
-                    if ('search' === $key || (count($filter) === 1 && empty($filter[0]))) {
+                    if ('search' === $key || (is_array($filter) && count($filter) === 1 && empty($filter[0]))) {
                         $filtersNumbers += 0;
-                    } else {
+                    } elseif (in_array($key, ['label_start_date', 'label_end_date']) && !empty($filter)) {
+                        $filtersNumbers ++;
+                    } elseif (is_array($filter)) {
                         $filtersNumbers += count($filter);
                     }
                 }
@@ -481,7 +481,21 @@ END_HTML;
                 esc_attr($oneLabelCode),
                 esc_html($oneLabelType)
             );
-        }
+        }; ?>
+		<br>
+
+		<p class="lpc__orders_listing__page__more_options--options__title"><?php echo __('Outward labels generation date', 'wc_colissimo'); ?></p>
+		<div>
+			<label>
+				<?php esc_html_e('From:', 'wc_colissimo'); ?>
+				<input type="date" name="label_start_date" value="<?php echo get_option('lpc_orders_filters_label_start_date', ''); ?>">
+			</label>
+			<label>
+				<?php esc_html_e('to:', 'wc_colissimo'); ?>
+				<input type="date" name="label_end_date" value="<?php echo get_option('lpc_orders_filters_label_end_date', ''); ?>">
+			</label>
+		</div>
+        <?php
     }
 
     public function wooStatusFilters() {
@@ -725,12 +739,6 @@ END_PRINT_SCRIPT;
         $buttonUpdateStatusLabel  = __('Update Colissimo statuses', 'wc_colissimo');
         echo '<a id="colissimo_action_update" href="' . $buttonUpdateStatusAction . '" class="page-title-action">' . $buttonUpdateStatusLabel . '</a>';
 
-        if (current_user_can('lpc_manage_bordereau')) {
-            $buttonGenerateBordereauAction = $this->bordereauGeneration->getGenerationBordereauEndDayUrl();
-            $buttonGenerateBordereauLabel  = __('Generate end of day bordereau', 'wc_colissimo');
-            echo '<a id="colissimo_action_bordereau" href="' . $buttonGenerateBordereauAction . '" class="page-title-action">' . $buttonGenerateBordereauLabel . '</a>';
-        }
-
         if (current_user_can('lpc_manage_labels') && WC_Admin_Settings::get_option('display_import_tracking_number', 'no') === 'yes') {
             $buttonImportTrackingNumberLabel  = __('Import tracking numbers', 'wc_colissimo');
             $buttonImportTrackingNumberAction = $this->labelOutwardImport->getUrlToImportTrackingNumbers();
@@ -742,29 +750,36 @@ END_PRINT_SCRIPT;
     }
 
     protected function lpcGetFilters() {
+
         return [
-            'country'         =>
+            'country'          =>
                 false === get_option('lpc_orders_filters_country') ? [''] : get_option('lpc_orders_filters_country'),
-            'shipping_method' => false === get_option('lpc_orders_filters_shipping_method') ?
+            'shipping_method'  => false === get_option('lpc_orders_filters_shipping_method') ?
                 [''] : get_option('lpc_orders_filters_shipping_method'),
-            'status'          => false === get_option('lpc_orders_filters_status') ?
+            'status'           => false === get_option('lpc_orders_filters_status') ?
                 [''] : get_option('lpc_orders_filters_status'),
-            'label_type'      => false === get_option('lpc_orders_filters_label_type') ?
+            'label_type'       => false === get_option('lpc_orders_filters_label_type') ?
                 [''] : get_option('lpc_orders_filters_label_type'),
-            'woo_status'      => false === get_option('lpc_orders_filters_woo_status') ?
+            'woo_status'       => false === get_option('lpc_orders_filters_woo_status') ?
                 [''] : get_option('lpc_orders_filters_woo_status'),
-            'search'          => isset($_REQUEST['s']) ?
+            'search'           => isset($_REQUEST['s']) ?
                 esc_attr(sanitize_text_field(wp_unslash($_REQUEST['s']))) : '',
+            'label_start_date' => false === get_option('lpc_orders_filters_label_start_date') ?
+                '' : get_option('lpc_orders_filters_label_start_date'),
+            'label_end_date'   => false === get_option('lpc_orders_filters_label_end_date') ?
+                '' : get_option('lpc_orders_filters_label_end_date'),
         ];
     }
 
-    protected function getTrackingNumbersFormatted($ordersId = []) {
+    protected function getTrackingNumbersFormatted(
+        $ordersId = []
+    ) {
         $trackingNumbersByOrders         = [];
         $renderedTrackingNumbersByOrders = [];
         $labelFormatByTrackingNumber     = [];
         $ordersInwardFailed              = get_option(LpcLabelGenerationInward::ORDERS_INWARD_PARCEL_FAILED, []);
 
-        $this->labelQueries->getTrackingNumbersByOrdersId($trackingNumbersByOrders, $labelFormatByTrackingNumber, $ordersId);
+        $this->labelQueries->getTrackingNumbersByOrdersId($trackingNumbersByOrders, $labelFormatByTrackingNumber, $labelInfoByTrackingNumber, $ordersId);
 
         foreach ($trackingNumbersByOrders as $oneOrderId => $oneOrder) {
             if ('insured' === $oneOrderId) {
@@ -783,8 +798,17 @@ END_PRINT_SCRIPT;
                         $shownLabel = '<a target="_blank" href="' . esc_url($labelTracking['trackingLink']) . '">' . $outLabel . '</a>';
                     }
 
+                    $labelTooltip = '';
+
+                    if (!empty($labelInfoByTrackingNumber[$outLabel])) {
+                        $dateGenerated = new DateTime($labelInfoByTrackingNumber[$outLabel]->label_created_at);
+                        $labelTooltip  = sprintf(__('Label generated at %s', 'wc_colissimo'),
+                                                 $dateGenerated->format(get_option('date_format', 'Y-m-d') . ' ' . get_option('time_format', 'H:i')));
+                    }
+
                     $renderedTrackingNumbersByOrders[$oneOrderId] .= '<span class="lpc__orders_listing__tracking-number">';
                     $renderedTrackingNumbersByOrders[$oneOrderId] .= '<span class="lpc__orders_listing__tracking_number--outward">' . $shownLabel . '</span>';
+                    $renderedTrackingNumbersByOrders[$oneOrderId] .= wc_help_tip($labelTooltip, true);
                     $renderedTrackingNumbersByOrders[$oneOrderId] .= $this->labelQueries->getOutwardLabelsActionsIcons(
                         $outLabel,
                         $format,
@@ -806,7 +830,6 @@ END_PRINT_SCRIPT;
 								<span>' .
                                 $this->bordereauQueries->getBordereauActionsIcons($bordereauLink,
                                                                                   $bordereauID[0],
-                                                                                  $oneOrderId,
                                                                                   LpcLabelQueries::REDIRECTION_COLISSIMO_ORDERS_LISTING)
                                 . '</span>
 							</span><br>';

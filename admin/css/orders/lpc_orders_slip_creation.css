@@ -1,0 +1,30 @@
+.lpc_slip_creation_header{
+	text-align: right;
+	margin-bottom: .5rem;
+}
+
+.lpc_slip_creation_table_container{
+	margin-bottom: 3rem;
+}
+
+.lpc_slip_creation_table_header{
+	padding: 10px 20px;
+	background-color: white;
+	cursor: pointer;
+	border-left: 4px solid #3970AC;
+	display: flex;
+}
+
+.lpc_slip_creation_table_header h2{
+	margin: 0;
+}
+
+.lpc_slip_creation_table_listing{
+	padding: 5px;
+	border: 1px solid #E5E5E5;
+	border-top: none;
+}
+
+.lpc_slip_creation_table_listing .tablenav.top{
+	display: none;
+}

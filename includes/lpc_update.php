@@ -22,6 +22,8 @@ class LpcUpdate extends LpcComponent {
     protected $shippingZones;
     /** @var LpcShippingMethods */
     protected $shippingMethods;
+    /** @var LpcBordereauDb */
+    protected $bordereauDb;
 
     public function __construct(
         LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
@@ -30,7 +32,8 @@ class LpcUpdate extends LpcComponent {
         LpcInwardLabelDb $inwardLabelDb = null,
         LpcAdminNotices $adminNotices = null,
         LpcShippingZones $shippingZones = null,
-        LpcShippingMethods $shippingMethods = null
+        LpcShippingMethods $shippingMethods = null,
+        LpcBordereauDb $bordereauDb = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->dbDefinition           = LpcRegister::get('dbDefinition', $dbDefinition);
@@ -39,6 +42,7 @@ class LpcUpdate extends LpcComponent {
         $this->adminNotices           = LpcRegister::get('lpcAdminNotices', $adminNotices);
         $this->shippingZones          = LpcRegister::get('shippingZones', $shippingZones);
         $this->shippingMethods        = LpcRegister::get('shippingMethods', $shippingMethods);
+        $this->bordereauDb            = LpcRegister::get('bordereauDb', $bordereauDb);
     }
 
     public function getDependencies() {
@@ -57,7 +61,7 @@ class LpcUpdate extends LpcComponent {
             'display'  => __('Every Fifteen Seconds'),
         ];
         $schedules['fifteen_minutes'] = [
-            'interval' => 15,
+            'interval' => 15 * 60,
             'display'  => __('Every Fifteen Minutes'),
         ];
 
@@ -229,6 +233,13 @@ class LpcUpdate extends LpcComponent {
                 $isWebservice = LpcHelper::get_option('lpc_prUseWebService', 'no');
                 update_option('lpc_pickup_map_type', !empty($isWebservice) && 'yes' === $isWebservice ? 'gmaps' : 'widget');
             }
+        }
+
+        // Update from version under 1.8.2
+        if (version_compare($versionInstalled, '1.8.2') === - 1) {
+            $this->outwardLabelDb->updateToVersion182();
+            $this->inwardLabelDb->updateToVersion182();
+            $this->bordereauDb->updateToVersion182();
         }
     }
 

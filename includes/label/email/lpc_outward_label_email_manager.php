@@ -12,7 +12,7 @@ class LpcOutwardLabelEmailManager extends LpcComponent {
     }
 
     public function generate_outward_label_woocommerce_email($emails) {
-        require_once 'lpc_outward_label_generation_email.php';
+        require_once __DIR__ . DIRECTORY_SEPARATOR . 'lpc_outward_label_generation_email.php';
 
         $emails['lpc_generate_outward_label'] = new LpcOutwardLabelGenerationEmail();
 

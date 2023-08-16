@@ -2,7 +2,6 @@
 
 class LpcBordereauGeneration extends LpcComponent {
     const MAX_LABEL_PER_BORDEREAU = 50;
-    const BORDEREAU_ID_META_KEY = 'lpc_bordereau_id';
     const AJAX_TASK_NAME = 'bordereau/generate_day';
 
     /** @var LpcBordereauGenerationApi */
@@ -13,17 +12,21 @@ class LpcBordereauGeneration extends LpcComponent {
     protected $ajaxDispatcher;
     /** @var LpcAdminNotices */
     protected $lpcAdminNotices;
+    /** @var LpcBordereauDb */
+    protected $bordereauDb;
 
     public function __construct(
         LpcBordereauGenerationApi $bordereauGenerationApi = null,
         LpcOutwardLabelDb $outwardLabelDb = null,
         LpcAjax $ajaxDispatcher = null,
-        LpcAdminNotices $lpcAdminNotices = null
+        LpcAdminNotices $lpcAdminNotices = null,
+        LpcBordereauDb $bordereauDb = null
     ) {
         $this->bordereauGenerationApi = LpcRegister::get('bordereauGenerationApi', $bordereauGenerationApi);
         $this->outwardLabelDb         = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
         $this->ajaxDispatcher         = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->lpcAdminNotices        = LpcRegister::get('lpcAdminNotices', $lpcAdminNotices);
+        $this->bordereauDb            = LpcRegister::get('bordereauDb', $bordereauDb);
     }
 
     public function getDependencies() {
@@ -77,7 +80,7 @@ class LpcBordereauGeneration extends LpcComponent {
             $this->generateFromOrdersId($outwardLabelsOrderIds);
         }
 
-        wp_redirect(admin_url('admin.php?page=wc_colissimo_view'));
+        wp_redirect(admin_url('admin.php?page=wc_colissimo_view&tab=slip-history'));
     }
 
     private function generateFromOrdersId($ordersId) {
@@ -107,6 +110,8 @@ class LpcBordereauGeneration extends LpcComponent {
             $bordereau = $retrievedBordereau->bordereau;
             $bordereauId = $bordereau->bordereauHeader->bordereauNumber;
 
+            $this->bordereauDb->insert($bordereauId, $bordereau->bordereauHeader->publishingDate);
+
             $newStatus = LpcHelper::get_option('lpc_order_status_on_bordereau_generated');
 
             $ordersIdForBatch = array_unique($batchOfTrackingNumbers);
@@ -114,19 +119,6 @@ class LpcBordereauGeneration extends LpcComponent {
             foreach ($ordersIdForBatch as $orderId) {
                 $order = wc_get_order($orderId);
 
-                $bordereauIdToStore = get_post_meta($orderId, self::BORDEREAU_ID_META_KEY, true);
-
-                if (empty($bordereauIdToStore)) {
-                    $bordereauIdToStore = [];
-                }
-
-                if (!empty($bordereauIdToStore)) {
-                    $bordereauIdToStore = explode(',', $bordereauIdToStore);
-                }
-
-                $bordereauIdToStore[] = $bordereauId;
-
-                update_post_meta($orderId, self::BORDEREAU_ID_META_KEY, implode(',', $bordereauIdToStore));
                 $this->outwardLabelDb->addBordereauIdOnBordereauGeneration($outwardLabelIds, $bordereauId);
                 if (!empty($newStatus) && 'unchanged_order_status' !== $newStatus) {
                     $order->update_status($newStatus);

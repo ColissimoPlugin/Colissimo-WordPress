@@ -66,9 +66,10 @@ class LpcPickupSelection extends LpcComponent {
                 $shippings = $order->get_shipping_methods();
                 $shipping  = current($shippings);
 
+                // TODO on rare cases the pickup data is not saved on the order
                 if (!empty($shipping)) {
                     $shippingMethod = $shipping->get_method_id();
-                    if (LpcRelay::ID == $shippingMethod) {
+                    if (LpcRelay::ID === $shippingMethod) {
                         $pickUpInfo = $this->getCurrentPickUpLocationInfo();
                         $this->updatePickupMeta($orderId, $pickUpInfo);
                         $this->setCurrentPickUpLocationInfo(null);

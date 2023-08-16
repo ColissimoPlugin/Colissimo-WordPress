@@ -3,7 +3,7 @@ var $affectMethodDiv;
 jQuery(function ($) {
     $.lpcInitWidget = function () {
         window.lpc_callback = function (point) {
-            $('.lpc-modal .modal-close').click();
+            $('.lpc-modal .modal-close').trigger('click');
 
             if ($affectMethodDiv.length === 0) {
                 var $errorDiv = $('#lpc_layer_error_message');
@@ -41,17 +41,6 @@ jQuery(function ($) {
             }
         };
 
-        // We need to close the widget to be able to open it again
-        $('body').on('wc_backbone_modal_before_remove', function () {
-            let container = $('#lpc_widget_container');
-            if (container.length > 0) {
-                try {
-                    container.frameColissimoClose();
-                } catch (e) {
-                }
-            }
-        });
-
         $('#lpc_pick_up_widget_show_map').off('click').on('click', function (e) {
             e.preventDefault();
 
@@ -68,6 +57,18 @@ jQuery(function ($) {
             $.extend(colissimoParams, window.lpc_widget_info);
 
             $('#lpc_widget_container').frameColissimoOpen(colissimoParams);
+
+            // We need to close the widget to be able to open it again
+            $('.lpc-modal .modal-close').on('click', function () {
+                let container = $('#lpc_widget_container');
+                if (container.length > 0) {
+                    try {
+                        container.frameColissimoClose();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            });
         });
     };
 

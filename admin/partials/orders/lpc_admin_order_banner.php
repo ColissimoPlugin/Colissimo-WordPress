@@ -433,7 +433,6 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
                                         echo $args['lpc_bordereau_queries']->getBordereauActionsIcons(
                                             $bordereauLinks[$outwardTrackingNumber]['link'],
                                             $bordereauLinks[$outwardTrackingNumber]['id'],
-                                            $args['order_id'],
                                             $args['lpc_redirection']
                                         );
                                     }

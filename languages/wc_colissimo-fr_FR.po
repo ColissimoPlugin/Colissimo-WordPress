@@ -646,8 +646,8 @@ msgstr "Imprimer l'étiquette aller"
 msgid "Print label information"
 msgstr "Imprimer les étiquettes de livraison"
 
-msgid "Print thermal error on some orders. Please check browser console for more information"
-msgstr "Erreur à l'impression thermique pour certaines commandes. Pour plus d'informations, merci de consulter la console du navigateur"
+msgid "Print thermal error on some orders:"
+msgstr "Erreur à l'impression thermique pour certaines commandes :"
 
 msgid "Please select a pick-up point"
 msgstr "Veuillez choisir un point de retrait"
@@ -978,9 +978,8 @@ msgstr "Le code postal où est situé votre entrepôt"
 msgid "Product"
 msgstr "Produit"
 
-msgid "Generate end of day bordereau"
-msgstr "Générer le bordereau de fin de journée"
-
+msgid "Generate end of period slip"
+msgstr "Générer le bordereau de fin de période"
 
 msgid "Colissimo Partial expedition"
 msgstr "Colissimo Expédition partielle"
@@ -1521,6 +1520,7 @@ msgstr "Service d'envoi pour l'Italie"
 
 msgid "Sending service Luxembourg"
 msgstr "Service d'envoi pour le Luxembourg"
+
 msgid "Number of products"
 msgstr "Nombre de produits"
 
@@ -1602,8 +1602,8 @@ msgstr "Widget Colissimo"
 msgid "Add the invoice when downloading the label"
 msgstr "Ajouter la facture quand l'étiquette est téléchargée"
 
-msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
-msgstr "Sur le listing Colissimo quand vous téléchargez une seule étiquette, si cette option est cochée alors la facture sera ajoutée au fichier PDF"
+msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file."
+msgstr "Sur le listing Colissimo quand vous téléchargez une seule étiquette, si cette option est cochée alors la facture sera ajoutée au fichier PDF."
 
 msgid "Leaflet (free)"
 msgstr "Leaflet (gratuit)"
@@ -1679,3 +1679,282 @@ msgstr "Calculer les méthodes de livraison avant que les taxes ne soient appliq
 
 msgid "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any tax."
 msgstr "Si cette option est activée, les méthodes d'expédition disponibles et les frais seront calculés sur la base du prix du panier avant l'application de toute taxe."
+
+msgid "Return labels for International shipments are only available in PDF A4 format and will ignore this option."
+msgstr "Les étiquettes retour pour les envois internationaux sont uniquement disponibles au format PDF A4 et ignoreront cette option."
+
+msgid "Number of days for the end of period slip"
+msgstr "Nombre de jours pour le bordereau de fin de période"
+
+msgid "Choose the number of days taken into account for the end of period slip. For example if you choose 2, the slip will be generated with yesterday and today's labels that haven't any slip yet."
+msgstr "Choisissez le nombre de jours pris en compte pour le bordereau de fin de période. Par exemple si vous choisissez 2, le bordereau sera généré avec toutes les étiquettes d'hier et aujourd'hui qui n'ont pas encore de bordereau."
+
+msgid "PDF office printing, dimension 10cm x 12cm, and resolution of 300dpi"
+msgstr "Impression bureautique en PDF, de dimension 10cm par 12cm, et de résolution 300dpi"
+
+msgid "PDF office printing, dimension 10cm x 10cm, and resolution of 300dpi"
+msgstr "Impression bureautique en PDF, de dimension 10cm par 10cm, et de résolution 300dpi"
+
+msgid "ZPL thermal printing, dimension 10cm x 10cm, and resolution of 203dpi"
+msgstr "Impression thermique en ZPL, de dimension 10cm par 10cm, et de résolution 203dpi"
+
+msgid "ZPL thermal printing, dimension 10cm x 10cm, and resolution of 300dpi"
+msgstr "Impression thermique en ZPL, de dimension 10cm par 10cm, et de résolution 300dpi"
+
+msgid "DPL thermal printing, dimension 10cm x 10cm, and resolution of 203dpi"
+msgstr "Impression thermique en DPL, de dimension 10cm par 10cm, et de résolution 203dpi"
+
+msgid "DPL thermal printing, dimension 10cm x 10cm, and resolution of 300dpi"
+msgstr "Impression thermique en DPL, de dimension 10cm par 10cm, et de résolution 300dpi"
+
+msgid "Extra cost"
+msgstr "Coût supplémentaire"
+
+msgid "This amount will be added to the shipping cost for all Colissimo shipping methods."
+msgstr "Ce montant sera ajouté au coût de livraison pour toutes les méthodes de livraison Colissimo."
+
+msgid "Global"
+msgstr "Global"
+
+msgid "Apply extra cost also for free shipping"
+msgstr "Appliquer le coût supplémentaire même pour la livraison gratuite"
+
+msgid "If you select \"Yes\", the extra cost will be applied even if the shipping is free. This includes \"Free from order value\", \"Always free?\" and \"Free shipping classes\" options."
+msgstr "Si vous sélectionnez \"Oui\", le coût supplémentaire sera appliqué même si la livraison est gratuite. Cela inclut les options \"Gratuit à partir du prix de commande\", \"Toujours gratuit ?\" et \"Classes d'expédition gratuites\"."
+
+msgid "Display more pickup points"
+msgstr "Afficher plus de points de retrait"
+
+msgid "Plugin overview"
+msgstr "Présentation générale de l'extension"
+
+msgid "Carrier configuration"
+msgstr "Configuration des transporteurs"
+
+msgid "Order postage"
+msgstr "Affranchissement des commandes"
+
+msgid "PickUp point order"
+msgstr "Commande en point de retrait"
+
+msgid "CN23 order"
+msgstr "Commande CN23"
+
+msgid "Multi-parcels"
+msgstr "Multi-colis"
+
+msgid "Multi-parcels OM"
+msgstr "Multi-colis OM"
+
+msgid "Parcel tracking"
+msgstr "Suivi des colis"
+
+msgid "Customs 2021"
+msgstr "Douanes 2021"
+
+msgid "Deposit of bordereau"
+msgstr "Bordereau de dépôt"
+
+msgid "Thermal printing kit"
+msgstr "Kit impression thermique"
+
+msgid "Summary"
+msgstr "Sommaire"
+
+msgid "Video tutorials"
+msgstr "Tutoriels vidéo"
+
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Welcome to your Colissimo plugin!"
+msgstr "Bienvenue sur votre extension Colissimo !"
+
+msgid "<u>Not yet registered on Colissimo?</u> Here is how to do it:"
+msgstr "<u>Pas encore inscrit sur Colissimo ?</u> Voici comment faire :"
+
+msgid "To register for the %1$s option, fill %2$s to create an account and receive your ids within a few days."
+msgstr "Pour souscrire à l'option %1$s, remplissez %2$s pour créer un compte et recevoir vos identifiants sous quelques jours."
+
+msgid "To register for the %1$s option, fill %2$s to be contacted by a sales representative."
+msgstr "Pour souscrire à l'option %1$s, remplissez %2$s pour être contacté par un conseiller commercial."
+
+msgid "this commercial contact form"
+msgstr "ce formulaire de contact commercial"
+
+msgid "<u>Already registered on Colissimo?</u> Here is how to configure your plugin:"
+msgstr "<u>Déjà inscrit sur Colissimo ?</u> Voici comment configurer votre extension :"
+
+msgid "I associate my account to the Colissimo plugin"
+msgstr "J'associe mon compte à l'extension Colissimo"
+
+msgid "To connect the plugin, you must enter your Colissimo ID and password in the \"General\" tab of this plugin."
+msgstr "Pour connecter l'extension, vous devez entrer votre identifiant et mot de passe Colissimo dans l'onglet \"Général\" de cette extension."
+
+msgid "The ID must be a 6 digits number, this is the one you use to connect to %s."
+msgstr "L'identifiant doit être un nombre à 6 chiffres, c'est celui que vous utilisez pour vous connecter sur %s."
+
+msgid "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
+msgstr "Je configure mes paramètres pour simplifier mes préparations d'expédition grâce aux fonctionnalités Colissimo"
+
+msgid "Enter %s to be able to generate labels"
+msgstr "Saisissez %s pour pouvoir générer des étiquettes"
+
+msgid "your origin address"
+msgstr "votre adresse d'origine"
+
+msgid "%s of your labels (either PDF or format for thermal printing)"
+msgstr "%s de vos étiquettes (soit PDF soit format pour impression thermique)"
+
+msgid "Choose the format"
+msgstr "Choisissez le format"
+
+msgid "In case of thermal printing, %s to your printer"
+msgstr "Dans le cas d'une impression thermique, %s à votre imprimante"
+
+msgid "configure the connection"
+msgstr "configurez la connexion"
+
+msgid "Enter %s for your parcels"
+msgstr "Saisissez %s pour vos colis"
+
+msgid "the packaging weight"
+msgstr "le poids de l'emballage"
+
+msgid "Enter %s for your shipments outside the European Union"
+msgstr "Saisissez %s pour vos expéditions hors Union Européenne"
+
+msgid "your customs formalities"
+msgstr "vos formalités douanières"
+
+msgid "I make sure the WooCommerce settings are complete"
+msgstr "Je m'assure que les paramètres WooCommerce sont complets"
+
+msgid "%s must be complete"
+msgstr "%s doit être remplie"
+
+msgid "The shop address"
+msgstr "L'adresse de la boutique"
+
+msgid "All the products must have a weight under their \"Shipping\" section"
+msgstr "Tous les produits doivent avoir un poids dans leur section \"Expédition\""
+
+msgid "The products may have a custom HS code and country of manufacture under their \"Attributes\" section"
+msgstr "Les produits peuvent avoir un code SH et un pays de fabrication personnalisés dans leur section \"Attributs\""
+
+msgid "I configure my shipping rates"
+msgstr "Je configure mes tarifs d'expédition"
+
+msgid "Head to %s"
+msgstr "Rendez-vous dans %s"
+
+msgid "the \"Shipping\" tab"
+msgstr "l'onglet \"Expédition\""
+
+msgid "The Colissimo plugin automatically creates its zones based on shipping costs rules"
+msgstr "L'extension Colissimo crée automatiquement ses zones en fonction des règles de frais d'expédition"
+
+msgid "Activate the shipping methods you want to show to your customers"
+msgstr "Activez les méthodes d'expédition que vous souhaitez proposer à vos clients"
+
+msgid "You can customize the titles and shipping prices of the delivery solutions for your customers"
+msgstr "Vous pouvez personnaliser les titres et les prix d'expédition des solutions de livraison pour vos clients"
+
+msgid "Note that shipping prices for Colissimo international are not automatically added"
+msgstr "Notez que les prix d'expédition pour Colissimo international ne sont pas ajoutés automatiquement"
+
+msgid "Beware: Colissimo doesn't handle parcels over 30kg, including packaging weight. Be careful about the weight unit and when you modify the weight ranges."
+msgstr "Attention : Colissimo ne gère pas les colis de plus de 30kg, incluant le poids de l'emballage. Soyez vigilant sur l’unité de poids et lorsque vous modifiez les tranches de poids."
+
+msgid "Everything is ready!"
+msgstr "Tout est prêt !"
+
+msgid "We have created a special page just for you, to view your new orders in %s"
+msgstr "Nous avons créé une page spéciale pour vous, pour consulter vos nouvelles commandes dans %s"
+
+msgid "Need help?"
+msgstr "Besoin d'aide ?"
+
+msgid "You can also contact the Colissimo support by phone at %1$s or the technical support by email at %2$s"
+msgstr "Vous pouvez également contacter le support Colissimo par téléphone au %1$s ou le support technique par email sur %2$s"
+
+msgid "You will find video tutorials on %s."
+msgstr "Vous trouverez des tutoriels vidéos sur %s."
+
+msgid "this page"
+msgstr "cette page"
+
+msgid "In the Colissimo listing when you print a single label, if this option is checked it adds the invoice to the printed file."
+msgstr "Sur le listing Colissimo quand vous imprimez une seule étiquette, si cette option est cochée alors la facture sera ajoutée lors de l'impression."
+
+msgid "Change Colissimo shipping method"
+msgstr "Changer la méthode d'expédition Colissimo"
+
+msgid "Outward labels generation date"
+msgstr "Date de génération des étiquettes aller"
+
+msgid "Label generated at %s"
+msgstr "Étiquette générée le %s"
+
+msgid "Orders"
+msgstr "Commandes"
+
+msgid "Slip creation"
+msgstr "Création de bordereau"
+
+msgid "Slip history"
+msgstr "Historique des bordereaux"
+
+msgid "Today's parcels"
+msgstr "Colis du jour"
+
+msgid "Other parcels"
+msgstr "Autres colis"
+
+msgid "Bordereau ID"
+msgstr "Bordereau ID"
+
+msgid "Number of parcels"
+msgstr "Nombre de colis"
+
+msgid "Creation date"
+msgstr "Date de création"
+
+msgid "Order IDs"
+msgstr "IDs de commande"
+
+msgid "Tracking numbers"
+msgstr "Numéros de suivi"
+
+msgid "Generate with the selected parcels"
+msgstr "Générer avec les colis sélectionnés"
+
+msgid "Add the invoice when printing the label"
+msgstr "Ajouter la facture lors de l'impression de l'étiquette"
+
+msgid "Developer documentation"
+msgstr "Documentation développeur"
+
+msgid "See documentation"
+msgstr "Voir la documentation"
+
+msgid "Number of CN23 documents to generate"
+msgstr "Nombre de documents CN23 à générer"
+
+msgid "CN23 format"
+msgstr "Format de la CN23"
+
+msgid "From:"
+msgstr "De :"
+
+msgid "to:"
+msgstr "à :"
+
+msgid "Invoices"
+msgstr "Factures"
+
+msgid "Label creation date"
+msgstr "Date de création de l'étiquette"
+
+msgid "Order creation date"
+msgstr "Date de création de la commande"

@@ -87,7 +87,7 @@
     "Z5": {
         "name": "Zone 5",
         "countries": {
-            "AU": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": "CORI", "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
+            "AU": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": "DOS", "return": "CORI", "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "CA": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": "DOS", "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "CN": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": "DOS", "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},
             "HK": {"domiciless": false, "domicileas": false, "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": "DOS", "return": false, "ftd": false, "cn23": true, "insurance": true, "flashss": false, "flashas": false},

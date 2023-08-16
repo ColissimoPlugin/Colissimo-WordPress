@@ -386,110 +386,112 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             }
         }
 
-        $classesFreeShipping     = $this->getFreeShippingClasses();
-        $isClassesFreeShipping   = !empty(array_intersect($classesFreeShipping, $cartShippingClasses));
-        $isMethodFreeForAllItems = $this->getFreeForItemsWithoutShippingClasses();
-        $areOtherPayingClasses   = !empty(array_diff($cartShippingClasses, $classesFreeShipping));
+        // For configuration of version 1.1 or lower
+        if (isset($rates[0]['weight'])) {
+            usort(
+                $rates,
+                function ($a, $b) {
+                    if ($a['weight'] == $b['weight']) {
+                        return 0;
+                    }
 
-        if (
-            'yes' === $this->get_option('always_free')
-            || ($this->freeFromOrderValue() > 0 && $totalPrice >= $this->freeFromOrderValue())
-            || $isCouponFreeShipping
-            || $isClassesFreeShipping && (!$areOtherPayingClasses || 'yes' === $isMethodFreeForAllItems)
-        ) {
-            $cost = 0.0;
+                    return ($a['weight'] < $b['weight']) ? - 1 : 1;
+                }
+            );
+
+            foreach ($rates as $rate) {
+                if ($rate['weight'] <= $totalValue) {
+                    $cost = $rate['price'];
+                }
+            }
         } else {
-            // For configuration of version 1.1 or lower
-            if (isset($rates[0]['weight'])) {
-                usort(
-                    $rates,
-                    function ($a, $b) {
-                        if ($a['weight'] == $b['weight']) {
-                            return 0;
+            $matchingRates = [];
+
+            // Step 1 : retrieve all matching line rate with price, weight and shipping classes
+            foreach ($rates as $oneRate) {
+                $arrayIntersection = array_intersect($cartShippingClasses, $oneRate['shipping_class']);
+                sort($arrayIntersection);
+                sort($cartShippingClasses);
+                $classMatches = $arrayIntersection == $cartShippingClasses;
+
+                if (
+                    $totalWeight >= $oneRate['min_weight']
+                    && (empty($oneRate['max_weight']) || $totalWeight < $oneRate['max_weight'])
+                    && $totalPrice >= $oneRate['min_price']
+                    && (empty($oneRate['max_price']) || $totalPrice < $oneRate['max_price'])
+                    && (
+                        $classMatches
+                        || in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $oneRate['shipping_class'])
+                    )
+                ) {
+                    $matchingRates[] = $oneRate;
+                }
+            }
+
+            $matchingShippingClassesRates = [];
+
+            // Step 2 : Match each shipping classes with corresponding line rates
+            foreach ($cartShippingClasses as $oneCartShippingClassId) {
+
+                // Step 2.1 : First check if a line rates is corresponding with a shipping class defined
+                if (!empty($oneCartShippingClassId)) {
+                    $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
+                        $matchingRates,
+                        function ($rate) use ($oneCartShippingClassId) {
+                            return in_array($oneCartShippingClassId, $rate['shipping_class']);
                         }
-
-                        return ($a['weight'] < $b['weight']) ? - 1 : 1;
-                    }
-                );
-
-                foreach ($rates as $rate) {
-                    if ($rate['weight'] <= $totalValue) {
-                        $cost = $rate['price'];
-                    }
-                }
-            } else {
-                $matchingRates = [];
-
-                // Step 1 : retrieve all matching line rate with price, weight and shipping classes
-                foreach ($rates as $oneRate) {
-                    $arrayIntersection = array_intersect($cartShippingClasses, $oneRate['shipping_class']);
-                    sort($arrayIntersection);
-                    sort($cartShippingClasses);
-                    $classMatches = $arrayIntersection == $cartShippingClasses;
-
-                    if (
-                        $totalWeight >= $oneRate['min_weight']
-                        && (empty($oneRate['max_weight']) || $totalWeight < $oneRate['max_weight'])
-                        && $totalPrice >= $oneRate['min_price']
-                        && (empty($oneRate['max_price']) || $totalPrice < $oneRate['max_price'])
-                        && (
-                            $classMatches
-                            || in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $oneRate['shipping_class'])
-                        )
-                    ) {
-                        $matchingRates[] = $oneRate;
-                    }
+                    );
                 }
 
-                $matchingShippingClassesRates = [];
-
-                // Step 2 : Match each shipping classes with corresponding line rates
-                foreach ($cartShippingClasses as $oneCartShippingClassId) {
-
-                    // Step 2.1 : First check if a line rates is corresponding with a shipping class defined
-                    if (!empty($oneCartShippingClassId)) {
-                        $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
-                            $matchingRates,
-                            function ($rate) use ($oneCartShippingClassId) {
-                                return in_array($oneCartShippingClassId, $rate['shipping_class']);
-                            }
-                        );
-                    }
-
-                    // Step 2.2 : If no line rates corresponding with shipping rates or if no shipping class is set, check the line rates for all shipping classes
-                    if (empty($matchingShippingClassesRates[$oneCartShippingClassId]) || '0' == $oneCartShippingClassId) {
-                        $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
-                            $matchingRates,
-                            function ($rate) use ($oneCartShippingClassId) {
-                                return in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class']);
-                            }
-                        );
-                    }
-                }
-
-                $shippingClassPrices = [];
-
-                // Step 3 : For each shipping class of the cart, take the cheapest line rate
-                foreach ($matchingShippingClassesRates as $shippingClassId => $oneShippingMethodRate) {
-                    foreach ($oneShippingMethodRate as $oneRate) {
-                        if (!isset($shippingClassPrices[$shippingClassId])) {
-                            $shippingClassPrices[$shippingClassId] = $oneRate['price'];
-                        } elseif ($shippingClassPrices[$shippingClassId] > $oneRate['price']) {
-                            $shippingClassPrices[$shippingClassId] = $oneRate['price'];
+                // Step 2.2 : If no line rates corresponding with shipping rates or if no shipping class is set, check the line rates for all shipping classes
+                if (empty($matchingShippingClassesRates[$oneCartShippingClassId]) || '0' == $oneCartShippingClassId) {
+                    $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
+                        $matchingRates,
+                        function ($rate) use ($oneCartShippingClassId) {
+                            return in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class']);
                         }
+                    );
+                }
+            }
+
+            $shippingClassPrices = [];
+
+            // Step 3 : For each shipping class of the cart, take the cheapest line rate
+            foreach ($matchingShippingClassesRates as $shippingClassId => $oneShippingMethodRate) {
+                foreach ($oneShippingMethodRate as $oneRate) {
+                    if (!isset($shippingClassPrices[$shippingClassId])) {
+                        $shippingClassPrices[$shippingClassId] = $oneRate['price'];
+                    } elseif ($shippingClassPrices[$shippingClassId] > $oneRate['price']) {
+                        $shippingClassPrices[$shippingClassId] = $oneRate['price'];
                     }
                 }
+            }
 
-                // Step 4 : Take the more expensive shipping class
-                foreach ($shippingClassPrices as $onePrice) {
-                    if (null === $cost || $onePrice > $cost) {
-                        $cost = $onePrice;
-                    }
+            // Step 4 : Take the more expensive shipping class
+            foreach ($shippingClassPrices as $onePrice) {
+                if (null === $cost || $onePrice > $cost) {
+                    $cost = $onePrice;
                 }
             }
         }
 
         if (null !== $cost) {
+            // Handle free shipping options
+            $classesFreeShipping     = $this->getFreeShippingClasses();
+            $isClassesFreeShipping   = !empty(array_intersect($classesFreeShipping, $cartShippingClasses));
+            $isMethodFreeForAllItems = $this->getFreeForItemsWithoutShippingClasses();
+            $areOtherPayingClasses   = !empty(array_diff($cartShippingClasses, $classesFreeShipping));
+            $freeFromOrderValue      = $this->freeFromOrderValue();
+
+            if (
+                'yes' === $this->get_option('always_free')
+                || ($freeFromOrderValue > 0 && $totalPrice >= $freeFromOrderValue)
+                || $isCouponFreeShipping
+                || $isClassesFreeShipping && (!$areOtherPayingClasses || 'yes' === $isMethodFreeForAllItems)
+            ) {
+                $cost = 0.0;
+            }
+
             // For DDP shipping methods, apply the extra cost if any, even when free shipping is active
             if (false !== strpos($this->id, '_ddp')) {
                 $countryCode = strtolower($package['destination']['country']);
@@ -499,15 +501,23 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 }
             }
 
-            $titleFree = $this->get_option('title_free', '');
-            $label     = 0 == $cost && !empty($titleFree) ? $titleFree : $this->title;
-
-            $translatedLabel = __($label, 'wc_colissimo');
-
             // Apply discount on shipping if there is one
-            if (0 !== $discountToApply) {
+            if (0 != $discountToApply) {
                 $cost = $cost * (1 - $discountToApply * 0.01);
             }
+
+            // We add it after any discount as it is a fixed cost
+            $extraCostFree = LpcHelper::get_option('lpc_extra_cost_over_free', 'no');
+            if (!empty($cost) || 'yes' === $extraCostFree) {
+                $extraCost = LpcHelper::get_option('lpc_extra_cost', 0);
+                if (!empty($extraCost)) {
+                    $cost += $extraCost;
+                }
+            }
+
+            $titleFree       = $this->get_option('title_free', '');
+            $label           = 0 == $cost && !empty($titleFree) ? $titleFree : $this->title;
+            $translatedLabel = __($label, 'wc_colissimo');
 
             $rate = [
                 'id'    => $this->get_rate_id(),

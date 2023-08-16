@@ -28,15 +28,15 @@ class LpcInwardLabelDb extends LpcDb {
 
         return <<<END_SQL
 CREATE TABLE $table_name (
-    id                      INT UNSIGNED        NOT NULL AUTO_INCREMENT,
-    order_id                BIGINT(20) UNSIGNED NOT NULL,
-    label                   MEDIUMBLOB          NULL,
-    label_format            VARCHAR(255)        NULL,
-    label_created_at        DATETIME            NULL,
-    cn23                    MEDIUMBLOB          NULL,
-    tracking_number         VARCHAR(255)        NULL,
-    outward_tracking_number VARCHAR(255)        NULL,
-    printed                 TINYINT(1)          NOT NULL DEFAULT 0,
+    id                      INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+    order_id                INT(20) UNSIGNED NOT NULL,
+    label                   MEDIUMBLOB       NULL,
+    label_format            VARCHAR(10)      NULL,
+    label_created_at        DATETIME         NULL,
+    cn23                    MEDIUMBLOB       NULL,
+    tracking_number         VARCHAR(20)      NULL,
+    outward_tracking_number VARCHAR(20)      NULL,
+    printed                 TINYINT(1)       NOT NULL DEFAULT 0,
     PRIMARY KEY (id),
     INDEX order_id (order_id),
     INDEX tracking_number (tracking_number),
@@ -424,6 +424,18 @@ ALTER TABLE $tableName ADD COLUMN `printed` TINYINT(1) NOT NULL DEFAULT 0
 END_SQL;
 
         $wpdb->query($query);
+        // phpcs:enable
+    }
+
+    public function updateToVersion182() {
+        $tableName = $this->getTableName();
+
+        // phpcs:disable
+        global $wpdb;
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `order_id` `order_id` INT(20) UNSIGNED NOT NULL');
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `label_format` `label_format` VARCHAR(10) NULL');
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `tracking_number` `tracking_number` VARCHAR(20) NULL');
+        $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `outward_tracking_number` `outward_tracking_number` VARCHAR(20) NULL');
         // phpcs:enable
     }
 

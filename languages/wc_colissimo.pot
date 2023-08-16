@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.8.1\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.8.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-06-05\n"
+"POT-Creation-Date: 2023-08-16\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -657,7 +657,7 @@ msgstr ""
 msgid "Print label information"
 msgstr ""
 
-msgid "Print thermal error on some orders. Please check browser console for more information"
+msgid "Print thermal error on some orders:"
 msgstr ""
 
 msgid "Please select a pick-up point"
@@ -989,9 +989,8 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-msgid "Generate end of day bordereau"
+msgid "Generate end of period slip"
 msgstr ""
-
 
 msgid "Colissimo Partial expedition"
 msgstr ""
@@ -1614,7 +1613,7 @@ msgstr ""
 msgid "Add the invoice when downloading the label"
 msgstr ""
 
-msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file"
+msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file."
 msgstr ""
 
 msgid "Leaflet (free)"
@@ -1690,5 +1689,284 @@ msgid "Calculate shipping method before applying taxes"
 msgstr ""
 
 msgid "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any tax."
+msgstr ""
+
+msgid "Return labels for International shipments are only available in PDF A4 format and will ignore this option."
+msgstr ""
+
+msgid "Number of days for the end of period slip"
+msgstr ""
+
+msgid "Choose the number of days taken into account for the end of period slip. For example if you choose 2, the slip will be generated with yesterday and today's labels that haven't any slip yet."
+msgstr ""
+
+msgid "PDF office printing, dimension 10cm x 12cm, and resolution of 300dpi"
+msgstr ""
+
+msgid "PDF office printing, dimension 10cm x 10cm, and resolution of 300dpi"
+msgstr ""
+
+msgid "ZPL thermal printing, dimension 10cm x 10cm, and resolution of 203dpi"
+msgstr ""
+
+msgid "ZPL thermal printing, dimension 10cm x 10cm, and resolution of 300dpi"
+msgstr ""
+
+msgid "DPL thermal printing, dimension 10cm x 10cm, and resolution of 203dpi"
+msgstr ""
+
+msgid "DPL thermal printing, dimension 10cm x 10cm, and resolution of 300dpi"
+msgstr ""
+
+msgid "Extra cost"
+msgstr ""
+
+msgid "This amount will be added to the shipping cost for all Colissimo shipping methods."
+msgstr ""
+
+msgid "Global"
+msgstr ""
+
+msgid "Apply extra cost also for free shipping"
+msgstr ""
+
+msgid "If you select \"Yes\", the extra cost will be applied even if the shipping is free. This includes \"Free from order value\", \"Always free?\" and \"Free shipping classes\" options."
+msgstr ""
+
+msgid "Display more pickup points"
+msgstr ""
+
+msgid "Plugin overview"
+msgstr ""
+
+msgid "Carrier configuration"
+msgstr ""
+
+msgid "Order postage"
+msgstr ""
+
+msgid "PickUp point order"
+msgstr ""
+
+msgid "CN23 order"
+msgstr ""
+
+msgid "Multi-parcels"
+msgstr ""
+
+msgid "Multi-parcels OM"
+msgstr ""
+
+msgid "Parcel tracking"
+msgstr ""
+
+msgid "Customs 2021"
+msgstr ""
+
+msgid "Deposit of bordereau"
+msgstr ""
+
+msgid "Thermal printing kit"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "Video tutorials"
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+msgid "Welcome to your Colissimo plugin!"
+msgstr ""
+
+msgid "<u>Not yet registered on Colissimo?</u> Here is how to do it:"
+msgstr ""
+
+msgid "To register for the %1$s option, fill %2$s to create an account and receive your ids within a few days."
+msgstr ""
+
+msgid "To register for the %1$s option, fill %2$s to be contacted by a sales representative."
+msgstr ""
+
+msgid "this commercial contact form"
+msgstr ""
+
+msgid "<u>Already registered on Colissimo?</u> Here is how to configure your plugin:"
+msgstr ""
+
+msgid "I associate my account to the Colissimo plugin"
+msgstr ""
+
+msgid "To connect the plugin, you must enter your Colissimo ID and password in the \"General\" tab of this plugin."
+msgstr ""
+
+msgid "The ID must be a 6 digits number, this is the one you use to connect to %s."
+msgstr ""
+
+msgid "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
+msgstr ""
+
+msgid "Enter %s to be able to generate labels"
+msgstr ""
+
+msgid "your origin address"
+msgstr ""
+
+msgid "%s of your labels (either PDF or format for thermal printing)"
+msgstr ""
+
+msgid "Choose the format"
+msgstr ""
+
+msgid "In case of thermal printing, %s to your printer"
+msgstr ""
+
+msgid "configure the connection"
+msgstr ""
+
+msgid "Enter %s for your parcels"
+msgstr ""
+
+msgid "the packaging weight"
+msgstr ""
+
+msgid "Enter %s for your shipments outside the European Union"
+msgstr ""
+
+msgid "your customs formalities"
+msgstr ""
+
+msgid "I make sure the WooCommerce settings are complete"
+msgstr ""
+
+msgid "%s must be complete"
+msgstr ""
+
+msgid "The shop address"
+msgstr ""
+
+msgid "All the products must have a weight under their \"Shipping\" section"
+msgstr ""
+
+msgid "The products may have a custom HS code and country of manufacture under their \"Attributes\" section"
+msgstr ""
+
+msgid "I configure my shipping rates"
+msgstr ""
+
+msgid "Head to %s"
+msgstr ""
+
+msgid "the \"Shipping\" tab"
+msgstr ""
+
+msgid "The Colissimo plugin automatically creates its zones based on shipping costs rules"
+msgstr ""
+
+msgid "Activate the shipping methods you want to show to your customers"
+msgstr ""
+
+msgid "You can customize the titles and shipping prices of the delivery solutions for your customers"
+msgstr ""
+
+msgid "Note that shipping prices for Colissimo international are not automatically added"
+msgstr ""
+
+msgid "Beware: Colissimo doesn't handle parcels over 30kg, including packaging weight. Be careful about the weight unit and when you modify the weight ranges."
+msgstr ""
+
+msgid "Everything is ready!"
+msgstr ""
+
+msgid "We have created a special page just for you, to view your new orders in %s"
+msgstr ""
+
+msgid "Need help?"
+msgstr ""
+
+msgid "You can also contact the Colissimo support by phone at %1$s or the technical support by email at %2$s"
+msgstr ""
+
+msgid "You will find video tutorials on %s."
+msgstr ""
+
+msgid "this page"
+msgstr ""
+
+msgid "In the Colissimo listing when you print a single label, if this option is checked it adds the invoice to the printed file."
+msgstr ""
+
+msgid "Change Colissimo shipping method"
+msgstr ""
+
+msgid "Outward labels generation date"
+msgstr ""
+
+msgid "Label generated at %s"
+msgstr ""
+
+msgid "Orders"
+msgstr ""
+
+msgid "Slip creation"
+msgstr ""
+
+msgid "Slip history"
+msgstr ""
+
+msgid "Today's parcels"
+msgstr ""
+
+msgid "Other parcels"
+msgstr ""
+
+msgid "Bordereau ID"
+msgstr ""
+
+msgid "Number of parcels"
+msgstr ""
+
+msgid "Creation date"
+msgstr ""
+
+msgid "Order IDs"
+msgstr ""
+
+msgid "Tracking numbers"
+msgstr ""
+
+msgid "Generate with the selected parcels"
+msgstr ""
+
+msgid "Add the invoice when printing the label"
+msgstr ""
+
+msgid "Developer documentation"
+msgstr ""
+
+msgid "See documentation"
+msgstr ""
+
+msgid "Number of CN23 documents to generate"
+msgstr ""
+
+msgid "CN23 format"
+msgstr ""
+
+msgid "From:"
+msgstr ""
+
+msgid "to:"
+msgstr ""
+
+msgid "Invoices"
+msgstr ""
+
+msgid "Label creation date"
+msgstr ""
+
+msgid "Order creation date"
 msgstr ""
 

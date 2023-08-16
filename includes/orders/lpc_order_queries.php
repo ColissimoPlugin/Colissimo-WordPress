@@ -19,9 +19,16 @@ class LpcOrderQueries {
         // TODO: look if there is a better way to do (with WC Queries)
         global $wpdb;
 
-        $query = "SELECT DISTINCT {$wpdb->prefix}woocommerce_order_items.order_id, {$wpdb->prefix}posts.post_date FROM {$wpdb->prefix}woocommerce_order_items 
+        $query = "SELECT DISTINCT {$wpdb->prefix}woocommerce_order_items.order_id, {$wpdb->prefix}posts.post_date, {$wpdb->prefix}lpc_outward_label.label_created_at, {$wpdb->prefix}lpc_outward_label.tracking_number 
+                    FROM {$wpdb->prefix}woocommerce_order_items 
                     JOIN {$wpdb->prefix}woocommerce_order_itemmeta ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id={$wpdb->prefix}woocommerce_order_items.order_item_id 
                     JOIN {$wpdb->prefix}posts ON {$wpdb->prefix}posts.ID={$wpdb->prefix}woocommerce_order_items.order_id";
+
+        if (!empty($filters['no_slip'])) {
+            $query .= " JOIN {$wpdb->prefix}lpc_outward_label ON {$wpdb->prefix}lpc_outward_label.order_id={$wpdb->prefix}woocommerce_order_items.order_id AND bordereau_id IS NULL";
+        } else {
+            $query .= " LEFT JOIN {$wpdb->prefix}lpc_outward_label ON {$wpdb->prefix}lpc_outward_label.order_id={$wpdb->prefix}woocommerce_order_items.order_id";
+        }
 
         $query .= self::getMetaJoin($args);
         $query .= self::addFilter($filters);
@@ -39,7 +46,11 @@ class LpcOrderQueries {
         $ordersId = [];
         if ($results) {
             foreach ($results as $result) {
-                $ordersId[] = $result->order_id;
+                $ordersId[] = [
+                    'order_id'         => $result->order_id,
+                    'label_created_at' => $result->label_created_at,
+                    'tracking_number'  => $result->tracking_number,
+                ];
             }
         }
 
@@ -53,13 +64,21 @@ class LpcOrderQueries {
                     JOIN {$wpdb->prefix}woocommerce_order_itemmeta ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id={$wpdb->prefix}woocommerce_order_items.order_item_id 
                     JOIN {$wpdb->prefix}posts ON {$wpdb->prefix}posts.ID={$wpdb->prefix}woocommerce_order_items.order_id";
 
-        $query .= self::addFilter($filters);
+        if (!empty($filters['no_slip'])) {
+            $query .= " JOIN {$wpdb->prefix}lpc_outward_label ON {$wpdb->prefix}lpc_outward_label.order_id={$wpdb->prefix}woocommerce_order_items.order_id AND bordereau_id IS NULL";
+        } else {
+            $query .= " LEFT JOIN {$wpdb->prefix}lpc_outward_label ON {$wpdb->prefix}lpc_outward_label.order_id={$wpdb->prefix}woocommerce_order_items.order_id";
+        }
+
+        if (!empty($filters)) {
+            $query .= self::addFilter($filters);
+        }
 
         // phpcs:disable
         $result = $wpdb->get_results($query);
         // phpcs:enable
 
-        if (null !== $result) {
+        if (!empty($result)) {
             return $result[0]->nb;
         }
 
@@ -309,7 +328,7 @@ class LpcOrderQueries {
         $filters[] = "{$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id'";
         $filters[] = "{$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE 'lpc_%'";
 
-        if ($requestFilters['search']) {
+        if (!empty($requestFilters['search'])) {
             $search = $requestFilters['search'];
 
             $filters['search'] = '(';
@@ -364,6 +383,14 @@ class LpcOrderQueries {
 			)";
 
             $filters['search'] .= ')';
+        }
+
+        if (!empty($requestFilters['label_start_date'])) {
+            $filters[] = "{$wpdb->prefix}lpc_outward_label.label_created_at > '{$requestFilters['label_start_date']}'";
+        }
+
+        if (!empty($requestFilters['label_end_date'])) {
+            $filters[] = "{$wpdb->prefix}lpc_outward_label.label_created_at < '{$requestFilters['label_end_date']}'";
         }
 
         if (isset($requestFilters['label_type'])) {

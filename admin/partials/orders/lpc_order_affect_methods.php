@@ -1,8 +1,9 @@
 <?php
 $shippingMethods = isset($args['lpc_shipping_methods']) ? $args['lpc_shipping_methods'] : [];
+$buttonText      = isset($args['button_text']) ? $args['button_text'] : __('Click here to ship this order with Colissimo', 'wc_colissimo');
 ?>
 
-<div class="lpc_order_affect">
+<div class="lpc_order_affect" id="<?php echo esc_attr($args['lpc_partial_name']); ?>">
 	<script type="text/javascript">
         if (window.lpc_bind_order_affect !== undefined) {
             window.lpc_bind_order_affect();
@@ -14,7 +15,7 @@ $shippingMethods = isset($args['lpc_shipping_methods']) ? $args['lpc_shipping_me
 	</script>
 
 	<button type="button" class="button button-primary lpc_order_affect_toggle_methods">
-        <?php echo __('Click here to ship this order with Colissimo', 'wc_colissimo'); ?>
+        <?php esc_html_e($buttonText); ?>
 	</button>
 
 	<div class="lpc_order_affect_available_methods" style="display: none">

@@ -57,10 +57,11 @@ class LpcAdminPickupWebService extends LpcComponent {
         $map = LpcHelper::renderPartial(
             'pickup' . DS . 'webservice_map.php',
             [
-                'ceAddress'   => !empty($order->get_shipping_address_1()) ? $order->get_shipping_address_1() : '',
-                'ceZipCode'   => !empty($order->get_shipping_postcode()) ? $order->get_shipping_postcode() : '',
-                'ceTown'      => !empty($order->get_shipping_city()) ? $order->get_shipping_city() : '',
-                'ceCountryId' => !empty($order->get_shipping_country()) ? $order->get_shipping_country() : '',
+                'ceAddress'     => !empty($order->get_shipping_address_1()) ? $order->get_shipping_address_1() : '',
+                'ceZipCode'     => !empty($order->get_shipping_postcode()) ? $order->get_shipping_postcode() : '',
+                'ceTown'        => !empty($order->get_shipping_city()) ? $order->get_shipping_city() : '',
+                'ceCountryId'   => !empty($order->get_shipping_country()) ? $order->get_shipping_country() : '',
+                'maxRelayPoint' => LpcHelper::get_option('lpc_max_relay_point', 20),
             ]
         );
 
@@ -88,6 +89,8 @@ class LpcAdminPickupWebService extends LpcComponent {
             'city'        => LpcHelper::getVar('city'),
             'countryCode' => LpcHelper::getVar('countryId'),
         ];
+
+        $loadMore = (int) LpcHelper::getVar('loadMore', 0) === 1;
 
         $generateRelaysPaypload = new LpcGenerateRelaysPayload();
 
@@ -137,7 +140,7 @@ class LpcAdminPickupWebService extends LpcComponent {
             }
 
             // Limit number of displayed relays
-            $maxRelayPoint = LpcHelper::get_option('lpc_max_relay_point', 20);
+            $maxRelayPoint = $loadMore ? 20 : LpcHelper::get_option('lpc_max_relay_point', 20);
             $listRelaysWS  = array_slice($listRelaysWS, 0, $maxRelayPoint);
 
             $i           = 0;
@@ -165,6 +168,7 @@ class LpcAdminPickupWebService extends LpcComponent {
                 [
                     'html'            => $html,
                     'chooseRelayText' => __('Choose this relay', 'wc_colissimo'),
+                    'loadMore'        => $loadMore ? 1 : 0,
                 ]
             );
         } else {

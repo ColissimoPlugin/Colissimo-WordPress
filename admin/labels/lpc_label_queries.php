@@ -60,11 +60,13 @@ class LpcLabelQueries extends LpcComponent {
      *
      * @param       $trackingNumbersByOrders
      * @param       $labelFormatByTrackingNumber
+     * @param       $labelInfoByTrackingNumber
      * @param array $ordersId
      */
     public function getTrackingNumbersByOrdersId(
         &$trackingNumbersByOrders,
         &$labelFormatByTrackingNumber,
+        &$labelInfoByTrackingNumber,
         $ordersId = []
     ) {
         $outwardTrackingNumbers = $this->outwardLabelDb->getLabelsInfosForOrdersId($ordersId);
@@ -72,6 +74,8 @@ class LpcLabelQueries extends LpcComponent {
 
         foreach ($outwardTrackingNumbers as $oneOutwardTrackingNumber) {
             if (!empty($oneOutwardTrackingNumber->tracking_number)) {
+                $labelInfoByTrackingNumber[$oneOutwardTrackingNumber->tracking_number] = $oneOutwardTrackingNumber;
+
                 $trackingNumbersByOrders[$oneOutwardTrackingNumber->order_id][$oneOutwardTrackingNumber->tracking_number] = [];
                 if (!empty($oneOutwardTrackingNumber->detail)) {
                     $oneOutwardTrackingNumber->detail = json_decode($oneOutwardTrackingNumber->detail, true);
@@ -297,7 +301,7 @@ class LpcLabelQueries extends LpcComponent {
 
     public static function enqueueLabelsActionsScript() {
         $thermalLabelPrintAction              = LpcRegister::get('thermalLabelPrintAction');
-        $args['errorMsgPrintThermal']         = __('Print thermal error on some orders. Please check browser console for more information', 'wc_colissimo');
+        $args['errorMsgPrintThermal']         = __('Print thermal error on some orders:', 'wc_colissimo');
         $args['deletionConfirmTextOutward']   = __('Do you confirm the deletion of label? All related inwards label will be deleted too', 'wc_colissimo');
         $args['deletionConfirmTextInward']    = __('Do you confirm the deletion of label?', 'wc_colissimo');
         $args['thermalLabelPrintActionUrl']   = $thermalLabelPrintAction->getThermalPrintActionUrl();

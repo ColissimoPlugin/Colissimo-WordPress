@@ -1,4 +1,20 @@
 {
+  "home": [
+    {
+      "id": "lpc_section_home",
+      "type": "title",
+      "title": "Welcome to your Colissimo plugin!"
+    },
+    {
+      "id": "lpc_onboarding",
+      "type": "onboarding",
+      "title": ""
+    },
+    {
+      "id": "lpc_section_home",
+      "type": "sectionend"
+    }
+  ],
   "main": [
     {
       "id": "lpc_section_general",
@@ -216,6 +232,16 @@
       "id": "lpc_section_delivery_duty",
       "type": "title",
       "title": "Delivery Duty Paid settings"
+    },
+    {
+      "id": "lpc_extracost_au",
+      "type": "number",
+      "title": "Option price for Australia",
+      "class": "",
+      "default": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
     },
     {
       "id": "lpc_extracost_bh",
@@ -495,10 +521,16 @@
       "options": {
         "PDF_A4_300dpi": "PDF office printing, dimension A4 and resolution of 300dpi",
         "PDF_10x15_300dpi": "PDF office printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "PDF_10x12_300dpi": "PDF office printing, dimension 10cm x 12cm, and resolution of 300dpi",
+        "PDF_10x10_300dpi": "PDF office printing, dimension 10cm x 10cm, and resolution of 300dpi",
+        "ZPL_10x15_300dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "ZPL_10x15_203dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi",
+        "ZPL_10x10_300dpi": "ZPL thermal printing, dimension 10cm x 10cm, and resolution of 300dpi",
+        "ZPL_10x10_203dpi": "ZPL thermal printing, dimension 10cm x 10cm, and resolution of 203dpi",
         "DPL_10x15_300dpi": "DPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
         "DPL_10x15_203dpi": "DPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi",
-        "ZPL_10x15_300dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
-        "ZPL_10x15_203dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi"
+        "DPL_10x10_300dpi": "DPL thermal printing, dimension 10cm x 10cm, and resolution of 300dpi",
+        "DPL_10x10_203dpi": "DPL thermal printing, dimension 10cm x 10cm, and resolution of 203dpi"
       }
     },
     {
@@ -521,6 +553,18 @@
       "title": "",
       "class": "",
       "default": ""
+    },
+    {
+      "id": "lpc_label_slip_day_to_substract",
+      "type": "number",
+      "title": "Number of days for the end of period slip",
+      "desc": "Choose the number of days taken into account for the end of period slip. For example if you choose 2, the slip will be generated with yesterday and today's labels that haven't any slip yet.",
+      "desc_tip": true,
+      "class": "",
+      "default": "0",
+      "custom_attributes": {
+        "min": "0"
+      }
     },
     {
       "id": "lpc_email_outward_tracking",
@@ -600,6 +644,15 @@
       "default": "no"
     },
     {
+      "id": "lpc_section_labels",
+      "type": "sectionend"
+    },
+    {
+      "id": "lpc_section_invoices",
+      "type": "title",
+      "title": "Invoices"
+    },
+    {
       "id": "add_invoice_zip_label",
       "type": "checkbox",
       "title": "Add the invoice in the label archive",
@@ -611,12 +664,20 @@
       "id": "add_invoice_download_label",
       "type": "checkbox",
       "title": "Add the invoice when downloading the label",
-      "desc": "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file",
+      "desc": "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file.",
       "desc_tip": true,
       "default": "yes"
     },
     {
-      "id": "lpc_section_labels",
+      "id": "add_invoice_print_label",
+      "type": "checkbox",
+      "title": "Add the invoice when printing the label",
+      "desc": "In the Colissimo listing when you print a single label, if this option is checked it adds the invoice to the printed file.",
+      "desc_tip": true,
+      "default": "yes"
+    },
+    {
+      "id": "lpc_section_invoices",
       "type": "sectionend"
     },
     {
@@ -628,15 +689,23 @@
       "id": "lpc_returnLabelFormat",
       "type": "select",
       "title": "Return label format",
+      "desc": "Return labels for International shipments are only available in PDF A4 format and will ignore this option.",
+      "desc_tip": true,
       "class": "",
       "default": "PDF_A4_300dpi",
       "options": {
         "PDF_A4_300dpi": "PDF office printing, dimension A4 and resolution of 300dpi",
         "PDF_10x15_300dpi": "PDF office printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "PDF_10x12_300dpi": "PDF office printing, dimension 10cm x 12cm, and resolution of 300dpi",
+        "PDF_10x10_300dpi": "PDF office printing, dimension 10cm x 10cm, and resolution of 300dpi",
+        "ZPL_10x15_300dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
+        "ZPL_10x15_203dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi",
+        "ZPL_10x10_300dpi": "ZPL thermal printing, dimension 10cm x 10cm, and resolution of 300dpi",
+        "ZPL_10x10_203dpi": "ZPL thermal printing, dimension 10cm x 10cm, and resolution of 203dpi",
         "DPL_10x15_300dpi": "DPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
         "DPL_10x15_203dpi": "DPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi",
-        "ZPL_10x15_300dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 300dpi",
-        "ZPL_10x15_203dpi": "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi"
+        "DPL_10x10_300dpi": "DPL thermal printing, dimension 10cm x 10cm, and resolution of 300dpi",
+        "DPL_10x10_203dpi": "DPL thermal printing, dimension 10cm x 10cm, and resolution of 203dpi"
       }
     },
     {
@@ -738,6 +807,41 @@
     }
   ],
   "shipping": [
+    {
+      "id": "lpc_global",
+      "type": "title",
+      "title": "Global"
+    },
+    {
+      "id": "lpc_extra_cost",
+      "type": "number",
+      "title": "Extra cost",
+      "desc": "This amount will be added to the shipping cost for all Colissimo shipping methods.",
+      "desc_tip": true,
+      "class": "",
+      "default": "0",
+      "custom_attributes": {
+        "min": "0",
+        "step": "any"
+      }
+    },
+    {
+      "id": "lpc_extra_cost_over_free",
+      "type": "select",
+      "title": "Apply extra cost also for free shipping",
+      "desc": "If you select \"Yes\", the extra cost will be applied even if the shipping is free. This includes \"Free from order value\", \"Always free?\" and \"Free shipping classes\" options.",
+      "desc_tip": true,
+      "class": "",
+      "default": "no",
+      "options": {
+        "yes": "Yes",
+        "no": "No"
+      }
+    },
+    {
+      "id": "lpc_global",
+      "type": "sectionend"
+    },
     {
       "id": "lpc_domiciless",
       "type": "title",
@@ -1100,6 +1204,41 @@
     {
       "id": "lpc_customs",
       "type": "sectionend"
+    },
+    {
+      "id": "lpc_cn23",
+      "type": "title",
+      "title": "CN23"
+    },
+    {
+      "id": "lpc_cn23_number",
+      "type": "number",
+      "title": "Number of CN23 documents to generate",
+      "class": "",
+      "default": "4",
+      "custom_attributes": {
+        "min": "1",
+        "max": "4"
+      }
+    },
+    {
+      "id": "lpc_cn23_format",
+      "type": "select",
+      "title": "CN23 format",
+      "class": "",
+      "default": "PDF_A4_300dpi",
+      "options": {
+        "PDF_A4_300dpi": "PDF office printing, dimension A4 and resolution of 300dpi",
+        "PDF_10x12_300dpi": "PDF office printing, dimension 10cm x 12cm, and resolution of 300dpi",
+        "ZPL_10x12_300dpi": "ZPL thermal printing, dimension 10cm x 12cm, and resolution of 300dpi",
+        "ZPL_10x12_203dpi": "ZPL thermal printing, dimension 10cm x 12cm, and resolution of 203dpi",
+        "DPL_10x12_300dpi": "DPL thermal printing, dimension 10cm x 12cm, and resolution of 300dpi",
+        "DPL_10x12_203dpi": "DPL thermal printing, dimension 10cm x 12cm, and resolution of 203dpi"
+      }
+    },
+    {
+      "id": "lpc_cn23",
+      "type": "sectionend"
     }
   ],
   "support": [
@@ -1123,8 +1262,10 @@
     },
     {
       "id": "lpc_log",
-      "type": "seelog",
-      "title": "",
+      "type": "lpcmodal",
+      "content": "logs",
+      "title": "Colissimo logs",
+      "text": "See logs",
       "class": "",
       "default": ""
     },
@@ -1153,7 +1294,31 @@
       "default": ""
     },
     {
+      "id": "lpc_dev_doc",
+      "type": "lpcmodal",
+      "content": "hooks",
+      "title": "Developer documentation",
+      "text": "See documentation",
+      "class": "",
+      "default": ""
+    },
+    {
       "id": "lpc_section_dev",
+      "type": "sectionend"
+    }
+  ],
+  "video": [
+    {
+      "id": "lpc_section_video",
+      "type": "title",
+      "title": "Video tutorials"
+    },
+    {
+      "id": "lpc_video_tutorials",
+      "type": "videotutorials"
+    },
+    {
+      "id": "lpc_section_video",
       "type": "sectionend"
     }
   ]
