@@ -289,12 +289,14 @@ class LpcSettingsTab extends LpcComponent {
         $countries_obj = new WC_Countries();
         $countries     = $countries_obj->__get('countries');
 
-        $countriesCode = array_merge(LpcCapabilitiesPerCountry::DOM1_COUNTRIES_CODE, LpcCapabilitiesPerCountry::FRANCE_COUNTRIES_CODE);
+        $countryCodes = array_merge(LpcCapabilitiesPerCountry::DOM1_COUNTRIES_CODE, LpcCapabilitiesPerCountry::FRANCE_COUNTRIES_CODE);
 
         $args['values'][''] = '---';
 
-        foreach ($countriesCode as $countryCode) {
-            $args['values'][$countryCode] = $countries[$countryCode];
+        foreach ($countries as $countryCode => $countryName) {
+            if (in_array($countryCode, $countryCodes)) {
+                $args['values'][$countryCode] = $countryName;
+            }
         }
 
         $value = LpcHelper::get_option($defaultArgs['id'], '');

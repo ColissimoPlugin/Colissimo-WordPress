@@ -20,7 +20,7 @@ class LpcAdminPickupWebService extends LpcComponent {
 
         add_action('current_screen',
             function ($currentScreen) {
-                if (is_admin() && 'post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type) {
+                if ('woocommerce_page_wc-orders' === $currentScreen->base || ('post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type)) {
                     $args = [
                         'ajaxURL'   => $this->ajaxDispatcher->getUrlForTask('pickupWS'),
                         'mapType'   => LpcHelper::get_option('lpc_pickup_map_type', 'widget'),

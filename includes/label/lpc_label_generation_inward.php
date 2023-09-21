@@ -88,9 +88,10 @@ class LpcLabelGenerationInward extends LpcComponent {
 
         $labelFormat = $payload->getLabelFormat();
 
-        update_post_meta($order->get_id(), self::INWARD_PARCEL_NUMBER_META_KEY, $parcelNumber);
+        $order->update_meta_data(self::INWARD_PARCEL_NUMBER_META_KEY, $parcelNumber);
+        $order->save();
 
-        // PDF label is too big to be stored in a post_meta
+        // PDF label is too big to be stored in an order meta
         $outwardLabelNumber = isset($customParams['outward_label_number']) ? $customParams['outward_label_number'] : null;
         $this->inwardLabelDb->insert($order->get_id(), $label, $parcelNumber, $cn23, $labelFormat, $outwardLabelNumber);
         $email_inward_label = LpcHelper::get_option(LpcInwardLabelEmailManager::EMAIL_RETURN_LABEL_OPTION, 'no');

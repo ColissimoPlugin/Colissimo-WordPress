@@ -103,11 +103,8 @@ END_SQL;
         $labelsToInsert = [];
 
         foreach ($labelsToMigrate as $oneLabel) {
-            $trackingNumber = get_post_meta(
-                $oneLabel->order_id,
-                LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY,
-                true
-            );
+            $order          = wc_get_order($oneLabel->order_id);
+            $trackingNumber = $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
 
             if (empty($trackingNumber)) {
                 continue;
@@ -366,13 +363,23 @@ ALTER TABLE $tableName ADD COLUMN `detail` LONGTEXT NULL
 END_SQL;
         $wpdb->query($query);
 
-        $queryUpdateBordereauColumn = <<<END_SQL
+        if (LpcOrderQueries::isHposActive()) {
+            $queryUpdateBordereauColumn = <<<END_SQL
+INSERT INTO $tableName (`order_id`, `bordereau_id`) 
+SELECT `order_id`, `meta_value` 
+FROM {$prefix}wc_orders_meta 
+WHERE `meta_key` = "lpc_bordereau_id"
+ON DUPLICATE KEY UPDATE `bordereau_id` = VALUES(`bordereau_id`)
+END_SQL;
+        } else {
+            $queryUpdateBordereauColumn = <<<END_SQL
 INSERT INTO $tableName (`order_id`, `bordereau_id`) 
 SELECT `post_id`, `meta_value` 
 FROM {$prefix}postmeta 
 WHERE `meta_key` = "lpc_bordereau_id"
 ON DUPLICATE KEY UPDATE `bordereau_id` = VALUES(`bordereau_id`)
 END_SQL;
+        }
 
         $wpdb->query($queryUpdateBordereauColumn);
         // phpcs:enable

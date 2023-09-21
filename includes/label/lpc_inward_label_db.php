@@ -86,21 +86,14 @@ END_SQL;
         $labelsToInsert = [];
 
         foreach ($labelsToMigrate as $oneLabel) {
-            $trackingNumber = get_post_meta(
-                $oneLabel->order_id,
-                LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY,
-                true
-            );
+            $order = wc_get_order($oneLabel->order_id);
+            $trackingNumber = $order->get_meta(LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY);
 
             if (empty($trackingNumber)) {
                 continue;
             }
 
-            $outwardTrackingNumber = get_post_meta(
-                $oneLabel->order_id,
-                LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY,
-                true
-            );
+            $outwardTrackingNumber = $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
 
             $labelsToInsert[] = $wpdb->prepare(
                 '(%d, %s, %s, %s, %s, %s, %s)',
@@ -172,11 +165,8 @@ END_SQL;
         $tableName = $this->getTableName();
 
         if (is_null($outwardTrackingNumber)) {
-            $outwardTrackingNumber = get_post_meta(
-                $orderId,
-                LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY,
-                true
-            );
+            $order = wc_get_order($orderId);
+            $outwardTrackingNumber = $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
         }
 
         // phpcs:disable

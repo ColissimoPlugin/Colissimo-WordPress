@@ -2,6 +2,8 @@
 
 defined('ABSPATH') || die('Restricted Access');
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+
 require_once LPC_ADMIN . 'lpc_settings_tab.php';
 require_once LPC_ADMIN . 'pickup' . DS . 'lpc_pickup_relay_point_on_order.php';
 require_once LPC_ADMIN . 'pickup' . DS . 'lpc_admin_pickup_web_service.php';
@@ -81,7 +83,7 @@ class LpcAdminInit {
         add_action('admin_notices', [$this, 'lpc_notifications']);
         add_filter('set-screen-option', [$this, 'lpc_set_option'], 10, 3);
         add_action('woocommerce_settings_page_init', [$this, 'lpc_load_settings_script']);
-        add_action('add_meta_boxes_shop_order', [$this, 'lpc_add_meta_boxes']);
+        add_action('add_meta_boxes', [$this, 'lpc_add_meta_boxes']);
         add_filter('woocommerce_screen_ids', [$this, 'lpc_set_wc_screen_ids']);
     }
 
@@ -142,6 +144,11 @@ class LpcAdminInit {
     }
 
     public function lpc_notifications() {
+        // Handle double admin_notices call with HPOS when saving an order
+        if ('edit_order' === LpcHelper::getVar('action')) {
+            return;
+        }
+
         $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
         $notifications     = [
             'inward_label_sent',
@@ -269,13 +276,16 @@ class LpcAdminInit {
 
         // Colissimo Banner
         $adminOrderBanner = LpcRegister::get('lpcAdminOrderBanner');
+        $screenId         = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
+            ? wc_get_page_screen_id('shop-order')
+            : 'shop_order';
         add_meta_box(
             'lpc_banner-box',
             '<img src="' . plugins_url('/images/colissimo_cropped.png', LPC_INCLUDES . 'init.php') . '" height="25">',
             [$adminOrderBanner, 'bannerContent'],
-            'shop_order',
+            $screenId,
             'normal',
-            'default',
+            'high',
             ['post' => $post]
         );
     }

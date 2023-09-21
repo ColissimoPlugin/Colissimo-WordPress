@@ -47,7 +47,9 @@ class LpcCouponsRestrictions extends LpcComponent {
             $coupon->update_meta_data('lpc_coupon_restriction', $values);
             $coupon->save_meta_data();
         } elseif (!empty($coupon->get_meta('lpc_coupon_restriction'))) {
-            delete_post_meta($post_id, 'lpc_coupon_restriction');
+            $order = wc_get_order($post_id);
+            $order->delete_meta_data('lpc_coupon_restriction');
+            $order->save();
         }
     }
 }

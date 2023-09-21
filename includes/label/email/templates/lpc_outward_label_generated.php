@@ -18,7 +18,7 @@ $linkText = __('here', 'wc_colissimo');
 	<p>
         <?php echo sprintf(
             __('Tracking number: %s', 'wc_colissimo'),
-            '<a target="_blank" href="' . esc_url($tracking_link) . '">' . get_post_meta($order->get_id(), 'lpc_outward_parcel_number', true) . '</a>'
+            '<a target="_blank" href="' . esc_url($tracking_link) . '">' . $order->get_meta('lpc_outward_parcel_number') . '</a>'
         ); ?>
 	</p>
 

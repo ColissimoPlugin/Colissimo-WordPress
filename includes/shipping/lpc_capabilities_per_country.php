@@ -111,7 +111,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         if (true === $productCode) {
             switch ($shippingMethod) {
                 case 'lpc_relay':
-                    return get_post_meta($order->get_id(), LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY, true);
+                    return $order->get_meta(LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY);
                 case 'lpc_expert_ddp':
                 case 'lpc_expert':
                     return 'DOS';

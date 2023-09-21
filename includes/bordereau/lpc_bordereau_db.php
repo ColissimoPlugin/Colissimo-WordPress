@@ -68,7 +68,10 @@ END_SQL;
                 $result->bordereau_id,
                 date('Y-m-d H:i:s', strtotime($bordereau->bordereauHeader->publishingDate))
             );
-            delete_post_meta($result->order_id, 'lpc_bordereau_id');
+
+            $order = wc_get_order($result->order_id);
+            $order->delete_meta_data('lpc_bordereau_id');
+            $order->save();
         }
 
         $stringBordereauxToInsert = implode(',', $bordereauxToInsert);

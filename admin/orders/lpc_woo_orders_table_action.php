@@ -24,7 +24,7 @@ class LpcWooOrdersTableAction extends LpcComponent {
         add_action(
             'current_screen',
             function ($currentScreen) {
-                if ('edit' === $currentScreen->base && 'shop_order' === $currentScreen->post_type) {
+                if ('woocommerce_page_wc-orders' === $currentScreen->base || ('edit' === $currentScreen->base && 'shop_order' === $currentScreen->post_type)) {
                     LpcHelper::enqueueStyle(
                         'lpc_woocommerce_order_table_actions',
                         plugins_url('/css/orders/lpc_woocommerce_order_table_actions.css', LPC_ADMIN . 'init.php'),

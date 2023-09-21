@@ -43,8 +43,10 @@ class LpcLabelPurge extends LpcComponent {
         $this->outwardLabelDb->purgeLabelsByOrdersId($orderIds);
 
         foreach ($orderIds as $orderId) {
-            delete_post_meta($orderId, LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
-            delete_post_meta($orderId, LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY);
+            $order = wc_get_order($orderId);
+            $order->delete_meta_data(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
+            $order->delete_meta_data(LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY);
+            $order->save();
         }
     }
 }

@@ -82,7 +82,7 @@ class LpcAdminOrderBanner extends LpcComponent {
         add_action(
             'current_screen',
             function ($currentScreen) {
-                if ('post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type) {
+                if ('woocommerce_page_wc-orders' === $currentScreen->base || ('post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type)) {
                     LpcHelper::enqueueStyle(
                         'lpc_order_banner',
                         plugins_url('/css/orders/lpc_order_banner.css', LPC_ADMIN . 'init.php'),
@@ -104,13 +104,12 @@ class LpcAdminOrderBanner extends LpcComponent {
             }
         );
 
-        add_action('save_post', [$this, 'generateLabel'], 10, 3);
-        add_action('save_post', [$this, 'sendCustomsDocuments'], 11, 3);
+        add_action('save_post', [$this, 'generateLabel'], 10, 2);
+        add_action('save_post', [$this, 'sendCustomsDocuments'], 10, 2);
     }
 
     public function bannerContent($post) {
-        $orderId = $post->ID;
-        $order   = wc_get_order($post);
+        $order = wc_get_order($post);
         if (empty($order) || !method_exists($order, 'get_shipping_methods')) {
             $warningMessage = __('This order could not be loaded by WooCommerce', 'wc_colissimo');
             echo '<div class="lpc__admin__order_banner__warning"><span>' . $warningMessage . '</span></div>';
@@ -118,9 +117,9 @@ class LpcAdminOrderBanner extends LpcComponent {
             return;
         }
 
+        $orderId        = $order->get_id();
         $shippingMethod = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
-
-        $methods = $this->lpcAdminOrderAffect->getColissimoShippingMethodsAvailable($order);
+        $methods        = $this->lpcAdminOrderAffect->getColissimoShippingMethodsAvailable($order);
 
         if ('lpc_relay' !== $shippingMethod) {
             unset($methods[$shippingMethod]);
@@ -273,7 +272,7 @@ class LpcAdminOrderBanner extends LpcComponent {
                 $args['lpc_documents_types']          = array_merge(['' => __('Document type', 'wc_colissimo')], $args['lpc_documents_types']);
 
                 // Get the already sent documents
-                $args['lpc_sent_documents'] = get_post_meta($orderId, 'lpc_customs_sent_documents', true);
+                $args['lpc_sent_documents'] = $order->get_meta('lpc_customs_sent_documents');
                 $args['lpc_sent_documents'] = empty($args['lpc_sent_documents']) ? [] : json_decode($args['lpc_sent_documents'], true);
             }
         }
@@ -315,7 +314,7 @@ class LpcAdminOrderBanner extends LpcComponent {
             $countryCode,
             array_merge($this->capabilitiesPerCountry::DOM1_COUNTRIES_CODE, $this->capabilitiesPerCountry::DOM2_COUNTRIES_CODE)
         );
-        $args['lpc_multi_parcels_amount']     = get_post_meta($args['order_id'], 'lpc_multi_parcels_amount', true);
+        $args['lpc_multi_parcels_amount']     = $order->get_meta('lpc_multi_parcels_amount');
         $args['lpc_multi_parcels_existing']   = $this->outwardLabelDb->getMultiParcelsLabels($args['order_id']);
 
         echo LpcHelper::renderPartial('orders' . DS . 'lpc_admin_order_banner.php', $args);
@@ -324,19 +323,19 @@ class LpcAdminOrderBanner extends LpcComponent {
     /**
      * @throws Exception When lpcAdminNotices isn't available.
      */
-    public function generateLabel($post_id, $post, $update) {
-        $slug = 'shop_order';
-
-        if (
-            !is_admin()
-            || $slug != $post->post_type
-            || !isset($_REQUEST['lpc__admin__order_banner__generate_label__action'])
+    public function generateLabel($orderId, $post) {
+        if (!is_admin()
+            || 'shop_order' !== $post->post_type
             || empty($_REQUEST['lpc__admin__order_banner__generate_label__action'])
+            || empty($_REQUEST['lpc__admin__order_banner__generate_label__items-id'])
         ) {
             return;
         }
 
-        if (empty($_REQUEST['lpc__admin__order_banner__generate_label__items-id'])) {
+        unset($_REQUEST['lpc__admin__order_banner__generate_label__action']);
+
+        $order = wc_get_order($orderId);
+        if (empty($order) || 'shop_order' !== $order->get_type()) {
             return;
         }
 
@@ -359,7 +358,6 @@ class LpcAdminOrderBanner extends LpcComponent {
             return;
         }
 
-        $order              = wc_get_order($post_id);
         $packageWeight      = isset($_REQUEST['lpc__admin__order_banner__generate_label__package_weight']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__package_weight'])) : 0;
         $totalWeight        = isset($_REQUEST['lpc__admin__order_banner__generate_label__total_weight__input']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__total_weight__input'])) : 0;
         $packageLength      = isset($_REQUEST['lpc__admin__order_banner__generate_label__package_length']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__package_length'])) : 0;
@@ -377,9 +375,8 @@ class LpcAdminOrderBanner extends LpcComponent {
             : LpcHelper::get_option('lpc_customs_defaultCustomsCategory', 5);
 
         if (!empty($multiParcels)) {
-            $orderId = $order->get_id();
             if (empty($multiParcelsAmount)) {
-                $multiParcelsAmount = intval(get_post_meta($orderId, 'lpc_multi_parcels_amount', true));
+                $multiParcelsAmount = intval($order->get_meta('lpc_multi_parcels_amount'));
             }
 
             $generatedLabels           = $this->outwardLabelDb->getMultiParcelsLabels($orderId);
@@ -409,7 +406,8 @@ class LpcAdminOrderBanner extends LpcComponent {
         if ('outward' === $outwardOrInward || 'both' === $outwardOrInward) {
             $status = $this->lpcOutwardLabelGeneration->generate($order, $customParams);
             if ($status && !empty($multiParcelsAmount)) {
-                update_post_meta($order->get_id(), 'lpc_multi_parcels_amount', $multiParcelsAmount);
+                $order->update_meta_data('lpc_multi_parcels_amount', $multiParcelsAmount);
+                $order->save();
             }
         }
 
@@ -418,14 +416,19 @@ class LpcAdminOrderBanner extends LpcComponent {
         }
     }
 
-    public function sendCustomsDocuments($post_id, $post, $update) {
+    public function sendCustomsDocuments($orderId, $post) {
         if (!is_admin() || 'shop_order' !== $post->post_type || !isset($_FILES['lpc__customs_document'])) {
             return;
         }
 
-        $sentDocuments = get_post_meta($post_id, 'lpc_customs_sent_documents', true);
+        $order = wc_get_order($orderId);
+        if (empty($order) || 'shop_order' !== $order->get_type()) {
+            return;
+        }
+
+        $sentDocuments = $order->get_meta('lpc_customs_sent_documents');
         $sentDocuments = empty($sentDocuments) ? [] : json_decode($sentDocuments, true);
-        $orderLabels   = $this->outwardLabelDb->getMultiParcelsLabels($post_id);
+        $orderLabels   = $this->outwardLabelDb->getMultiParcelsLabels($orderId);
 
         $documentsPerLabel = $_FILES['lpc__customs_document']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash
         foreach ($documentsPerLabel['name'] as $parcelNumber => $documentTypes) {
@@ -452,10 +455,9 @@ class LpcAdminOrderBanner extends LpcComponent {
             }
         }
 
-        update_post_meta(
-            $post_id,
-            'lpc_customs_sent_documents',
-            json_encode($sentDocuments)
-        );
+        $order->update_meta_data('lpc_customs_sent_documents', json_encode($sentDocuments));
+        $order->save();
+
+        unset($_FILES['lpc__customs_document']);
     }
 }

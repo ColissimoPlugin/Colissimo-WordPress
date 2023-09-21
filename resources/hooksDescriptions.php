@@ -274,7 +274,7 @@
 	</div>
 	<div>
 		<h3>lpc_update_delivery_status_period</h3>
-		<p>includes/tracking/lpc_unified_tracking_api.php</p>
+		<p>includes/orders/lpc_order_queries.php</p>
 		<p>This filter is used when the orders delivery statuses are refreshed.
 			By default the plugin takes the orders of the 90 previous days that haven't been delivered yet, you can change the number of days with this filter.</p>
 		<p>Example:</p>

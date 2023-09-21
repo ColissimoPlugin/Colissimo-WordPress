@@ -29,10 +29,9 @@ class LpcAdminOrderAffect extends LpcComponent {
 
     public function init() {
         add_action('woocommerce_after_order_itemmeta', [$this, 'addAffectLink'], 10, 2);
-        add_action('save_post', [$this, 'updateShippingMethod'], 10, 3);
         add_action('current_screen',
             function ($currentScreen) {
-                if (is_admin() && 'post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type) {
+                if ('woocommerce_page_wc-orders' === $currentScreen->base || ('post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type)) {
                     LpcHelper::enqueueScript(
                         'lpc_order_affect',
                         plugins_url('/js/orders/lpc_order_affect.js', LPC_ADMIN . 'init.php'),
@@ -45,6 +44,8 @@ class LpcAdminOrderAffect extends LpcComponent {
                         plugins_url('/css/orders/lpc_order_affect_methods.css', LPC_ADMIN . 'init.php'),
                         null
                     );
+
+                    $this->updateShippingMethod();
                 }
             }
         );
@@ -81,24 +82,26 @@ class LpcAdminOrderAffect extends LpcComponent {
         echo LpcHelper::renderPartial('orders' . DS . 'lpc_order_affect_methods.php', $args);
     }
 
-    public function updateShippingMethod($post_id, $post, $update) {
-        $slug = 'shop_order';
+    public function updateShippingMethod() {
+        if (!is_admin() || !isset($_REQUEST['lpc_order_affect_update_method']) || empty(sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_update_method'])))) {
+            return;
+        }
 
-        if (
-            !is_admin()
-            || $slug != $post->post_type
-            || !isset($_REQUEST['lpc_order_affect_update_method'])
-            || empty(sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_update_method'])))
-        ) {
+        $orderId = LpcHelper::getVar('id');
+        if (empty($orderId)) {
+            return;
+        }
+
+        $order = wc_get_order($orderId);
+        if (empty($order) || 'shop_order' !== $order->get_type()) {
             return;
         }
 
         $lpcNewShippingMethodId = isset($_REQUEST['lpc_new_shipping_method']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc_new_shipping_method'])) : '';
         $orderShippingItemId    = isset($_REQUEST['lpc_order_affect_shipping_item_id']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_shipping_item_id'])) : '';
         $relayInformation       = isset($_REQUEST['lpc_order_affect_relay_informations']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_relay_informations'])) : '';
-        $order                  = wc_get_order($post_id);
 
-        if (empty($order) || empty($lpcNewShippingMethodId)) {
+        if (empty($lpcNewShippingMethodId)) {
             return;
         }
 
@@ -112,21 +115,9 @@ class LpcAdminOrderAffect extends LpcComponent {
         if (LpcRelay::ID === $lpcNewShippingMethod->id) {
             $relayInformationData = json_decode(stripslashes($relayInformation));
 
-            update_post_meta(
-                $post_id,
-                LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY,
-                $relayInformationData->identifiant
-            );
-            update_post_meta(
-                $post_id,
-                LpcPickupSelection::PICKUP_LOCATION_LABEL_META_KEY,
-                $relayInformationData->nom
-            );
-            update_post_meta(
-                $post_id,
-                LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY,
-                $relayInformationData->typeDePoint
-            );
+            $order->update_meta_data(LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY, $relayInformationData->identifiant);
+            $order->update_meta_data(LpcPickupSelection::PICKUP_LOCATION_LABEL_META_KEY, $relayInformationData->nom);
+            $order->update_meta_data(LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY, $relayInformationData->typeDePoint);
 
             $order->set_shipping_address_1($relayInformationData->adresse1);
             $order->set_shipping_postcode($relayInformationData->codePostal);

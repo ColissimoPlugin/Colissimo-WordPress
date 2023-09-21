@@ -73,7 +73,8 @@ class LpcOutwardLabelGenerationEmail extends WC_Email {
         if (LpcHelper::get_option('lpc_email_tracking_link', 'website_tracking_page') === 'website_tracking_page') {
             return get_site_url() . LpcRegister::get('unifiedTrackingApi')->getTrackingPageUrlForOrder($orderId);
         } else {
-            $trackingNumber = get_post_meta($orderId, 'lpc_outward_parcel_number', true);
+            $order = wc_get_order($orderId);
+            $trackingNumber = $order->get_meta('lpc_outward_parcel_number');
 
             return str_replace(
                 '{lpc_tracking_number}',

@@ -67,7 +67,7 @@ END_HTML;
         $columns      = $this->get_columns();
         $hidden       = [];
         $sortable     = [];
-        $total_items  = LpcOrderQueries::countLpcOrders($args, $filters);
+        $total_items  = LpcOrderQueries::countLpcOrders($filters);
         $current_page = $this->get_pagenum();
         $user         = get_current_user_id();
         $screen       = get_current_screen();
@@ -109,12 +109,6 @@ END_HTML;
             } catch (Exception $exception) {
                 continue;
             }
-
-            $address = $wc_order->get_shipping_address_1();
-            $address .= !empty($wc_order->get_shipping_address_2()) ?
-                '<br>' . $wc_order->get_shipping_address_2()
-                : '';
-            $address .= '<br>' . $wc_order->get_shipping_postcode() . ' ' . $wc_order->get_shipping_city();
 
             /**
              * Filter on the date format shown in the Colissimo listing

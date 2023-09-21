@@ -131,7 +131,7 @@ END_HTML;
         $columns      = $this->get_columns();
         $hidden       = [];
         $sortable     = $this->get_sortable_columns();
-        $total_items  = LpcOrderQueries::countLpcOrders($args, $filters);
+        $total_items  = LpcOrderQueries::countLpcOrders($filters);
         $current_page = $this->get_pagenum();
         $user         = get_current_user_id();
         $screen       = get_current_screen();
@@ -365,30 +365,33 @@ END_HTML;
     protected function countryFilters() {
         $displayedCountries = false === get_option('lpc_orders_filters_country') ? [''] : get_option('lpc_orders_filters_country');
 
-        $countries = LpcOrderQueries::getLpcOrdersPostMetaList('_shipping_country');
+        $countries = LpcOrderQueries::getLpcOrdersPostMetaList('_shipping_country', true);
 
         if (!empty($countries)) {
             ?>
 			<br>
 			<p class="lpc__orders_listing__page__more_options--options__title">
-                <?php echo __(
-                    'Country',
-                    'wc_colissimo'
-                ); ?></p>
+                <?php esc_html_e('Country', 'wc_colissimo'); ?></p>
 
 			<label>
 				<input type="checkbox"
-					   name="order_country[]" <?php echo in_array('', $displayedCountries) ? 'checked' : ''; ?>
+					   name="order_country[]" <?php checked(in_array('', $displayedCountries)); ?>
 					   value="">
-                <?php echo __('All countries', 'wc_colissimo'); ?>
+                <?php esc_html_e('All countries', 'wc_colissimo'); ?>
 			</label>
             <?php
-            foreach ($countries as $oneCountry) {
+            $wcCountries  = new WC_Countries();
+            $countryNames = $wcCountries->__get('countries');
+            foreach ($countryNames as $countryCode => $countryName) {
+				if (!in_array($countryCode, $countries)) {
+					continue;
+				}
+
                 printf(
                     '<label><input type="checkbox" name="order_country[]" %1$s value="%2$s">%3$s</label>',
-                    in_array($oneCountry, $displayedCountries) ? 'checked' : '',
-                    esc_attr($oneCountry),
-                    esc_html($oneCountry)
+                    checked(in_array($countryCode, $displayedCountries), true, false),
+                    esc_attr($countryCode),
+                    esc_html($countryName)
                 );
             }
         }
@@ -487,11 +490,11 @@ END_HTML;
 		<p class="lpc__orders_listing__page__more_options--options__title"><?php echo __('Outward labels generation date', 'wc_colissimo'); ?></p>
 		<div>
 			<label>
-				<?php esc_html_e('From:', 'wc_colissimo'); ?>
+                <?php esc_html_e('From:', 'wc_colissimo'); ?>
 				<input type="date" name="label_start_date" value="<?php echo get_option('lpc_orders_filters_label_start_date', ''); ?>">
 			</label>
 			<label>
-				<?php esc_html_e('to:', 'wc_colissimo'); ?>
+                <?php esc_html_e('to:', 'wc_colissimo'); ?>
 				<input type="date" name="label_end_date" value="<?php echo get_option('lpc_orders_filters_label_end_date', ''); ?>">
 			</label>
 		</div>

@@ -28,7 +28,7 @@ class LpcAdminPickupWidget extends LpcComponent {
         add_action('current_screen',
             function ($currentScreen) {
                 // Add scripts and styles only on the WC order in edition mode
-                if (is_admin() && 'post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type) {
+                if ('woocommerce_page_wc-orders' === $currentScreen->base || ('post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type)) {
                     // Mapbox scripts to display the map, needed by the Colissimo widget
                     LpcHelper::enqueueScript('lpc_mapbox', self::MAP_JS_URL, null, ['jquery']);
                     LpcHelper::enqueueStyle('lpc_mapbox', self::MAP_CSS_URL);

@@ -1,42 +1,184 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 class LpcOrderQueries {
-    const LPC_ALIAS_TABLES_NAME = [
-        'woocommerce_order_items'    => 'wc_order_items',
-        'lpc_label'                  => 'lpc_label',
-        'woocommerce_order_itemmeta' => 'wc_order_itemmeta',
-        'posts'                      => 'posts',
-        'postmeta'                   => 'postmeta',
+    const UPDATE_STATUS_PERIOD = '-90 days';
 
-    ];
-
-    public static function getLpcOrders(
-        $current_page = 0,
-        $per_page = 0,
-        $args = [],
-        $filters = []
-    ) {
-        // TODO: look if there is a better way to do (with WC Queries)
+    public static function getLpcOrders($currentPage = 0, $elementsPerPage = 0, $args = [], $filters = []): array {
         global $wpdb;
 
-        $query = "SELECT DISTINCT {$wpdb->prefix}woocommerce_order_items.order_id, {$wpdb->prefix}posts.post_date, {$wpdb->prefix}lpc_outward_label.label_created_at, {$wpdb->prefix}lpc_outward_label.tracking_number 
-                    FROM {$wpdb->prefix}woocommerce_order_items 
-                    JOIN {$wpdb->prefix}woocommerce_order_itemmeta ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id={$wpdb->prefix}woocommerce_order_items.order_item_id 
-                    JOIN {$wpdb->prefix}posts ON {$wpdb->prefix}posts.ID={$wpdb->prefix}woocommerce_order_items.order_id";
+        $orderItems      = $wpdb->prefix . 'woocommerce_order_items';
+        $orderItemMeta   = $wpdb->prefix . 'woocommerce_order_itemmeta';
+        $lpcOutwardLabel = $wpdb->prefix . 'lpc_outward_label';
 
+        $selection = ' DISTINCT ' . $orderItems . '.order_id';
         if (!empty($filters['no_slip'])) {
-            $query .= " JOIN {$wpdb->prefix}lpc_outward_label ON {$wpdb->prefix}lpc_outward_label.order_id={$wpdb->prefix}woocommerce_order_items.order_id AND bordereau_id IS NULL";
-        } else {
-            $query .= " LEFT JOIN {$wpdb->prefix}lpc_outward_label ON {$wpdb->prefix}lpc_outward_label.order_id={$wpdb->prefix}woocommerce_order_items.order_id";
+            $selection .= ', ' . $lpcOutwardLabel . '.label_created_at, ' . $lpcOutwardLabel . '.tracking_number';
         }
 
-        $query .= self::getMetaJoin($args);
-        $query .= self::addFilter($filters);
+        if (self::isHposActive()) {
+            $orders         = $wpdb->prefix . 'wc_orders';
+            $ordersMeta     = $wpdb->prefix . 'wc_orders_meta';
+            $orderAddresses = $wpdb->prefix . 'wc_order_addresses';
 
-        $query .= self::getOrderBy($args);
-        if (0 < $current_page && 0 < $per_page) {
-            $offset = ($current_page - 1) * $per_page;
-            $query  .= "LIMIT $per_page OFFSET $offset";
+            $query = 'SELECT ' . $selection . ' 
+                    FROM ' . $orderItems . ' 
+                    JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id 
+                    JOIN ' . $orders . ' ON ' . $orders . '.id = ' . $orderItems . '.order_id';
+
+            if (!empty($filters['no_slip'])) {
+                $query .= ' JOIN ' . $lpcOutwardLabel . ' ON ' . $lpcOutwardLabel . '.order_id = ' . $orderItems . '.order_id AND ' . $lpcOutwardLabel . '.bordereau_id IS NULL';
+            } else {
+                $query .= ' LEFT JOIN ' . $lpcOutwardLabel . ' ON ' . $lpcOutwardLabel . '.order_id = ' . $orderItems . '.order_id';
+            }
+
+            $where = [];
+            if (!empty($args['orderby'])) {
+                $metaKey = '';
+                switch ($args['orderby']) {
+                    case 'shipping-method':
+                        $where[] = $orderItems . ' . order_item_type = "shipping"';
+                        break;
+                    case 'shipping-status':
+                        $metaKey = LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY;
+                        break;
+                    case 'lpc-bordereau':
+                        $metaKey = 'lpc_bordereau_id';
+                        break;
+                }
+
+                if (in_array($args['orderby'], ['customer', 'address', 'country'])) {
+                    $query .= ' LEFT JOIN ' . $orderAddresses . ' ON ' . $orderAddresses . '.order_id = ' . $orderItems . '.order_id AND ' . $orderAddresses . '.address_type = "shipping" ';
+                } elseif (!empty($metaKey)) {
+                    $query .= ' LEFT JOIN ' . $ordersMeta . ' ON ' . $ordersMeta . '.order_id = ' . $orderItems . '.order_id AND ' . $ordersMeta . '.meta_key = "' . esc_sql($metaKey) . '" ';
+                }
+            }
+
+            $query .= self::addFilter($filters, $where);
+
+            if (empty($args['orderby'])) {
+                $query .= ' ORDER BY ' . $orders . '.date_created_gmt DESC ';
+            } else {
+                switch ($args['orderby']) {
+                    case 'id':
+                        $ord = $orderItems . '.order_id';
+                        break;
+                    case 'customer':
+                        $ord = $orderAddresses . '.first_name';
+                        break;
+                    case 'address':
+                        $ord = $orderAddresses . '.address_1';
+                        break;
+                    case 'country':
+                        $ord = $orderAddresses . '.country';
+                        break;
+                    case 'shipping-method':
+                        $ord = $orderItems . '.order_item_name';
+                        break;
+                    case 'shipping-status':
+                    case 'lpc-bordereau':
+                        $ord = $ordersMeta . '.meta_value';
+                        break;
+                    case 'woo-status':
+                        $ord = $orders . '.status';
+                        break;
+                    default:
+                        $ord = $orders . '.date_created_gmt';
+                        break;
+                }
+
+                $ord = ' ORDER BY ' . $ord . ' ';
+                if (!empty($args['order'])) {
+                    $ord .= $args['order'] . ' ';
+                }
+
+                $query .= $ord;
+            }
+        } else {
+            $posts    = $wpdb->prefix . 'posts';
+            $postmeta = $wpdb->prefix . 'postmeta';
+
+            $query = 'SELECT ' . $selection . ' 
+                    FROM ' . $orderItems . ' 
+                    JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id 
+                    JOIN ' . $posts . ' ON ' . $posts . '.ID = ' . $orderItems . '.order_id';
+
+            if (!empty($filters['no_slip'])) {
+                $query .= ' JOIN ' . $lpcOutwardLabel . ' ON ' . $lpcOutwardLabel . '.order_id = ' . $orderItems . '.order_id AND ' . $lpcOutwardLabel . '.bordereau_id IS NULL';
+            } else {
+                $query .= ' LEFT JOIN ' . $lpcOutwardLabel . ' ON ' . $lpcOutwardLabel . '.order_id = ' . $orderItems . '.order_id';
+            }
+
+            if (!empty($args['orderby'])) {
+                switch ($args['orderby']) {
+                    case 'customer':
+                        $where = $postmeta . '.meta_key = "_shipping_first_name"';
+                        break;
+                    case 'address':
+                        $where = $postmeta . '.meta_key = "_shipping_address_1"';
+                        break;
+                    case 'country':
+                        $where = $postmeta . '.meta_key = "_shipping_country"';
+                        break;
+                    case 'shipping-method':
+                        $where = $orderItems . '.order_item_type = "shipping"';
+                        break;
+                    case 'shipping-status':
+                        $where = $postmeta . '.meta_key = "' . esc_sql(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY) . '"';
+                        break;
+                    case 'lpc-bordereau':
+                        $where = $postmeta . '.meta_key = "lpc_bordereau_id"';
+                        break;
+                    default:
+                        $where = ' ';
+                        break;
+                }
+
+                if (' ' !== $where) {
+                    $query .= ' LEFT JOIN ' . $postmeta . ' ON ' . $postmeta . '.post_id = ' . $orderItems . '.order_id AND ' . $where . ' ';
+                }
+            }
+
+            $query .= self::addFilter($filters);
+
+            if (empty($args['orderby'])) {
+                $query .= ' ORDER BY ' . $posts . '.post_date DESC ';
+            } else {
+                switch ($args['orderby']) {
+                    case 'id':
+                        $ord = $orderItems . '.order_id';
+                        break;
+                    case 'customer':
+                    case 'address':
+                    case 'country':
+                    case 'shipping-status':
+                    case 'lpc-bordereau':
+                        $ord = $postmeta . '.meta_value';
+                        break;
+                    case 'shipping-method':
+                        $ord = $orderItems . '.order_item_name';
+                        break;
+                    case 'woo-status':
+                        $ord = $posts . '.post_status';
+                        break;
+                    default:
+                        $ord = $posts . '.post_date';
+                        break;
+                }
+
+                $ord = ' ORDER BY ' . $ord . ' ';
+                if (!empty($args['order'])) {
+                    $ord .= $args['order'] . ' ';
+                }
+
+                $query .= $ord;
+            }
+        }
+
+        if (0 < $currentPage && 0 < $elementsPerPage) {
+            $offset = ($currentPage - 1) * $elementsPerPage;
+            $query  .= ' LIMIT ' . $elementsPerPage . ' OFFSET ' . $offset;
         }
 
         // phpcs:disable
@@ -48,8 +190,8 @@ class LpcOrderQueries {
             foreach ($results as $result) {
                 $ordersId[] = [
                     'order_id'         => $result->order_id,
-                    'label_created_at' => $result->label_created_at,
-                    'tracking_number'  => $result->tracking_number,
+                    'label_created_at' => $result->label_created_at ?? null,
+                    'tracking_number'  => $result->tracking_number ?? null,
                 ];
             }
         }
@@ -57,17 +199,28 @@ class LpcOrderQueries {
         return $ordersId;
     }
 
-    public static function countLpcOrders($args = [], $filters = []) {
+    public static function countLpcOrders($filters = []) {
         global $wpdb;
 
-        $query = "SELECT COUNT(DISTINCT {$wpdb->prefix}woocommerce_order_items.order_id) AS nb FROM {$wpdb->prefix}woocommerce_order_items 
-                    JOIN {$wpdb->prefix}woocommerce_order_itemmeta ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id={$wpdb->prefix}woocommerce_order_items.order_item_id 
-                    JOIN {$wpdb->prefix}posts ON {$wpdb->prefix}posts.ID={$wpdb->prefix}woocommerce_order_items.order_id";
+        $orderItems      = $wpdb->prefix . 'woocommerce_order_items';
+        $orderItemMeta   = $wpdb->prefix . 'woocommerce_order_itemmeta';
+        $lpcOutwardLabel = $wpdb->prefix . 'lpc_outward_label';
+
+        $query = 'SELECT COUNT(DISTINCT ' . $orderItems . '.order_id) AS nb FROM ' . $orderItems . ' 
+                    JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id ';
+
+        if (self::isHposActive()) {
+            $orders = $wpdb->prefix . 'wc_orders';
+            $query  .= 'JOIN ' . $orders . ' ON ' . $orders . '.id = ' . $orderItems . '.order_id';
+        } else {
+            $posts = $wpdb->prefix . 'posts';
+            $query .= 'JOIN ' . $posts . ' ON ' . $posts . '.ID = ' . $orderItems . '.order_id';
+        }
 
         if (!empty($filters['no_slip'])) {
-            $query .= " JOIN {$wpdb->prefix}lpc_outward_label ON {$wpdb->prefix}lpc_outward_label.order_id={$wpdb->prefix}woocommerce_order_items.order_id AND bordereau_id IS NULL";
+            $query .= ' JOIN ' . $lpcOutwardLabel . ' ON ' . $lpcOutwardLabel . '.order_id = ' . $orderItems . '.order_id AND bordereau_id IS NULL';
         } else {
-            $query .= " LEFT JOIN {$wpdb->prefix}lpc_outward_label ON {$wpdb->prefix}lpc_outward_label.order_id={$wpdb->prefix}woocommerce_order_items.order_id";
+            $query .= ' LEFT JOIN ' . $lpcOutwardLabel . ' ON ' . $lpcOutwardLabel . '.order_id = ' . $orderItems . '.order_id';
         }
 
         if (!empty($filters)) {
@@ -85,18 +238,50 @@ class LpcOrderQueries {
         return 0;
     }
 
-    public static function getLpcOrdersIdsByPostMeta($params = []) {
+    public static function getLpcOrderIdsToRefreshDeliveryStatus(): array {
         global $wpdb;
 
-        $prefix = $wpdb->prefix;
+        $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
+        $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
-        $query = "SELECT DISTINCT wc_order_items.order_id FROM {$prefix}woocommerce_order_items AS wc_order_items
-                    JOIN {$prefix}woocommerce_order_itemmeta  AS wc_order_itemmeta ON wc_order_itemmeta.order_item_id = wc_order_items.order_item_id
-                    JOIN {$prefix}posts AS posts ON posts.ID = wc_order_items.order_id
-                    LEFT JOIN {$prefix}postmeta AS postmeta ON postmeta.post_id = wc_order_items.order_id AND postmeta.meta_key='_lpc_is_delivered'";
+        $timePeriod = self::UPDATE_STATUS_PERIOD;
 
-        $params[] = "wc_order_itemmeta.meta_key='method_id' AND wc_order_itemmeta.meta_value LIKE 'lpc_%'";
-        $params[] = 'posts.post_type = "shop_order"';
+        /**
+         * Filter allowing to modify the time period for which the tracking status should be updated.
+         *
+         * @since 1.9.0
+         */
+        $timePeriod = apply_filters('lpc_update_delivery_status_period', $timePeriod);
+        $fromDate   = date('Y-m-d', strtotime($timePeriod));
+
+        $params = [
+            $orderItemMeta . '.meta_key = "method_id"',
+            $orderItemMeta . '.meta_value LIKE "lpc_%"',
+        ];
+
+        if (self::isHposActive()) {
+            $orders     = $wpdb->prefix . 'wc_orders';
+            $ordersMeta = $wpdb->prefix . 'wc_orders_meta';
+            $query      = 'SELECT DISTINCT ' . $orderItems . '.order_id 
+                    FROM ' . $orderItems . '
+                    JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+                    JOIN ' . $orders . ' ON ' . $orders . '.id = ' . $orderItems . '.order_id
+                    LEFT JOIN ' . $ordersMeta . ' ON ' . $ordersMeta . '.order_id = ' . $orderItems . '.order_id AND ' . $ordersMeta . '.meta_key = "_lpc_is_delivered"';
+            $params[]   = $orders . '.type = "shop_order"';
+            $params[]   = $orders . '.date_created_gmt > "' . esc_sql($fromDate) . '"';
+            $params[]   = $ordersMeta . '.meta_value IS NULL OR ' . $ordersMeta . '.meta_value = "0"';
+        } else {
+            $posts    = $wpdb->prefix . 'posts';
+            $postmeta = $wpdb->prefix . 'postmeta';
+            $query    = 'SELECT DISTINCT ' . $orderItems . '.order_id 
+                    FROM ' . $orderItems . '
+                    JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+                    JOIN ' . $posts . ' ON ' . $posts . '.ID = ' . $orderItems . '.order_id
+                    LEFT JOIN ' . $postmeta . ' ON ' . $postmeta . '.post_id = ' . $orderItems . '.order_id AND ' . $postmeta . '.meta_key = "_lpc_is_delivered"';
+            $params[] = $posts . '.post_type = "shop_order"';
+            $params[] = $posts . '.post_date > "' . esc_sql($fromDate) . '"';
+            $params[] = $postmeta . '.meta_value IS NULL OR ' . $postmeta . '.meta_value = "0"';
+        }
 
         $query .= ' WHERE (' . implode(') AND (', $params) . ') ';
 
@@ -118,41 +303,42 @@ class LpcOrderQueries {
     public static function getLpcOrdersIdsForPurge() {
         global $wpdb;
 
-        $nbDays = LpcHelper::get_option('lpc_day_purge');
+        $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
+        $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
-        $fromDate = time() - $nbDays * DAY_IN_SECONDS;
-
-        $lastEventDateMetaKey = LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY;
-        $isDeliveredMetaKey   = LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY;
-
+        $nbDays      = LpcHelper::get_option('lpc_day_purge');
+        $fromDate    = time() - $nbDays * DAY_IN_SECONDS;
         $isDelivered = LpcUnifiedTrackingApi::IS_DELIVERED_META_VALUE_TRUE;
 
-        $metaQuery = [
-            [
-                'key'     => $lastEventDateMetaKey,
-                'value'   => $fromDate,
-                'compare' => '<',
-            ],
-            [
-                'key'     => $isDeliveredMetaKey,
-                'value'   => $isDelivered,
-                'compare' => '=',
-            ],
-        ];
-
-        $metaSql = get_meta_sql($metaQuery, 'post', $wpdb->posts, 'ID');
-
-        $prefix = $wpdb->prefix;
-
-        $query = "SELECT DISTINCT wc_order_items.order_id FROM {$prefix}woocommerce_order_items AS wc_order_items
-                    JOIN {$prefix}woocommerce_order_itemmeta  AS wc_order_itemmeta ON wc_order_itemmeta.order_item_id = wc_order_items.order_item_id
-                    JOIN {$prefix}posts ON wc_order_items.order_id={$prefix}posts.ID";
-
-        $query .= $metaSql['join'];
-
-        $query .= ' WHERE (wc_order_itemmeta.meta_key = "method_id" 
-                        AND wc_order_itemmeta.meta_value LIKE "lpc_%" 
-                        AND ' . $prefix . 'posts.post_type = "shop_order") ' . $metaSql['where'];
+        if (self::isHposActive()) {
+            $orders     = $wpdb->prefix . 'wc_orders';
+            $ordersMeta = $wpdb->prefix . 'wc_orders_meta';
+            $query      = 'SELECT DISTINCT ' . $orderItems . '.order_id 
+                FROM ' . $orderItems . '
+                JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+                JOIN ' . $orders . ' ON ' . $orderItems . '.order_id = ' . $orders . '.id
+                JOIN ' . $ordersMeta . ' AS lastEventDate ON lastEventDate.order_id = ' . $orders . '.id AND lastEventDate.meta_key = "' . LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY . '"
+                JOIN ' . $ordersMeta . ' AS isDelivered ON isDelivered.order_id = ' . $orders . '.id AND isDelivered.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '"
+                WHERE ' . $orderItemMeta . '.meta_key = "method_id" 
+                    AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%" 
+                    AND ' . $orders . '.type = "shop_order" 
+                    AND lastEventDate.meta_value < ' . $fromDate . '
+                    AND isDelivered.meta_value = ' . intval($isDelivered);
+        } else {
+            $posts    = $wpdb->prefix . 'posts';
+            $postmeta = $wpdb->prefix . 'postmeta';
+            $query    = 'SELECT DISTINCT ' . $orderItems . '.order_id 
+                FROM ' . $orderItems . '
+                JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+                JOIN ' . $posts . ' ON  ' . $orderItems . '.order_id = ' . $posts . '.ID
+                JOIN ' . $postmeta . ' AS lastEventDate ON lastEventDate.post_id = ' . $posts . '.ID AND lastEventDate.meta_key = "' . LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY . '"
+                JOIN ' . $postmeta . ' AS isDelivered ON isDelivered.post_id = ' . $posts . '.ID AND isDelivered.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '"
+                WHERE (' . $orderItemMeta . '.meta_key = "method_id" 
+                    AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%" 
+                    AND ' . $posts . '.post_type = "shop_order") 
+                    AND lastEventDate.meta_value < ' . $fromDate . '
+                    AND isDelivered.meta_value = ' . intval($isDelivered);
+        }
 
         // phpcs:disable
         $results = $wpdb->get_results($query);
@@ -169,228 +355,373 @@ class LpcOrderQueries {
         return $ordersId;
     }
 
-    public static function getLpcOrdersPostMetaList($metaName) {
-        global $wpdb;
-
+    public static function getLpcOrdersPostMetaList(string $metaName, bool $isAddressMeta = false) {
         if (empty($metaName)) {
             return [];
         }
 
-        $query = $wpdb->prepare(
-            "SELECT DISTINCT {$wpdb->prefix}postmeta.meta_value
-					FROM {$wpdb->prefix}postmeta
-         			JOIN {$wpdb->prefix}woocommerce_order_items
-              			ON {$wpdb->prefix}postmeta.post_id = {$wpdb->prefix}woocommerce_order_items.order_id
-         			JOIN {$wpdb->prefix}woocommerce_order_itemmeta
-              			ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id = {$wpdb->prefix}woocommerce_order_items.order_item_id
-					WHERE {$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id'
-	  					AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE %s
-						AND {$wpdb->prefix}postmeta.meta_key = %s
-					ORDER BY {$wpdb->prefix}postmeta.meta_value ASC",
-            'lpc_%',
-            $metaName
-        );
+        global $wpdb;
+        $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
+        $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
+
+        if (self::isHposActive()) {
+            $orderAddresses = $wpdb->prefix . 'wc_order_addresses';
+            if ($isAddressMeta) {
+                [$none, $addressType, $addressPart] = explode('_', $metaName);
+                // phpcs:disable
+                $query = $wpdb->prepare(
+                    'SELECT DISTINCT ' . $orderAddresses . '.' . $addressPart . '
+					FROM ' . $orderAddresses . '
+         			JOIN ' . $orderItems . '
+              			ON ' . $orderAddresses . '.order_id = ' . $orderItems . '.order_id
+         			JOIN ' . $orderItemMeta . '
+              			ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+					WHERE ' . $orderItemMeta . '.meta_key = "method_id"
+	  					AND ' . $orderItemMeta . '.meta_value LIKE %s
+						AND ' . $orderAddresses . '.address_type = %s
+					ORDER BY ' . $orderAddresses . '.' . $addressPart . ' ASC',
+                    'lpc_%',
+                    $addressType
+                );
+                // phpcs:enable
+            } else {
+                $ordersMeta = $wpdb->prefix . 'wc_orders_meta';
+                // phpcs:disable
+                $query = $wpdb->prepare(
+                    'SELECT DISTINCT ' . $ordersMeta . '.meta_value
+					FROM ' . $ordersMeta . '
+         			JOIN ' . $orderItems . '
+              			ON ' . $ordersMeta . '.order_id = ' . $orderItems . '.order_id
+         			JOIN ' . $orderItemMeta . '
+              			ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+					WHERE ' . $orderItemMeta . '.meta_key = "method_id"
+	  					AND ' . $orderItemMeta . '.meta_value LIKE %s
+						AND ' . $ordersMeta . '.meta_key = %s
+					ORDER BY ' . $ordersMeta . '.meta_value ASC',
+                    'lpc_%',
+                    $metaName
+                );
+                // phpcs:enable
+            }
+        } else {
+            $postmeta = $wpdb->prefix . 'postmeta';
+            // phpcs:disable
+            $query = $wpdb->prepare(
+                'SELECT DISTINCT ' . $postmeta . '.meta_value
+					FROM ' . $postmeta . '
+         			JOIN ' . $orderItems . '
+              			ON ' . $postmeta . '.post_id = ' . $orderItems . '.order_id
+         			JOIN ' . $orderItemMeta . '
+              			ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+					WHERE ' . $orderItemMeta . '.meta_key = "method_id"
+	  					AND ' . $orderItemMeta . '.meta_value LIKE %s
+						AND ' . $postmeta . '.meta_key = %s
+					ORDER BY ' . $postmeta . '.meta_value ASC',
+                'lpc_%',
+                $metaName
+            );
+            // phpcs:enable
+        }
 
         return $wpdb->get_col($query);  //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     }
 
     public static function getLpcOrdersShippingMethods() {
         global $wpdb;
+        $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
+        $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
+        // phpcs:disable
         return $wpdb->get_col(
-            "SELECT DISTINCT {$wpdb->prefix}woocommerce_order_items.order_item_name
-					FROM {$wpdb->prefix}woocommerce_order_items
-                    JOIN {$wpdb->prefix}woocommerce_order_itemmeta
-                        ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id = {$wpdb->prefix}woocommerce_order_items.order_item_id
-					WHERE {$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id'
-                        AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE 'lpc_%'
-                        AND {$wpdb->prefix}woocommerce_order_items.order_item_type = 'shipping'
-  					ORDER BY {$wpdb->prefix}woocommerce_order_items.order_item_name ASC;"
+            'SELECT DISTINCT ' . $orderItems . '.order_item_name
+					FROM ' . $orderItems . '
+                    JOIN ' . $orderItemMeta . '
+                        ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+					WHERE ' . $orderItemMeta . '.meta_key = "method_id"
+                        AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%"
+                        AND ' . $orderItems . '.order_item_type = "shipping"
+  					ORDER BY ' . $orderItems . '.order_item_name ASC;'
         );
+        // phpcs:enable
     }
 
     public static function getLpcOrdersWooStatuses() {
         global $wpdb;
+        $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
+        $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
-        return $wpdb->get_col(
-            "SELECT DISTINCT {$wpdb->prefix}posts.post_status
-					FROM {$wpdb->prefix}posts
-         			JOIN {$wpdb->prefix}woocommerce_order_items
-        				ON {$wpdb->prefix}posts.id = {$wpdb->prefix}woocommerce_order_items.order_id
-        			JOIN {$wpdb->prefix}woocommerce_order_itemmeta
-        				ON {$wpdb->prefix}woocommerce_order_itemmeta.order_item_id = {$wpdb->prefix}woocommerce_order_items.order_item_id
-					WHERE {$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id' 
-					    AND {$wpdb->prefix}posts.post_type = 'shop_order' 
-  						AND {$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE 'lpc_%'
-					ORDER BY {$wpdb->prefix}posts.post_status ASC"
-        );
+        if (self::isHposActive()) {
+            $orders = $wpdb->prefix . 'wc_orders';
+
+            // phpcs:disable
+            return $wpdb->get_col(
+                'SELECT DISTINCT ' . $orders . '.status
+					FROM ' . $orders . '
+         			JOIN ' . $orderItems . '
+        				ON ' . $orders . '.id = ' . $orderItems . '.order_id
+        			JOIN ' . $orderItemMeta . '
+        				ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+					WHERE ' . $orderItemMeta . '.meta_key = "method_id" 
+					    AND ' . $orders . '.type = "shop_order" 
+  						AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%"
+					ORDER BY ' . $orders . '.status ASC'
+            );
+            // phpcs:enable
+        } else {
+            $posts = $wpdb->prefix . 'posts';
+
+            // phpcs:disable
+            return $wpdb->get_col(
+                'SELECT DISTINCT ' . $posts . '.post_status
+					FROM ' . $posts . '
+         			JOIN ' . $orderItems . '
+        				ON ' . $posts . '.id = ' . $orderItems . '.order_id
+        			JOIN ' . $orderItemMeta . '
+        				ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+					WHERE ' . $orderItemMeta . '.meta_key = "method_id" 
+					    AND ' . $posts . '.post_type = "shop_order" 
+  						AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%"
+					ORDER BY ' . $posts . '.post_status ASC'
+            );
+            // phpcs:enable
+        }
     }
 
-    protected static function formatTextForSql(&$text) {
-        $text = "'" . $text . "'";
-    }
-
-    protected static function andCriterion($criterion) {
+    protected static function addFilter($requestFilters = [], $filters = []): string {
         global $wpdb;
 
-        return " AND {$wpdb->prefix}woocommerce_order_items.order_id IN 
-			                   (SELECT {$wpdb->prefix}postmeta.post_id FROM {$wpdb->prefix}postmeta WHERE
-			                        (meta_key='_shipping_first_name' AND meta_value LIKE '%$criterion%')
-			                        OR (meta_key='_shipping_last_name' AND meta_value LIKE '%$criterion%')
-			                        OR (meta_key='_shipping_postcode' AND meta_value = '$criterion')
-			                        OR (meta_key='_shipping_city' AND meta_value LIKE '%$criterion%')
-			                        OR (meta_key='lpc_outward_parcel_number' AND meta_value LIKE '%$criterion%')
-			                        OR (meta_key='_shipping_country' AND meta_value = '$criterion')
-			                        OR (post_id LIKE '%$criterion%')) ";
-    }
+        $orderItems      = $wpdb->prefix . 'woocommerce_order_items';
+        $orderItemMeta   = $wpdb->prefix . 'woocommerce_order_itemmeta';
+        $posts           = $wpdb->prefix . 'posts';
+        $postmeta        = $wpdb->prefix . 'postmeta';
+        $lpcOutwardLabel = $wpdb->prefix . 'lpc_outward_label';
+        $lpcInwardLabel  = $wpdb->prefix . 'lpc_inward_label';
 
-    protected static function getOrderBy($args) {
-        global $wpdb;
-        if (empty($args['orderby'])) {
-            return " ORDER BY {$wpdb->prefix}posts.post_date DESC ";
-        }
+        $filters[] = $orderItemMeta . '.meta_key = "method_id"';
+        $filters[] = $orderItemMeta . '.meta_value LIKE "lpc_%"';
 
-        switch ($args['orderby']) {
-            case 'date':
-                $ord = 'posts.post_date';
-                break;
-            case 'id':
-                $ord = 'woocommerce_order_items.order_id';
-                break;
-            case 'customer':
-            case 'address':
-            case 'country':
-            case 'shipping-status':
-            case 'lpc-bordereau':
-                $ord = 'postmeta.meta_value';
-                break;
-            case 'shipping-method':
-                $ord = 'woocommerce_order_items.order_item_name';
-                break;
-            case 'woo-status':
-                $ord = 'posts.post_status';
-                break;
-            default:
-                $ord = 'posts.post_date';
-                break;
-        }
+        if (self::isHposActive()) {
+            $orders         = $wpdb->prefix . 'wc_orders';
+            $ordersMeta     = $wpdb->prefix . 'wc_orders_meta';
+            $orderAddresses = $wpdb->prefix . 'wc_order_addresses';
 
-        $ord = " ORDER BY {$wpdb->prefix}" . $ord . ' ';
-        if (!empty($args['order'])) {
-            $ord .= $args['order'] . ' ';
-        }
+            if (!empty($requestFilters['search'])) {
+                $search = $requestFilters['search'];
 
-        return $ord;
-    }
+                $filters['search'] = '(';
 
-    protected static function getMetaJoin($args) {
-        global $wpdb;
+                // ID
+                $filters['search'] .= $orderItems . '.order_id LIKE "%' . esc_sql($search) . '%"';
 
-        if (empty($args['orderby'])) {
-            return ' ';
-        }
+                // Date
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $orders . '.id
+                    FROM ' . $orders . '
+                    WHERE DATE_FORMAT(' . $orders . '.date_created_gmt, "%m-%d-%Y") LIKE "%' . esc_sql($search) . '%")';
 
-        switch ($args['orderby']) {
-            case 'customer':
-                $where = "postmeta . meta_key = '_shipping_first_name'";
-                break;
-            case 'address':
-                $where = "postmeta . meta_key = '_shipping_address_1'";
-                break;
-            case 'country':
-                $where = "postmeta . meta_key = '_shipping_country'";
-                break;
-            case 'shipping-method':
-                $where = "woocommerce_order_items . order_item_type = 'shipping'";
-                break;
-            case 'shipping-status':
-                $where = "postmeta . meta_key = '" . esc_sql(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY) . "'";
-                break;
-            case 'lpc-bordereau':
-                $where = "postmeta . meta_key = 'lpc_bordereau_id'";
-                break;
-            default:
-                $where = ' ';
-                break;
-        }
+                // Customer Name and Shipping Address
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $orderAddresses . '.order_id 
+                    FROM ' . $orderAddresses . ' 
+                    WHERE (
+                        ' . $orderAddresses . '.first_name LIKE "%' . esc_sql($search) . '%"
+                        OR ' . $orderAddresses . '.last_name LIKE "%' . esc_sql($search) . '%"
+                        OR ' . $orderAddresses . '.address_1 LIKE "%' . esc_sql($search) . '%"
+                        OR ' . $orderAddresses . '.address_2 LIKE "%' . esc_sql($search) . '%"
+                        OR ' . $orderAddresses . '.city LIKE "%' . esc_sql($search) . '%"
+                        OR ' . $orderAddresses . '.country LIKE "%' . esc_sql($search) . '%"
+                        OR ' . $orderAddresses . '.postcode LIKE "%' . esc_sql($search) . '%"
+                    ) AND ' . $orderAddresses . '.address_type = "shipping"
+                )';
 
-        if (' ' !== $where) {
-            $where = " LEFT JOIN {$wpdb->prefix}postmeta ON {$wpdb->prefix}postmeta.post_id = {$wpdb->prefix}woocommerce_order_items.order_id AND " . $wpdb->prefix . $where . ' ';
-        }
+                // Slip ID and Outward label number
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $lpcOutwardLabel . '.order_id 
+                    FROM ' . $lpcOutwardLabel . ' 
+                    WHERE (
+                        ' . $lpcOutwardLabel . '.bordereau_id LIKE "%' . esc_sql($search) . '%"
+                        OR ' . $lpcOutwardLabel . '.tracking_number LIKE "%' . esc_sql($search) . '%"
+                    )
+                )';
 
-        return $where;
-    }
+                // Shipping method
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $orderItems . '.order_id
+                    FROM ' . $orderItems . '
+                    WHERE ' . $orderItems . '.order_item_type = "shipping"
+                        AND ' . $orderItems . '.order_item_name LIKE "%' . esc_sql($search) . '%")';
 
-    protected static function addFilter($requestFilters = []) {
-        $filters = [];
-        global $wpdb;
+                // WooCommerce Order Status
+                $filters['search'] .= ' OR ' . $orders . '.status LIKE "%' . esc_sql($search) . '%"';
 
-        $filters[] = "{$wpdb->prefix}woocommerce_order_itemmeta.meta_key = 'method_id'";
-        $filters[] = "{$wpdb->prefix}woocommerce_order_itemmeta.meta_value LIKE 'lpc_%'";
+                // Inward label number
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $lpcInwardLabel . '.order_id
+                    FROM ' . $lpcInwardLabel . '
+                    WHERE ' . $lpcInwardLabel . '.tracking_number LIKE "%' . esc_sql($search) . '%"
+			    )';
 
-        if (!empty($requestFilters['search'])) {
-            $search = $requestFilters['search'];
+                $filters['search'] .= ')';
+            }
 
-            $filters['search'] = '(';
+            if (isset($requestFilters['country'])) {
+                $countries = array_filter(
+                    $requestFilters['country'],
+                    function ($country) {
+                        return !empty($country);
+                    }
+                );
 
-            // ID
-            $filters['search'] .= "{$wpdb->prefix}woocommerce_order_items.order_id LIKE '%{$search}%'";
+                if (!empty($countries)) {
+                    $filters[] .= $orderItems . '.order_id IN (
+                        SELECT ' . $orderAddresses . '.order_id 
+                        FROM ' . $orderAddresses . ' 
+                        WHERE
+                            ' . $orderAddresses . '.country IN ("' . implode('", "', $countries) . '")
+                            AND ' . $orderAddresses . '.address_type = "shipping"
+                    )';
+                }
+            }
 
-            // Date
-            $filters['search'] .= " OR {$wpdb->prefix}woocommerce_order_items.order_id IN (
-			SELECT {$wpdb->prefix}posts.ID
-			FROM {$wpdb->prefix}posts
-			WHERE DATE_FORMAT({$wpdb->prefix}posts.post_date_gmt, '%m-%d-%Y') LIKE '%{$search}%')";
+            if (isset($requestFilters['status'])) {
+                $status = array_filter(
+                    $requestFilters['status'],
+                    function ($oneStatus) {
+                        return !empty($oneStatus);
+                    }
+                );
 
-            // Customer Name, Shipping Address and Bordereau ID
-            $filters['search'] .= " OR {$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT {$wpdb->prefix}postmeta.post_id 
-				FROM {$wpdb->prefix}postmeta 
-				WHERE (
-					{$wpdb->prefix}postmeta.meta_key = '_shipping_first_name'
-					OR {$wpdb->prefix}postmeta.meta_key = '_shipping_last_name'
-					OR {$wpdb->prefix}postmeta.meta_key = '_shipping_address_1'
-					OR {$wpdb->prefix}postmeta.meta_key = '_shipping_address_2'
-					OR {$wpdb->prefix}postmeta.meta_key = '_shipping_city'
-					OR {$wpdb->prefix}postmeta.meta_key = '_shipping_country'
-					OR {$wpdb->prefix}postmeta.meta_key = '_shipping_postcode'
-					OR {$wpdb->prefix}postmeta.meta_key = 'lpc_bordereau_id'
-				) AND {$wpdb->prefix}postmeta.meta_value LIKE '%{$search}%'
-			)";
+                if (!empty($status)) {
+                    $filters[] = $orderItems . '.order_id IN (
+                        SELECT ' . $ordersMeta . '.order_id
+                        FROM ' . $ordersMeta . '
+                        WHERE ' . $ordersMeta . '.meta_key = "' . esc_sql(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY) . '"
+                            AND ' . $ordersMeta . '.meta_value IN ("' . implode('", "', $status) . '"))';
+                }
+            }
 
-            // Shipping method
-            $filters['search'] .= " OR {$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT {$wpdb->prefix}woocommerce_order_items.order_id
-				FROM {$wpdb->prefix}woocommerce_order_items
-				WHERE {$wpdb->prefix}woocommerce_order_items.order_item_type = 'shipping'
-					AND {$wpdb->prefix}woocommerce_order_items.order_item_name LIKE '%{$search}%')";
+            if (isset($requestFilters['woo_status'])) {
+                $wooStatus = array_filter(
+                    $requestFilters['woo_status'],
+                    function ($oneWooStatus) {
+                        return !empty($oneWooStatus);
+                    }
+                );
 
-            // WooCommerce Order Status
-            $filters['search'] .= " OR {$wpdb->prefix}posts.post_status LIKE '%{$search}%'";
+                if (!empty($wooStatus)) {
+                    $filters[] = $orders . '.status IN ("' . implode('", "', $wooStatus) . '")';
+                }
+            }
 
-            // Outward label number
-            $filters['search'] .= " OR {$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT {$wpdb->prefix}lpc_outward_label.order_id
-				FROM {$wpdb->prefix}lpc_outward_label
-				WHERE {$wpdb->prefix}lpc_outward_label.tracking_number LIKE '%{$search}%'
-			)";
+            // Make sure we take only orders and not subscriptions
+            $filters[] = $orders . '.type = "shop_order"';
+        } else {
+            if (!empty($requestFilters['search'])) {
+                $search = $requestFilters['search'];
 
-            // Inward label number
-            $filters['search'] .= " OR {$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT {$wpdb->prefix}lpc_inward_label.order_id
-				FROM {$wpdb->prefix}lpc_inward_label
-				WHERE {$wpdb->prefix}lpc_inward_label.tracking_number LIKE '%{$search}%'
-			)";
+                $filters['search'] = '(';
 
-            $filters['search'] .= ')';
-        }
+                // ID
+                $filters['search'] .= $orderItems . '.order_id LIKE "%' . esc_sql($search) . '%"';
 
-        if (!empty($requestFilters['label_start_date'])) {
-            $filters[] = "{$wpdb->prefix}lpc_outward_label.label_created_at > '{$requestFilters['label_start_date']}'";
-        }
+                // Date
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $posts . '.ID
+                    FROM ' . $posts . '
+                    WHERE DATE_FORMAT(' . $posts . '.post_date_gmt, "%m-%d-%Y") LIKE "%' . esc_sql($search) . '%")';
 
-        if (!empty($requestFilters['label_end_date'])) {
-            $filters[] = "{$wpdb->prefix}lpc_outward_label.label_created_at < '{$requestFilters['label_end_date']}'";
+                // Customer Name, Shipping Address and Bordereau ID
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $postmeta . '.post_id 
+                    FROM ' . $postmeta . ' 
+                    WHERE (
+                        ' . $postmeta . '.meta_key = "_shipping_first_name"
+                        OR ' . $postmeta . '.meta_key = "_shipping_last_name"
+                        OR ' . $postmeta . '.meta_key = "_shipping_address_1"
+                        OR ' . $postmeta . '.meta_key = "_shipping_address_2"
+                        OR ' . $postmeta . '.meta_key = "_shipping_city"
+                        OR ' . $postmeta . '.meta_key = "_shipping_country"
+                        OR ' . $postmeta . '.meta_key = "_shipping_postcode"
+                        OR ' . $postmeta . '.meta_key = "lpc_bordereau_id"
+                    ) AND ' . $postmeta . '.meta_value LIKE "%' . esc_sql($search) . '%"
+                )';
+
+                // Shipping method
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $orderItems . '.order_id
+                    FROM ' . $orderItems . '
+                    WHERE ' . $orderItems . '.order_item_type = "shipping"
+                        AND ' . $orderItems . '.order_item_name LIKE "%' . esc_sql($search) . '%")';
+
+                // WooCommerce Order Status
+                $filters['search'] .= ' OR ' . $posts . '.post_status LIKE "%' . esc_sql($search) . '%"';
+
+                // Outward label number
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $lpcOutwardLabel . '.order_id
+                    FROM ' . $lpcOutwardLabel . '
+                    WHERE ' . $lpcOutwardLabel . '.tracking_number LIKE "%' . esc_sql($search) . '%"
+                )';
+
+                // Inward label number
+                $filters['search'] .= ' OR ' . $orderItems . '.order_id IN (
+                    SELECT ' . $lpcInwardLabel . '.order_id
+                    FROM ' . $lpcInwardLabel . '
+                    WHERE ' . $lpcInwardLabel . '.tracking_number LIKE "%' . esc_sql($search) . '%"
+                )';
+
+                $filters['search'] .= ')';
+            }
+
+            if (isset($requestFilters['country'])) {
+                $countries = array_filter(
+                    $requestFilters['country'],
+                    function ($country) {
+                        return !empty($country);
+                    }
+                );
+
+                if (!empty($countries)) {
+                    $filters[] = $orderItems . '.order_id IN (
+                        SELECT ' . $postmeta . '.post_id 
+                        FROM ' . $postmeta . ' 
+                        WHERE ' . $postmeta . '.meta_key = "_shipping_country"
+                            AND ' . $postmeta . '.meta_value IN ("' . implode('", "', $countries) . '"))';
+                }
+            }
+
+            if (isset($requestFilters['status'])) {
+                $status = array_filter(
+                    $requestFilters['status'],
+                    function ($oneStatus) {
+                        return !empty($oneStatus);
+                    }
+                );
+
+                if (!empty($status)) {
+                    $filters[] = $orderItems . '.order_id IN (
+                        SELECT ' . $postmeta . '.post_id
+                        FROM ' . $postmeta . '
+                        WHERE ' . $postmeta . '.meta_key = "' . esc_sql(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY) . '"
+                            AND ' . $postmeta . '.meta_value IN ("' . implode('", "', $status) . '"))';
+                }
+            }
+
+            if (isset($requestFilters['woo_status'])) {
+                $wooStatus = array_filter(
+                    $requestFilters['woo_status'],
+                    function ($oneWooStatus) {
+                        return !empty($oneWooStatus);
+                    }
+                );
+
+                if (!empty($wooStatus)) {
+                    $filters[] = $posts . '.post_status IN ("' . implode('", "', $wooStatus) . '")';
+                }
+            }
+
+            // Make sure we take only orders and not subscriptions
+            $filters[] = $posts . '.post_type = "shop_order"';
         }
 
         if (isset($requestFilters['label_type'])) {
@@ -402,59 +733,50 @@ class LpcOrderQueries {
             );
 
             if (in_array('inward', $labelTypes)) {
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT DISTINCT {$wpdb->prefix}lpc_inward_label.order_id
-				FROM {$wpdb->prefix}lpc_inward_label
-				WHERE {$wpdb->prefix}lpc_inward_label.tracking_number IS NOT NULL)";
+                $filters[] = $orderItems . '.order_id IN (
+                    SELECT DISTINCT ' . $lpcInwardLabel . '.order_id
+                    FROM ' . $lpcInwardLabel . '
+                    WHERE ' . $lpcInwardLabel . '.tracking_number IS NOT NULL)';
             }
 
             if (in_array('outward', $labelTypes)) {
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT DISTINCT {$wpdb->prefix}lpc_outward_label.order_id
-				FROM {$wpdb->prefix}lpc_outward_label
-				WHERE {$wpdb->prefix}lpc_outward_label.tracking_number IS NOT NULL)";
+                $filters[] = $orderItems . '.order_id IN (
+                    SELECT DISTINCT ' . $lpcOutwardLabel . '.order_id
+                    FROM ' . $lpcOutwardLabel . '
+                    WHERE ' . $lpcOutwardLabel . '.tracking_number IS NOT NULL)';
             }
 
             if (in_array('outward_printed', $labelTypes)) {
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT DISTINCT {$wpdb->prefix}lpc_outward_label.order_id
-				FROM {$wpdb->prefix}lpc_outward_label
-				WHERE {$wpdb->prefix}lpc_outward_label.printed = 1)";
+                $filters[] = $orderItems . '.order_id IN (
+                    SELECT DISTINCT ' . $lpcOutwardLabel . '.order_id
+                    FROM ' . $lpcOutwardLabel . '
+                    WHERE ' . $lpcOutwardLabel . '.printed = 1)';
             }
 
             if (in_array('outward_not_printed', $labelTypes)) {
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT DISTINCT {$wpdb->prefix}lpc_outward_label.order_id
-				FROM {$wpdb->prefix}lpc_outward_label
-				WHERE {$wpdb->prefix}lpc_outward_label.printed = 0)";
+                $filters[] = $orderItems . '.order_id IN (
+                    SELECT DISTINCT ' . $lpcOutwardLabel . '.order_id
+                    FROM ' . $lpcOutwardLabel . '
+                    WHERE ' . $lpcOutwardLabel . '.printed = 0)';
             }
 
             if (in_array('none', $labelTypes)) {
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id NOT IN (
-				SELECT DISTINCT {$wpdb->prefix}lpc_inward_label.order_id
-				FROM {$wpdb->prefix}lpc_inward_label)";
+                $filters[] = $orderItems . '.order_id NOT IN (
+                    SELECT DISTINCT ' . $lpcInwardLabel . '.order_id
+                    FROM ' . $lpcInwardLabel . ')';
 
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id NOT IN (
-				SELECT DISTINCT {$wpdb->prefix}lpc_outward_label.order_id
-				FROM {$wpdb->prefix}lpc_outward_label)";
+                $filters[] = $orderItems . '.order_id NOT IN (
+                    SELECT DISTINCT ' . $lpcOutwardLabel . '.order_id
+                    FROM ' . $lpcOutwardLabel . ')';
             }
         }
 
-        if (isset($requestFilters['country'])) {
-            $countries = array_filter(
-                $requestFilters['country'],
-                function ($country) {
-                    return !empty($country);
-                }
-            );
+        if (!empty($requestFilters['label_start_date'])) {
+            $filters[] = $lpcOutwardLabel . '.label_created_at > "' . esc_sql($requestFilters['label_start_date']) . '"';
+        }
 
-            if (!empty($countries)) {
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT {$wpdb->prefix}postmeta.post_id 
-				FROM {$wpdb->prefix}postmeta 
-				WHERE {$wpdb->prefix}postmeta.meta_key = '_shipping_country' 
-					AND {$wpdb->prefix}postmeta.meta_value IN ('" . implode("', '", $countries) . "'))";
-            }
+        if (!empty($requestFilters['label_end_date'])) {
+            $filters[] = $lpcOutwardLabel . '.label_created_at < "' . esc_sql($requestFilters['label_end_date']) . '"';
         }
 
         if (isset($requestFilters['shipping_method'])) {
@@ -466,50 +788,25 @@ class LpcOrderQueries {
             );
 
             if (!empty($shippingMethods)) {
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT {$wpdb->prefix}woocommerce_order_items.order_id
-				FROM {$wpdb->prefix}woocommerce_order_items
-				WHERE {$wpdb->prefix}woocommerce_order_items.order_item_type = 'shipping'
-					AND {$wpdb->prefix}woocommerce_order_items.order_item_name IN ('" . implode(
-                        "','",
-                        $shippingMethods
-                    ) . "'))";
+                $filters[] = $orderItems . '.order_id IN (
+                    SELECT ' . $orderItems . '.order_id
+                    FROM ' . $orderItems . '
+                    WHERE ' . $orderItems . '.order_item_type = "shipping"
+                        AND ' . $orderItems . '.order_item_name IN ("' . implode('","', $shippingMethods) . '"))';
             }
         }
-
-        if (isset($requestFilters['status'])) {
-            $status = array_filter(
-                $requestFilters['status'],
-                function ($oneStatus) {
-                    return !empty($oneStatus);
-                }
-            );
-
-            if (!empty($status)) {
-                $filters[] = "{$wpdb->prefix}woocommerce_order_items.order_id IN (
-				SELECT {$wpdb->prefix}postmeta.post_id
-				FROM {$wpdb->prefix}postmeta
-				WHERE {$wpdb->prefix}postmeta.meta_key = '" . esc_sql(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY) . "'
-					AND {$wpdb->prefix}postmeta.meta_value IN ('" . implode("', '", $status) . "'))";
-            }
-        }
-
-        if (isset($requestFilters['woo_status'])) {
-            $wooStatus = array_filter(
-                $requestFilters['woo_status'],
-                function ($oneWooStatus) {
-                    return !empty($oneWooStatus);
-                }
-            );
-
-            if (!empty($wooStatus)) {
-                $filters[] = "{$wpdb->prefix}posts.post_status IN ('" . implode("', '", $wooStatus) . "')";
-            }
-        }
-
-        // Make sure we take only orders and not subscriptions
-        $filters[] = $wpdb->prefix . 'posts.post_type = "shop_order"';
 
         return ' WHERE ' . implode(' AND ', $filters);
+    }
+
+    public static function isHposActive(): bool {
+        if (class_exists('\Automattic\WooCommerce\Utilities\OrderUtil') && method_exists(
+                OrderUtil::class,
+                'custom_orders_table_usage_is_enabled'
+            ) && OrderUtil::custom_orders_table_usage_is_enabled()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

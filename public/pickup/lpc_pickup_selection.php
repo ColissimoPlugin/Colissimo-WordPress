@@ -93,9 +93,11 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     private function updatePickupMeta($orderId, $pickUpInfo) {
-        update_post_meta($orderId, self::PICKUP_LOCATION_ID_META_KEY, $pickUpInfo['identifiant']);
-        update_post_meta($orderId, self::PICKUP_LOCATION_LABEL_META_KEY, $pickUpInfo['nom']);
-        update_post_meta($orderId, self::PICKUP_PRODUCT_CODE_META_KEY, $pickUpInfo['typeDePoint']);
+        $order = wc_get_order($orderId);
+        $order->update_meta_data(self::PICKUP_LOCATION_ID_META_KEY, $pickUpInfo['identifiant']);
+        $order->update_meta_data(self::PICKUP_LOCATION_LABEL_META_KEY, $pickUpInfo['nom']);
+        $order->update_meta_data(self::PICKUP_PRODUCT_CODE_META_KEY, $pickUpInfo['typeDePoint']);
+        $order->save();
     }
 
     private function setPickupAsShippingAddress($order, $pickupData) {

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Colissimo shipping methods for WooCommerce
  * Description: This extension gives you the possibility to use the Colissimo shipping methods in WooCommerce
- * Version: 1.8.2
+ * Version: 1.9.0
  * Author: Colissimo
  * Author URI: https://www.colissimo.entreprise.laposte.fr/fr
  * Text Domain: wc_colissimo
@@ -23,7 +23,6 @@ if (
     || (is_multisite() && in_array('woocommerce/woocommerce.php',
                                    apply_filters('active_plugins', array_keys(get_site_option('active_sitewide_plugins')))))
 ) {
-
     // Load defines
     if (!defined('DS')) {
         define('DS', DIRECTORY_SEPARATOR);
@@ -81,6 +80,7 @@ if (
             $this->checkCompatibility();
             $this->checkCron();
             $this->handleDDP();
+            $this->hposCompatibility();
         }
 
         private function handleDDP() {
@@ -88,9 +88,7 @@ if (
         }
 
         public function saveDdpInformation($order) {
-            $orderId  = $order->get_id();
-            $usingDdp = get_post_meta($orderId, 'lpc_using_ddp', true);
-
+            $usingDdp = $order->get_meta('lpc_using_ddp');
             if (in_array($usingDdp, [0, 1])) {
                 return;
             }
@@ -103,18 +101,23 @@ if (
                 $shipping_methods
             );
 
-            update_post_meta($orderId, 'lpc_using_ddp', 0);
+            $order->update_meta_data('lpc_using_ddp', 0);
             if (empty($shippingMethodIds)) {
+                $order->save();
+
                 return;
             }
 
             if (strpos(array_pop($shippingMethodIds), 'ddp') === false) {
+                $order->save();
+
                 return;
             }
 
             $extraCost = LpcHelper::get_option('lpc_extracost_' . $order->get_shipping_country(), 0);
-            update_post_meta($orderId, 'lpc_ddp_cost', $extraCost);
-            update_post_meta($orderId, 'lpc_using_ddp', 1);
+            $order->update_meta_data('lpc_ddp_cost', $extraCost);
+            $order->update_meta_data('lpc_using_ddp', 1);
+            $order->save();
         }
 
         public function initCapabilities() {
@@ -172,6 +175,14 @@ if (
             if (!wp_next_scheduled('update_colissimo_statuses')) {
                 wp_schedule_event(time(), 'hourly', 'update_colissimo_statuses');
             }
+        }
+
+        private function hposCompatibility() {
+            add_action('before_woocommerce_init', function () {
+                if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+                    \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+                }
+            });
         }
     }
 

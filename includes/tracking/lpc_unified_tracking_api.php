@@ -7,8 +7,6 @@ class LpcUnifiedTrackingApi extends LpcComponent {
     const CRYPT_KEY = 'lpc_crypt_key';
     const QUERY_VAR = 'lpc_tracking_hash';
 
-    const UPDATE_STATUS_PERIOD = '-90 days';
-
     const LAST_EVENT_CODE_META_KEY = '_lpc_last_event_code';
     const LAST_EVENT_DATE_META_KEY = '_lpc_last_event_date';
     const IS_DELIVERED_META_KEY = '_lpc_is_delivered';
@@ -139,23 +137,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
     }
 
     public function updateAllStatuses($login = null, $password = null, $ip = null, $lang = null) {
-        $timePeriod = self::UPDATE_STATUS_PERIOD;
-
-        /**
-         * Filter allowing to modify the time period for which the tracking status should be updated.
-         *
-         * @since 1.9.0
-         */
-        $timePeriod = apply_filters('lpc_update_delivery_status_period', $timePeriod);
-
-        $fromDate = date('Y-m-d', strtotime($timePeriod));
-
-        $params = [
-            LpcOrderQueries::LPC_ALIAS_TABLES_NAME['posts'] . '.post_date > \'' . esc_sql($fromDate) . '\'',
-            '(' . LpcOrderQueries::LPC_ALIAS_TABLES_NAME['postmeta'] . '.meta_value IS NULL OR ' . LpcOrderQueries::LPC_ALIAS_TABLES_NAME['postmeta'] . '.meta_value  = "0")',
-        ];
-
-        $matchingOrdersId = LpcOrderQueries::getLpcOrdersIdsByPostMeta($params);
+        $matchingOrdersId = LpcOrderQueries::getLpcOrderIdsToRefreshDeliveryStatus();
 
         $orderIdsToUpdateEncoded = get_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME);
 
@@ -280,19 +262,16 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                 }
 
                 // Store the label status on the order for the main label, and update the order accordingly
-                update_post_meta($orderId, self::LAST_EVENT_CODE_META_KEY, $eventLastCode);
-                update_post_meta($orderId, self::LAST_EVENT_DATE_META_KEY, strtotime($eventLastDate));
-                update_post_meta($orderId, self::LAST_EVENT_INTERNAL_CODE_META_KEY, $currentStateInternalCode);
+                $order->update_meta_data(self::LAST_EVENT_CODE_META_KEY, $eventLastCode);
+                $order->update_meta_data(self::LAST_EVENT_DATE_META_KEY, strtotime($eventLastDate));
+                $order->update_meta_data(self::LAST_EVENT_INTERNAL_CODE_META_KEY, $currentStateInternalCode);
 
                 // The user manually changed the order status to finished, don't change the order after this
                 if ($orderStatusOnDelivered === $order->get_status()) {
                     $isDelivered = true;
                 }
-                update_post_meta(
-                    $orderId,
-                    self::IS_DELIVERED_META_KEY,
-                    $isDelivered ? self::IS_DELIVERED_META_VALUE_TRUE : self::IS_DELIVERED_META_VALUE_FALSE
-                );
+                $order->update_meta_data(self::IS_DELIVERED_META_KEY, $isDelivered ? self::IS_DELIVERED_META_VALUE_TRUE : self::IS_DELIVERED_META_VALUE_FALSE);
+                $order->save();
 
                 if ($isDelivered) {
                     $change_order_status = $orderStatusOnDelivered;
@@ -381,7 +360,8 @@ class LpcUnifiedTrackingApi extends LpcComponent {
      */
     public function getTrackingPageUrlForOrder($orderId, $trackingNumber = null) {
         if (empty($trackingNumber)) {
-            $trackingNumber = get_post_meta($orderId, 'lpc_outward_parcel_number', true);
+            $order          = wc_get_order($orderId);
+            $trackingNumber = $order->get_meta('lpc_outward_parcel_number');
         }
         $trackingHash = $this->encrypt($orderId . '-' . $trackingNumber);
 

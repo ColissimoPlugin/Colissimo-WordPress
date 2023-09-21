@@ -182,13 +182,24 @@ class LpcLabelGenerationPayload {
 
         $this->setFtdGivenCountryCodeId($addressee['countryCode']);
 
-        if (!empty($addressee['street2'])) {
-            // Required bypass because Colissimo Labels for Belgium or Switzerland don't display line3
-            $countryCodesNoLine3 = ['BE', 'CH'];
-            if (in_array($addressee['countryCode'], $countryCodesNoLine3)) {
+        // Required bypass because Colissimo Labels for Belgium or Switzerland don't display line3
+        $countryCodesNoLine3 = ['BE', 'CH'];
+        if (in_array($addressee['countryCode'], $countryCodesNoLine3)) {
+            if (!empty($addressee['street2'])) {
                 $payloadAddressee['address']['line2'] = $payloadAddressee['address']['line2'] . ' ' . $addressee['street2'];
-            } else {
+            }
+        } else {
+            if (!empty($addressee['street2'])) {
                 $payloadAddressee['address']['line3'] = $addressee['street2'];
+            } elseif (strlen($payloadAddressee['address']['line2']) > 35) {
+                $payloadAddressee['address']['line2'] = substr($addressee['street'], 0, 35);
+                $lastSpacePos                         = strrpos($payloadAddressee['address']['line2'], ' ');
+                if (false === $lastSpacePos) {
+                    $payloadAddressee['address']['line3'] = substr($addressee['street'], 35);
+                } else {
+                    $payloadAddressee['address']['line2'] = substr($addressee['street'], 0, $lastSpacePos);
+                    $payloadAddressee['address']['line3'] = substr($addressee['street'], $lastSpacePos);
+                }
             }
         }
 
@@ -1259,7 +1270,7 @@ class LpcLabelGenerationPayload {
     }
 
     protected function getOriginalParcelNumberFromInvoice(WC_Order $order) {
-        return get_post_meta($order->get_id(), LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY, true);
+        return $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
     }
 
     public function getLabelFormat() {

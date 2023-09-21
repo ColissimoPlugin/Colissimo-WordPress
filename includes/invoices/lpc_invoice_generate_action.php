@@ -6,12 +6,15 @@ if (!class_exists('LPC_TCPDF')) {
 }
 
 class LpcInvoiceGenerateAction extends LpcComponent {
+    /** @var LpcAjax */
+    protected $ajaxDispatcher;
 
-    public function __construct() {
+    public function __construct(LpcAjax $ajaxDispatcher = null) {
+        $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
     }
 
     public function getDependencies() {
-        return [];
+        return ['ajaxDispatcher'];
     }
 
     public function init() {
@@ -101,7 +104,7 @@ class LpcInvoiceGenerateAction extends LpcComponent {
                 }
                 $output .= '<tr>
 						<th class="td" scope="row" colspan="2" style="text-align:left; ' . $style . ((1 === $i) ? 'border-top-width: 3px;' : '') . '">' . $total['label'] . '</th>
-						<td class="td" style="text-align:left; ' . ((1 === $i) ? 'border-top-width: 3px;' : '') . '">' . $total['value'] . '</td>
+						<td class="td" style="text-align:left; ' . ((1 === $i) ? 'border-top-width: 3px;' : '') . '">' . strip_tags($total['value']) . '</td>
 					</tr>';
             }
         }

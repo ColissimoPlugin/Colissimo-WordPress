@@ -11,24 +11,13 @@ class LpcPickupRelayPointOnOrder extends LpcComponent {
         $itemData = @$item->get_data();
         if (!empty($itemData['method_id']) && LpcRelay::ID === $itemData['method_id']) {
             $orderId = $item->get_order_id();
+            $order   = wc_get_order($orderId);
             echo LpcHelper::renderPartial(
                 'pickup/relay_point_info_on_order.php',
                 [
-                    'pickUpLocationType' => get_post_meta(
-                        $orderId,
-                        LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY,
-                        true
-                    ),
-                    'pickUpLocationId' => get_post_meta(
-                        $orderId,
-                        LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY,
-                        true
-                    ),
-                    'pickUpLocationLabel' => get_post_meta(
-                        $orderId,
-                        LpcPickupSelection::PICKUP_LOCATION_LABEL_META_KEY,
-                        true
-                    ),
+                    'pickUpLocationType' => $order->get_meta(LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY),
+                    'pickUpLocationId' => $order->get_meta(LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY),
+                    'pickUpLocationLabel' => $order->get_meta(LpcPickupSelection::PICKUP_LOCATION_LABEL_META_KEY),
                 ]
             );
         }

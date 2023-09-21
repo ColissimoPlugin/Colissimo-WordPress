@@ -119,7 +119,9 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
         } else {
             // If it's the last following parcel, remove also the multi-parcels number
             if (1 === count($multiParcelsLabels) && !empty($multiParcelsLabels[$trackingNumber])) {
-                update_post_meta($orderId, 'lpc_multi_parcels_amount', '');
+                $order = wc_get_order($orderId);
+                $order->update_meta_data('lpc_multi_parcels_amount', '');
+                $order->save();
             }
 
             $noticeText = sprintf(__('Label %s deleted', 'wc_colissimo'), $trackingNumber);

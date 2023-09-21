@@ -110,7 +110,8 @@ class LpcLabelGenerationOutward extends LpcComponent {
 
         $labelFormat = $payload->getLabelFormat();
 
-        update_post_meta($order->get_id(), self::OUTWARD_PARCEL_NUMBER_META_KEY, $parcelNumber);
+        $order->update_meta_data(self::OUTWARD_PARCEL_NUMBER_META_KEY, $parcelNumber);
+        $order->save();
 
         // If it's insured
         if ($payload->isInsured()) {
@@ -126,7 +127,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             }
         }
 
-        // PDF label is too big to be stored in a post_meta
+        // PDF label is too big to be stored in an order meta
         $this->outwardLabelDb->insert($order->get_id(), $label, $parcelNumber, $type, $cn23, $labelFormat, $detail);
         if ($fullyShipped) {
             $this->applyStatusAfterLabelGeneration($order);
@@ -255,7 +256,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withMultiParcels($order->get_id(), $customParams);
 
         if ('lpc_relay' === $shippingMethodUsed) {
-            $relayId = get_post_meta($order->get_id(), LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY, true);
+            $relayId = $order->get_meta(LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY);
             $payload->withPickupLocationId($relayId);
         }
 
