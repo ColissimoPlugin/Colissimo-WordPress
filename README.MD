@@ -1,4 +1,4 @@
-# COLISSIMO Woocommerce
+# Plugin COLISSIMO WooCommerce
 
 PHP version minimale : 5.6
 WordPress version minimale : 4.7
