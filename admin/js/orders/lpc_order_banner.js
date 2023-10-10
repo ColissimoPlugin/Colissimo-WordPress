@@ -84,11 +84,67 @@ jQuery(function ($) {
         $adminOrderBanner.find('input[name="lpc__admin__order_banner__generate_label__total_weight__input"]').val(roundedTotalWeightHidden);
     }
 
-    function bindOutwardLabelGeneration() {
-        $('.lpc__admin__order_banner__generate_label__generate-label-button').off('click').on('click', function () {
-            $('input[name="lpc__admin__order_banner__generate_label__action"]').val('1');
+    function lpcDefaultValue(value, defaultValue) {
+        return value !== undefined && value.length > 0 ? value : defaultValue;
+    }
 
-            $(this).closest('form').submit();
+    function bindOutwardLabelGeneration() {
+        let generatingLabel = false;
+        $('.lpc__admin__order_banner__generate_label__generate-label-button').off('click').on('click', function () {
+            if (generatingLabel) {
+                return;
+            }
+
+            generatingLabel = true;
+            const itemsForLabel = [];
+            $('.lpc__admin__order_banner__generate_label__item__checkbox:checked').each(function () {
+                const currentItemId = $(this).attr('data-item-id');
+                itemsForLabel.push({
+                    'id': currentItemId,
+                    'price': $('.lpc__admin__order_banner__generate_label__item__price[data-item-id="' + currentItemId + '"]').val(),
+                    'quantity': $('.lpc__admin__order_banner__generate_label__item__qty[data-item-id="' + currentItemId + '"]').val(),
+                    'weight': $('.lpc__admin__order_banner__generate_label__item__weight[data-item-id="' + currentItemId + '"]').val()
+                });
+            });
+
+            let orderId = $('#post_ID').val();
+            if (!orderId) {
+                const urlParams = new URLSearchParams($(this).closest('form').attr('action'));
+                orderId = urlParams.get('id');
+            }
+
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'lpc_order_generate_label',
+                    order_id: orderId,
+                    label_type: $('select[name="lpc__admin__order_banner__generate_label__outward_or_inward"]').val(),
+                    items: itemsForLabel,
+                    package_weight: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_weight"]').val(), 0),
+                    total_weight: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__total_weight__input"]').val(), 0),
+                    package_length: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_length"]').val(), 0),
+                    package_width: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_width"]').val(), 0),
+                    package_height: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_height"]').val(), 0),
+                    package_description: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_description"]').val(), ''),
+                    cn23_type: lpcDefaultValue($('select[name="lpc__admin__order_banner__generate_label__cn23__type"]').val(), ''),
+                    shipping_costs: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__shipping_costs"]').val(), 0),
+                    non_machinable: $('input[name="lpc__admin__order_banner__generate_label__non_machinable__input"]:checked').length > 0 ? 'yes' : '',
+                    using_insurance: $('input[name="lpc__admin__order_banner__generate_label__using__insurance__input"]:checked').length > 0 ? 'yes' : 'no',
+                    insurance_amount: lpcDefaultValue($('select[name="lpc__admin__order_banner__generate_label__insurance__amount"]').val(), 0),
+                    multi_parcels: $('input[name="lpc__admin__order_banner__generate_label__multi__parcels__input"]:checked').length > 0 ? 'yes' : '',
+                    parcels_amount: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__parcels_amount"]').val(), 0)
+                },
+                success: function (response) {
+                    generatingLabel = false;
+                    if (response.type === 'error') {
+                        alert(response.data.message);
+                    } else {
+                        location.reload();
+                    }
+                }
+            });
         });
     }
 

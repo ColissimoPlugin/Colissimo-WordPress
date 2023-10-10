@@ -35,6 +35,7 @@ require_once LPC_INCLUDES . 'invoices' . DS . 'lpc_invoice_generate_action.php';
 require_once LPC_INCLUDES . 'lpc_cron.php';
 require_once LPC_INCLUDES . 'lpc_update.php';
 require_once LPC_INCLUDES . 'customs' . DS . 'lpc_customs_documents_api.php';
+require_once LPC_ADMIN . 'lpc_account_api.php';
 
 
 class LpcIncludeInit {
@@ -76,16 +77,11 @@ class LpcIncludeInit {
         LpcRegister::register('lpcRegisterWCEmail', new LpcRegisterWCEmail());
 
         LpcRegister::register('bordereauGeneration', new LpcBordereauGeneration());
-
         LpcRegister::register('labelPurge', new LpcLabelPurge());
-
         LpcRegister::register('lpcCron', new LpcCron());
-
         LpcRegister::register('lpcUpdate', new LpcUpdate());
-
         LpcRegister::register('customsDocumentsApi', new LpcCustomsDocumentsApi());
-
+        LpcRegister::register('accountApi', new LpcAccountApi());
         LpcRegister::register('labelInwardDownloadAccountAction', new LpcLabelInwardDownloadAccountAction());
     }
-
 }

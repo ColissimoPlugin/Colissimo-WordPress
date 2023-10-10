@@ -1,7 +1,5 @@
 {
   "name": "tecnickcom/tcpdf",
-  "version": "6.3.5",
-  "homepage": "http://www.tcpdf.org/",
   "type": "library",
   "description": "TCPDF is a PHP class for generating PDF documents and barcodes.",
   "keywords": [
@@ -13,7 +11,9 @@
     "pdf417",
     "barcodes"
   ],
-  "license": "LGPL-3.0-only",
+  "homepage": "http://www.tcpdf.org/",
+  "version": "6.6.5",
+  "license": "LGPL-3.0-or-later",
   "authors": [
     {
       "name": "Nicola Asuni",

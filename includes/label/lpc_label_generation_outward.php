@@ -79,6 +79,20 @@ class LpcLabelGenerationOutward extends LpcComponent {
                     'notice-success',
                     sprintf(__('Order %s : Outward label generated', 'wc_colissimo'), $orderId)
                 );
+
+                $accountApi = LpcRegister::get('accountApi');
+                if (!$accountApi->isCgvAccepted()) {
+                    $lpc_admin_notices->add_notice(
+                        'cgv_invalid',
+                        'notice-error',
+                        '<span style="color:red;font-weight: bold;">' .
+                        __(
+                            'We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:',
+                            'wc_colissimo'
+                        ) . '<br/><a href="https://www.colissimo.entreprise.laposte.fr" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
+                        . '</span>'
+                    );
+                }
             }
 
             if (!empty($ordersFailed[$orderId])) {
@@ -282,5 +296,4 @@ class LpcLabelGenerationOutward extends LpcComponent {
             $order->save();
         }
     }
-
 }

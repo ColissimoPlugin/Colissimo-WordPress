@@ -39,6 +39,7 @@
  * @package com.tecnick.tcpdf
  * @version 1.1.1
  */
+
 // DOCUMENT_ROOT fix for IIS Webserver
 if ((!isset($_SERVER['DOCUMENT_ROOT'])) or (empty($_SERVER['DOCUMENT_ROOT']))) {
     if (isset($_SERVER['SCRIPT_FILENAME'])) {
@@ -51,22 +52,28 @@ if ((!isset($_SERVER['DOCUMENT_ROOT'])) or (empty($_SERVER['DOCUMENT_ROOT']))) {
     }
 }
 $_SERVER['DOCUMENT_ROOT'] = str_replace('//', '/', $_SERVER['DOCUMENT_ROOT']);
-if (substr($_SERVER['DOCUMENT_ROOT'], -1) != '/') {
+if (substr($_SERVER['DOCUMENT_ROOT'], - 1) != '/') {
     $_SERVER['DOCUMENT_ROOT'] .= '/';
 }
 
 // Load main configuration file only if the K_TCPDF_EXTERNAL_CONFIG constant is set to false.
 if (!defined('K_TCPDF_EXTERNAL_CONFIG') or !K_TCPDF_EXTERNAL_CONFIG) {
     // define a list of default config files in order of priority
-    require_once(dirname(__FILE__).'/config/tcpdf_config.php');
+    $tcpdf_config_files = [dirname(__FILE__) . '/config/tcpdf_config.php'];
+    foreach ($tcpdf_config_files as $tcpdf_config) {
+        if (@file_exists($tcpdf_config) and is_readable($tcpdf_config)) {
+            require_once($tcpdf_config);
+            break;
+        }
+    }
 }
 
 if (!defined('K_PATH_MAIN')) {
-    define('K_PATH_MAIN', dirname(__FILE__).'/');
+    define('K_PATH_MAIN', dirname(__FILE__) . '/');
 }
 
 if (!defined('K_PATH_FONTS')) {
-    define('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
+    define('K_PATH_FONTS', K_PATH_MAIN . 'fonts/');
 }
 
 if (!defined('K_PATH_URL')) {

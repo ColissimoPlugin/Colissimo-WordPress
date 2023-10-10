@@ -87,6 +87,10 @@ END_SQL;
 
         foreach ($labelsToMigrate as $oneLabel) {
             $order = wc_get_order($oneLabel->order_id);
+            if (empty($order)) {
+                continue;
+            }
+
             $trackingNumber = $order->get_meta(LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY);
 
             if (empty($trackingNumber)) {
@@ -166,6 +170,10 @@ END_SQL;
 
         if (is_null($outwardTrackingNumber)) {
             $order = wc_get_order($orderId);
+            if (empty($order)) {
+                return false;
+            }
+
             $outwardTrackingNumber = $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
         }
 

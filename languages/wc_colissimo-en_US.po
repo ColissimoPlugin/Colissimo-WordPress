@@ -1958,3 +1958,9 @@ msgstr "Label creation date"
 
 msgid "Order creation date"
 msgstr "Order creation date"
+
+msgid "We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:"
+msgstr "We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:"
+
+msgid "Sign the GTC"
+msgstr "Sign the GTC"

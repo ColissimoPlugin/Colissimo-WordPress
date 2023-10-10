@@ -19,14 +19,17 @@ class LpcSettingsTab extends LpcComponent {
     protected $adminNotices;
     /** @var LpcPickUpWidgetApi */
     private $pickUpWidgetApi;
+    /** @var LpcAccountApi */
+    private $accountApi;
 
-    public function __construct(LpcAdminNotices $adminNotices = null, LpcPickUpWidgetApi $pickUpWidgetApi = null) {
+    public function __construct(LpcAdminNotices $adminNotices = null, LpcPickUpWidgetApi $pickUpWidgetApi = null, LpcAccountApi $accountApi = null) {
         $this->adminNotices    = LpcRegister::get('lpcAdminNotices', $adminNotices);
         $this->pickUpWidgetApi = LpcRegister::get('pickupWidgetApi', $pickUpWidgetApi);
+        $this->accountApi      = LpcRegister::get('accountApi', $accountApi);
     }
 
     public function getDependencies() {
-        return ['lpcAdminNotices'];
+        return ['lpcAdminNotices', 'pickupWidgetApi', 'accountApi'];
     }
 
     public function init() {
@@ -44,6 +47,8 @@ class LpcSettingsTab extends LpcComponent {
         add_action('load-woocommerce_page_wc-settings', [$this, 'warningCredentials']);
         // DIVI breaking the pickup map in widget mode
         add_action('load-woocommerce_page_wc-settings', [$this, 'warningDivi']);
+        // CGV not accepted warning
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningCgv']);
 
         $this->initOnboarding();
         $this->initSeeLog();
@@ -485,6 +490,9 @@ class LpcSettingsTab extends LpcComponent {
             return;
         }
 
+        // Reset accepted CGV status when credentials change
+        update_option('lpc_accepted_cgv', false);
+
         $token = $this->pickUpWidgetApi->authenticate($newLogin, $newPassword);
 
         if (!empty($token)) {
@@ -563,6 +571,27 @@ class LpcSettingsTab extends LpcComponent {
                 'wc_colissimo'
             )
         );
+    }
+
+    public function warningCgv() {
+        $currentTab = LpcHelper::getVar('tab');
+
+        if ('lpc' !== $currentTab) {
+            return;
+        }
+
+        if (!$this->accountApi->isCgvAccepted()) {
+            $this->adminNotices->add_notice(
+                'cgv_invalid',
+                'notice-error',
+                '<span style="color:red;font-weight: bold;">' .
+                __(
+                    'We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:',
+                    'wc_colissimo'
+                ) . '<br/><a href="https://www.colissimo.entreprise.laposte.fr" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
+                . '</span>'
+            );
+        }
     }
 
     private function logCredentialsValidity($token) {

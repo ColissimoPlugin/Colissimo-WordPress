@@ -118,6 +118,9 @@ class LpcBordereauGeneration extends LpcComponent {
 
             foreach ($ordersIdForBatch as $orderId) {
                 $order = wc_get_order($orderId);
+                if (empty($order)) {
+                    continue;
+                }
 
                 $this->outwardLabelDb->addBordereauIdOnBordereauGeneration($outwardLabelIds, $bordereauId);
                 if (!empty($newStatus) && 'unchanged_order_status' !== $newStatus) {

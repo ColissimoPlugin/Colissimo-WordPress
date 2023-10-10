@@ -209,6 +209,9 @@ class LpcUnifiedTrackingApi extends LpcComponent {
             }
 
             $mainTrackingNumber = $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
+            if (empty($mainTrackingNumber)) {
+                $mainTrackingNumber = $trackingNumbers[count($trackingNumbers) - 1];
+            }
 
             if (null === $ip) {
                 $ip = WC_Geolocation::get_ip_address();
@@ -361,8 +364,9 @@ class LpcUnifiedTrackingApi extends LpcComponent {
     public function getTrackingPageUrlForOrder($orderId, $trackingNumber = null) {
         if (empty($trackingNumber)) {
             $order          = wc_get_order($orderId);
-            $trackingNumber = $order->get_meta('lpc_outward_parcel_number');
+            $trackingNumber = empty($order) ? '' : $order->get_meta('lpc_outward_parcel_number');
         }
+
         $trackingHash = $this->encrypt($orderId . '-' . $trackingNumber);
 
         if (empty(get_option('permalink_structure'))) {

@@ -149,8 +149,8 @@ class LpcAdminInit {
             return;
         }
 
-        $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
-        $notifications     = [
+        $adminNotices  = LpcRegister::get('lpcAdminNotices');
+        $notifications = [
             'inward_label_sent',
             'outward_label_generate',
             'inward_label_generate',
@@ -168,9 +168,10 @@ class LpcAdminInit {
             'shipping_statuses_updated',
             'disabled_cron',
             'credentials_validity',
+            'cgv_invalid',
         ];
         foreach ($notifications as $oneNotification) {
-            $notice_content = $lpc_admin_notices->get_notice($oneNotification);
+            $notice_content = $adminNotices->get_notice($oneNotification);
             if ($notice_content) {
                 echo $notice_content;
             }
@@ -222,9 +223,23 @@ class LpcAdminInit {
 
         add_screen_option($option, $args);
 
+        $adminNotices = LpcRegister::get('lpcAdminNotices');
+        $accountApi   = LpcRegister::get('accountApi');
+        if (!$accountApi->isCgvAccepted()) {
+            $adminNotices->add_notice(
+                'cgv_invalid',
+                'notice-error',
+                '<span style="color:red;font-weight: bold;">' .
+                __(
+                    'We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:',
+                    'wc_colissimo'
+                ) . '<br/><a href="https://www.colissimo.entreprise.laposte.fr" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
+                . '</span>'
+            );
+        }
+
         if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
-            $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
-            $lpc_admin_notices->add_notice(
+            $adminNotices->add_notice(
                 'disabled_cron',
                 'notice-warning',
                 __('Your site\'s cron system is disabled, the shipping statuses won\'t be updated.', 'wc_colissimo')

@@ -55,10 +55,10 @@ class LpcLabelInwardDeleteAction extends LpcComponent {
 
         $trackingNumber = LpcHelper::getVar(self::TRACKING_NUMBER_VAR_NAME);
         $redirection    = LpcHelper::getVar(self::REDIRECTION_VAR_NAME);
+        $orderId        = $this->inwardLabelDb->getOrderIdByTrackingNumber($trackingNumber);
 
         switch ($redirection) {
             case LpcLabelQueries::REDIRECTION_WOO_ORDER_EDIT_PAGE:
-                $orderId = $this->inwardLabelDb->getOrderIdByTrackingNumber($trackingNumber);
                 $urlRedirection = get_edit_post_link($orderId, '');
                 break;
             case LpcLabelQueries::REDIRECTION_COLISSIMO_ORDERS_LISTING:
@@ -98,6 +98,13 @@ class LpcLabelInwardDeleteAction extends LpcComponent {
                 'notice-success',
                 sprintf(__('Label %s deleted', 'wc_colissimo'), $trackingNumber)
             );
+
+            // Remove the related order meta
+            $order = wc_get_order($orderId);
+            if (!empty($order)) {
+                $order->update_meta_data(LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY, '');
+                $order->save();
+            }
         }
 
         wp_redirect($urlRedirection);

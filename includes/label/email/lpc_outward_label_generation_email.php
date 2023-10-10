@@ -13,6 +13,10 @@ class LpcOutwardLabelGenerationEmail extends WC_Email {
         $this->template_html  = 'lpc_outward_label_generated.php';
         $this->template_plain = 'plain' . DS . 'lpc_outward_label_generated.php';
         $this->template_base  = untrailingslashit(plugin_dir_path(__FILE__)) . DS . 'templates' . DS;
+        $this->placeholders   = [
+            '{order_date}'   => '',
+            '{order_number}' => '',
+        ];
 
         add_action('lpc_outward_label_generated', [$this, 'trigger']);
 
@@ -55,7 +59,13 @@ class LpcOutwardLabelGenerationEmail extends WC_Email {
 
     public function trigger(WC_Order $order) {
         if ($this->is_enabled()) {
-            $this->object    = $order;
+            $this->object = $order;
+
+            $this->setup_locale();
+            $this->placeholders['{order_date}']   = wc_format_datetime($this->object->get_date_created());
+            $this->placeholders['{order_number}'] = $this->object->get_order_number();
+            $this->restore_locale();
+
             $this->recipient = $order->get_billing_email();
             $sending         = $this->send(
                 $this->get_recipient(),
@@ -74,6 +84,10 @@ class LpcOutwardLabelGenerationEmail extends WC_Email {
             return get_site_url() . LpcRegister::get('unifiedTrackingApi')->getTrackingPageUrlForOrder($orderId);
         } else {
             $order = wc_get_order($orderId);
+            if (empty($order)) {
+                return get_site_url() . LpcRegister::get('unifiedTrackingApi')->getTrackingPageUrlForOrder($orderId);
+            }
+
             $trackingNumber = $order->get_meta('lpc_outward_parcel_number');
 
             return str_replace(

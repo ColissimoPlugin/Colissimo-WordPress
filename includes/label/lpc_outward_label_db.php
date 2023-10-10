@@ -103,7 +103,11 @@ END_SQL;
         $labelsToInsert = [];
 
         foreach ($labelsToMigrate as $oneLabel) {
-            $order          = wc_get_order($oneLabel->order_id);
+            $order = wc_get_order($oneLabel->order_id);
+            if (empty($order)) {
+                continue;
+            }
+
             $trackingNumber = $order->get_meta(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
 
             if (empty($trackingNumber)) {

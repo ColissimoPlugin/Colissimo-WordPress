@@ -1958,3 +1958,9 @@ msgstr "Date de création de l'étiquette"
 
 msgid "Order creation date"
 msgstr "Date de création de la commande"
+
+msgid "We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:"
+msgstr "Nous avons détecté que vous n’avez pas encore signé la dernière version de nos CGV. Votre consentement est nécessaire afin de pouvoir continuer à utiliser les services Colissimo. Nous vous invitons donc à les signer sur votre espace Colissimo entreprise, en cliquant sur le lien ci-dessous :"
+
+msgid "Sign the GTC"
+msgstr "Signer les CGV"

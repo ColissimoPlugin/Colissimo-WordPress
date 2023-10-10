@@ -42,7 +42,6 @@ $buttonText      = isset($args['button_text']) ? $args['button_text'] : __('Clic
 			</div>
         <?php } ?>
 		<input type="hidden" name="lpc_order_affect_relay_informations" value="{}">
-		<input type="hidden" name="lpc_order_affect_update_method" value="0">
 		<input type="hidden" name="lpc_order_affect_shipping_item_id" value="0">
 		<div class="lpc_order_affect_error_message">
 			<span style="display: none" class="lpc_order_affect_error_message_pickup">

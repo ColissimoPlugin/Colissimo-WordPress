@@ -48,7 +48,7 @@ require_once(dirname(__FILE__).'/lpc_tcpdf.php');
 require_once(dirname(__FILE__).'/lpc_tcpdf_parser.php');
 
 /**
- * @class TCPDF_IMPORT
+ * @class LPC_TCPDF_IMPORT
  * !!! THIS CLASS IS UNDER DEVELOPMENT !!!
  * PHP class extension of the TCPDF (http://www.tcpdf.org) library to import existing PDF documents.<br>
  * @package com.tecnick.tcpdf
@@ -60,8 +60,8 @@ class LPC_TCPDF_IMPORT extends LPC_TCPDF {
 
 	/**
 	 * Import an existing PDF document
-	 * @param $filename (string) Filename of the PDF document to import.
-	 * @return true in case of success, false otherwise
+	 * @param string $filename Filename of the PDF document to import.
+	 * @return void
 	 * @public
 	 * @since 1.0.000 (2011-05-24)
 	 */

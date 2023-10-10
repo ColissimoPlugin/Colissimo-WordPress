@@ -75,7 +75,11 @@ class LpcWooOrdersTableBulkActions extends LpcComponent {
         $changed            = 0;
 
         foreach ($ids as $id) {
-            $order              = wc_get_order($id);
+            $order = wc_get_order($id);
+            if (empty($order)) {
+                continue;
+            }
+
             $orderShippingTotal = $order->get_shipping_total();
             $orderShippingTax   = $order->get_shipping_tax();
 

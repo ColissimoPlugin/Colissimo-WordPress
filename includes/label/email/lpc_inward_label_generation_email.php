@@ -12,6 +12,10 @@ class LpcInwardLabelGenerationEmail extends WC_Email {
         $this->template_html  = 'lpc_inward_label_generated.php';
         $this->template_plain = 'plain' . DS . 'lpc_inward_label_generated.php';
         $this->template_base  = untrailingslashit(plugin_dir_path(__FILE__)) . DS . 'templates' . DS;
+        $this->placeholders   = [
+            '{order_date}'   => '',
+            '{order_number}' => '',
+        ];
 
         add_action('lpc_inward_label_generated', [$this, 'trigger']);
 
@@ -55,7 +59,13 @@ class LpcInwardLabelGenerationEmail extends WC_Email {
             return false;
         }
 
-        $this->object        = $order;
+        $this->object = $order;
+
+        $this->setup_locale();
+        $this->placeholders['{order_date}']   = wc_format_datetime($this->object->get_date_created());
+        $this->placeholders['{order_number}'] = $this->object->get_order_number();
+        $this->restore_locale();
+
         $label_full_filename = sys_get_temp_dir() . DS . $label_filename . $this->get_extention_from_format();
         $sending             = false;
         try {

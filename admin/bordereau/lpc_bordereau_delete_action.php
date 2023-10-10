@@ -49,10 +49,10 @@ class LpcBordereauDeleteAction extends LpcComponent {
         $bordereauID = LpcHelper::getVar(self::BORDEREAU_ID_VAR_NAME);
         $redirection = LpcHelper::getVar(self::REDIRECTION_VAR_NAME);
 
-        if (LpcLabelQueries::REDIRECTION_COLISSIMO_ORDERS_LISTING === $redirection) {
-            $urlRedirection = admin_url('admin.php?page=wc_colissimo_view');
-        } elseif (LpcBordereauQueries::REDIRECTION_COLISSIMO_BORDEREAU_LISTING === $redirection) {
+        if (LpcBordereauQueries::REDIRECTION_COLISSIMO_BORDEREAU_LISTING === $redirection) {
             $urlRedirection = admin_url('admin.php?page=wc_colissimo_view&tab=slip-history');
+        } else {
+            $urlRedirection = admin_url('admin.php?page=wc_colissimo_view');
         }
 
         LpcLogger::debug(

@@ -182,4 +182,14 @@ class LpcHelper {
 
         return WP_PLUGIN_DIR . '/woocommerce';
     }
+
+    public static function endAjax($success = true, $data = []) {
+        echo json_encode(
+            [
+                'type' => $success ? 'success' : 'error',
+                'data' => $data,
+            ]
+        );
+        exit;
+    }
 }

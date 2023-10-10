@@ -44,11 +44,11 @@ class LpcAdminOrderAffect extends LpcComponent {
                         plugins_url('/css/orders/lpc_order_affect_methods.css', LPC_ADMIN . 'init.php'),
                         null
                     );
-
-                    $this->updateShippingMethod();
                 }
             }
         );
+
+        add_action('wp_ajax_lpc_order_affect', [$this, 'updateShippingMethod']);
     }
 
     public function addAffectLink($itemId, $item) {
@@ -83,36 +83,34 @@ class LpcAdminOrderAffect extends LpcComponent {
     }
 
     public function updateShippingMethod() {
-        if (!is_admin() || !isset($_REQUEST['lpc_order_affect_update_method']) || empty(sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_update_method'])))) {
-            return;
-        }
-
-        $orderId = LpcHelper::getVar('id');
+        $orderId = LpcHelper::getVar('order_id');
         if (empty($orderId)) {
-            return;
+            LpcHelper::endAjax(false, ['message' => 'Order not found']);
         }
 
         $order = wc_get_order($orderId);
         if (empty($order) || 'shop_order' !== $order->get_type()) {
-            return;
+            LpcHelper::endAjax(false, ['message' => 'This post is not an order']);
         }
 
-        $lpcNewShippingMethodId = isset($_REQUEST['lpc_new_shipping_method']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc_new_shipping_method'])) : '';
-        $orderShippingItemId    = isset($_REQUEST['lpc_order_affect_shipping_item_id']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_shipping_item_id'])) : '';
-        $relayInformation       = isset($_REQUEST['lpc_order_affect_relay_informations']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc_order_affect_relay_informations'])) : '';
-
+        $lpcNewShippingMethodId = LpcHelper::getVar('new_shipping_method');
         if (empty($lpcNewShippingMethodId)) {
-            return;
+            LpcHelper::endAjax(false, ['message' => __('Please select a shipping method', 'wc_colissimo')]);
         }
 
         $lpcMethods           = $this->getColissimoShippingMethodsAvailable($order);
         $lpcNewShippingMethod = $lpcMethods[$lpcNewShippingMethodId];
 
-        if (empty($lpcNewShippingMethod) || (LpcRelay::ID === $lpcNewShippingMethod->id && empty($relayInformation))) {
-            return;
+        if (empty($lpcNewShippingMethod)) {
+            LpcHelper::endAjax(false, ['message' => __('Please select a shipping method', 'wc_colissimo')]);
         }
 
         if (LpcRelay::ID === $lpcNewShippingMethod->id) {
+            $relayInformation = LpcHelper::getVar('relay_information');
+            if (empty($relayInformation)) {
+                LpcHelper::endAjax(false, ['message' => __('Please select a pick-up point', 'wc_colissimo')]);
+            }
+
             $relayInformationData = json_decode(stripslashes($relayInformation));
 
             $order->update_meta_data(LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY, $relayInformationData->identifiant);
@@ -128,6 +126,7 @@ class LpcAdminOrderAffect extends LpcComponent {
             $order->save();
         }
 
+        $orderShippingItemId = LpcHelper::getVar('shipping_item_id');
         if (empty($orderShippingItemId)) {
             $shippingItem = new WC_Order_Item_Shipping();
             $shippingItem->set_props(
@@ -149,10 +148,12 @@ class LpcAdminOrderAffect extends LpcComponent {
             );
             $shippingItem->save();
         }
+
+        LpcHelper::endAjax();
     }
 
     /**
-     * Retrieve Colissimo shipping methods avalaible for an order by country
+     * Retrieve Colissimo shipping methods available for an order by country
      *
      * @param WC_Order $order
      *

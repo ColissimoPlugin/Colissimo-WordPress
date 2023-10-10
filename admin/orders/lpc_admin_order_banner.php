@@ -104,7 +104,7 @@ class LpcAdminOrderBanner extends LpcComponent {
             }
         );
 
-        add_action('save_post', [$this, 'generateLabel'], 10, 2);
+        add_action('wp_ajax_lpc_order_generate_label', [$this, 'generateLabel']);
         add_action('save_post', [$this, 'sendCustomsDocuments'], 10, 2);
     }
 
@@ -323,56 +323,42 @@ class LpcAdminOrderBanner extends LpcComponent {
     /**
      * @throws Exception When lpcAdminNotices isn't available.
      */
-    public function generateLabel($orderId, $post) {
-        if (!is_admin()
-            || 'shop_order' !== $post->post_type
-            || empty($_REQUEST['lpc__admin__order_banner__generate_label__action'])
-            || empty($_REQUEST['lpc__admin__order_banner__generate_label__items-id'])
-        ) {
-            return;
+    public function generateLabel() {
+        $checkedItems = LpcHelper::getVar('items', [], 'array');
+        if (empty($checkedItems)) {
+            LpcHelper::endAjax(false, ['message' => __('You need to select at least one item to generate a label', 'wc_colissimo')]);
         }
 
-        unset($_REQUEST['lpc__admin__order_banner__generate_label__action']);
-
-        $order = wc_get_order($orderId);
+        $orderId = LpcHelper::getVar('order_id');
+        $order   = wc_get_order($orderId);
         if (empty($order) || 'shop_order' !== $order->get_type()) {
-            return;
+            LpcHelper::endAjax(false, ['message' => __('Order not found', 'wc_colissimo')]);
         }
-
-        $allItemsId = unserialize(sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__items-id'])));
 
         $items = [];
-        foreach ($allItemsId as $oneItemId) {
-            if (!isset($_REQUEST[$oneItemId . '-checkbox']) || 'on' !== $_REQUEST[$oneItemId . '-checkbox']) {
-                continue;
-            }
-
-            $items[$oneItemId]['price']  = isset($_REQUEST[$oneItemId . '-price']) ? sanitize_text_field(wp_unslash($_REQUEST[$oneItemId . '-price'])) : 0;
-            $items[$oneItemId]['qty']    = isset($_REQUEST[$oneItemId . '-qty']) ? sanitize_text_field(wp_unslash($_REQUEST[$oneItemId . '-qty'])) : 0;
-            $items[$oneItemId]['weight'] = isset($_REQUEST[$oneItemId . '-weight']) ? sanitize_text_field(wp_unslash($_REQUEST[$oneItemId . '-weight'])) : 0;
+        foreach ($checkedItems as $oneItem) {
+            $oneItemId                   = $oneItem['id'];
+            $items[$oneItemId]['price']  = $oneItem['price'];
+            $items[$oneItemId]['qty']    = $oneItem['quantity'];
+            $items[$oneItemId]['weight'] = $oneItem['weight'];
         }
 
-        if (empty($items)) {
-            $this->lpcAdminNotices->add_notice('lpc_notice', 'notice-warning', __('You need to select at least one item to generate a label', 'wc_colissimo'));
-
-            return;
+        $packageWeight  = LpcHelper::getVar('package_weight');
+        $totalWeight    = LpcHelper::getVar('total_weight');
+        $description    = LpcHelper::getVar('package_description');
+        $customCategory = LpcHelper::getVar('cn23_type');
+        if (empty($customCategory)) {
+            $customCategory = LpcHelper::get_option('lpc_customs_defaultCustomsCategory', 5);
         }
-
-        $packageWeight      = isset($_REQUEST['lpc__admin__order_banner__generate_label__package_weight']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__package_weight'])) : 0;
-        $totalWeight        = isset($_REQUEST['lpc__admin__order_banner__generate_label__total_weight__input']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__total_weight__input'])) : 0;
-        $packageLength      = isset($_REQUEST['lpc__admin__order_banner__generate_label__package_length']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__package_length'])) : 0;
-        $packageWidth       = isset($_REQUEST['lpc__admin__order_banner__generate_label__package_width']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__package_width'])) : 0;
-        $packageHeight      = isset($_REQUEST['lpc__admin__order_banner__generate_label__package_height']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__package_height'])) : 0;
-        $shippingCosts      = isset($_REQUEST['lpc__admin__order_banner__generate_label__shipping_costs']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__shipping_costs'])) : 0;
-        $nonMachinable      = isset($_REQUEST['lpc__admin__order_banner__generate_label__non_machinable__input']);
-        $usingInsurance     = isset($_REQUEST['lpc__admin__order_banner__generate_label__using__insurance__input']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__using__insurance__input'])) : 'no';
-        $insuranceAmount    = isset($_REQUEST['lpc__admin__order_banner__generate_label__insurrance__amount']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__insurrance__amount'])) : 0;
-        $description        = isset($_REQUEST['lpc__admin__order_banner__generate_label__package_description']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__package_description'])) : '';
-        $multiParcels       = isset($_REQUEST['lpc__admin__order_banner__generate_label__multi__parcels__input']);
-        $multiParcelsAmount = isset($_REQUEST['lpc__admin__order_banner__generate_label__parcels_amount']) ? intval($_REQUEST['lpc__admin__order_banner__generate_label__parcels_amount']) : 0;
-        $customCategory     = isset($_REQUEST['lpc__admin__order_banner__generate_label__cn23__type'])
-            ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__cn23__type']))
-            : LpcHelper::get_option('lpc_customs_defaultCustomsCategory', 5);
+        $packageLength      = LpcHelper::getVar('package_length');
+        $packageWidth       = LpcHelper::getVar('package_width');
+        $packageHeight      = LpcHelper::getVar('package_height');
+        $shippingCosts      = LpcHelper::getVar('shipping_costs');
+        $nonMachinable      = LpcHelper::getVar('non_machinable');
+        $usingInsurance     = LpcHelper::getVar('using_insurance');
+        $insuranceAmount    = LpcHelper::getVar('insurance_amount');
+        $multiParcels       = LpcHelper::getVar('multi_parcels');
+        $multiParcelsAmount = LpcHelper::getVar('parcels_amount');
 
         if (!empty($multiParcels)) {
             if (empty($multiParcelsAmount)) {
@@ -401,19 +387,25 @@ class LpcAdminOrderBanner extends LpcComponent {
             'customsCategory'           => $customCategory,
         ];
 
-        $outwardOrInward = isset($_REQUEST['lpc__admin__order_banner__generate_label__outward_or_inward']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__outward_or_inward'])) : '';
+        $outwardOrInward = LpcHelper::getVar('label_type');
 
-        if ('outward' === $outwardOrInward || 'both' === $outwardOrInward) {
-            $status = $this->lpcOutwardLabelGeneration->generate($order, $customParams);
-            if ($status && !empty($multiParcelsAmount)) {
-                $order->update_meta_data('lpc_multi_parcels_amount', $multiParcelsAmount);
-                $order->save();
+        try {
+            if ('outward' === $outwardOrInward || 'both' === $outwardOrInward) {
+                $status = $this->lpcOutwardLabelGeneration->generate($order, $customParams);
+                if ($status && !empty($multiParcelsAmount)) {
+                    $order->update_meta_data('lpc_multi_parcels_amount', $multiParcelsAmount);
+                    $order->save();
+                }
             }
+
+            if ('inward' === $outwardOrInward || ('both' === $outwardOrInward && 'yes' !== LpcHelper::get_option('lpc_createReturnLabelWithOutward', 'no'))) {
+                $this->lpcInwardLabelGeneration->generate($order, $customParams);
+            }
+        } catch (Exception $e) {
+            LpcHelper::endAjax(false, ['message' => $e->getMessage()]);
         }
 
-        if ('inward' === $outwardOrInward || ('both' === $outwardOrInward && 'yes' !== LpcHelper::get_option('lpc_createReturnLabelWithOutward', 'no'))) {
-            $this->lpcInwardLabelGeneration->generate($order, $customParams);
-        }
+        LpcHelper::endAjax();
     }
 
     public function sendCustomsDocuments($orderId, $post) {
@@ -456,8 +448,8 @@ class LpcAdminOrderBanner extends LpcComponent {
         }
 
         $order->update_meta_data('lpc_customs_sent_documents', json_encode($sentDocuments));
-        $order->save();
-
         unset($_FILES['lpc__customs_document']);
+
+        $order->save();
     }
 }

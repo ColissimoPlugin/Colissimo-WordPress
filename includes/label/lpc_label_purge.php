@@ -44,6 +44,10 @@ class LpcLabelPurge extends LpcComponent {
 
         foreach ($orderIds as $orderId) {
             $order = wc_get_order($orderId);
+            if (empty($order)) {
+                continue;
+            }
+
             $order->delete_meta_data(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY);
             $order->delete_meta_data(LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY);
             $order->save();

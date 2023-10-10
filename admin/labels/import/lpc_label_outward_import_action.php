@@ -145,6 +145,8 @@ class LpcLabelOutwardImportAction extends LpcComponent {
                 continue;
             }
 
+            $order->update_meta_data(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY, $trackingNumber);
+            $order->save();
             $this->labelGenerationOutward->applyStatusAfterLabelGeneration($order);
 
             $email_outward_label = LpcHelper::get_option(LpcOutwardLabelEmailManager::EMAIL_OUTWARD_TRACKING_OPTION, 'no');

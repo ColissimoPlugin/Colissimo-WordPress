@@ -117,10 +117,18 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
                 )
             );
         } else {
+            $order = wc_get_order($orderId);
             // If it's the last following parcel, remove also the multi-parcels number
             if (1 === count($multiParcelsLabels) && !empty($multiParcelsLabels[$trackingNumber])) {
-                $order = wc_get_order($orderId);
-                $order->update_meta_data('lpc_multi_parcels_amount', '');
+                if (!empty($order)) {
+                    $order->update_meta_data('lpc_multi_parcels_amount', '');
+                    $order->save();
+                }
+            }
+
+            // Remove the related order meta
+            if (!empty($order)) {
+                $order->update_meta_data(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY, '');
                 $order->save();
             }
 
@@ -144,6 +152,11 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
                                 __('Inward label %s deleted', 'wc_colissimo'),
                                 $oneInwardLabel->tracking_number
                             );
+                    }
+                    // Remove the related order meta
+                    if (!empty($order)) {
+                        $order->update_meta_data(LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY, '');
+                        $order->save();
                     }
                 }
             }

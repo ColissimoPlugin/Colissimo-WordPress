@@ -70,8 +70,16 @@ END_SQL;
             );
 
             $order = wc_get_order($result->order_id);
+            if (empty($order)) {
+                continue;
+            }
+
             $order->delete_meta_data('lpc_bordereau_id');
             $order->save();
+        }
+
+        if (empty($bordereauxToInsert)) {
+            return;
         }
 
         $stringBordereauxToInsert = implode(',', $bordereauxToInsert);

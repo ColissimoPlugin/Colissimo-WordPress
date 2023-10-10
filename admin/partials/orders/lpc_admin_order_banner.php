@@ -64,10 +64,8 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 				</thead>
 				<tbody>
                     <?php
-                    $allItemsId = [];
                     foreach ($orderItems as $oneItem) {
                         $totalQuantity += $oneItem['base_qty'];
-                        $allItemsId[]  = $oneItem['id'];
                         ?>
 						<tr>
 							<td class="lpc__admin__order_banner__generate_label__item__td__checkbox check-column">
@@ -267,8 +265,8 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
                     <?php echo __('Personalized amount of insurance:', 'wc_colissimo'); ?>
 				</label>
 				<select
-						class="lpc__admin__order_banner__generate_label__insurrance__amount"
-						name="lpc__admin__order_banner__generate_label__insurrance__amount"
+						class="lpc__admin__order_banner__generate_label__insurance__amount"
+						name="lpc__admin__order_banner__generate_label__insurance__amount"
 						id="lpc_insurance_amount"
                     <?php echo 'yes' == LpcHelper::get_option('lpc_using_insurance') ? '' : ' disabled="true" '; ?>>
 					<option value=""><?php esc_html_e('Choose an amount', 'wc_colissimo'); ?></option>
@@ -544,6 +542,4 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 			</ol>
 		</div>
 	</div>
-	<input type="hidden" name="lpc__admin__order_banner__generate_label__action" value="0">
-	<input type="hidden" name="lpc__admin__order_banner__generate_label__items-id" value="<?php echo serialize($allItemsId); ?>">
 </div>

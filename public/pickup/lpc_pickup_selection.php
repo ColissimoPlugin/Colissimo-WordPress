@@ -62,7 +62,11 @@ class LpcPickupSelection extends LpcComponent {
         add_action(
             'woocommerce_checkout_order_processed',
             function ($orderId, $posted_data = []) {
-                $order     = wc_get_order($orderId);
+                $order = wc_get_order($orderId);
+                if (empty($order)) {
+                    return;
+                }
+
                 $shippings = $order->get_shipping_methods();
                 $shipping  = current($shippings);
 
@@ -94,6 +98,10 @@ class LpcPickupSelection extends LpcComponent {
 
     private function updatePickupMeta($orderId, $pickUpInfo) {
         $order = wc_get_order($orderId);
+        if (empty($order)) {
+            return;
+        }
+
         $order->update_meta_data(self::PICKUP_LOCATION_ID_META_KEY, $pickUpInfo['identifiant']);
         $order->update_meta_data(self::PICKUP_LOCATION_LABEL_META_KEY, $pickUpInfo['nom']);
         $order->update_meta_data(self::PICKUP_PRODUCT_CODE_META_KEY, $pickUpInfo['typeDePoint']);
