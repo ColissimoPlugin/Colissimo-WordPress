@@ -24,7 +24,7 @@ class LpcBordereauDb extends LpcDb {
         $charset_collate = $wpdb->get_charset_collate();
 
         return <<<END_SQL
-CREATE TABLE $table_name (
+CREATE TABLE IF NOT EXISTS $table_name (
     id                    INT UNSIGNED     NOT NULL AUTO_INCREMENT,
     bordereau_external_id INT(20) UNSIGNED NOT NULL,
     created_at            DATETIME         NULL,

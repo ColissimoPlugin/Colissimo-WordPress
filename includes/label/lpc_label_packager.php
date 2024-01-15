@@ -52,55 +52,48 @@ class LpcLabelPackager extends LpcComponent {
                 $zipDirname = $orderId;
                 $zip->addEmptyDir($zipDirname);
 
+                $labelFormat = !empty($label['format']) ? $label['format'] : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
                 if ($isOutward) {
-                    $outwardLabel       = $this->outwardLabelDb->getLabelFor($trackingNumber);
-                    $outwardLabelFormat = !empty($outwardLabel['format']) ? $outwardLabel['format'] : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
-                    if (!empty($outwardLabel['label'])) {
-                        $zip->addFromString(
-                            $zipDirname . '/outward_label(' . $trackingNumber . ').' . strtolower($outwardLabelFormat),
-                            $outwardLabel['label']
+                    $zip->addFromString(
+                        $zipDirname . '/outward_label(' . $trackingNumber . ').' . strtolower($labelFormat),
+                        $label['label']
+                    );
+
+                    if ('yes' === LpcHelper::get_option('add_invoice_zip_label', 'yes')) {
+                        $tmpFiles[] = $invoiceFilename = sys_get_temp_dir() . DS . $orderId . '_invoice.pdf';
+
+                        $this->invoiceGenerateAction->generateInvoice(
+                            $orderId,
+                            $invoiceFilename,
+                            MergePdf::DESTINATION__DISK
                         );
-
-                        if ('yes' === LpcHelper::get_option('add_invoice_zip_label', 'yes')) {
-                            $tmpFiles[] = $invoiceFilename = sys_get_temp_dir() . DS . $orderId . '_invoice.pdf';
-
-                            $this->invoiceGenerateAction->generateInvoice(
-                                $orderId,
-                                $invoiceFilename,
-                                MergePdf::DESTINATION__DISK
-                            );
-                            $zip->addFile($invoiceFilename, $zipDirname . '/invoice(' . $orderId . ').pdf');
-                        }
+                        $zip->addFile($invoiceFilename, $zipDirname . '/invoice(' . $orderId . ').pdf');
                     }
 
                     $outwardCn23 = $this->outwardLabelDb->getCn23For($trackingNumber);
-                    if (!empty($outwardCn23)) {
-                        $zip->addFromString($zipDirname . '/outward_cn23(' . $trackingNumber . ').pdf', $outwardCn23);
+                    if (!empty($outwardCn23['cn23'])) {
+                        $cn23Format = !empty($outwardCn23['format']) ? $outwardCn23['format'] : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
+                        $zip->addFromString($zipDirname . '/outward_cn23(' . $trackingNumber . ').' . strtolower($cn23Format), $outwardCn23['cn23']);
                     }
                 }
 
                 if ($isInward) {
-                    $inwardLabel       = $this->inwardLabelDb->getLabelFor($trackingNumber);
-                    $inwardLabelFormat = !empty($inwardLabel['format']) ? $inwardLabel['format'] : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
-                    if (!empty($inwardLabel['label'])) {
-                        $zip->addFromString(
-                            $zipDirname . '/inward_label(' . $trackingNumber . ').' . strtolower($inwardLabelFormat),
-                            $inwardLabel['label']
-                        );
-                    }
+                    $zip->addFromString(
+                        $zipDirname . '/inward_label(' . $trackingNumber . ').' . strtolower($labelFormat),
+                        $label['label']
+                    );
 
                     $inwardCn23 = $this->inwardLabelDb->getCn23For($trackingNumber);
-                    if (!empty($inwardCn23)) {
-                        $zip->addFromString($zipDirname . '/inward_cn23(' . $trackingNumber . ').pdf', $inwardCn23);
+                    if (!empty($inwardCn23['cn23'])) {
+                        $cn23Format = !empty($inwardCn23['format']) ? $inwardCn23['format'] : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
+                        $zip->addFromString($zipDirname . '/inward_cn23(' . $trackingNumber . ').' . strtolower($cn23Format), $inwardCn23['cn23']);
                     }
                 }
             }
 
             $zip->close();
 
-            $content = readfile($filename);
-
-            return $content;
+            return readfile($filename);
         } finally {
             array_map(
                 function ($tmpFile) {

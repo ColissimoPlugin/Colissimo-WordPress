@@ -45,4 +45,6 @@ if (!empty($relay)) {
 			</div>
 		</div>
 	</div>
+<?php } else { ?>
+	<div id="lpc_pick_up_info"></div>
 <?php } ?>

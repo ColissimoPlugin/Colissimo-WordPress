@@ -241,6 +241,22 @@ class LpcUpdate extends LpcComponent {
             $this->inwardLabelDb->updateToVersion182();
             $this->bordereauDb->updateToVersion182();
         }
+
+        // Update from version under 1.9.2
+        if (version_compare($versionInstalled, '1.9.2') === - 1) {
+            $passwordAlreadyEncrypted = LpcHelper::get_option('lpc_pwd_encrypted', 0);
+            if (empty($passwordAlreadyEncrypted)) {
+                update_option(
+                    'lpc_pwd_webservices',
+                    LpcHelper::encryptPassword(
+                        LpcHelper::get_option('lpc_pwd_webservices')
+                    )
+                );
+                update_option('lpc_pwd_encrypted', 1);
+            }
+            $this->outwardLabelDb->updateToVersion192();
+            $this->inwardLabelDb->updateToVersion192();
+        }
     }
 
     /** Functions for update to 1.3 **/

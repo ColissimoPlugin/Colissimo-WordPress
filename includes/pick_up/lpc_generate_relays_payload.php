@@ -23,7 +23,7 @@ class LpcGenerateRelaysPayload {
 
     public function withPassword($password = null) {
         if (null === $password) {
-            $password = LpcHelper::get_option('lpc_pwd_webservices', '');
+            $password = LpcHelper::getPasswordWebService();
         }
 
         if (empty($password)) {

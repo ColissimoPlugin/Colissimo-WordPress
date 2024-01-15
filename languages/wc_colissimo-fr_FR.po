@@ -1,5 +1,9 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "For international delivery only"
-msgstr "Pour les livraisons à l'international seulement"
+msgstr "Pour les livraisons à l’international seulement"
 
 msgid "Colissimo without signature"
 msgstr "Colissimo sans signature"
@@ -26,10 +30,10 @@ msgid "Average preparation delay"
 msgstr "Délai de préparation moyen"
 
 msgid "Your average delay for preparation of a shipment, in days."
-msgstr "Votre délai moyen de préparation d'une livraison, en jours."
+msgstr "Votre délai moyen de préparation d’une livraison, en jours."
 
 msgid "The log file is empty"
-msgstr "Le fichier de log est vide"
+msgstr "Le fichier journal est vide"
 
 msgid "General configuration"
 msgstr "Configuration générale"
@@ -71,7 +75,7 @@ msgid "Colour of the selected pickup point in the list and on the map"
 msgstr "Couleur du point de retrait sélectionné dans la liste et sur la carte"
 
 msgid "Information icons color"
-msgstr "Couleur des pictos d'information"
+msgstr "Couleur des pictos d’information"
 
 msgid "Font"
 msgstr "Police"
@@ -107,10 +111,10 @@ msgid "Country code required to get relay points"
 msgstr "Le code pays est requis pour les points de retrait"
 
 msgid "Shipping date required to get relay points"
-msgstr "La date d'expédition est requise pour les points de retrait"
+msgstr "La date d’expédition est requise pour les points de retrait"
 
 msgid "The international option can't be enabled if the country destination is France"
-msgstr "L'option internationale ne peut pas être activée si le pays de destination est la France"
+msgstr "L’option internationale ne peut pas être activée si le pays de destination est la France"
 
 msgid "Apply"
 msgstr "Appliquer"
@@ -128,13 +132,13 @@ msgid "Search"
 msgstr "Chercher"
 
 msgid "Unknown ajax call: %s"
-msgstr "Appel ajax inconnu : %s"
+msgstr "Appel ajax inconnu : %s"
 
 msgid "Wrong ajax call type"
-msgstr "Mauvais type d'appel ajax"
+msgstr "Mauvais type d’appel ajax"
 
 msgid "The web service returned 0 relay"
-msgstr "Le web service n'a trouvé aucun point de retrait"
+msgstr "Le web service n’a trouvé aucun point de retrait"
 
 msgid "No relay available"
 msgstr "Aucun point de retrait disponible"
@@ -161,7 +165,7 @@ msgid "Use cart price instead of weight"
 msgstr "Se baser sur le prix du panier plutôt que sur son poids"
 
 msgid "Do you want to base your shipping fees on cart price instead of the cart weight?"
-msgstr "Voulez-vous calculer les frais de livraison en fonction du prix du panier plutôt que de son poids ?"
+msgstr "Voulez-vous calculer les frais de livraison en fonction du prix du panier plutôt que de son poids ?"
 
 msgid "Price"
 msgstr "Prix"
@@ -173,22 +177,22 @@ msgid "Delete selected"
 msgstr "Supprimer la sélection"
 
 msgid "Always free?"
-msgstr "Toujours gratuit ?"
+msgstr "Toujours gratuit ?"
 
 msgid "If enabled, rates calculation for this shipping method will always be zero."
 msgstr "Si activé, les frais de livraisons seront toujours gratuit pour cette méthode."
 
 msgid "The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
-msgstr "La clé API peut être générée depuis cloud.google.com/maps-platform. N'ajoutez pas votre clé d'API s'il y a un conflit avec une autre extension qui l'utilise."
+msgstr "La clé API peut être générée depuis cloud.google.com/maps-platform. N’ajoutez pas votre clé d’API s’il y a un conflit avec une autre extension qui l’utilise."
 
 msgid "Label generation settings"
 msgstr "Paramètres de génération des étiquettes"
 
 msgid "Generate label on"
-msgstr "Générer l'étiquette aux statuts"
+msgstr "Générer l’étiquette aux statuts"
 
 msgid "Order status once label is generated"
-msgstr "Statut des commandes après génération de l'étiquette"
+msgstr "Statut des commandes après génération de l’étiquette"
 
 msgid "Order status once the package is delivered"
 msgstr "Statut des commandes après livraison"
@@ -197,16 +201,16 @@ msgid "Name of your store company"
 msgstr "Nom de votre magasin"
 
 msgid "Use Colissimo Insurance?"
-msgstr "Utiliser l'assurance Colissimo ?"
+msgstr "Utiliser l’assurance Colissimo ?"
 
 msgid "Generate Colissimo Outward label"
-msgstr "Générer l'étiquette de livraison Colissimo"
+msgstr "Générer l’étiquette de livraison Colissimo"
 
 msgid "Not found... <a href=\"%s\">get back to the home page</a>."
-msgstr "Non trouvé... <a href=\"%s\">retour à l'accueil</a>."
+msgstr "Non trouvé... <a href=\"%s\">retour à l’accueil</a>."
 
 msgid "An error occured while retrieving tracking info (%s [%u])... <a href=\"%s\">get back to the home page</a>."
-msgstr "Une erreur est survenue lors de la récupération des informations de suivi (%s [%u])... <a href=\"%s\">retour à l'accueil</a>."
+msgstr "Une erreur est survenue lors de la récupération des informations de suivi (%s [%u])... <a href=\"%s\">retour à l’accueil</a>."
 
 msgid "Status history"
 msgstr "Historique des statuts"
@@ -221,7 +225,7 @@ msgid "Tracking information for order"
 msgstr "Information de suivis de la commande"
 
 msgid "Shipping mehtod:"
-msgstr "Méthode de livraison :"
+msgstr "Méthode de livraison :"
 
 msgid "Tracking number"
 msgstr "Numéro de suivi"
@@ -239,16 +243,16 @@ msgid "Shipping cost will be free if the order value is over the given one (only
 msgstr "Les frais de livraisons seront gratuits si le coût de la commande dépasse ce montant (appliqué seulement si le montant est positif)."
 
 msgid "Maximum weight / price"
-msgstr "Poids / prix maximum"
+msgstr "Poids/prix maximum"
 
 msgid "Return labels"
 msgstr "Étiquette de retour"
 
 msgid "Delivery label format"
-msgstr "Format d'impression des étiquettes aller"
+msgstr "Format d’impression des étiquettes aller"
 
 msgid "Return label format"
-msgstr "Format d'impression des étiquettes retour"
+msgstr "Format d’impression des étiquettes retour"
 
 msgid "PDF office printing, dimension A4 and resolution of 300dpi"
 msgstr "Impression bureautique en PDF, de dimension A4 et de résolution 300dpi"
@@ -266,13 +270,13 @@ msgid "Default HS code"
 msgstr "Code SH par défaut"
 
 msgid "Used when no HS code set on a product"
-msgstr "Utilisé si aucun code SH n'a été défini sur un produit"
+msgstr "Utilisé si aucun code SH n’a été défini sur un produit"
 
 msgid "Default customs category"
 msgstr "Catégorie de nature des envois"
 
 msgid "Define the nature of the shipment"
-msgstr "Indique la nature de l'envoi (pour les envois internationaux ou vers l'outre-mer soumis à la déclaration CN23)"
+msgstr "Indique la nature de l’envoi (pour les envois internationaux ou vers l’outre-mer soumis à la déclaration CN23)"
 
 msgid "Gift"
 msgstr "Cadeau"
@@ -290,22 +294,22 @@ msgid "Other"
 msgstr "Autre"
 
 msgid "Origin custom attribute name"
-msgstr "Nom de l'attribut personnalisé pays d'origine"
+msgstr "Nom de l’attribut personnalisé pays d’origine"
 
 msgid "The name of the custom attribute you use to store the product country of manufacture / origin on products"
-msgstr "Nom de l'attribut personnalisé utilisé pour stocker le pays de fabrication / d'origine du produit"
+msgstr "Nom de l’attribut personnalisé utilisé pour stocker le pays de fabrication/d’origine du produit"
 
 msgid "HS code custom attribute name"
-msgstr "Nom de l'attribut personnalisé code SH"
+msgstr "Nom de l’attribut personnalisé code SH"
 
 msgid "The name of the custom attribute you use to store the product HS code on products"
-msgstr "Nom de l'attribut personnalisé utilisé pour stocker le code SH des produits"
+msgstr "Nom de l’attribut personnalisé utilisé pour stocker le code SH des produits"
 
 msgid "For french overseas destinations only (except St-Pierre-et-Miquelon)"
 msgstr "Pour les DOM-TOM uniquement (sauf St-Pierre-et-Miquelon)"
 
 msgid "Are parcels free of taxes and fees?"
-msgstr "Colis franc de taxes et de droits ?"
+msgstr "Colis franc de taxes et de droits ?"
 
 msgid "Generate bordereau"
 msgstr "Générer le bordereau"
@@ -317,46 +321,46 @@ msgid "Order status once bordereau is generated"
 msgstr "Statut des commandes après génération du bordereau"
 
 msgid "Access denied! (Security check failed)"
-msgstr "Accès refusé ! (Echec de la vérification)"
+msgstr "Accès refusé ! (Echec de la vérification)"
 
 msgid "Automatically create return label at the same time as the outward label"
-msgstr "Créer automatiquement l'étiquette de retour lors de la génération de l'étiquette aller"
+msgstr "Créer automatiquement l’étiquette de retour lors de la génération de l’étiquette aller"
 
 msgid "An email is sent to the customer when the inward label is generated, if this option is set up"
-msgstr "Un email est envoyé au client lorsque l'étiquette de retour est générée si cette option est activée"
+msgstr "Un e-mail est envoyé au client lorsque l’étiquette de retour est générée si cette option est activée"
 
 msgid "Your inward label"
 msgstr "Votre étiquette de retour"
 
 msgid "Automatically email the return label to the customer"
-msgstr "Envoyer automatiquement l'étiquette de retour au client par email"
+msgstr "Envoyer automatiquement l’étiquette de retour au client par e-mail"
 
 msgid "If enabled, the return label will be automatically emailed to the customer when it is generated. Please make sure that the 'Inward label generated' email is enabled in WooCommerce->Settings->Emails."
-msgstr "Si activé, l'étiquette de retour sera automatiquement envoyée lors de sa création au client. Assurez vous que l'email 'Etiquette de retour générée' soit activée dans WooCommerce->Réglages->Emails."
+msgstr "Si activé, l’étiquette de retour sera automatiquement envoyée lors de sa création au client. Assurez vous que l’e-mail ’Etiquette de retour générée’ soit activée dans WooCommerce->Réglages->Emails."
 
 msgid "Email Return Label"
-msgstr "Envoyer l'étiquette retour par mail"
+msgstr "Envoyer l’étiquette retour par mail"
 
 msgid "Label sent"
 msgstr "Étiquette envoyée"
 
 msgid "Label was not sent"
-msgstr "L'étiquette n'a pas été envoyée"
+msgstr "L’étiquette n’a pas été envoyée"
 
 msgid "If you don't activate this option, you can still manually create return labels on order shipping page"
-msgstr "Si vous n'activez pas cette option, vous pouvez toujours créer l'étiquette manuellement sur la page de la commande"
+msgstr "Si vous n’activez pas cette option, vous pouvez toujours créer l’étiquette manuellement sur la page de la commande"
 
 msgid "Generate Colissimo Inward label"
-msgstr "Générer l'étiquette de retour Colissimo"
+msgstr "Générer l’étiquette de retour Colissimo"
 
 msgid "Not allowed for this destination"
 msgstr "Non autorisé pour cette destination"
 
 msgid "Generate inward labels"
-msgstr "Générer l'étiquette retour"
+msgstr "Générer l’étiquette retour"
 
 msgid "Generate outward labels"
-msgstr "Générer l'étiquette aller"
+msgstr "Générer l’étiquette aller"
 
 msgid "Click here to download your created label package"
 msgstr "Cliquez ici pour télécharger les étiquettes"
@@ -368,7 +372,7 @@ msgid "Send tracking email"
 msgstr "Envoi du mail de suivi"
 
 msgid "Send the tracking link in an email to customer. Please make sure that the 'Colissimo order tracking' email is enabled in WooCommerce->Settings->Emails."
-msgstr "Envoi du lien de suivi de commande par email. Assurez vous que l'email 'Suivi de commande Colissimo' soit activée WooCommerce->Réglages->Emails."
+msgstr "Envoi du lien de suivi de commande par e-mail. Assurez vous que l’e-mail ’Suivi de commande Colissimo’ soit activée WooCommerce->Réglages->Emails."
 
 msgid "Outward label generated"
 msgstr "Étiquette aller générée"
@@ -389,7 +393,7 @@ msgid "Your order status changed"
 msgstr "Votre statut de commande a changé"
 
 msgid "You can follow up your order here:"
-msgstr "Vous pouvez suivre votre commande ici:"
+msgstr "Vous pouvez suivre votre commande ici :"
 
 msgid "Number of days to consider labels for purging (days)"
 msgstr "Nombre de jours avant suppression des étiquettes (jours)"
@@ -404,16 +408,16 @@ msgid "Update Colissimo statuses"
 msgstr "Mettre à jour les statuts Colissimo"
 
 msgid "Download outward label"
-msgstr "Télécharger l'étiquette aller"
+msgstr "Télécharger l’étiquette aller"
 
 msgid "Download inward label"
-msgstr "Télécharger l'étiquette retour"
+msgstr "Télécharger l’étiquette retour"
 
 msgid "Print outward label"
-msgstr "Imprimer l'étiquette aller"
+msgstr "Imprimer l’étiquette aller"
 
 msgid "Print inward label"
-msgstr "Imprimer l'étiquette retour"
+msgstr "Imprimer l’étiquette retour"
 
 msgid "Billing address"
 msgstr "Adresse de facturation"
@@ -431,7 +435,7 @@ msgid "MailBox pick-up"
 msgstr "Enlèvement dans ma boîte aux lettres"
 
 msgid "Allow customers to automatically create return labels and use them to return the parcel from their MailBox"
-msgstr "Autoriser les clients à créer leur étiquette de retour et l'utiliser pour le retour en boîte aux lettres"
+msgstr "Autoriser les clients à créer leur étiquette de retour et l’utiliser pour le retour en boîte aux lettres"
 
 msgid "F j, Y"
 msgstr "j F, Y"
@@ -440,10 +444,10 @@ msgid "Retrieval address"
 msgstr "Adresse de retour"
 
 msgid "Your order was initially sent to the following address:"
-msgstr "Votre commande a été livrée initiallement à l'adresse suivante :"
+msgstr "Votre commande a été livrée initiallement à l’adresse suivante :"
 
 msgid "You may change the address the return will be made from via the following fields:"
-msgstr "Vous pouvez changer l'adresse depuis laquelle le retour sera envoyé via les champs suivants :"
+msgstr "Vous pouvez changer l’adresse depuis laquelle le retour sera envoyé via les champs suivants :"
 
 msgid "Street"
 msgstr "Rue"
@@ -458,91 +462,91 @@ msgid "Check that this address is allowed for MailBox picking return"
 msgstr "Verifier que cette adresse est éligible au retour en boîte aux lettres."
 
 msgid "Address from which the return will be from:"
-msgstr "Adresse depuis laquelle le retour sera fait :"
+msgstr "Adresse depuis laquelle le retour sera fait :"
 
 msgid "Confirm pick-up"
-msgstr "Confirmer l'enlevement dans ma boîte aux lettres"
+msgstr "Confirmer l’enlevement dans ma boîte aux lettres"
 
 msgid "This address is not eligible for MailBox pick-up."
-msgstr "Cette adresse n'est pas éligible au retour en boîte aux lettres."
+msgstr "Cette adresse n’est pas éligible au retour en boîte aux lettres."
 
 msgid "Please confirm before today %1$s that you will put the parcel in the MailBox described previously, before the %2$s at %3$s."
-msgstr "Merci de confirmer avant aujourd'hui %1$s que vous déposerez le colis dans la boîte aux lettres décrite ci-dessus, avant le %2$s à %3$s."
+msgstr "Merci de confirmer avant aujourd’hui %1$s que vous déposerez le colis dans la boîte aux lettres décrite ci-dessus, avant le %2$s à %3$s."
 
 msgid "Your PickUp has been confirmed."
 msgstr "Votre retour boîte aux lettres a été confirmé."
 
 msgid "Your return tracking number is:"
-msgstr "Votre numéro de suivi de retour est :"
+msgstr "Votre numéro de suivi de retour est :"
 
 msgid "An error occured while confirming the mailBox pick-up."
 msgstr "AUne erreur est survenue lors de la confirmation du retour boîte aux lettres."
 
 msgid "Show international Relay Points"
-msgstr "Afficher les points de retrait à l'international"
+msgstr "Afficher les points de retrait à l’international"
 
 msgid "Only applicable for map type other than Colissimo widget"
 msgstr "Applicable seulement pour les types de carte autres que le widget Colissimo"
 
 msgid "Outward label was not generated:"
-msgstr "L'étiquette aller n'a pas été générée :"
+msgstr "L’étiquette aller n’a pas été générée :"
 
 msgid "Inward label was not generated:"
-msgstr "L'étiquette retour n'a pas été générée :"
+msgstr "L’étiquette retour n’a pas été générée :"
 
 msgid "No change"
 msgstr "Aucun changement"
 
 msgid "Weight cannot be negative!"
-msgstr "Le poids ne peut pas être négatif !"
+msgstr "Le poids ne peut pas être négatif !"
 
 msgid "The ProductCode used requires that a pickupLocationId is set!"
-msgstr "Le Code produit utilisé requiert qu'un pickupLocationId soit valué."
+msgstr "Le Code produit utilisé requiert qu’un pickupLocationId soit valué."
 
 msgid "The ProductCode used requires that a pickupLocationId is *not* set!"
-msgstr "Le Code produit utilisé requiert que le prickupLocationId ne soit *pas* valué !"
+msgstr "Le Code produit utilisé requiert que le prickupLocationId ne soit *pas* valué !"
 
 msgid "You must specify the name of your store company in the Origin address!"
-msgstr "Vous devez renseigner le nom de votre magasin dans l'adresse d'origine !"
+msgstr "Vous devez renseigner le nom de votre magasin dans l’adresse d’origine !"
 
 msgid "The name of your store company must be set in Origin address!"
-msgstr "Le nom de votre magasin doit être valué dans l'adresse d'origine !"
+msgstr "Le nom de votre magasin doit être valué dans l’adresse d’origine !"
 
 msgid "The address line 1 must be set in the Origin address!"
-msgstr "L'adresse ligne 1 doit être valuée dans l'adresse d'origine !"
+msgstr "L’adresse ligne 1 doit être valuée dans l’adresse d’origine !"
 
 msgid "The Country / State must be set in the Origin address!"
-msgstr "Le pays doit être valué dans l'adresse d'origine !"
+msgstr "Le pays doit être valué dans l’adresse d’origine !"
 
 msgid "The Postcode / ZIP must be set in the Origin address!"
-msgstr "Le code postal doit être valué dans l'adresse d'origine !"
+msgstr "Le code postal doit être valué dans l’adresse d’origine !"
 
 msgid "The city must be set in the Origin address!"
-msgstr "La ville doit être valuée dans l'adresse d'origine !"
+msgstr "La ville doit être valuée dans l’adresse d’origine !"
 
 msgid "The name of the company or (firstname + lastname) must be set in the addressee's address!"
-msgstr "Le nom du magasin ou (Prénom + Nom de famille) doit être valué dans l'adresse du destinataire !"
+msgstr "Le nom du magasin ou (Prénom + Nom de famille) doit être valué dans l’adresse du destinataire !"
 
 msgid "The address line 1 must be set in the Addressee address!"
-msgstr "L'adresse ligne 1 doit être valuée dans l'adresse de destinataire !"
+msgstr "L’adresse ligne 1 doit être valuée dans l’adresse de destinataire !"
 
 msgid "The Country / State must be set in the Addressee address!"
-msgstr "Le pays doit être valué dans l'adresse de destinataire !"
+msgstr "Le pays doit être valué dans l’adresse de destinataire !"
 
 msgid "The Postcode / ZIP must be set in the Addressee address!"
-msgstr "Le code postal doit être valué dans l'adresse de destinataire !"
+msgstr "Le code postal doit être valué dans l’adresse de destinataire !"
 
 msgid "The city must be set in the Addressee address!"
-msgstr "La ville doit être valuée dans l'adresse de destinataire !"
+msgstr "La ville doit être valuée dans l’adresse de destinataire !"
 
 msgid "The ProductCode used requires that a mobile number is set!"
-msgstr "Le ProductCode utilisé nécessite qu'un numéro de téléphone mobile soit fourni"
+msgstr "Le ProductCode utilisé nécessite qu’un numéro de téléphone mobile soit fourni"
 
 msgid "See order"
 msgstr "Voir la commande"
 
 msgid "Google maps API key"
-msgstr "Clé d'API Google Maps"
+msgstr "Clé d’API Google Maps"
 
 msgid "Log messages"
 msgstr "Enregistrer les messages de log"
@@ -575,7 +579,7 @@ msgid "Shipping method"
 msgstr "Méthode de livraison"
 
 msgid "Label (out / in)"
-msgstr "Étiquette (aller / retour)"
+msgstr "Étiquette (aller/retour)"
 
 msgid "Bordereau"
 msgstr "Bordereau"
@@ -587,19 +591,19 @@ msgid "Date"
 msgstr "Date"
 
 msgid "Order %s : Outward label generated"
-msgstr "Commande %s : Étiquette aller générée"
+msgstr "Commande %s : Étiquette aller générée"
 
 msgid "Order %s : Outward label was not generated:"
-msgstr "Commande %s : L'étiquette aller n'a pas été générée :"
+msgstr "Commande %s : L’étiquette aller n’a pas été générée :"
 
 msgid "Order %s : Inward label generated"
-msgstr "Commande %s : Étiquette retour générée"
+msgstr "Commande %s : Étiquette retour générée"
 
 msgid "Order %s : Inward label was not generated:"
-msgstr "Commande %s : L'étiquette retour n'a pas été générée :"
+msgstr "Commande %s : L’étiquette retour n’a pas été générée :"
 
 msgid "We found that Colissimo Delivery Integration plugin is installed on your website. This plugin have some compatibility issues with the official Colissimo plugin. To avoid issues, please deactivate Colissimo Delivery Integration."
-msgstr "Nous avons détecté que l'extension Colissimo Delivery Integration est installée sur votre site. Cette extension peut avoir des incompatibilités avec l'extension officielle Colissimo. Pour éviter les erreurs, vous pouvez désactiver l'extension Colissimo Delivery Integration"
+msgstr "Nous avons détecté que l’extension Colissimo Delivery Integration est installée sur votre site. Cette extension peut avoir des incompatibilités avec l’extension officielle Colissimo. Pour éviter les erreurs, vous pouvez désactiver l’extension Colissimo Delivery Integration"
 
 msgid "ZPL thermal printing, dimension 10cm x 15cm, and resolution of 203dpi"
 msgstr "Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 203dpi"
@@ -638,16 +642,16 @@ msgid "Only if USB is selected for Port"
 msgstr "Seulement si USB est sélectionné comme Port"
 
 msgid "Print inward labels"
-msgstr "Imprimer l'étiquette retour"
+msgstr "Imprimer l’étiquette retour"
 
 msgid "Print outward labels"
-msgstr "Imprimer l'étiquette aller"
+msgstr "Imprimer l’étiquette aller"
 
 msgid "Print label information"
 msgstr "Imprimer les étiquettes de livraison"
 
 msgid "Print thermal error on some orders:"
-msgstr "Erreur à l'impression thermique pour certaines commandes :"
+msgstr "Erreur à l’impression thermique pour certaines commandes :"
 
 msgid "Please select a pick-up point"
 msgstr "Veuillez choisir un point de retrait"
@@ -677,13 +681,13 @@ msgid "No label generated"
 msgstr "Aucune étiquette générée"
 
 msgid "To weight"
-msgstr "Jusqu'au poids"
+msgstr "Jusqu’au poids"
 
 msgid "To cart price"
-msgstr "Jusqu'au prix panier"
+msgstr "Jusqu’au prix panier"
 
 msgid "Shipping class"
-msgstr "Classe d'expédition"
+msgstr "Classe d’expédition"
 
 msgid "Included"
 msgstr "Inclus"
@@ -722,49 +726,49 @@ msgid "Inward"
 msgstr "Retour"
 
 msgid "Unable to delete label %s"
-msgstr "Impossible de supprimer l'étiquette %s"
+msgstr "Impossible de supprimer l’étiquette %s"
 
 msgid "Label %s deleted"
 msgstr "Étiquette %s supprimée"
 
 msgid "Do you confirm the deletion of label?"
-msgstr "Confirmez-vous la suppression de l'étiquette ?"
+msgstr "Confirmez-vous la suppression de l’étiquette ?"
 
 msgid "Do you confirm the deletion of label? All related inwards label will be deleted too"
-msgstr "Confirmez-vous la suppression de l'étiquette ? Les étiquettes retours liées seront aussi supprimées"
+msgstr "Confirmez-vous la suppression de l’étiquette ? Les étiquettes retours liées seront aussi supprimées"
 
 msgid "Inward label %s deleted"
 msgstr "Étiquette retour %s supprimée"
 
 msgid "Delete outward label"
-msgstr "Supprimer l'étiquette aller"
+msgstr "Supprimer l’étiquette aller"
 
 msgid "Delete inward label"
-msgstr "Supprimer l'étiquette retour"
+msgstr "Supprimer l’étiquette retour"
 
 msgid "Every Fifteen Seconds"
 msgstr "Toutes les quinzes secondes"
 
 msgid "Thanks for updating Colissimo Official plugin to version %s. This version needs to modify the database structure and it will take a few minutes. While the migration is being done, you can use the plugin as usual but you won't be able to see the labels in the Colissimo listing. Please contact the Colissimo support if they are still not visible in a few hours."
-msgstr "Merci d'avoir mis à jour le plugin Colissimo Officiel vers la version %s. Cette version requiert une modification de notre structure de base de données et cela va prendre quelques minutes. Pendant la migration, vous pouvez utiliser le plugin sans problème, mais vous ne pourrez pas voir les étiquettes de livraisons dans le listing Colissimo. Si vous ne voyez toujours pas les étiquettes après quelques heures, merci de contacter le support Colissimo."
+msgstr "Merci d’avoir mis à jour l’extension Colissimo Officiel vers la version %s. Cette version requiert une modification de notre structure de base de données et cela va prendre quelques minutes. Pendant la migration, vous pouvez utiliser l’extension sans problème, mais vous ne pourrez pas voir les étiquettes de livraisons dans le listing Colissimo. Si vous ne voyez toujours pas les étiquettes après quelques heures, merci de contacter le support Colissimo."
 
 msgid "Colissimo Official plugin: the labels migration is done!"
-msgstr "Plugin Colissimo Officiel : la migration des étiquettes est terminée !"
+msgstr "Plugin Colissimo Officiel : la migration des étiquettes est terminée !"
 
 msgid "Disable"
 msgstr "Désactiver"
 
 msgid "Colissimo shipping methods for WooCommerce : Our plugin may cause some errors in your website with the new WordPress version 5.5. To fix them, please download the plugin \"Enable jQuery Migrate Helper\" provided by the WordPress team at the following address: %s"
-msgstr "Colissimo méthodes de livraison pour WooCommerce : Notre extension peut causer des erreurs sur votre site avec la nouvelle version de WordPress 5.5. Pour les corriger, merci de télécharger l'extension \"Enable jQuery Migrate Helper\" développée par l'équipe WordPress à l'adresse suivante : %s"
+msgstr "Colissimo méthodes de livraison pour WooCommerce : Notre extension peut causer des erreurs sur votre site avec la nouvelle version de WordPress 5.5. Pour les corriger, merci de télécharger l’extension \"Enable jQuery Migrate Helper\" développée par l’équipe WordPress à l’adresse suivante : %s"
 
 msgid "No Colissimo shipping methods are available for this order"
-msgstr "Aucune méthode de livraison Colissimo n'est disponible pour cette commande"
+msgstr "Aucune méthode de livraison Colissimo n’est disponible pour cette commande"
 
 msgid "The packaging weight will be added to the products weight on label generation."
-msgstr "Le poids de l'emballage va être ajouté au poids des produits à la génération de l'étiquette."
+msgstr "Le poids de l’emballage va être ajouté au poids des produits à la génération de l’étiquette."
 
 msgid "Packaging weight (%s)"
-msgstr "Poids de l'emballage (%s)"
+msgstr "Poids de l’emballage (%s)"
 
 msgid "Hi %s,"
 msgstr "Bonjour %s,"
@@ -773,7 +777,7 @@ msgid "Your order #%s is being prepared and will soon be taken care of for shipp
 msgstr "Votre commande #%s est en cours de préparation et sera bientôt prise en charge pour la livraison."
 
 msgid "The inward label for order #%s has been generated."
-msgstr "L'étiquette de retour pour la commande #%s a été générée"
+msgstr "L’étiquette de retour pour la commande #%s a été générée"
 
 msgid "[%s] Your inward label"
 msgstr "[%s] Votre étiquette de retour"
@@ -785,7 +789,7 @@ msgid "Tracking link"
 msgstr "Lien de suivi"
 
 msgid "Choose where the tracking link in the tracking email will redirect to"
-msgstr "Choix de la redirection du lien de suivi dans l'email de suivi"
+msgstr "Choix de la redirection du lien de suivi dans l’e-mail de suivi"
 
 msgid "This website's tracking page"
 msgstr "La page de suivi de ce site"
@@ -835,7 +839,7 @@ msgid "Choose this relay"
 msgstr "Choisir ce point de retrait"
 
 msgid "Colissimo shipping methods for WooCommerce : Our plugin is fully compatible with WordPress 5.6. If you have installed \"Enable jQuery Migrate Helper\" to use our plugin with WordPress 5.5, it's no longer required."
-msgstr "Colissimo méthodes de livraison pour WooCommerce : Notre plugin est entièrement compatible avec WordPress 5.6. Si vous avez installé \"Enable jQuery Migrate Helper\" pour utiliser notre plugin avec WordPress 5.5, cela n'est plus requis."
+msgstr "Colissimo méthodes de livraison pour WooCommerce : Notre extension est entièrement compatible avec WordPress 5.6. Si vous avez installé \"Enable jQuery Migrate Helper\" pour utiliser notre extension avec WordPress 5.5, cela n’est plus requis."
 
 msgid "Title"
 msgstr "Titre"
@@ -850,7 +854,7 @@ msgid "This controls the title which the user sees during checkout if the shippi
 msgstr "Nom de la méthode de livraison que le client verra sur le tunnel de commande si la méthode est gratuite. Laissez vide pour garder toujours le titre standard."
 
 msgid "The statuses update process has started. Depending of the numbers of orders you have, it may take a few minutes to update all statuses. You will find more information by checking logs."
-msgstr "Le processus de mise à jour des statuts a commencé. En fonction du nombre de commandes que vous avez, cela peut prendre plusieurs minutes de mettre à jour tous les status. Vous trouverez plus d'informations dans le fichier de log."
+msgstr "Le processus de mise à jour des statuts a commencé. En fonction du nombre de commandes que vous avez, cela peut prendre plusieurs minutes de mettre à jour tous les statuts. Vous trouverez plus d’informations dans le fichier de log."
 
 msgid "EORI number"
 msgstr "Numéro EORI"
@@ -862,16 +866,16 @@ msgid "EORI number for delivery to United Kingdom"
 msgstr "Numéro EORI spécifique pour les livraisons en direction du Royaume-Uni"
 
 msgid "On outward label generation"
-msgstr "À la génération de l'étiquette de livraison"
+msgstr "À la génération de l’étiquette de livraison"
 
 msgid "On bordereau generation"
 msgstr "À la génération du bordereau"
 
 msgid "Add order notes on label"
-msgstr "Ajouter les notes de commandes sur l'étiquette"
+msgstr "Ajouter les notes de commandes sur l’étiquette"
 
 msgid "If enabled, the order notes set by the customer during the checkout will be displayed on the label"
-msgstr "Si cette option est activée, les notes de commandes saisies par le client pendant le tunnel de commande seront ajoutées sur l'étiquette"
+msgstr "Si cette option est activée, les notes de commandes saisies par le client pendant le tunnel de commande seront ajoutées sur l’étiquette"
 
 msgid "VAT number"
 msgstr "Numéro TVA"
@@ -886,16 +890,16 @@ msgid "Inward labels"
 msgstr "Étiquettes retour"
 
 msgid "This order is not shipped by Colissimo"
-msgstr "Cette commande n'est pas expédiée par Colissimo"
+msgstr "Cette commande n’est pas expédiée par Colissimo"
 
 msgid "You don't have any label for this order. To generate one, please check the \"Labels generation\" tab"
-msgstr "Vous n'avez pas d'étiquettes pour cette commande. Vous pouvez en générer une dans l'onglet \"Génération d'étiquettes\""
+msgstr "Vous n’avez pas d’étiquettes pour cette commande. Vous pouvez en générer une dans l’onglet \"Génération d’étiquettes\""
 
 msgid "Labels listing"
 msgstr "Listing des étiquettes"
 
 msgid "Labels generation"
-msgstr "Génération d'étiquettes"
+msgstr "Génération d’étiquettes"
 
 msgid "Item"
 msgstr "Article"
@@ -910,7 +914,7 @@ msgid "Unit weight (%s)"
 msgstr "Poids unitaire (%s)"
 
 msgid "Total weight (items + packaging)"
-msgstr "Poids total (articles + emballage)"
+msgstr "Poids total (articles + emballage)"
 
 msgid "Outward label"
 msgstr "Étiquette aller"
@@ -934,31 +938,31 @@ msgid "Colissimo order tracking"
 msgstr "Suivi de commande Colissimo"
 
 msgid "An email is sent to the customer when the outward label or delivery docket is generated, depending of the option set in Colissimo Official configuration"
-msgstr "Un email est envoyé au client lorsque l'étiquette aller ou le bordereau est généré, dépendant de l'option définie dans la configuration Colissimo Officiel"
+msgstr "Un e-mail est envoyé au client lorsque l’étiquette aller ou le bordereau est généré, dépendant de l’option définie dans la configuration Colissimo Officiel"
 
 msgid "Editing prices and weights may create inconsistency between CN23 or labels and invoice. Edit these values only if you really need it."
-msgstr "L'édition des prix et des poids peut créer des incohérences entre les étiquettes ou le formulaire CN23 et la facture. Modifiez ces valeurs seulement si vous en avez vraiment besoin."
+msgstr "L’édition des prix et des poids peut créer des incohérences entre les étiquettes ou le formulaire CN23 et la facture. Modifiez ces valeurs seulement si vous en avez vraiment besoin."
 
 msgid "Edit prices and weights"
 msgstr "Modifier les prix et les poids"
 
 msgid "Origin address"
-msgstr "Adresse d'origine"
+msgstr "Adresse d’origine"
 
 msgid "This is the address of your warehouse, if this address is set it will override the default WooCommerce store address"
-msgstr "Ceci est l'adresse de votre entrepôt, si vous ne la renseignez pas, l'adresse prise par défaut sera celle renseignée dans la configuration de WooCommerce"
+msgstr "Ceci est l’adresse de votre entrepôt, si vous ne la renseignez pas, l’adresse prise par défaut sera celle renseignée dans la configuration de WooCommerce"
 
 msgid "Address line 1"
 msgstr "Adresse ligne 1"
 
 msgid "The street address for your warehouse location"
-msgstr "L'adresse où se situe votre entrepôt"
+msgstr "L’adresse où se situe votre entrepôt"
 
 msgid "Address line 2"
 msgstr "Adresse ligne 2"
 
 msgid "An additional, optional address line for your warehouse location"
-msgstr "Ligne d'adresse optionnelle et additionnelle de votre entrepôt"
+msgstr "Ligne d’adresse optionnelle et additionnelle de votre entrepôt"
 
 msgid "The city in which your warehouse is located"
 msgstr "La ville où votre entrepôt est situé"
@@ -997,25 +1001,25 @@ msgid "Timeline"
 msgstr "Chronologie"
 
 msgid "Step number"
-msgstr "Numéro d'étape"
+msgstr "Numéro d’étape"
 
 msgid "Display shipping methods logo on checkout"
 msgstr "Afficher le logo des méthodes de livraison sur le tunnel de commande"
 
 msgid "Choose to add the shipping methods logo next to the method name in the checkout"
-msgstr "Choisissez d'ajouter le logo des méthodes de livraison à côté du nom de la méthode dans le tunnel de commande."
+msgstr "Choisissez d’ajouter le logo des méthodes de livraison à côté du nom de la méthode dans le tunnel de commande."
 
 msgid "Bordereau n°%d"
 msgstr "Bordereau n°%d"
 
 msgid "You don't have any label for this order. To generate one, please check \"Generate Colissimo Outward label\" inside the \"Order actions\" menu"
-msgstr "Vous n'avez pas d'étiquette de livraison pour cette commande. Pour en générer une, vous pouvez utiliser l'option \"Générer l'étiquette de livraison Colissimo\" dans le menu \"Action de la commande\""
+msgstr "Vous n’avez pas d’étiquette de livraison pour cette commande. Pour en générer une, vous pouvez utiliser l’option \"Générer l’étiquette de livraison Colissimo\" dans le menu \"Action de la commande\""
 
 msgid "In accordance with the customs regulation, it is necessary to provide documents related to the parcels for the customs."
 msgstr "Dans le cadre de la réglementation liée aux douanes, il est nécessaire de fournir des documents liés aux colis pour les douanes."
 
 msgid "It is possible to send these documents through the parcel tracking tool or from here using the plugin."
-msgstr "Il est possible d'envoyer ces documents via l'outil de suivi de colis ou via le plugin à cet endroit."
+msgstr "Il est possible d’envoyer ces documents via l’outil de suivi de colis ou via l’extension à cet endroit."
 
 msgid "Custom clearance bordereau"
 msgstr "Bordereau de dédouanement"
@@ -1045,7 +1049,7 @@ msgid "Unique administrative document"
 msgstr "Document administratif unique"
 
 msgid "Compensation report"
-msgstr "Bilan d'indemnisation"
+msgstr "Bilan d’indemnisation"
 
 msgid "Picture"
 msgstr "Photo"
@@ -1063,13 +1067,13 @@ msgid "Document type"
 msgstr "Type du document"
 
 msgid "An error occurred when transmitting the file %1$s: %2$s"
-msgstr "Une erreur est survenue lors de la transmission du fichier %1$s : %2$s"
+msgstr "Une erreur est survenue lors de la transmission du fichier %1$s : %2$s"
 
 msgid "Unknown error"
 msgstr "Erreur inconnue"
 
 msgid "An error occurred while getting the customs files for this order: %s"
-msgstr "Une erreur est survenue lors de la récupération des documents de douane pour cette commande : %1$s"
+msgstr "Une erreur est survenue lors de la récupération des documents de douane pour cette commande : %1$s"
 
 msgid "Unknown"
 msgstr "Inconnu"
@@ -1096,7 +1100,7 @@ msgid "Display a button to import your tracking number in Colissimo listing"
 msgstr "Afficher un bouton pour importer vos numéros de suivi dans le listing Colissimo"
 
 msgid "This feature is only if you don't generate your labels on your website. You can import a CSV to set the tracking number in WooCommerce with the following columns: order_id, tracking_number"
-msgstr "Cette fonctionnalité vous servira uniquement si vous générez vos étiquettes sur un service tiers. Elle permet d'importer un CSV avec les colonnes suivantes : order_id, tracking_number"
+msgstr "Cette fonctionnalité vous servira uniquement si vous générez vos étiquettes sur un service tiers. Elle permet d’importer un CSV avec les colonnes suivantes : order_id, tracking_number"
 
 msgid "Import tracking numbers"
 msgstr "Importer des numéros de suivi"
@@ -1111,7 +1115,7 @@ msgid "Missing columns in the imported CSV"
 msgstr "Colonnes manquantes dans le fichier CSV"
 
 msgid "Could not insert tracking number for order(s): %s"
-msgstr "Import des numéros de suivi impossible pour les commande(s) suivante(s) : %s"
+msgstr "Import des numéros de suivi impossible pour les commande(s) suivante(s) : %s"
 
 msgid "You cannot do this action on imported tracking numbers"
 msgstr "Vous ne pouvez pas faire cette action sur un numéro de suivi importé"
@@ -1141,10 +1145,10 @@ msgid "documentation"
 msgstr "documentation"
 
 msgid "Add the invoice in the label archive"
-msgstr "Ajouter la facture dans l'archive des étiquettes"
+msgstr "Ajouter la facture dans l’archive des étiquettes"
 
 msgid "In the Colissimo listing on the bulk action download label information, if this option is checked it adds the invoice to the archive"
-msgstr "Dans la liste des commandes Colissimo sur l'action de masse pour télécharger les informations des étiquettes, si cette option est cochée alors la facture sera ajoutée à l'archive"
+msgstr "Dans la liste des commandes Colissimo sur l’action de masse pour télécharger les informations des étiquettes, si cette option est cochée alors la facture sera ajoutée à l’archive"
 
 msgid "No method"
 msgstr "Aucune méthode"
@@ -1153,13 +1157,13 @@ msgid "Colissimo services"
 msgstr "Services Colissimo"
 
 msgid "Check status"
-msgstr "Vérifier l'état"
+msgstr "Vérifier l’état"
 
 msgid "Sending service"
-msgstr "Service d'envoi"
+msgstr "Service d’envoi"
 
 msgid "Sending service used for Austria, Germany, Italy and Luxembourg"
-msgstr "Service d'envoi utilisé pour l'Autriche, l'Allemagne, l'Italie et le Luxembourg"
+msgstr "Service d’envoi utilisé pour l’Autriche, l’Allemagne, l’Italie et le Luxembourg"
 
 msgid "Local postal service"
 msgstr "Service postal local"
@@ -1168,34 +1172,34 @@ msgid "Parent account ID"
 msgstr "Référence de compte parent"
 
 msgid "If you use an advanced account, please enter the parent account ID"
-msgstr "Si vous utilisez un compte utilisateur avancé, veuillez renseigner l'identifiant du compte parent"
+msgstr "Si vous utilisez un compte utilisateur avancé, veuillez renseigner l’identifiant du compte parent"
 
 msgid "Insured"
 msgstr "Assuré"
 
 msgid "Allow customers to download return label from their account"
-msgstr "Autoriser les clients a télécharger l'étiquette de retour depuis leur compte"
+msgstr "Autoriser les clients a télécharger l’étiquette de retour depuis leur compte"
 
 msgid "If the return doesn't exist, it will be generated"
-msgstr "Si l'étiquette de retour n'éxiste pas elle sera générée"
+msgstr "Si l’étiquette de retour n’éxiste pas elle sera générée"
 
 msgid "For outward label %s"
-msgstr "Pour l'étiquette aller %s"
+msgstr "Pour l’étiquette aller %s"
 
 msgid "Default country for products without country"
-msgstr "Pays par défaut pour les produits sans pays d'origine"
+msgstr "Pays par défaut pour les produits sans pays d’origine"
 
 msgid "This option allows you to set a default country for products without country"
-msgstr "Cette option vous permet d'ajouter un pays par défaut pour les produits sans pays d'origine"
+msgstr "Cette option vous permet d’ajouter un pays par défaut pour les produits sans pays d’origine"
 
 msgid "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any coupon."
-msgstr "Si cette option est activée, les méthodes et les frais d'expédition disponibles seront calculés sur la base du prix du panier avant l'application de tout code promo."
+msgstr "Si cette option est activée, les méthodes et les frais d’expédition disponibles seront calculés sur la base du prix du panier avant l’application de tout code promo."
 
 msgid "There has been an error while downloading the return label, please contact us for more information."
-msgstr "Il y a eu une erreur lors de la génération de l'étiquette retour, veuillez nous contacter pour plus d'information."
+msgstr "Il y a eu une erreur lors de la génération de l’étiquette retour, veuillez nous contacter pour plus d’information."
 
 msgid "The non-machinable option isn't available for this shipping method and destination country."
-msgstr "L'option non-mécanisable n'est pas disponible pour cette méthode d'envoi et pays de destination."
+msgstr "L’option non-mécanisable n’est pas disponible pour cette méthode d’envoi et pays de destination."
 
 msgid "General"
 msgstr "Général"
@@ -1204,10 +1208,10 @@ msgid "DDP"
 msgstr "DDP"
 
 msgid "Delivery Duty Paid settings"
-msgstr "Réglages de l'option Delivery Duty Paid"
+msgstr "Réglages de l’option Delivery Duty Paid"
 
 msgid "Option price for Australia"
-msgstr "Surcoût à appliquer pour l'Australie"
+msgstr "Surcoût à appliquer pour l’Australie"
 
 msgid "Option price for Bahrain"
 msgstr "Surcoût à appliquer pour le Bahreïn"
@@ -1219,13 +1223,13 @@ msgid "Option price for China"
 msgstr "Surcoût à appliquer pour la Chine"
 
 msgid "Option price for Egypt"
-msgstr "Surcoût à appliquer pour l'Égypte"
+msgstr "Surcoût à appliquer pour l’Égypte"
 
 msgid "Option price for Hong Kong"
 msgstr "Surcoût à appliquer pour Hong Kong"
 
 msgid "Option price for Indonesia"
-msgstr "Surcoût à appliquer pour l'Indonésie"
+msgstr "Surcoût à appliquer pour l’Indonésie"
 
 msgid "Option price for Japan"
 msgstr "Surcoût à appliquer pour le Japon"
@@ -1237,19 +1241,19 @@ msgid "Option price for Mexico"
 msgstr "Surcoût à appliquer pour le Mexique"
 
 msgid "Option price for Oman"
-msgstr "Surcoût à appliquer pour l'Oman"
+msgstr "Surcoût à appliquer pour l’Oman"
 
 msgid "Option price for Philippines"
 msgstr "Surcoût à appliquer pour les Philippines"
 
 msgid "Option price for Saudi Arabia"
-msgstr "Surcoût à appliquer pour l'Arabie Saoudite"
+msgstr "Surcoût à appliquer pour l’Arabie Saoudite"
 
 msgid "Option price for Singapore"
 msgstr "Surcoût à appliquer pour Singapour"
 
 msgid "Option price for South Africa"
-msgstr "Surcoût à appliquer pour l'Afrique du Sud"
+msgstr "Surcoût à appliquer pour l’Afrique du Sud"
 
 msgid "Option price for South Korea"
 msgstr "Surcoût à appliquer pour la Corée du Sud"
@@ -1279,16 +1283,16 @@ msgid "Colissimo with signature - DDP option"
 msgstr "Colissimo avec signature - Option DDP"
 
 msgid "This shipping method lets you configure the \"Colissimo International - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
-msgstr "Cette méthode de livraison vous permet de régler l'envoi \"Colissimo International - Option DDP\" qui est disponible et affichée uniquement pour les pays suivants : Afrique du Sud, Arabie Saoudite, Australie, Bahreïn, Canada, Chine, Corée du Sud, Égypte, Émirats Arabes Unis, États-Unis (USA), Hong Kong, Indonésie, Japon, Koweït, Mexique, Oman, Philippines, Singapour, Suisse, Thaïlande."
+msgstr "Cette méthode de livraison vous permet de régler l’envoi \"Colissimo International - Option DDP\" qui est disponible et affichée uniquement pour les pays suivants : Afrique du Sud, Arabie Saoudite, Australie, Bahreïn, Canada, Chine, Corée du Sud, Égypte, Émirats Arabes Unis, États-Unis (USA), Hong Kong, Indonésie, Japon, Koweït, Mexique, Oman, Philippines, Singapour, Suisse, Thaïlande."
 
 msgid "This shipping method lets you configure the \"Colissimo with signature - DDP Option\" shipping that is available and shown only for the United Kingdom."
-msgstr "Cette méthode de livraison vous permet de régler l'envoi \"Colissimo avec signature - Option DDP\" qui n'est disponible et affiché uniquement pour le Royaume Uni."
+msgstr "Cette méthode de livraison vous permet de régler l’envoi \"Colissimo avec signature - Option DDP\" qui n’est disponible et affiché uniquement pour le Royaume Uni."
 
 msgid "Please define a state / province"
-msgstr "Veuillez définir un état / une province"
+msgstr "Veuillez définir un état/une province"
 
 msgid "Shipping state missing for label generation with this country"
-msgstr "Province de destination manquante pour la génération d'une étiquette pour ce pays"
+msgstr "Province de destination manquante pour la génération d’une étiquette pour ce pays"
 
 msgid "Package length (cm)"
 msgstr "Longueur du colis (cm)"
@@ -1309,22 +1313,22 @@ msgid "English description"
 msgstr "Description en Anglais"
 
 msgid "The customs need a description of the package's content, in English."
-msgstr "La douane a besoin d'une description du contenu du colis, en Anglais."
+msgstr "La douane a besoin d’une description du contenu du colis, en Anglais."
 
 msgid "The product's details couldn't be found, the product may have been deleted from your store."
-msgstr "Les informations du produit n'ont pas été trouvées, le produit a peut-être été supprimé du magasin."
+msgstr "Les informations du produit n’ont pas été trouvées, le produit a peut-être été supprimé du magasin."
 
 msgid "Shipping address:"
-msgstr "Adresse de livraison :"
+msgstr "Adresse de livraison :"
 
 msgid "Tracking number: %s"
-msgstr "Numéro de suivi : %s"
+msgstr "Numéro de suivi : %s"
 
 msgid "Custom"
 msgstr "Douanes"
 
 msgid "Shipping methods"
-msgstr "Méthodes d'envoi"
+msgstr "Méthodes d’envoi"
 
 msgid "Colissimo International"
 msgstr "Colissimo International"
@@ -1345,19 +1349,19 @@ msgid "Bordereau n°%d deleted"
 msgstr "Bordereau n°%d supprimé"
 
 msgid "Do you confirm the deletion of bordereau?"
-msgstr "Confirmez-vous la suppression du bordereau?"
+msgstr "Confirmez-vous la suppression du bordereau ?"
 
 msgid "Do you confirm the creation of outward label?"
-msgstr "Confirmez-vous la création de l'étiquette aller ?"
+msgstr "Confirmez-vous la création de l’étiquette aller ?"
 
 msgid "Do you confirm the creation of inward label?"
-msgstr "Confirmez-vous la création de l'étiquette de retour ?"
+msgstr "Confirmez-vous la création de l’étiquette de retour ?"
 
 msgid "Generate inward label"
-msgstr "Générer l'étiquette retour"
+msgstr "Générer l’étiquette retour"
 
 msgid "Generate outward label"
-msgstr "Générer l'étiquette aller"
+msgstr "Générer l’étiquette aller"
 
 msgid "Colissimo collection"
 msgstr "Collecte Colissimo"
@@ -1375,49 +1379,49 @@ msgid "If you are a Facilité customer, go to your Colissimo space in the Collec
 msgstr "Si vous êtes client Facilité, RDV sur votre espace Colissimo dans la rubrique Collecte et faites une demande de souscription."
 
 msgid "If you are a Privilege customer, contact your usual sales contact so that he can give you access to the section."
-msgstr "Si vous êtes client Privilège, contactez votre interlocuteur commercial habituel pour qu'il vous donne accès à la rubrique."
+msgstr "Si vous êtes client Privilège, contactez votre interlocuteur commercial habituel pour qu’il vous donne accès à la rubrique."
 
 msgid "Free shipping classes"
-msgstr "Classes d'expédition gratuites"
+msgstr "Classes d’expédition gratuites"
 
 msgid "These shipping classes qualify for free shipping"
-msgstr "Ces classes d'expédition bénéficient de la livraison gratuite"
+msgstr "Ces classes d’expédition bénéficient de la livraison gratuite"
 
 msgid "Excluded shipping classes"
-msgstr "Classes d'expédition exclues"
+msgstr "Classes d’expédition exclues"
 
 msgid "The current shipping method will not be displayed if one product in the cart has one of these shipping classes. This option takes precedence over the option Free shipping classes"
-msgstr "La méthode de livraison actuelle ne sera pas affichée si un produit du panier possède l'une de ces classes d'expédition. Cette option est prioritaire sur l'option Classes d'expédition gratuites"
+msgstr "La méthode de livraison actuelle ne sera pas affichée si un produit du panier possède l’une de ces classes d’expédition. Cette option est prioritaire sur l’option Classes d’expédition gratuites"
 
 msgid "Return address"
 msgstr "Adresse de retour"
 
 msgid "This is the address of the place where you want to receive parcels returned by your customers. The default address will be the origin address"
-msgstr "C'est l'adresse du lieu où vous souhaitez recevoir les colis retournés par vos clients. L'adresse par défaut sera l'adresse d'origine"
+msgstr "C’est l’adresse du lieu où vous souhaitez recevoir les colis retournés par vos clients. L’adresse par défaut sera l’adresse d’origine"
 
 msgid "Order %1$s is insured up to %2$s euros, this is the maximum amount for parcels delivered with %3$s shipping method"
-msgstr "La commande %1$s est assurée à la hauteur de %2$s euros, c'est le montant maximum pour les colis livrés avec la méthode d'expédition %3$s"
+msgstr "La commande %1$s est assurée à la hauteur de %2$s euros, c’est le montant maximum pour les colis livrés avec la méthode d’expédition %3$s"
 
 msgid "Free if at least one item in the cart has one of the free shipping classes above"
-msgstr "Gratuit si au moins un des produits du panier a une des classes d'expédition gratuite ci-dessus"
+msgstr "Gratuit si au moins un des produits du panier a une des classes d’expédition gratuite ci-dessus"
 
 msgid "If enabled, delivery will be free, even if the other items in the cart do not have one of the free shipping classes above"
-msgstr "Si activé, la livraison sera gratuite même si les autres produits du panier n'ont pas une des classes d'expédition gratuite ci-dessus"
+msgstr "Si activé, la livraison sera gratuite même si les autres produits du panier n’ont pas une des classes d’expédition gratuite ci-dessus"
 
 msgid "Colissimo support"
 msgstr "Support Colissimo"
 
 msgid "Plugin support"
-msgstr "Support de l'extension"
+msgstr "Support de l’extension"
 
 msgid "Support"
 msgstr "Support"
 
 msgid "The street address for your return location"
-msgstr "L'adresse où se situe votre lieu de retour"
+msgstr "L’adresse où se situe votre lieu de retour"
 
 msgid "An additional, optional address line for your return location"
-msgstr "Ligne d'adresse optionnelle et additionnelle du lieu de retour"
+msgstr "Ligne d’adresse optionnelle et additionnelle du lieu de retour"
 
 msgid "The city in which your return location is located"
 msgstr "La ville où se situe votre lieu de retour"
@@ -1429,37 +1433,37 @@ msgid "The postal code, if any, in which your return location is located"
 msgstr "Le code postal où est situé votre lieu de retour"
 
 msgid "The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX"
-msgstr "Le numéro de mobile pour une destination française doit commencer par +33 ou 0, suivi de 6 ou 7 et être long de 12 ou 10 caractères. Par exemple 06XXXXXXXX ou +336XXXXXXXX"
+msgstr "Le numéro de mobile pour une destination française doit commencer par +33 ou 0, suivi de 6 ou 7 et être long de 12 ou 10 caractères. Par exemple 06XXXXXXXX ou +336XXXXXXXX"
 
 msgid "The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX"
-msgstr "Le numéro de mobile pour une destination Belge doit commencer par +324 et être long de 12 caractères. Par exemple +324XXXXXXXX"
+msgstr "Le numéro de mobile pour une destination Belge doit commencer par +324 et être long de 12 caractères. Par exemple +324XXXXXXXX"
 
 msgid "Order %s: insurance is not available for this country"
-msgstr "Commande %s : l'assurance n'est pas disponible pour ce pays"
+msgstr "Commande %s : l’assurance n’est pas disponible pour ce pays"
 
 msgid "Ship with: %s"
-msgstr "Expédier avec : %s"
+msgstr "Expédier avec : %s"
 
 msgid "The order #%1$d cannot be shipped with %2$s"
 msgstr "La commande #%1$d ne peut pas être expédiée avec %2$s"
 
 msgid "Shipping method changed to %1$s for %2$d orders."
-msgstr "Méthode d'expédition changée pour %1$s sur %2$d commandes."
+msgstr "Méthode d’expédition changée pour %1$s sur %2$d commandes."
 
 msgid "Shipping method changed to %s with bulk edit."
-msgstr "Méthode d'expédition changée pour %s avec une action de masse"
+msgstr "Méthode d’expédition changée pour %s avec une action de masse"
 
 msgid "The order #%d was made to be shipped to a relay point, make sure to change its shipping address!"
-msgstr "La commande #%d était prévue pour être expédiée vers un point de retrait, assurez-vous de changer son adresse d'expédition !"
+msgstr "La commande #%d était prévue pour être expédiée vers un point de retrait, assurez-vous de changer son adresse d’expédition !"
 
 msgid "Select automatically the nearest relay point"
 msgstr "Sélectionner automatiquement le point de retrait le plus proche"
 
 msgid "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address"
-msgstr "Lorsque l'utilisateur sélectionne la méthode en point de retrait lors de sa commande, un point de retrait est automatiquement proposé basé sur l'adresse de livraison"
+msgstr "Lorsque l’utilisateur sélectionne la méthode en point de retrait lors de sa commande, un point de retrait est automatiquement proposé basé sur l’adresse de livraison"
 
 msgid "Export %s file"
-msgstr "Exporter le fichier : %s"
+msgstr "Exporter le fichier : %s"
 
 msgid "Export capabilities by country to CSV"
 msgstr "Exporter le fichier de capacités par pays au format CSV"
@@ -1471,7 +1475,7 @@ msgid "Import"
 msgstr "Importer"
 
 msgid "Import / export capabilities per country"
-msgstr "Importer / exporter les capacités par pays"
+msgstr "Importer/exporter les capacités par pays"
 
 msgid "%s file has been imported"
 msgstr "Le fichier %s a été importé"
@@ -1480,7 +1484,7 @@ msgid "Please upload a CSV file to import capabilities by country"
 msgstr "Veuillez téléverser un fichier CSV pour importer les capacités par pays"
 
 msgid "The label couldn't be generated: %s"
-msgstr "L'étiquette n'a pas pu être générée : %s"
+msgstr "L’étiquette n’a pas pu être générée : %s"
 
 msgid "Firstname"
 msgstr "Prénom"
@@ -1498,10 +1502,10 @@ msgid "Mobile number"
 msgstr "Téléphone portable"
 
 msgid "Personalized amount of insurance:"
-msgstr "Montant personnalisé de l'assurance :"
+msgstr "Montant personnalisé de l’assurance :"
 
 msgid "Error while saving imported rates"
-msgstr "Une erreur est survenue lors de l'import des frais"
+msgstr "Une erreur est survenue lors de l’import des frais"
 
 msgid "Export"
 msgstr "Exporter"
@@ -1510,16 +1514,16 @@ msgid "Please select a file"
 msgstr "Veuillez sélectionner un fichier"
 
 msgid "Sending service Austria"
-msgstr "Service d'envoi pour l'Autriche"
+msgstr "Service d’envoi pour l’Autriche"
 
 msgid "Sending service Germany"
-msgstr "Service d'envoi pour l'Allemagne"
+msgstr "Service d’envoi pour l’Allemagne"
 
 msgid "Sending service Italy"
-msgstr "Service d'envoi pour l'Italie"
+msgstr "Service d’envoi pour l’Italie"
 
 msgid "Sending service Luxembourg"
-msgstr "Service d'envoi pour le Luxembourg"
+msgstr "Service d’envoi pour le Luxembourg"
 
 msgid "Number of products"
 msgstr "Nombre de produits"
@@ -1534,22 +1538,22 @@ msgid "Add discount"
 msgstr "Ajouter une réduction"
 
 msgid "Use the multi-parcels shipping"
-msgstr "Utiliser l'envoi en multi-colis"
+msgstr "Utiliser l’envoi en multi-colis"
 
 msgid "If you want your client to receive all the parcels at the same time, activate this option and specify the exact number of parcels."
 msgstr "Si vous souhaitez que votre client reçoive tous les colis en même temps, activez cette option et donnez le nombre exact de colis."
 
 msgid "Parcel n°%1$s / %2$s"
-msgstr "Colis n°%1$s / %2$s"
+msgstr "Colis n°%1$s/%2$s"
 
 msgid "Number of parcels:"
-msgstr "Nombre de colis :"
+msgstr "Nombre de colis :"
 
 msgid "Incorrect number of parcels"
 msgstr "Nombre de colis incorrect"
 
 msgid "All labels have already been generated. To generate a new label, please uncheck the multi-parcels shipping."
-msgstr "Toutes les étiquettes ont déjà été générées. Pour générer une nouvelle étiquette, veuillez décocher l'envoi en multi-colis."
+msgstr "Toutes les étiquettes ont déjà été générées. Pour générer une nouvelle étiquette, veuillez décocher l’envoi en multi-colis."
 
 msgid "All labels have been generated."
 msgstr "Toutes les étiquettes ont été générées."
@@ -1558,7 +1562,7 @@ msgid "If you made a mistake or if you want to change the total number of parcel
 msgstr "Si vous avez fait une erreur ou si vous souhaitez changer le nombre total de colis, vous pouvez supprimer les étiquettes générées."
 
 msgid "You cannot delete this label because the label %s is bound to it."
-msgstr "Vous ne pouvez pas supprimer cette étiquette car l'étiquette %s lui est liée."
+msgstr "Vous ne pouvez pas supprimer cette étiquette car l’étiquette %s lui est liée."
 
 msgid "Master parcel"
 msgstr "Colis maître"
@@ -1579,28 +1583,28 @@ msgid "Customs category"
 msgstr "Catégorie de nature des envois"
 
 msgid "Use Colissimo Insurance for outward label?"
-msgstr "Utiliser l'assurance Colissimo pour les étiquettes aller ?"
+msgstr "Utiliser l’assurance Colissimo pour les étiquettes aller ?"
 
 msgid "If enabled, each outward label generation will use Colissimo Insurance feature by default."
-msgstr "Si activé, les étiquettes aller automatiquement générées utiliseront l'assurance Colissimo."
+msgstr "Si activé, les étiquettes aller automatiquement générées utiliseront l’assurance Colissimo."
 
 msgid "Use Colissimo Insurance for inward label?"
-msgstr "Utiliser l'assurance Colissimo pour les étiquettes retour ?"
+msgstr "Utiliser l’assurance Colissimo pour les étiquettes retour ?"
 
 msgid "If enabled, each inward label generation will use Colissimo Insurance feature by default."
-msgstr "Si activé, les étiquettes retour automatiquement générées utiliseront l'assurance Colissimo."
+msgstr "Si activé, les étiquettes retour automatiquement générées utiliseront l’assurance Colissimo."
 
 msgid "Pickup map type"
 msgstr "Type de carte pour les points de retrait"
 
 msgid "Google Maps (requires an API key)"
-msgstr "Google Maps (requiert une clé d'API)"
+msgstr "Google Maps (requiert une clé d’API)"
 
 msgid "Colissimo widget"
 msgstr "Widget Colissimo"
 
 msgid "Add the invoice when downloading the label"
-msgstr "Ajouter la facture quand l'étiquette est téléchargée"
+msgstr "Ajouter la facture quand l’étiquette est téléchargée"
 
 msgid "In the Colissimo listing when you download a single label, if this option is checked it adds the invoice to the PDF file."
 msgstr "Sur le listing Colissimo quand vous téléchargez une seule étiquette, si cette option est cochée alors la facture sera ajoutée au fichier PDF."
@@ -1609,13 +1613,13 @@ msgid "Leaflet (free)"
 msgstr "Leaflet (gratuit)"
 
 msgid "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."
-msgstr "Les frais de livraison ne doivent pas être gratuits pour que la déclaration de douanes soit valide, vous pouvez le modifier manuellement en activant l'option Modifier les prix et les poids."
+msgstr "Les frais de livraison ne doivent pas être gratuits pour que la déclaration de douanes soit valide, vous pouvez le modifier manuellement en activant l’option Modifier les prix et les poids."
 
 msgid "Your site's cron system is disabled, the shipping statuses won't be updated."
 msgstr "Le système de cron de votre site est désactivé, les statuts de livraison ne pourront pas être mis à jour."
 
 msgid "The packaging weight you configured is high, the shipping methods may not show up on your store if the packaging weight + the cart weight are greater than 30kg."
-msgstr "Le poids de l'emballage que vous avez configuré est élevé, les méthodes d'expédition peuvent ne pas s'afficher sur votre boutique si le poids de l'emballage + le poids du panier dépassent 30kg."
+msgstr "Le poids de l’emballage que vous avez configuré est élevé, les méthodes d’expédition peuvent ne pas s’afficher sur votre boutique si le poids de l’emballage + le poids du panier dépassent 30kg."
 
 msgid "Maximum number of displayed relays"
 msgstr "Nombre maximum de points de retrait affichés"
@@ -1627,7 +1631,7 @@ msgid "Valid Colissimo credentials"
 msgstr "Identifiants Colissimo valides"
 
 msgid "Your Colissimo credentials are incorrect, you won't be able to generate labels or show the pickup map to your customers."
-msgstr "Vos idendifiants Colissimo sont incorrects, vous ne pourrez pas générer d'étiquette ou afficher la carte des points de retrait à vos clients."
+msgstr "Vos idendifiants Colissimo sont incorrects, vous ne pourrez pas générer d’étiquette ou afficher la carte des points de retrait à vos clients."
 
 msgid "Please enter your Colissimo credentials to be able to generate labels and show the pickup map."
 msgstr "Veuillez entrer vos identifiants Colissimo pour pouvoir générer des étiquettes et afficher la carte des points de retrait."
@@ -1651,13 +1655,13 @@ msgid "AT %dm"
 msgstr "A %dm"
 
 msgid "Opening hours"
-msgstr "Heures d'ouverture"
+msgstr "Heures d’ouverture"
 
 msgid "Default display in mobile"
 msgstr "Affichage par défaut en mobile"
 
 msgid "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
-msgstr "Quand l'utilisateur est sur un appareil mobile avec GoogleMaps ou Leaflet, l'affichage par défaut peut être la liste des points de retrait ou la carte et la liste."
+msgstr "Quand l’utilisateur est sur un appareil mobile avec GoogleMaps ou Leaflet, l’affichage par défaut peut être la liste des points de retrait ou la carte et la liste."
 
 msgid "Map and list"
 msgstr "Carte et liste"
@@ -1666,19 +1670,19 @@ msgid "List only"
 msgstr "Liste uniquement"
 
 msgid "The product couldn't be found."
-msgstr "Le produit n'a pas pu être trouvé."
+msgstr "Le produit n’a pas pu être trouvé."
 
 msgid "This order could not be loaded by WooCommerce"
-msgstr "Cette commande n'a pas pu être chargée par WooCommerce"
+msgstr "Cette commande n’a pas pu être chargée par WooCommerce"
 
 msgid "The DIVI option General => Performance => Defer jQuery And jQuery Migrate is activated. Please disable it to prevent DIVI from breaking the Colissimo widget, or change the pickup map type."
-msgstr "L'option DIVI Général => Performance => Différer jQuery et jQuery Migrate est activée. Veuillez la désactiver pour empêcher DIVI de casser le widget Colissimo, ou changez de type de carte de points de retrait"
+msgstr "L’option DIVI Général => Performance => Différer jQuery et jQuery Migrate est activée. Veuillez la désactiver pour empêcher DIVI de casser le widget Colissimo, ou changez de type de carte de points de retrait"
 
 msgid "Calculate shipping method before applying taxes"
 msgstr "Calculer les méthodes de livraison avant que les taxes ne soient appliquées"
 
 msgid "If enabled, the available shipping methods and fees will be calculated based on the cart price before applying any tax."
-msgstr "Si cette option est activée, les méthodes d'expédition disponibles et les frais seront calculés sur la base du prix du panier avant l'application de toute taxe."
+msgstr "Si cette option est activée, les méthodes d’expédition disponibles et les frais seront calculés sur la base du prix du panier avant l’application de toute taxe."
 
 msgid "Return labels for International shipments are only available in PDF A4 format and will ignore this option."
 msgstr "Les étiquettes retour pour les envois internationaux sont uniquement disponibles au format PDF A4 et ignoreront cette option."
@@ -1687,7 +1691,7 @@ msgid "Number of days for the end of period slip"
 msgstr "Nombre de jours pour le bordereau de fin de période"
 
 msgid "Choose the number of days taken into account for the end of period slip. For example if you choose 2, the slip will be generated with yesterday and today's labels that haven't any slip yet."
-msgstr "Choisissez le nombre de jours pris en compte pour le bordereau de fin de période. Par exemple si vous choisissez 2, le bordereau sera généré avec toutes les étiquettes d'hier et aujourd'hui qui n'ont pas encore de bordereau."
+msgstr "Choisissez le nombre de jours pris en compte pour le bordereau de fin de période. Par exemple si vous choisissez 2, le bordereau sera généré avec toutes les étiquettes d’hier et aujourd’hui qui n’ont pas encore de bordereau."
 
 msgid "PDF office printing, dimension 10cm x 12cm, and resolution of 300dpi"
 msgstr "Impression bureautique en PDF, de dimension 10cm par 12cm, et de résolution 300dpi"
@@ -1720,13 +1724,13 @@ msgid "Apply extra cost also for free shipping"
 msgstr "Appliquer le coût supplémentaire même pour la livraison gratuite"
 
 msgid "If you select \"Yes\", the extra cost will be applied even if the shipping is free. This includes \"Free from order value\", \"Always free?\" and \"Free shipping classes\" options."
-msgstr "Si vous sélectionnez \"Oui\", le coût supplémentaire sera appliqué même si la livraison est gratuite. Cela inclut les options \"Gratuit à partir du prix de commande\", \"Toujours gratuit ?\" et \"Classes d'expédition gratuites\"."
+msgstr "Si vous sélectionnez \"Oui\", le coût supplémentaire sera appliqué même si la livraison est gratuite. Cela inclut les options \"Gratuit à partir du prix de commande\", \"Toujours gratuit ?\" et \"Classes d’expédition gratuites\"."
 
 msgid "Display more pickup points"
 msgstr "Afficher plus de points de retrait"
 
 msgid "Plugin overview"
-msgstr "Présentation générale de l'extension"
+msgstr "Présentation générale de l’extension"
 
 msgid "Carrier configuration"
 msgstr "Configuration des transporteurs"
@@ -1768,40 +1772,40 @@ msgid "Home"
 msgstr "Accueil"
 
 msgid "Welcome to your Colissimo plugin!"
-msgstr "Bienvenue sur votre extension Colissimo !"
+msgstr "Bienvenue sur votre extension Colissimo !"
 
 msgid "<u>Not yet registered on Colissimo?</u> Here is how to do it:"
-msgstr "<u>Pas encore inscrit sur Colissimo ?</u> Voici comment faire :"
+msgstr "<u>Pas encore inscrit sur Colissimo ?</u> Voici comment faire :"
 
 msgid "To register for the %1$s option, fill %2$s to create an account and receive your ids within a few days."
-msgstr "Pour souscrire à l'option %1$s, remplissez %2$s pour créer un compte et recevoir vos identifiants sous quelques jours."
+msgstr "Pour souscrire à l’option %1$s, remplissez %2$s pour créer un compte et recevoir vos identifiants sous quelques jours."
 
 msgid "To register for the %1$s option, fill %2$s to be contacted by a sales representative."
-msgstr "Pour souscrire à l'option %1$s, remplissez %2$s pour être contacté par un conseiller commercial."
+msgstr "Pour souscrire à l’option %1$s, remplissez %2$s pour être contacté par un conseiller commercial."
 
 msgid "this commercial contact form"
 msgstr "ce formulaire de contact commercial"
 
 msgid "<u>Already registered on Colissimo?</u> Here is how to configure your plugin:"
-msgstr "<u>Déjà inscrit sur Colissimo ?</u> Voici comment configurer votre extension :"
+msgstr "<u>Déjà inscrit sur Colissimo ?</u> Voici comment configurer votre extension :"
 
 msgid "I associate my account to the Colissimo plugin"
-msgstr "J'associe mon compte à l'extension Colissimo"
+msgstr "J’associe mon compte à l’extension Colissimo"
 
 msgid "To connect the plugin, you must enter your Colissimo ID and password in the \"General\" tab of this plugin."
-msgstr "Pour connecter l'extension, vous devez entrer votre identifiant et mot de passe Colissimo dans l'onglet \"Général\" de cette extension."
+msgstr "Pour connecter l’extension, vous devez entrer votre identifiant et mot de passe Colissimo dans l’onglet \"Général\" de cette extension."
 
 msgid "The ID must be a 6 digits number, this is the one you use to connect to %s."
-msgstr "L'identifiant doit être un nombre à 6 chiffres, c'est celui que vous utilisez pour vous connecter sur %s."
+msgstr "L’identifiant doit être un nombre à 6 chiffres, c’est celui que vous utilisez pour vous connecter sur %s."
 
 msgid "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
-msgstr "Je configure mes paramètres pour simplifier mes préparations d'expédition grâce aux fonctionnalités Colissimo"
+msgstr "Je configure mes paramètres pour simplifier mes préparations d’expédition grâce aux fonctionnalités Colissimo"
 
 msgid "Enter %s to be able to generate labels"
 msgstr "Saisissez %s pour pouvoir générer des étiquettes"
 
 msgid "your origin address"
-msgstr "votre adresse d'origine"
+msgstr "votre adresse d’origine"
 
 msgid "%s of your labels (either PDF or format for thermal printing)"
 msgstr "%s de vos étiquettes (soit PDF soit format pour impression thermique)"
@@ -1810,7 +1814,7 @@ msgid "Choose the format"
 msgstr "Choisissez le format"
 
 msgid "In case of thermal printing, %s to your printer"
-msgstr "Dans le cas d'une impression thermique, %s à votre imprimante"
+msgstr "Dans le cas d’une impression thermique, %s à votre imprimante"
 
 msgid "configure the connection"
 msgstr "configurez la connexion"
@@ -1819,7 +1823,7 @@ msgid "Enter %s for your parcels"
 msgstr "Saisissez %s pour vos colis"
 
 msgid "the packaging weight"
-msgstr "le poids de l'emballage"
+msgstr "le poids de l’emballage"
 
 msgid "Enter %s for your shipments outside the European Union"
 msgstr "Saisissez %s pour vos expéditions hors Union Européenne"
@@ -1828,13 +1832,13 @@ msgid "your customs formalities"
 msgstr "vos formalités douanières"
 
 msgid "I make sure the WooCommerce settings are complete"
-msgstr "Je m'assure que les paramètres WooCommerce sont complets"
+msgstr "Je m’assure que les paramètres WooCommerce sont complets"
 
 msgid "%s must be complete"
 msgstr "%s doit être remplie"
 
 msgid "The shop address"
-msgstr "L'adresse de la boutique"
+msgstr "L’adresse de la boutique"
 
 msgid "All the products must have a weight under their \"Shipping\" section"
 msgstr "Tous les produits doivent avoir un poids dans leur section \"Expédition\""
@@ -1843,40 +1847,40 @@ msgid "The products may have a custom HS code and country of manufacture under t
 msgstr "Les produits peuvent avoir un code SH et un pays de fabrication personnalisés dans leur section \"Attributs\""
 
 msgid "I configure my shipping rates"
-msgstr "Je configure mes tarifs d'expédition"
+msgstr "Je configure mes tarifs d’expédition"
 
 msgid "Head to %s"
 msgstr "Rendez-vous dans %s"
 
 msgid "the \"Shipping\" tab"
-msgstr "l'onglet \"Expédition\""
+msgstr "l’onglet \"Expédition\""
 
 msgid "The Colissimo plugin automatically creates its zones based on shipping costs rules"
-msgstr "L'extension Colissimo crée automatiquement ses zones en fonction des règles de frais d'expédition"
+msgstr "L’extension Colissimo crée automatiquement ses zones en fonction des règles de frais d’expédition"
 
 msgid "Activate the shipping methods you want to show to your customers"
-msgstr "Activez les méthodes d'expédition que vous souhaitez proposer à vos clients"
+msgstr "Activez les méthodes d’expédition que vous souhaitez proposer à vos clients"
 
 msgid "You can customize the titles and shipping prices of the delivery solutions for your customers"
-msgstr "Vous pouvez personnaliser les titres et les prix d'expédition des solutions de livraison pour vos clients"
+msgstr "Vous pouvez personnaliser les titres et les prix d’expédition des solutions de livraison pour vos clients"
 
 msgid "Note that shipping prices for Colissimo international are not automatically added"
-msgstr "Notez que les prix d'expédition pour Colissimo international ne sont pas ajoutés automatiquement"
+msgstr "Notez que les prix d’expédition pour Colissimo international ne sont pas ajoutés automatiquement"
 
 msgid "Beware: Colissimo doesn't handle parcels over 30kg, including packaging weight. Be careful about the weight unit and when you modify the weight ranges."
-msgstr "Attention : Colissimo ne gère pas les colis de plus de 30kg, incluant le poids de l'emballage. Soyez vigilant sur l’unité de poids et lorsque vous modifiez les tranches de poids."
+msgstr "Attention : Colissimo ne gère pas les colis de plus de 30kg, incluant le poids de l’emballage. Soyez vigilant sur l’unité de poids et lorsque vous modifiez les tranches de poids."
 
 msgid "Everything is ready!"
-msgstr "Tout est prêt !"
+msgstr "Tout est prêt !"
 
 msgid "We have created a special page just for you, to view your new orders in %s"
 msgstr "Nous avons créé une page spéciale pour vous, pour consulter vos nouvelles commandes dans %s"
 
 msgid "Need help?"
-msgstr "Besoin d'aide ?"
+msgstr "Besoin d’aide ?"
 
 msgid "You can also contact the Colissimo support by phone at %1$s or the technical support by email at %2$s"
-msgstr "Vous pouvez également contacter le support Colissimo par téléphone au %1$s ou le support technique par email sur %2$s"
+msgstr "Vous pouvez également contacter le support Colissimo par téléphone au %1$s ou le support technique par e-mail sur %2$s"
 
 msgid "You will find video tutorials on %s."
 msgstr "Vous trouverez des tutoriels vidéos sur %s."
@@ -1885,10 +1889,10 @@ msgid "this page"
 msgstr "cette page"
 
 msgid "In the Colissimo listing when you print a single label, if this option is checked it adds the invoice to the printed file."
-msgstr "Sur le listing Colissimo quand vous imprimez une seule étiquette, si cette option est cochée alors la facture sera ajoutée lors de l'impression."
+msgstr "Sur le listing Colissimo quand vous imprimez une seule étiquette, si cette option est cochée alors la facture sera ajoutée lors de l’impression."
 
 msgid "Change Colissimo shipping method"
-msgstr "Changer la méthode d'expédition Colissimo"
+msgstr "Changer la méthode d’expédition Colissimo"
 
 msgid "Outward labels generation date"
 msgstr "Date de génération des étiquettes aller"
@@ -1930,7 +1934,7 @@ msgid "Generate with the selected parcels"
 msgstr "Générer avec les colis sélectionnés"
 
 msgid "Add the invoice when printing the label"
-msgstr "Ajouter la facture lors de l'impression de l'étiquette"
+msgstr "Ajouter la facture lors de l’impression de l’étiquette"
 
 msgid "Developer documentation"
 msgstr "Documentation développeur"
@@ -1945,22 +1949,43 @@ msgid "CN23 format"
 msgstr "Format de la CN23"
 
 msgid "From:"
-msgstr "De :"
+msgstr "De :"
 
 msgid "to:"
-msgstr "à :"
+msgstr "à :"
 
 msgid "Invoices"
 msgstr "Factures"
 
 msgid "Label creation date"
-msgstr "Date de création de l'étiquette"
+msgstr "Date de création de l’étiquette"
 
 msgid "Order creation date"
 msgstr "Date de création de la commande"
 
 msgid "We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:"
-msgstr "Nous avons détecté que vous n’avez pas encore signé la dernière version de nos CGV. Votre consentement est nécessaire afin de pouvoir continuer à utiliser les services Colissimo. Nous vous invitons donc à les signer sur votre espace Colissimo entreprise, en cliquant sur le lien ci-dessous :"
+msgstr "Nous avons détecté que vous n’avez pas encore signé la dernière version de nos CGV. Votre consentement est nécessaire afin de pouvoir continuer à utiliser les services Colissimo. Nous vous invitons donc à les signer sur votre espace Colissimo entreprise, en cliquant sur le lien ci-dessous :"
 
 msgid "Sign the GTC"
 msgstr "Signer les CGV"
+
+msgid "If the return label doesn't exist, it will be generated"
+msgstr "Si l’étiquette de retour n’existe pas, elle sera générée"
+
+msgid "Plugin feedback"
+msgstr "Retours sur l’extension"
+
+msgid "Would you like to help us improve our plugin by answering our questionnaire?"
+msgstr "Souhaitez-vous nous aider à améliorer notre extension en répondant à notre questionnaire ?"
+
+msgid "Sure, why not!"
+msgstr "Oui, pourquoi pas !"
+
+msgid "No, thanks"
+msgstr "Non, merci"
+
+msgid "Please set a valid phone number"
+msgstr "Veuillez entrer un numéro de téléphone valide"
+
+msgid "Please set a pick up point"
+msgstr "Veuillez sélectionner un point de retrait"

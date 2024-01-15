@@ -23,7 +23,7 @@ class LpcBordereauGenerationApi extends LpcSoapApi {
             ]
         );
 
-        $request['password'] = LpcHelper::get_option('lpc_pwd_webservices');
+        $request['password'] = LpcHelper::getPasswordWebService();
 
         $response = $this->getSoapClient()->generateBordereauByParcelsNumbers($request)->return;
 
@@ -60,7 +60,7 @@ class LpcBordereauGenerationApi extends LpcSoapApi {
             ]
         );
 
-        $request['password'] = LpcHelper::get_option('lpc_pwd_webservices');
+        $request['password'] = LpcHelper::getPasswordWebService();
 
         $response = $this->getSoapClient()->getBordereauByNumber($request)->return;
 

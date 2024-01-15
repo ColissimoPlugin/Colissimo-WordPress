@@ -86,7 +86,7 @@ class LpcOrderTracking extends LpcComponent {
         foreach ($trackingNumbers as $oneTrackingNumber) {
             $downloadInwardLabel = $this->labelInwardDownloadAccountAction->getUrlForTrackingNumber($oneTrackingNumber);
             $text                = sprintf(__('For outward label %s', 'wc_colissimo'), $oneTrackingNumber);
-            $links[]             = '<li><a target="_blank" href="' . esc_url($downloadInwardLabel) . '">' . $text . '</a></li>';
+            $links[]             = '<li><a href="' . esc_url($downloadInwardLabel) . '">' . $text . '</a></li>';
         }
         $output[] = implode('', $links);
         $output[] = '</ul>';

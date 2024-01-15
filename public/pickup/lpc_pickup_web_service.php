@@ -4,6 +4,11 @@ require_once LPC_INCLUDES . 'lpc_modal.php';
 require_once LPC_PUBLIC . 'pickup' . DS . 'lpc_pickup.php';
 
 class LpcPickupWebService extends LpcPickup {
+    const LEAFLET_JS_URL = 'https://unpkg.com/leaflet@1.9.2/dist/leaflet.js';
+    const LEAFLET_JS_INTEGRITY = 'sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=';
+    const LEAFLET_CSS_URL = 'https://unpkg.com/leaflet@1.9.2/dist/leaflet.css';
+    const GOOGLE_MAPS_JS_URL = 'https://maps.googleapis.com/maps/api/js?key=';
+
     protected $modal;
     protected $ajaxDispatcher;
     protected $lpcPickUpSelection;
@@ -35,14 +40,17 @@ class LpcPickupWebService extends LpcPickup {
         add_action(
             'wp_enqueue_scripts',
             function () {
-                if (is_checkout()) {
+                if (is_checkout() || has_block('woocommerce/checkout')) {
                     wp_register_script('lpc_pick_up_ws', plugins_url('/js/pickup/webservice.js', LPC_INCLUDES . 'init.php'), ['jquery'], LPC_VERSION, true);
 
                     $args = [
-                        'ajaxURL'            => $this->ajaxDispatcher->getUrlForTask('pickupWS'),
-                        'pickUpSelectionUrl' => $this->lpcPickUpSelection->getAjaxUrl(),
-                        'mapType'            => LpcHelper::get_option('lpc_pickup_map_type', 'widget'),
-                        'mapMarker'          => plugins_url('/images/map_marker.png', LPC_INCLUDES . 'init.php'),
+                        'baseAjaxUrl'           => admin_url('admin-ajax.php'),
+                        'messagePhoneRequired'  => __('Please set a valid phone number', 'wc_colissimo'),
+                        'messagePickupRequired' => __('Please set a pick up point', 'wc_colissimo'),
+                        'ajaxURL'               => $this->ajaxDispatcher->getUrlForTask('pickupWS'),
+                        'pickUpSelectionUrl'    => $this->lpcPickUpSelection->getAjaxUrl(),
+                        'mapType'               => LpcHelper::get_option('lpc_pickup_map_type', 'widget'),
+                        'mapMarker'             => plugins_url('/images/map_marker.png', LPC_INCLUDES . 'init.php'),
                     ];
 
                     wp_localize_script('lpc_pick_up_ws', 'lpcPickUpSelection', $args);
@@ -53,6 +61,17 @@ class LpcPickupWebService extends LpcPickup {
                     wp_enqueue_script('lpc_pick_up_ws');
                     wp_enqueue_style('lpc_pick_up_ws');
                     wp_enqueue_style('lpc_pick_up');
+                    $googleApiKey = LpcHelper::get_option('lpc_gmap_key', '');
+                    $mapType      = LpcHelper::get_option('lpc_pickup_map_type', 'leaflet');
+                    if ('leaflet' !== $mapType && !empty($googleApiKey)) {
+                        wp_register_script('lpc_google_maps', self::GOOGLE_MAPS_JS_URL . $googleApiKey, [], LPC_VERSION);
+                        wp_enqueue_script('lpc_google_maps');
+                    } else {
+                        wp_register_script('lpc_leaflet_js', self::LEAFLET_JS_URL, [], LPC_VERSION, ['integrity' => self::LEAFLET_JS_INTEGRITY]);
+                        wp_register_style('lpc_leaflet_css', self::LEAFLET_CSS_URL, [], LPC_VERSION);
+                        wp_enqueue_script('lpc_leaflet_js');
+                        wp_enqueue_style('lpc_leaflet_css');
+                    }
                     $this->modal->loadScripts();
                 }
             }
@@ -72,15 +91,19 @@ class LpcPickupWebService extends LpcPickup {
             return;
         }
 
+        echo $this->getWebserviceModal();
+    }
+
+    public function getWebserviceModal($forceCheckout = false) {
         $wcSession = WC()->session;
         $customer  = $wcSession->customer;
 
         $map = LpcHelper::renderPartial(
             'pickup' . DS . 'webservice_map.php',
             [
-                'ceAddress'     => $customer['shipping_address'],
+                'ceAddress'     => str_replace('’', "'", $customer['shipping_address']),
                 'ceZipCode'     => $customer['shipping_postcode'],
-                'ceTown'        => $customer['shipping_city'],
+                'ceTown'        => str_replace('’', "'", $customer['shipping_city']),
                 'ceCountryId'   => $customer['shipping_country'],
                 'maxRelayPoint' => LpcHelper::get_option('lpc_max_relay_point', 20),
             ]
@@ -106,11 +129,12 @@ class LpcPickupWebService extends LpcPickup {
             'apiKey'       => LpcHelper::get_option('lpc_gmap_key', ''),
             'currentRelay' => $currentRelay,
             'type'         => 'button',
-            'showButton'   => is_checkout(),
-            'showInfo'     => is_checkout(),
+            'showButton'   => is_checkout() || $forceCheckout,
+            'showInfo'     => is_checkout() || $forceCheckout,
             'mapType'      => LpcHelper::get_option('lpc_pickup_map_type', 'leaflet'),
         ];
-        echo LpcHelper::renderPartial('pickup' . DS . 'webservice.php', $args);
+
+        return LpcHelper::renderPartial('pickup' . DS . 'webservice.php', $args);
     }
 
     public function pickupWS() {
@@ -208,7 +232,7 @@ class LpcPickupWebService extends LpcPickup {
             } else {
                 LpcLogger::error($return->errorCode . ' : ' . $return->errorMessage);
 
-                return $this->ajaxDispatcher->makeError(['message' => __('Error')]);
+                return $this->ajaxDispatcher->makeError(['message' => __('Error', 'wc_colissimo')]);
             }
         }
     }

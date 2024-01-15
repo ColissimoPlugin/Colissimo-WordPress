@@ -17,7 +17,7 @@ class LpcPickUpWidgetApi extends LpcRestApi {
         }
 
         if (empty($password)) {
-            $password = LpcHelper::get_option('lpc_pwd_webservices');
+            $password = LpcHelper::getPasswordWebService();
         }
 
         try {

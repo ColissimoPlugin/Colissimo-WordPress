@@ -24,9 +24,9 @@ class LpcLabelQueries extends LpcComponent {
     /** @var LpcInwardLabelEmailManager */
     protected $inwardLabelEmailManager;
     /** @var LpcLabelOutwardGenerateAction */
-    protected $LabelOutwardCreateAction;
+    protected $labelOutwardCreateAction;
     /** @var LpcLabelInwardGenerateAction */
-    protected $LabelInwardCreateAction;
+    protected $labelInwardCreateAction;
 
     public function __construct(
         LpcInwardLabelDb $inwardLabelDb = null,
@@ -234,18 +234,25 @@ class LpcLabelQueries extends LpcComponent {
                . 'title="' . __('Delete inward label', 'wc_colissimo') . '"';
     }
 
-    protected function getLabelOutwardDownloadAttr($trackingNumber, $format) {
-        switch ($format) {
-            case LpcLabelGenerationPayload::LABEL_FORMAT_ZPL:
-            case LpcLabelGenerationPayload::LABEL_FORMAT_DPL:
-                $outwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
-                    [$trackingNumber]
-                );
-                break;
-            case LpcLabelGenerationPayload::LABEL_FORMAT_PDF:
-            default:
-                $outwardLabelDownloadLink = $this->labelOutwardDownloadAction->getUrlForTrackingNumber($trackingNumber);
-                break;
+    protected function getLabelOutwardDownloadAttr($trackingNumber, $format): string {
+        $cn23Data = $this->outwardLabelDb->getCn23For($trackingNumber);
+        if (!empty($cn23Data['format']) && LpcLabelGenerationPayload::LABEL_FORMAT_PDF !== $cn23Data['format']) {
+            $outwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
+                [$trackingNumber]
+            );
+        } else {
+            switch ($format) {
+                case LpcLabelGenerationPayload::LABEL_FORMAT_ZPL:
+                case LpcLabelGenerationPayload::LABEL_FORMAT_DPL:
+                    $outwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
+                        [$trackingNumber]
+                    );
+                    break;
+                case LpcLabelGenerationPayload::LABEL_FORMAT_PDF:
+                default:
+                    $outwardLabelDownloadLink = $this->labelOutwardDownloadAction->getUrlForTrackingNumber($trackingNumber);
+                    break;
+            }
         }
 
         return 'data-link="' . $outwardLabelDownloadLink . '" title="' . __(
@@ -254,18 +261,25 @@ class LpcLabelQueries extends LpcComponent {
             ) . '"';
     }
 
-    protected function getLabelInwardDownloadAttr($trackingNumber, $format) {
-        switch ($format) {
-            case LpcLabelGenerationPayload::LABEL_FORMAT_ZPL:
-            case LpcLabelGenerationPayload::LABEL_FORMAT_DPL:
-                $inwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
-                    [$trackingNumber]
-                );
-                break;
-            case LpcLabelGenerationPayload::LABEL_FORMAT_PDF:
-            default:
-                $inwardLabelDownloadLink = $this->labelInwardDownloadAction->getUrlForTrackingNumber($trackingNumber);
-                break;
+    protected function getLabelInwardDownloadAttr($trackingNumber, $format): string {
+        $cn23Data = $this->inwardLabelDb->getCn23For($trackingNumber);
+        if (!empty($cn23Data['format']) && LpcLabelGenerationPayload::LABEL_FORMAT_PDF !== $cn23Data['format']) {
+            $inwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
+                [$trackingNumber]
+            );
+        } else {
+            switch ($format) {
+                case LpcLabelGenerationPayload::LABEL_FORMAT_ZPL:
+                case LpcLabelGenerationPayload::LABEL_FORMAT_DPL:
+                    $inwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
+                        [$trackingNumber]
+                    );
+                    break;
+                case LpcLabelGenerationPayload::LABEL_FORMAT_PDF:
+                default:
+                    $inwardLabelDownloadLink = $this->labelInwardDownloadAction->getUrlForTrackingNumber($trackingNumber);
+                    break;
+            }
         }
 
         return 'data-link="' . $inwardLabelDownloadLink . '" title="' . __(

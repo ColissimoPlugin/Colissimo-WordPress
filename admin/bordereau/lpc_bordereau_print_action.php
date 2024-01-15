@@ -49,7 +49,7 @@ class LpcBordereauPrintAction extends LpcComponent {
             $bordereau   = $this->bordereauGenerationApi->getBordereauByNumber($bordereauID)->bordereau;
 
             $tmpDir = ini_get('upload_tmp_dir');
-            if (empty($tmpDir)) {
+            if (empty($tmpDir) || !is_writable($tmpDir)) {
                 $tmpDir = sys_get_temp_dir();
             }
 

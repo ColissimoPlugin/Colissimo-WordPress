@@ -27,7 +27,7 @@ class LpcInwardLabelDb extends LpcDb {
         $charset_collate = $wpdb->get_charset_collate();
 
         return <<<END_SQL
-CREATE TABLE $table_name (
+CREATE TABLE IF NOT EXISTS $table_name (
     id                      INT UNSIGNED     NOT NULL AUTO_INCREMENT,
     order_id                INT(20) UNSIGNED NOT NULL,
     label                   MEDIUMBLOB       NULL,
@@ -37,6 +37,7 @@ CREATE TABLE $table_name (
     tracking_number         VARCHAR(20)      NULL,
     outward_tracking_number VARCHAR(20)      NULL,
     printed                 TINYINT(1)       NOT NULL DEFAULT 0,
+    cn23_format             VARCHAR(10)      NULL,
     PRIMARY KEY (id),
     INDEX order_id (order_id),
     INDEX tracking_number (tracking_number),
@@ -178,7 +179,17 @@ END_SQL;
         }
 
         // phpcs:disable
-        $sql = 'INSERT INTO ' . $tableName . ' (`order_id`, `label`, `label_format`, `label_created_at`, `cn23`, `tracking_number`, `outward_tracking_number`) VALUES (%d, %s, %s, %s, %s, %s, %s)';
+        $sql = 'INSERT INTO ' . $tableName . ' (`order_id`, `label`, `label_format`, `label_created_at`, `cn23`, `tracking_number`, `outward_tracking_number`, `cn23_format`) VALUES (%d, %s, %s, %s, %s, %s, %s, %s)';
+
+        $cn23Format = LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
+        if (!empty($cn23)) {
+            $cn23FormatOption = LpcHelper::get_option('lpc_cn23_format');
+            if (strpos($cn23FormatOption, 'ZPL') !== false) {
+                $cn23Format = LpcLabelGenerationPayload::LABEL_FORMAT_ZPL;
+            } elseif (strpos($cn23FormatOption, 'DPL') !== false) {
+                $cn23Format = LpcLabelGenerationPayload::LABEL_FORMAT_DPL;
+            }
+        }
 
         $sql = $wpdb->prepare(
             $sql,
@@ -188,14 +199,15 @@ END_SQL;
             current_time('mysql'),
             $cn23,
             $trackingNumber,
-            $outwardTrackingNumber
+            $outwardTrackingNumber,
+            $cn23Format
         );
 
         return $wpdb->query($sql);
         // phpcs:enable
     }
 
-    public function getLabelFor($trackingNumber) {
+    public function getLabelFor($trackingNumber): array {
         global $wpdb;
         $tableName = $this->getTableName();
 
@@ -271,24 +283,32 @@ END_SQL;
         return $result;
     }
 
-    public function getCn23For($trackingNumber) {
+    public function getCn23For($trackingNumber): array {
         global $wpdb;
         $tableName = $this->getTableName();
 
         // phpcs:disable
         $query = <<<END_SQL
-SELECT cn23
+SELECT cn23, cn23_format
 FROM $tableName
 WHERE tracking_number = "%s"
 END_SQL;
 
-        $query = $wpdb->prepare($query, $trackingNumber);
-
+        $query      = $wpdb->prepare($query, $trackingNumber);
         $inwardCn23 = $wpdb->get_results($query);
-
         // phpcs:enable
 
-        return !empty($inwardCn23[0]->cn23) ? $inwardCn23[0]->cn23 : '';
+        $cn23   = '';
+        $format = '';
+        if (!empty($inwardCn23[0])) {
+            $cn23   = $inwardCn23[0]->cn23;
+            $format = !empty($inwardCn23[0]->cn23_format) ? $inwardCn23[0]->cn23_format : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
+        }
+
+        return [
+            'format' => $format,
+            'cn23'   => $cn23,
+        ];
     }
 
     public function getLabelsInfosForOrdersId($ordersId = []) {
@@ -434,6 +454,27 @@ END_SQL;
         $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `label_format` `label_format` VARCHAR(10) NULL');
         $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `tracking_number` `tracking_number` VARCHAR(20) NULL');
         $wpdb->query('ALTER TABLE ' . $tableName . ' CHANGE `outward_tracking_number` `outward_tracking_number` VARCHAR(20) NULL');
+        // phpcs:enable
+    }
+
+    public function updateToVersion192() {
+        global $wpdb;
+        $tableName = $this->getTableName();
+
+        // phpcs:disable
+        $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
+        $updatedColumns = array_filter($columns,
+            function ($column) {
+                return 'cn23_format' === $column->Field;
+            }
+        );
+
+        if (!empty($updatedColumns)) {
+            return;
+        }
+
+        $wpdb->query('ALTER TABLE ' . $tableName . ' ADD COLUMN `cn23_format` VARCHAR(10) NULL');
+        $wpdb->query('UPDATE ' . $tableName . ' SET `cn23_format` = "PDF" WHERE `cn23` IS NOT NULL');
         // phpcs:enable
     }
 

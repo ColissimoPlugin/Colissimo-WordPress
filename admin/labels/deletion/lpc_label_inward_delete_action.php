@@ -59,7 +59,8 @@ class LpcLabelInwardDeleteAction extends LpcComponent {
 
         switch ($redirection) {
             case LpcLabelQueries::REDIRECTION_WOO_ORDER_EDIT_PAGE:
-                $urlRedirection = get_edit_post_link($orderId, '');
+                $order          = wc_get_order($orderId);
+                $urlRedirection = $order->get_edit_order_url();
                 break;
             case LpcLabelQueries::REDIRECTION_COLISSIMO_ORDERS_LISTING:
             default:

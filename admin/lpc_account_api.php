@@ -36,7 +36,7 @@ class LpcAccountApi extends LpcRestApi {
 
     public function getCgvInformation() {
         $login    = LpcHelper::get_option('lpc_id_webservices');
-        $password = LpcHelper::get_option('lpc_pwd_webservices');
+        $password = LpcHelper::getPasswordWebService();
 
         if (empty($login) || empty($password)) {
             return false;

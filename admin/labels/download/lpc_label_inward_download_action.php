@@ -61,8 +61,9 @@ class LpcLabelInwardDownloadAction extends LpcComponent {
 
             $filesToMerge[] = sys_get_temp_dir() . DS . $labelFileName;
 
-            $cn23Content = $this->inwardLabelDb->getCn23For($trackingNumber);
-            if ($cn23Content) {
+            $cn23Data    = $this->inwardLabelDb->getCn23For($trackingNumber);
+            $cn23Content = LpcLabelGenerationPayload::LABEL_FORMAT_PDF === $cn23Data['format'] ? $cn23Data['cn23'] : '';
+            if (!empty($cn23Content)) {
                 $cn23ContentFile = fopen(sys_get_temp_dir() . DS . 'inward_cn23.pdf', 'w');
                 fwrite($cn23ContentFile, $cn23Content);
                 fclose($cn23ContentFile);

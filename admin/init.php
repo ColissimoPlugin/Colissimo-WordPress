@@ -2,8 +2,6 @@
 
 defined('ABSPATH') || die('Restricted Access');
 
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
-
 require_once LPC_ADMIN . 'lpc_settings_tab.php';
 require_once LPC_ADMIN . 'pickup' . DS . 'lpc_pickup_relay_point_on_order.php';
 require_once LPC_ADMIN . 'pickup' . DS . 'lpc_admin_pickup_web_service.php';
@@ -32,17 +30,18 @@ require_once LPC_ADMIN . 'labels' . DS . 'generate' . DS . 'lpc_label_outward_ge
 require_once LPC_ADMIN . 'lpc_compatibility.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_action.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_bulk_actions.php';
+require_once LPC_ADMIN . 'settings' . DS . 'lpc_settings_logs_download.php';
 require_once LPC_ADMIN . 'shipping' . DS . 'lpc_shipping_rates.php';
 if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
     require_once LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php';
 }
 
 class LpcAdminInit {
-
     public function __construct() {
         // Add left menu
         add_action('admin_menu', [$this, 'add_menus'], 99);
         add_action('admin_menu', [$this, 'add_dev_tool'], 99);
+        LpcRegister::register('settingsLogsDownload', new LpcSettingsLogsDownload());
         LpcRegister::register('settingsTab', new LpcSettingsTab());
         LpcRegister::register('pickupRelayPointOnOrder', new LpcPickupRelayPointOnOrder());
 
@@ -291,7 +290,10 @@ class LpcAdminInit {
 
         // Colissimo Banner
         $adminOrderBanner = LpcRegister::get('lpcAdminOrderBanner');
-        $screenId         = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
+
+        $screenId = class_exists('Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\CustomOrdersTableController') && wc_get_container()
+            ->get(Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class)
+            ->custom_orders_table_usage_is_enabled()
             ? wc_get_page_screen_id('shop-order')
             : 'shop_order';
         add_meta_box(

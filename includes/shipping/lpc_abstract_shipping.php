@@ -143,19 +143,17 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         }
         $args = [];
 
+        $args['values']   = $shippingClasses;
+        $args['multiple'] = true;
         if ('classes_free_shipping' === $key) {
-            $args['values']          = $shippingClasses;
             $args['id_and_name']     = 'classes_free_shipping[]';
             $args['label']           = __('Free shipping classes', 'wc_colissimo');
             $args['selected_values'] = $this->get_option('classes_free_shipping', []);
-            $args['multiple']        = true;
             $args['description']     = __('These shipping classes qualify for free shipping', 'wc_colissimo');
         } else {
-            $args['values']          = $shippingClasses;
             $args['id_and_name']     = 'excluded_classes[]';
             $args['label']           = __('Excluded shipping classes', 'wc_colissimo');
             $args['selected_values'] = $this->get_option('excluded_classes', []);
-            $args['multiple']        = true;
             $args['description']     = __(
                 'The current shipping method will not be displayed if one product in the cart has one of these shipping classes. This option takes precedence over the option Free shipping classes',
                 'wc_colissimo'

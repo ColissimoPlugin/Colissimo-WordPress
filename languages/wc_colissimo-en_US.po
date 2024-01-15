@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "For international delivery only"
 msgstr "For international delivery only"
 
@@ -1964,3 +1968,24 @@ msgstr "We have detected that you have not yet signed the latest version of our 
 
 msgid "Sign the GTC"
 msgstr "Sign the GTC"
+
+msgid "If the return label doesn't exist, it will be generated"
+msgstr "If the return label doesn't exist, it will be generated"
+
+msgid "Plugin feedback"
+msgstr "Plugin feedback"
+
+msgid "Would you like to help us improve our plugin by answering our questionnaire?"
+msgstr "Would you like to help us improve our plugin by answering our questionnaire?"
+
+msgid "Sure, why not!"
+msgstr "Sure, why not!"
+
+msgid "No, thanks"
+msgstr "No, thanks"
+
+msgid "Please set a valid phone number"
+msgstr "Please set a valid phone number"
+
+msgid "Please set a pick up point"
+msgstr "Please set a pick up point"

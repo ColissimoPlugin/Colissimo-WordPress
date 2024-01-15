@@ -142,7 +142,7 @@ class LpcLabelGenerationPayload {
 
     public function withPassword($password = null) {
         if (null === $password) {
-            $password = LpcHelper::get_option('lpc_pwd_webservices');
+            $password = LpcHelper::getPasswordWebService();
         }
 
         if (empty($password)) {
@@ -628,7 +628,7 @@ class LpcLabelGenerationPayload {
         if (empty($instructions)) {
             unset($this->payload['letter']['parcel']['instructions']);
         } else {
-            $this->payload['letter']['parcel']['instructions'] = preg_replace('/[^A-Za-z0-9 ]/', '', $instructions);
+            $this->payload['letter']['parcel']['instructions'] = substr(preg_replace('/[^A-Za-z0-9 ]/', '', $instructions), 0, 35);
         }
 
         return $this;
@@ -716,6 +716,10 @@ class LpcLabelGenerationPayload {
             if (strpos($encodedDescription, '\u') !== false) {
                 $description = trim(preg_replace('#\\\u.{4}#Ui', '', trim($encodedDescription, '"')));
             }
+
+            // The Colissimo API returns an error if there is an accent
+            $description = LpcHelper::replaceAccents($description);
+
             $description           = substr($description, 0, 64);
             $articleDescriptions[] = $description;
 

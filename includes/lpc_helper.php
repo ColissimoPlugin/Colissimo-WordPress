@@ -6,6 +6,10 @@
 class LpcHelper {
 
     const CONFIG_FILE = 'config_options.json';
+    const ENCRYPTION_KEY = 'colissimo-key-encryption';
+    const ENCRYPTION_METHOD = 'AES-128-CTR';
+    const ENCRYPTION_OPTION = 0;
+    const ENCRYPTION_IV = '1234567891011121';
 
     protected static $configOptions;
 
@@ -191,5 +195,25 @@ class LpcHelper {
             ]
         );
         exit;
+    }
+
+    public static function encryptPassword($password) {
+        return openssl_encrypt($password, self::ENCRYPTION_METHOD, self::ENCRYPTION_KEY, self::ENCRYPTION_OPTION, self::ENCRYPTION_IV);
+    }
+
+    public static function decryptPassword($encryptedPassword) {
+        return openssl_decrypt($encryptedPassword, self::ENCRYPTION_METHOD, self::ENCRYPTION_KEY, self::ENCRYPTION_OPTION, self::ENCRYPTION_IV);
+    }
+
+    public static function getPasswordWebService() {
+        return self::decryptPassword(self::get_option('lpc_pwd_webservices'));
+    }
+
+    public static function replaceAccents(string $text) {
+        return str_replace(
+            ['’', 'é', 'è', 'ê', 'ë', 'à', 'â', 'ä', 'ô', 'ö', 'î', 'ï', 'ù', 'û', 'ü', 'ç', 'ÿ', 'É', 'È', 'Ê', 'Ë', 'À', 'Â', 'Ä', 'Ô', 'Ö', 'Î', 'Ï', 'Ù', 'Û', 'Ü', 'Ç', 'Ÿ'],
+            ['\'', 'e', 'e', 'e', 'e', 'a', 'a', 'a', 'o', 'o', 'i', 'i', 'u', 'u', 'u', 'c', 'y', 'E', 'E', 'E', 'E', 'A', 'A', 'A', 'O', 'O', 'I', 'I', 'U', 'U', 'U', 'C', 'Y'],
+            $text
+        );
     }
 }

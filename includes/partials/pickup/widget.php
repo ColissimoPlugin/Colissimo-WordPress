@@ -1,9 +1,4 @@
-<script type="text/javascript">
-    window.lpc_widget_info = <?php echo $args['widgetInfo']; ?>;
-</script>
-
 <?php $args['modal']->echo_modal(); ?>
-
 
 <?php if ($args['showButton']) { ?>
 	<div id="lpc_layer_error_message"></div>

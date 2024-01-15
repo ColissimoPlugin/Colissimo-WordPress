@@ -13,23 +13,24 @@ $description     = empty($args['description']) ? '' : $args['description'];
 		</label>
 	</th>
 	<td>
-		<select style="width: auto; max-width: 10rem"
-            <?php echo esc_attr($multiple); ?>
-				id="<?php esc_attr_e($id_and_name); ?>"
-				class="lpc__shipping_rates__shipping_class__select select2-hidden-accessible"
-				name="<?php esc_attr_e($id_and_name); ?>">
-            <?php
-            foreach ($args['values'] as $oneClass) {
-                echo '<option value="' . $oneClass->term_id . '" ' . (
-                    isset($selected_values) && in_array(
-                        $oneClass->term_id,
-                        $selected_values
-                    ) ? 'selected="selected"' : ''
-                    )
-                     . '>' . $oneClass->name . '</option>';
-            }
-            ?>
-		</select>
+		<fieldset>
+			<select style="width: auto; max-width: 10rem"
+                <?php echo esc_attr($multiple); ?>
+					id="<?php esc_attr_e($id_and_name); ?>"
+					class="lpc__shipping_rates__shipping_class__select select2-hidden-accessible"
+					name="<?php esc_attr_e($id_and_name); ?>">
+                <?php
+                foreach ($args['values'] as $oneClass) {
+                    echo '<option value="' . $oneClass->term_id . '" ' . (
+                        isset($selected_values) && in_array(
+                            $oneClass->term_id,
+                            $selected_values
+                        ) ? 'selected="selected"' : ''
+                        )
+                         . '>' . $oneClass->name . '</option>';
+                }
+                ?>
+			</select>
+		</fieldset>
 	</td>
 </tr>
-

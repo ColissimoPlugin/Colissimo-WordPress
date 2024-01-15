@@ -172,10 +172,6 @@ END_HTML;
         $ordersOutwardFailed = get_option(LpcLabelGenerationOutward::ORDERS_OUTWARD_PARCEL_FAILED, []);
 
         foreach ($ordersIds as $orderId) {
-            if (strpos(get_post_status($orderId), 'draft') !== false) {
-                continue;
-            }
-
             try {
                 $wc_order = new WC_Order($orderId);
             } catch (Exception $exception) {
@@ -383,9 +379,9 @@ END_HTML;
             $wcCountries  = new WC_Countries();
             $countryNames = $wcCountries->__get('countries');
             foreach ($countryNames as $countryCode => $countryName) {
-				if (!in_array($countryCode, $countries)) {
-					continue;
-				}
+                if (!in_array($countryCode, $countries)) {
+                    continue;
+                }
 
                 printf(
                     '<label><input type="checkbox" name="order_country[]" %1$s value="%2$s">%3$s</label>',

@@ -35,6 +35,25 @@ class LpcDbDefinition extends LpcComponent {
     public function defineTableLabel() {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
+        if (is_multisite()) {
+            $currentBlog = get_current_blog_id();
+            $sites       = get_sites();
+
+            foreach ($sites as $site) {
+                if (is_object($site)) {
+                    $site = get_object_vars($site);
+                }
+                switch_to_blog($site['blog_id']);
+                $this->createTables();
+            }
+
+            switch_to_blog($currentBlog);
+        } else {
+            $this->createTables();
+        }
+    }
+
+    private function createTables() {
         $outwardSql = $this->outwardLabelDb->getTableDefinition();
         dbDelta($outwardSql);
 

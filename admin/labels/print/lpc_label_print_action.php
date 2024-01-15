@@ -67,7 +67,7 @@ class LpcLabelPrintAction extends LpcComponent {
 
                 if (LpcLabelGenerationPayload::LABEL_FORMAT_PDF === $label['format']) {
                     $tmpDir = ini_get('upload_tmp_dir');
-                    if (empty($tmpDir)) {
+                    if (empty($tmpDir) || !is_writable($tmpDir)) {
                         $tmpDir = sys_get_temp_dir();
                     }
 
@@ -79,11 +79,13 @@ class LpcLabelPrintAction extends LpcComponent {
                     $filesToMerge[] = $labelFileName;
                 }
 
-                $cn23Content = $isOutward
+                $cn23Data = $isOutward
                     ?
                     $this->outwardLabelDb->getCn23For($trackingNumber)
                     :
                     $this->inwardLabelDb->getCn23For($trackingNumber);
+
+                $cn23Content = LpcLabelGenerationPayload::LABEL_FORMAT_PDF === $cn23Data['format'] ? $cn23Data['cn23'] : '';
 
                 if ($needInvoice) {
                     $lpcInvoiceGenerateAction = LpcRegister::get('invoiceGenerateAction');
@@ -97,13 +99,13 @@ class LpcLabelPrintAction extends LpcComponent {
                         );
                         $filesToMerge[] = $invoiceFilename;
 
-                        if ($cn23Content) {
+                        if (!empty($cn23Content)) {
                             $filesToMerge[] = $invoiceFilename;
                         }
                     }
                 }
 
-                if ($cn23Content) {
+                if (!empty($cn23Content)) {
                     $cn23FileName    = sys_get_temp_dir() . DS . 'cn23(' . $trackingNumber . ').pdf';
                     $cn23ContentFile = fopen($cn23FileName, 'w');
                     fwrite($cn23ContentFile, $cn23Content);

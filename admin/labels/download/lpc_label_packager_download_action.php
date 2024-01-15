@@ -46,6 +46,16 @@ class LpcLabelPackagerDownloadAction extends LpcComponent {
             );
         }
 
+        if (!class_exists('ZipArchive')) {
+            header('HTTP/1.0 424 Failed Dependency');
+
+            return $this->ajaxDispatcher->makeAndLogError(
+                [
+                    'message' => 'The ext-zip PHP extension is required to download labels package',
+                ]
+            );
+        }
+
         $trackingNumbers = explode(',', LpcHelper::getVar(self::TRACKING_NUMBERS_VAR_NAME));
 
         try {

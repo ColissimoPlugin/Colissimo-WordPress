@@ -7,15 +7,17 @@ class LpcModal {
     protected $templateId;
     protected $content;
     protected $title;
+    protected $elementId;
 
     public function __construct($content, $title = null, $templateId = null) {
         if (empty($templateId)) {
             $templateId = uniqid();
         }
-        $this->templateId = $templateId;
 
-        $this->content = $content;
-        $this->title   = $title;
+        $this->templateId = $templateId;
+        $this->elementId  = 'lpc' . rand(1000, 9999);
+        $this->content    = $content;
+        $this->title      = $title;
     }
 
     public function registerScripts() {
@@ -84,8 +86,9 @@ class LpcModal {
         return $this->echo_button($buttonContent)->echo_modal();
     }
 
-    public function echo_modalAndLink($aContent = null) {
-        return $this->echo_link($aContent)->echo_modal();
-    }
+    public function open_modal($partial) {
+        include LPC_INCLUDES . 'partials' . DS . 'modal' . DS . $partial . '.php';
 
+        return $this->echo_link()->echo_modal();
+    }
 }

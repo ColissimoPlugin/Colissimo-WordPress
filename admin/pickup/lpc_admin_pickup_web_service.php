@@ -57,9 +57,9 @@ class LpcAdminPickupWebService extends LpcComponent {
         $map = LpcHelper::renderPartial(
             'pickup' . DS . 'webservice_map.php',
             [
-                'ceAddress'     => !empty($order->get_shipping_address_1()) ? $order->get_shipping_address_1() : '',
+                'ceAddress'     => !empty($order->get_shipping_address_1()) ? str_replace('’', "'", $order->get_shipping_address_1()) : '',
                 'ceZipCode'     => !empty($order->get_shipping_postcode()) ? $order->get_shipping_postcode() : '',
-                'ceTown'        => !empty($order->get_shipping_city()) ? $order->get_shipping_city() : '',
+                'ceTown'        => !empty($order->get_shipping_city()) ? str_replace('’', "'", $order->get_shipping_city()) : '',
                 'ceCountryId'   => !empty($order->get_shipping_country()) ? $order->get_shipping_country() : '',
                 'maxRelayPoint' => LpcHelper::get_option('lpc_max_relay_point', 20),
             ]
@@ -195,7 +195,7 @@ class LpcAdminPickupWebService extends LpcComponent {
                 } else {
                     LpcLogger::error($return->errorCode . ' : ' . $return->errorMessage);
 
-                    return $this->ajaxDispatcher->makeError(['message' => __('Error')]);
+                    return $this->ajaxDispatcher->makeError(['message' => __('Error', 'wc_colissimo')]);
                 }
             }
         }

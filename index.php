@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Colissimo shipping methods for WooCommerce
  * Description: This extension gives you the possibility to use the Colissimo shipping methods in WooCommerce
- * Version: 1.9.1
+ * Version: 1.9.2
  * Author: Colissimo
  * Author URI: https://www.colissimo.entreprise.laposte.fr/fr
  * Text Domain: wc_colissimo
@@ -81,6 +81,39 @@ if (
             $this->checkCron();
             $this->handleDDP();
             $this->hposCompatibility();
+            $this->initBlockCheckout();
+        }
+
+        public function initBlockCheckout() {
+            add_action('woocommerce_blocks_loaded', function () {
+                require_once __DIR__ . '/lpc_wc_block-blocks-integration.php';
+                add_action(
+                    'woocommerce_blocks_cart_block_registration',
+                    function ($integration_registry) {
+                        $integration_registry->register(new LpcWcBlock_Blocks_Integration());
+                    }
+                );
+                add_action(
+                    'woocommerce_blocks_checkout_block_registration',
+                    function ($integration_registry) {
+                        $integration_registry->register(new LpcWcBlock_Blocks_Integration());
+                    }
+                );
+            });
+
+            add_action('block_categories_all', [$this, 'registerLpcWcBlockBlockCategory'], 10, 2);
+        }
+
+        public function registerLpcWcBlockBlockCategory($categories) {
+            return array_merge(
+                $categories,
+                [
+                    [
+                        'slug'  => 'lpc_wc_block',
+                        'title' => __('LpcWcBlock Blocks', 'lpc_wc_block'),
+                    ],
+                ]
+            );
         }
 
         private function handleDDP() {

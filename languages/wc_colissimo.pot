@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.9.1\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.9.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-10-10\n"
+"POT-Creation-Date: 2024-01-15\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -1974,5 +1974,26 @@ msgid "We have detected that you have not yet signed the latest version of our G
 msgstr ""
 
 msgid "Sign the GTC"
+msgstr ""
+
+msgid "If the return label doesn't exist, it will be generated"
+msgstr ""
+
+msgid "Plugin feedback"
+msgstr ""
+
+msgid "Would you like to help us improve our plugin by answering our questionnaire?"
+msgstr ""
+
+msgid "Sure, why not!"
+msgstr ""
+
+msgid "No, thanks"
+msgstr ""
+
+msgid "Please set a valid phone number"
+msgstr ""
+
+msgid "Please set a pick up point"
 msgstr ""
 

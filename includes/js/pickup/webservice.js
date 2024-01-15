@@ -540,6 +540,9 @@ jQuery(function ($) {
                     if (response.type === 'success') {
                         $errorDiv.hide();
                         $('#lpc_pick_up_info').replaceWith(response.html);
+                        if (window.lpcBlockChangeContent) {
+                            window.lpcBlockChangeContent(response.html);
+                        }
                         $('body').trigger('update_checkout');
                     } else {
                         $errorDiv.html(response.message);

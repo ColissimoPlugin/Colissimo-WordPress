@@ -100,9 +100,6 @@ END_HTML;
 
         foreach ($orders as $order) {
             $orderId = $order['order_id'];
-            if (strpos(get_post_status($orderId), 'draft') !== false) {
-                continue;
-            }
 
             try {
                 $wc_order = new WC_Order($orderId);

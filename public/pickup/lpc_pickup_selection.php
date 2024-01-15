@@ -59,6 +59,24 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     public function savePickUpSelectionOnOrderProcessed() {
+        add_action('woocommerce_store_api_checkout_order_processed',
+            function ($order) {
+                $shippings = $order->get_shipping_methods();
+                $shipping  = current($shippings);
+
+                if (empty($shipping)) {
+                    return;
+                }
+
+                $shippingMethod = $shipping->get_method_id();
+                if (LpcRelay::ID === $shippingMethod) {
+                    $pickUpInfo = $this->getCurrentPickUpLocationInfo();
+                    $this->setPickupAsShippingAddress($order, $pickUpInfo);
+                    $this->updatePickupMeta($order->get_id(), $pickUpInfo);
+                    $this->setCurrentPickUpLocationInfo(null);
+                }
+            }
+        );
         add_action(
             'woocommerce_checkout_order_processed',
             function ($orderId, $posted_data = []) {

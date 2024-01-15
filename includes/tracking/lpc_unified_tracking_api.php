@@ -74,7 +74,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         }
 
         if (empty($password)) {
-            $password = LpcHelper::get_option('lpc_pwd_webservices');
+            $password = LpcHelper::getPasswordWebService();
         }
 
         if (null === $lang) {
@@ -158,6 +158,10 @@ class LpcUnifiedTrackingApi extends LpcComponent {
 
         if (!wp_next_scheduled(self::UPDATE_TRACKING_ORDER_CRON_NAME)) {
             wp_schedule_event(time(), 'fifteen_minutes', self::UPDATE_TRACKING_ORDER_CRON_NAME);
+
+            if (!wp_next_scheduled(self::UPDATE_TRACKING_ORDER_CRON_NAME)) {
+                LpcLogger::debug('could not schedule event update statuses');
+            }
         }
     }
 

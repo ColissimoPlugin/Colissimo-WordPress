@@ -73,8 +73,9 @@ class LpcLabelOutwardDownloadAction extends LpcComponent {
             }
 
             $cn23Filename = null;
-            $cn23Content  = $this->outwardLabelDb->getCn23For($trackingNumber);
-            if ($cn23Content) {
+            $cn23Data     = $this->outwardLabelDb->getCn23For($trackingNumber);
+            $cn23Content  = LpcLabelGenerationPayload::LABEL_FORMAT_PDF === $cn23Data['format'] ? $cn23Data['cn23'] : '';
+            if (!empty($cn23Content)) {
                 if ($needInvoice) {
                     $filesToMerge[] = $invoiceFilename;
                 }

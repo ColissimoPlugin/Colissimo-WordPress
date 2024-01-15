@@ -21,7 +21,7 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
     public function storeDocument(array $orderLabels, string $documentType, string $parcelNumber, string $document, string $documentName): string {
         $accountNumber = LpcHelper::get_option('lpc_id_webservices');
         $login         = LpcHelper::get_option('lpc_id_webservices');
-        $password      = LpcHelper::get_option('lpc_pwd_webservices');
+        $password      = LpcHelper::getPasswordWebService();
 
         if (function_exists('curl_file_create')) {
             $document         = curl_file_create($document, mime_content_type($document), $documentName);
@@ -113,7 +113,7 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
      */
     public function getDocuments($parcelNumber) {
         $login    = LpcHelper::get_option('lpc_id_webservices');
-        $password = LpcHelper::get_option('lpc_pwd_webservices');
+        $password = LpcHelper::getPasswordWebService();
 
         $payload = [
             'credential' => [

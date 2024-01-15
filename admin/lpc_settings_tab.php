@@ -21,15 +21,23 @@ class LpcSettingsTab extends LpcComponent {
     private $pickUpWidgetApi;
     /** @var LpcAccountApi */
     private $accountApi;
+    /** @var LpcSettingsLogsDownload */
+    private $settingsLogsDownload;
 
-    public function __construct(LpcAdminNotices $adminNotices = null, LpcPickUpWidgetApi $pickUpWidgetApi = null, LpcAccountApi $accountApi = null) {
-        $this->adminNotices    = LpcRegister::get('lpcAdminNotices', $adminNotices);
-        $this->pickUpWidgetApi = LpcRegister::get('pickupWidgetApi', $pickUpWidgetApi);
-        $this->accountApi      = LpcRegister::get('accountApi', $accountApi);
+    public function __construct(
+        LpcAdminNotices $adminNotices = null,
+        LpcPickUpWidgetApi $pickUpWidgetApi = null,
+        LpcAccountApi $accountApi = null,
+        LpcSettingsLogsDownload $settingsLogsDownload = null
+    ) {
+        $this->adminNotices         = LpcRegister::get('lpcAdminNotices', $adminNotices);
+        $this->pickUpWidgetApi      = LpcRegister::get('pickupWidgetApi', $pickUpWidgetApi);
+        $this->accountApi           = LpcRegister::get('accountApi', $accountApi);
+        $this->settingsLogsDownload = LpcRegister::get('settingsLogsDownload', $settingsLogsDownload);
     }
 
     public function getDependencies() {
-        return ['lpcAdminNotices', 'pickupWidgetApi', 'accountApi'];
+        return ['lpcAdminNotices', 'pickupWidgetApi', 'accountApi', 'settingsLogsDownload'];
     }
 
     public function init() {
@@ -66,15 +74,15 @@ class LpcSettingsTab extends LpcComponent {
         $this->initDefaultCountry();
         $this->initMultiSelectRelayType();
         $this->fixSavePassword();
-        $this->intiVideoTutorials();
+        $this->initVideoTutorials();
     }
 
-    protected function intiVideoTutorials() {
+    protected function initVideoTutorials() {
         add_action('woocommerce_admin_field_videotutorials', [$this, 'displayVideoTutorials']);
     }
 
     protected function fixSavePassword() {
-        add_filter('woocommerce_admin_settings_sanitize_option_lpc_pwd_webservices', [$this, 'fixWordPressSanitizePassword'], 10, 3);
+        add_filter('woocommerce_admin_settings_sanitize_option_lpc_pwd_webservices', [$this, 'encryptPassword'], 10, 3);
     }
 
     protected function initOnboarding() {
@@ -157,8 +165,13 @@ class LpcSettingsTab extends LpcComponent {
         );
     }
 
-    public function fixWordPressSanitizePassword($value, $option, $rawValue) {
-        return $rawValue;
+    public function encryptPassword($value, $option, $rawValue) {
+        // password is already encrypt if not changed, so we don't touch it
+        if (LpcHelper::get_option('lpc_pwd_webservices') === $rawValue) {
+            return $rawValue;
+        }
+
+        return LpcHelper::encryptPassword($rawValue);
     }
 
     public function displayOnboarding($field) {
@@ -173,10 +186,12 @@ class LpcSettingsTab extends LpcComponent {
      * @param $field object containing parameters defined in the config_options.json
      */
     public function displayModalButton($field) {
+        wp_register_style('lpc_settings_support', plugins_url('/css/settings/lpc_settings_support.css', __FILE__), [], LPC_VERSION);
+        wp_enqueue_style('lpc_settings_support');
         if ('hooks' === $field['content']) {
             $modalContent = file_get_contents(LPC_FOLDER . 'resources' . DS . 'hooksDescriptions.php');
         } else {
-            $modalContent = '<pre>' . LpcLogger::get_logs() . '</pre>';
+            $modalContent = '<pre>' . LpcLogger::get_logs(null, $this->settingsLogsDownload->getUrl()) . '</pre>';
         }
         $modal = new LpcModal($modalContent, __($field['title'], 'wc_colissimo'), 'lpc-' . $field['content']);
         $modal->loadScripts();
@@ -513,7 +528,7 @@ class LpcSettingsTab extends LpcComponent {
 
         if (!$testedCredentials) {
             $login    = LpcHelper::get_option('lpc_id_webservices');
-            $password = LpcHelper::get_option('lpc_pwd_webservices');
+            $password = LpcHelper::getPasswordWebService();
 
             if (empty($login) || empty($password)) {
                 $this->adminNotices->add_notice(

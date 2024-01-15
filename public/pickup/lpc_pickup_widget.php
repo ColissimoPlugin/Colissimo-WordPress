@@ -48,13 +48,16 @@ class LpcPickupWidget extends LpcPickup {
         add_action(
             'wp_enqueue_scripts',
             function () {
-                if (is_checkout()) {
+                if (is_checkout() || has_block('woocommerce/checkout')) {
                     wp_register_script('lpc_mapbox', self::MAP_JS_URL, ['jquery'], '0.1', true);
 
                     wp_register_script('lpc_widgets_web_js_url', self::WEB_JS_URL, ['lpc_mapbox'], '0.1');
 
                     $args = [
-                        'pickUpSelectionUrl' => $this->lpcPickUpSelection->getAjaxUrl(),
+                        'baseAjaxUrl'           => admin_url('admin-ajax.php'),
+                        'messagePhoneRequired'  => __('Please set a valid phone number', 'wc_colissimo'),
+                        'messagePickupRequired' => __('Please set a pick up point', 'wc_colissimo'),
+                        'pickUpSelectionUrl'    => $this->lpcPickUpSelection->getAjaxUrl(),
                     ];
                     wp_localize_script('lpc_widgets_web_js_url', 'lpcPickUpSelection', $args);
 
@@ -67,6 +70,12 @@ class LpcPickupWidget extends LpcPickup {
                         true
                     );
                     wp_enqueue_script('lpc_widget');
+
+                    $WcSession  = WC()->session;
+                    $customer   = $WcSession->customer;
+                    $widgetInfo = $this->getWidgetInfo($customer);
+
+                    wp_add_inline_script('lpc_widget', 'window.lpc_widget_info = ' . $widgetInfo, 'before');
 
                     wp_register_style('lpc_pickup_widget', plugins_url('/css/pickup/widget.css', LPC_INCLUDES . 'init.php'), [], LPC_VERSION);
                     wp_enqueue_style('lpc_pickup_widget');
@@ -90,9 +99,10 @@ class LpcPickupWidget extends LpcPickup {
             return;
         }
 
-        $WcSession = WC()->session;
-        $customer  = $WcSession->customer;
+        echo $this->getWidgetModal();
+    }
 
+    public function getWidgetInfo($customer) {
         $availableCountries = $this->getWidgetListCountry();
         if (empty($availableCountries)) {
             $availableCountries = ['FR'];
@@ -102,9 +112,9 @@ class LpcPickupWidget extends LpcPickup {
             'URLColissimo'      => self::BASE_URL,
             'ceLang'            => defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'FR',
             'ceCountryList'     => implode(',', $availableCountries),
-            'ceAddress'         => $customer['shipping_address'],
+            'ceAddress'         => str_replace('’', "'", $customer['shipping_address']),
             'ceZipCode'         => $customer['shipping_postcode'],
-            'ceTown'            => $customer['shipping_city'],
+            'ceTown'            => str_replace('’', "'", $customer['shipping_city']),
             'ceCountry'         => $customer['shipping_country'],
             'token'             => $this->pickUpWidgetApi->authenticate(),
             'dyPreparationTime' => LpcHelper::get_option('lpc_preparation_time', 1),
@@ -144,7 +154,14 @@ class LpcPickupWidget extends LpcPickup {
             }
         }
 
-        $widgetInfo   = wp_json_encode($widgetInfo);
+        return wp_json_encode($widgetInfo);
+    }
+
+    public function getWidgetModal($forceCheckout = false) {
+        $WcSession = WC()->session;
+        $customer  = $WcSession->customer;
+
+        $widgetInfo   = $this->getWidgetInfo($customer);
         $currentRelay = $this->lpcPickUpSelection->getCurrentPickUpLocationInfo();
 
         $address = [
@@ -163,12 +180,12 @@ class LpcPickupWidget extends LpcPickup {
             'widgetInfo'   => $widgetInfo,
             'modal'        => $this->modal,
             'currentRelay' => $currentRelay,
-            'showButton'   => is_checkout(),
+            'showButton'   => is_checkout() || $forceCheckout,
             'showInfo'     => true,
             'type'         => 'button',
         ];
 
-        echo LpcHelper::renderPartial('pickup' . DS . 'widget.php', $args);
+        return LpcHelper::renderPartial('pickup' . DS . 'widget.php', $args);
     }
 
     /**

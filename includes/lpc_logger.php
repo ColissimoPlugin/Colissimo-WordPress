@@ -19,24 +19,23 @@ class LpcLogger {
 
     protected $logFile;
 
-
-    public static function error($message, array $details = null) {
+    public static function error($message, array $details = []) {
         self::log(self::ERROR_LEVEL, $message, $details);
     }
 
-    public static function warn($message, array $details = null) {
+    public static function warn($message, array $details = []) {
         self::log(self::WARN_LEVEL, $message, $details);
     }
 
-    public static function warning($message, array $details = null) {
+    public static function warning($message, array $details = []) {
         self::warn($message, $details);
     }
 
-    public static function debug($message, array $details = null) {
+    public static function debug($message, array $details = []) {
         self::log(self::DEBUG_LEVEL, $message, $details);
     }
 
-    public static function info($message, array $details = null) {
+    public static function info($message, array $details = []) {
         self::log(self::INFO_LEVEL, $message, $details);
     }
 
@@ -47,7 +46,7 @@ class LpcLogger {
      * @param            $message
      * @param array|null $details
      */
-    protected static function log($type, $message, array $details = null) {
+    protected static function log($type, $message, array $details = []) {
         $log = (int) LpcHelper::get_option('lpc_log', 0);
 
         if (empty($log)) {
@@ -55,7 +54,7 @@ class LpcLogger {
         }
 
         $content = $message;
-        if (null !== $details) {
+        if (!empty($details)) {
             $content .= PHP_EOL . wp_json_encode($details, 0, self::MAX_DETAILS_DEPTH);
         }
 
@@ -97,10 +96,15 @@ class LpcLogger {
      *
      * @return bool|string
      */
-    public static function get_logs($lines = null) {
+    public static function get_logs($lines = null, $downloadLink = '') {
 
         if (!file_exists(self::LOG_FILE)) {
             return __('The log file is empty', 'wc_colissimo');
+        }
+
+        $link = '';
+        if (!empty($downloadLink)) {
+            $link = '<a id="colissimo_settings_logs_download_link" href="' . esc_url($downloadLink) . '">' . __('Download logs', 'wc_colissimo') . '</a>';
         }
 
         if (null == $lines) {
@@ -129,6 +133,6 @@ class LpcLogger {
 
         fclose($f);
 
-        return trim(implode('<br><br>', array_reverse(explode("\r\n<log>", $logFile))));
+        return $link . trim(implode('<br><br>', array_reverse(explode("\r\n<log>", $logFile))));
     }
 }

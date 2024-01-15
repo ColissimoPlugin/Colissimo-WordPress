@@ -62,9 +62,9 @@ class LpcAdminPickupWidget extends LpcComponent {
             [
                 'ceCountryList'     => implode(',', $availableCountries),
                 'ceLang'            => defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'FR',
-                'ceAddress'         => !empty($order->get_shipping_address_1()) ? $order->get_shipping_address_1() : '',
+                'ceAddress'         => !empty($order->get_shipping_address_1()) ? str_replace('’', "'", $order->get_shipping_address_1()) : '',
                 'ceZipCode'         => !empty($order->get_shipping_postcode()) ? $order->get_shipping_postcode() : '',
-                'ceTown'            => !empty($order->get_shipping_city()) ? $order->get_shipping_city() : '',
+                'ceTown'            => !empty($order->get_shipping_city()) ? str_replace('’', "'", $order->get_shipping_city()) : '',
                 'ceCountry'         => !empty($order->get_shipping_country()) ? $order->get_shipping_country() : '',
                 'URLColissimo'      => self::BASE_URL,
                 'token'             => $this->pickUpWidgetApi->authenticate(),
@@ -119,7 +119,9 @@ class LpcAdminPickupWidget extends LpcComponent {
         $args['showInfo']   = false;
         $args['type']       = 'link';
 
-        return LpcHelper::renderPartial('pickup' . DS . 'widget.php', $args);
+        $widgetInfo = LpcHelper::renderPartial('pickup' . DS . 'widget_info.php', $args);
+
+        return $widgetInfo . LpcHelper::renderPartial('pickup' . DS . 'widget.php', $args);
     }
 
     /**

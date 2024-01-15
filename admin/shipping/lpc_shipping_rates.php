@@ -46,9 +46,9 @@ class LpcShippingRates extends LpcComponent {
         foreach ($shippingRates as $rate) {
             $lines[] = [
                 $rate['min_weight'],
-                isset($rate['max_weight']) ?? '',
+                $rate['max_weight'] ?? '',
                 $rate['min_price'],
-                isset($rate['max_price']) ?? '',
+                $rate['max_price'] ?? '',
                 implode(' ', $rate['shipping_class']),
                 $rate['price'],
             ];

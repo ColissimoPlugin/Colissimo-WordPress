@@ -49,17 +49,17 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         delete_option('lpc_capabilities_per_country');
     }
 
-    public function getCapabilitiesPerCountry($fromCountry = null) {
+    public function getCapabilitiesPerCountry($fromCountry = null, $isReturn = false) {
         if (is_null($fromCountry)) {
-            $fromCountry = $this->getStoreCountryCode();
+            $fromCountry = $this->getStoreCountryCode($isReturn);
         }
 
         if (in_array($fromCountry, self::DOM1_COUNTRIES_CODE)) {
-            return get_option('lpc_capabilities_per_country_dom1');
+            return get_option('lpc_capabilities_per_country_dom1', []);
         }
 
         if (in_array($fromCountry, self::FRANCE_COUNTRIES_CODE)) {
-            return get_option('lpc_capabilities_per_country_fr');
+            return get_option('lpc_capabilities_per_country_fr', []);
         }
 
         return [];
@@ -82,13 +82,13 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         }
     }
 
-    public function getCapabilitiesForCountry($countryCode) {
+    public function getCapabilitiesForCountry($countryCode, $isReturn = false) {
         if (empty($countryCode)) {
             return [];
         }
 
         if (null === $this->capabilitiesByCountry) {
-            foreach ($this->getCapabilitiesPerCountry() as $zoneId => $zone) {
+            foreach ($this->getCapabilitiesPerCountry(null, $isReturn) as $zoneId => $zone) {
                 foreach ($zone['countries'] as $countryId => $countryCapabilities) {
                     $this->capabilitiesByCountry[$countryId] = array_merge(
                         ['zone' => $zoneId],
@@ -190,8 +190,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
     }
 
     public function getReturnProductCodeForDestination($countryCode) {
-        $storeCountryCode = $this->getStoreCountryCode();
-
+        $storeCountryCode  = $this->getStoreCountryCode(true);
         $returnProductCode = $this->getInfoForDestination($countryCode, 'return');
 
         if (true === $returnProductCode) {
@@ -206,7 +205,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
     }
 
     public function getInfoForDestination($countryCode, $info) {
-        $productInfo = $this->getCapabilitiesForCountry($countryCode);
+        $productInfo = $this->getCapabilitiesForCountry($countryCode, 'return' === $info);
 
         if ('FR' !== $this->getStoreCountryCode()) {
             $productInfo[$this->getCapabilitiesFileMethod(LpcSignDDP::ID)]   = false;
@@ -260,7 +259,14 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         return $countriesOfMethod;
     }
 
-    protected function getStoreCountryCode() {
+    protected function getStoreCountryCode($isReturn = false) {
+        if ($isReturn) {
+            $country = LpcHelper::get_option('lpc_return_address_country', '');
+            if (!empty($country)) {
+                return $country;
+            }
+        }
+
         $country = LpcHelper::get_option('lpc_origin_address_country', '');
         if (!empty($country)) {
             return $country;
@@ -279,12 +285,12 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
      * @return bool
      */
     protected function isIntraDOM1($storeCountryCode, $countryCode) {
-        // For expedition between these destinations, Colissimo considers it as intra
-        $intraCountryCodes = ['GP', 'MQ', 'MF', 'BL'];
-
         if ($storeCountryCode == $countryCode) {
             return true;
         }
+
+        // For expedition between these destinations, Colissimo considers it as intra
+        $intraCountryCodes = ['GP', 'MQ', 'MF', 'BL'];
 
         if (in_array($storeCountryCode, $intraCountryCodes) && in_array($countryCode, $intraCountryCodes)) {
             return true;
