@@ -1989,3 +1989,9 @@ msgstr "Veuillez entrer un numéro de téléphone valide"
 
 msgid "Please set a pick up point"
 msgstr "Veuillez sélectionner un point de retrait"
+
+msgid "Calculate shipping method with no-shipment products prices"
+msgstr "Calculer les méthodes de livraison avec les prix des produits sans expédition"
+
+msgid "If enabled, the available shipping methods and fees will be calculated based on the total cart price, including the price of products that don't require shipment."
+msgstr "Si activé, les méthodes d’expédition disponibles et les frais seront calculés sur la base du prix total du panier, incluant le prix des produits qui ne nécessitent pas d’expédition."

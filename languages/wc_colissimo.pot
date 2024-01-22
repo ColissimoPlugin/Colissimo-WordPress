@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.9.2\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 1.9.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-15\n"
+"POT-Creation-Date: 2024-01-22\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -1995,5 +1995,11 @@ msgid "Please set a valid phone number"
 msgstr ""
 
 msgid "Please set a pick up point"
+msgstr ""
+
+msgid "Calculate shipping method with no-shipment products prices"
+msgstr ""
+
+msgid "If enabled, the available shipping methods and fees will be calculated based on the total cart price, including the price of products that don't require shipment."
 msgstr ""
 

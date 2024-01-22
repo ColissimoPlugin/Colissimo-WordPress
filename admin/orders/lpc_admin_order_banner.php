@@ -178,7 +178,7 @@ class LpcAdminOrderBanner extends LpcComponent {
 
         foreach ($items as $item) {
             $product = $item->get_product();
-            if (empty($product)) {
+            if (empty($product) || !$product->needs_shipping()) {
                 continue;
             }
 

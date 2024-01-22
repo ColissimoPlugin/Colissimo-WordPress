@@ -228,6 +228,11 @@ class LpcLabelGenerationPayload {
                         __('The product couldn\'t be found.', 'wc_colissimo')
                     );
                 }
+
+                if (!$product->needs_shipping()) {
+                    continue;
+                }
+
                 $productWeight = $product->get_weight() < 0.01 ? 0.01 : $product->get_weight();
                 $weight        = (float) $productWeight * $data['quantity'];
 
@@ -687,6 +692,10 @@ class LpcLabelGenerationPayload {
                 throw new Exception(
                     __('The product couldn\'t be found.', 'wc_colissimo')
                 );
+            }
+
+            if (!$product->needs_shipping()) {
+                continue;
             }
 
             $quantity = !$isMasterParcel && isset($customParams['items'][$itemId]['qty']) ? $customParams['items'][$itemId]['qty'] : $item->get_quantity();

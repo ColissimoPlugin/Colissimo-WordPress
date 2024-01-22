@@ -1989,3 +1989,9 @@ msgstr "Please set a valid phone number"
 
 msgid "Please set a pick up point"
 msgstr "Please set a pick up point"
+
+msgid "Calculate shipping method with no-shipment products prices"
+msgstr "Calculate shipping method with no-shipment products prices"
+
+msgid "If enabled, the available shipping methods and fees will be calculated based on the total cart price, including the price of products that don't require shipment."
+msgstr "If enabled, the available shipping methods and fees will be calculated based on the total cart price, including the price of products that don't require shipment."

@@ -251,8 +251,13 @@ END_HTML;
         return $result;
     }
 
-    public static function getSeeOrderLink($orderId) {
-        $orderUrl = admin_url('post.php?post=' . $orderId . '&action=edit');
+    public static function getSeeOrderLink($orderId): string {
+        $order = wc_get_order($orderId);
+        if (empty($order)) {
+            return 'N/A';
+        }
+
+        $orderUrl = $order->get_edit_order_url();
 
         return '<a href="' . $orderUrl . '">' . $orderId . '</a>';
     }

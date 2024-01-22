@@ -293,19 +293,35 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         $articleQuantity = 0;
         $discountToApply = 0;
 
+        $noshipProductsCount = LpcHelper::get_option('lpc_calculate_shipping_with_noship_products', 'no') === 'yes';
+
         foreach ($package['contents'] as $item) {
             $articleQuantity += $item['quantity'];
             $product         = $item['data'];
             if (empty($product)) {
                 continue;
             }
+
+            if ($noshipProductsCount) {
+                $lineTotal    = $lineTotal + $item['line_total'];
+                $lineTax      = $lineTax + $item['line_tax'];
+                $lineSubTotal = $lineSubTotal + $item['line_subtotal'];
+                $lineSubTax   = $lineSubTax + $item['line_subtotal_tax'];
+            }
+
+            if (is_callable([$product, 'needs_shipping']) && !$product->needs_shipping()) {
+                continue;
+            }
+
+            if (!$noshipProductsCount) {
+                $lineTotal    = $lineTotal + $item['line_total'];
+                $lineTax      = $lineTax + $item['line_tax'];
+                $lineSubTotal = $lineSubTotal + $item['line_subtotal'];
+                $lineSubTax   = $lineSubTax + $item['line_subtotal_tax'];
+            }
+
             $totalWeight           += (float) $product->get_weight() * $item['quantity'];
             $cartShippingClasses[] = $product->get_shipping_class_id();
-
-            $lineTotal    = $lineTotal + $item['line_total'];
-            $lineTax      = $lineTax + $item['line_tax'];
-            $lineSubTotal = $lineSubTotal + $item['line_subtotal'];
-            $lineSubTax   = $lineSubTax + $item['line_subtotal_tax'];
         }
 
         // Check if there is an available discount

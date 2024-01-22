@@ -72,10 +72,10 @@ class LpcGenerateRelaysPayload {
 
     public function withOptionInter($optionInter = null) {
         if (null === $optionInter) {
-            $optionInter = LpcHelper::get_option('lpc_show_international', 'yes') == 'yes' ? '1' : '0';
+            $optionInter = LpcHelper::get_option('lpc_show_international', 'yes') === 'yes' ? '1' : '0';
         }
 
-        if (empty($optionInter) || 'FR' == $this->payload['countryCode']) {
+        if (empty($optionInter) || 'FR' === $this->payload['countryCode']) {
             $this->payload['optionInter'] = '0';
         } else {
             $this->payload['optionInter'] = $optionInter;

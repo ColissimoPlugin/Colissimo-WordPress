@@ -513,6 +513,14 @@
       "default": "no"
     },
     {
+      "id": "lpc_calculate_shipping_with_noship_products",
+      "type": "checkbox",
+      "title": "Calculate shipping method with no-shipment products prices",
+      "desc": "If enabled, the available shipping methods and fees will be calculated based on the total cart price, including the price of products that don't require shipment.",
+      "desc_tip": true,
+      "default": "no"
+    },
+    {
       "id": "lpc_deliveryLabelFormat",
       "type": "select",
       "title": "Delivery label format",

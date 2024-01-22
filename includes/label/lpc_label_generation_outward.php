@@ -187,6 +187,11 @@ class LpcLabelGenerationOutward extends LpcComponent {
         $fullyShipped = true;
 
         foreach ($allItemsOrders as $item) {
+            $product = $item->get_product();
+            if (empty($product) || !$product->needs_shipping()) {
+                continue;
+            }
+
             if (empty($alreadyGeneratedLabelItems[$item->get_id()]) || $alreadyGeneratedLabelItems[$item->get_id()]['qty'] < $item->get_quantity()) {
                 $fullyShipped = false;
                 break;
