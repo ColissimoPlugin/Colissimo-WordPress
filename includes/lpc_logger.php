@@ -10,6 +10,7 @@ class LpcLogger {
     const LOG_LINES_NB = 1000;
     const LOG_FILE = LPC_FOLDER . 'logs' . DS . 'colissimo.log';
     const MAX_DETAILS_DEPTH = 7;
+    const MAX_LOGS_LIFE_IN_DAYS = 14;
 
     const NONE_LEVEL = 0;
     const ERROR_LEVEL = 1;
@@ -78,7 +79,18 @@ class LpcLogger {
             $logFileContent  = file_get_contents(self::LOG_FILE);
             $logFileEachLine = explode(PHP_EOL, $logFileContent);
 
-            while (10000 < count($logFileEachLine)) {
+            $logsLifeLimit = strtotime('-' . self::MAX_LOGS_LIFE_IN_DAYS . ' days');
+            foreach ($logFileEachLine as $oneLine) {
+                if (strpos($oneLine, '<log>') !== 0) {
+                    array_shift($logFileEachLine);
+                    continue;
+                }
+
+                $date = substr($oneLine, 5, 10);
+                if (strtotime($date) >= $logsLifeLimit) {
+                    break;
+                }
+
                 array_shift($logFileEachLine);
             }
         } else {
@@ -97,7 +109,6 @@ class LpcLogger {
      * @return bool|string
      */
     public static function get_logs($lines = null, $downloadLink = '') {
-
         if (!file_exists(self::LOG_FILE)) {
             return __('The log file is empty', 'wc_colissimo');
         }

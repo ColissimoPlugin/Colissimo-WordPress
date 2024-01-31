@@ -55,7 +55,7 @@ class LpcLabelGenerationInward extends LpcComponent {
                 );
             }
 
-            if (!empty($ordersFailed[$customParams['outward_label_number']])) {
+            if (!empty($customParams['outward_label_number']) && !empty($ordersFailed[$customParams['outward_label_number']])) {
                 unset($ordersFailed[$customParams['outward_label_number']]);
                 update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed);
             }

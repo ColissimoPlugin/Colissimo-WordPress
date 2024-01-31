@@ -196,6 +196,10 @@ class LpcPickupWebService extends LpcPickup {
             ];
 
             foreach ($listRelaysWS as $oneRelay) {
+                if (empty($oneRelay->identifiant) || empty($oneRelay->typeDePoint)) {
+                    continue;
+                }
+
                 $partialArgs['oneRelay'] = $oneRelay;
                 $partialArgs['i']        = $i ++;
 

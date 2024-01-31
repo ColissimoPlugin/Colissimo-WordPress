@@ -21,7 +21,7 @@ class LpcPickupAjaxContent extends LpcComponent {
 
     public function sendPickupContent() {
         if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
-            $content = $this->lpcPickupWidget->getWidgetModal(true);
+            $content = $this->lpcPickupWidget->getWidgetModal(true, true);
         } else {
             $content = $this->lpcPickupWebService->getWebserviceModal(true);
         }

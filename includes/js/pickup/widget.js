@@ -44,7 +44,7 @@ jQuery(function ($) {
             }
         };
 
-        $('#lpc_pick_up_widget_show_map').off('click').on('click', function (e) {
+        $('.lpc_pick_up_widget_show_map').off('click').on('click', function (e) {
             e.preventDefault();
 
             $affectMethodDiv = $(this).closest('.lpc_order_affect_available_methods');
@@ -58,7 +58,6 @@ jQuery(function ($) {
             };
 
             $.extend(colissimoParams, window.lpc_widget_info);
-
             $('#lpc_widget_container').frameColissimoOpen(colissimoParams);
 
             // We need to close the widget to be able to open it again

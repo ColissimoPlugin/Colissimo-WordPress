@@ -68,3 +68,8 @@
 #shipping_method script{
 	display: none !important;
 }
+
+/* Fix for input::after covering the pickup button */
+input[name^="shipping_method"][value^="lpc_relay"]::after{
+	height: 0;
+}

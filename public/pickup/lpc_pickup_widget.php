@@ -108,14 +108,19 @@ class LpcPickupWidget extends LpcPickup {
             $availableCountries = ['FR'];
         }
 
+        $address = str_replace('’', "'", $customer['shipping_address'] ?? '');
+        $postcode = $customer['shipping_postcode'] ?? '';
+        $city = str_replace('’', "'", $customer['shipping_city'] ?? '');
+        $country = $customer['shipping_country'] ?? '';
+
         $widgetInfo = [
             'URLColissimo'      => self::BASE_URL,
             'ceLang'            => defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'FR',
             'ceCountryList'     => implode(',', $availableCountries),
-            'ceAddress'         => str_replace('’', "'", $customer['shipping_address']),
-            'ceZipCode'         => $customer['shipping_postcode'],
-            'ceTown'            => str_replace('’', "'", $customer['shipping_city']),
-            'ceCountry'         => $customer['shipping_country'],
+            'ceAddress'         => $address,
+            'ceZipCode'         => $postcode,
+            'ceTown'            => $city,
+            'ceCountry'         => $country,
             'token'             => $this->pickUpWidgetApi->authenticate(),
             'dyPreparationTime' => LpcHelper::get_option('lpc_preparation_time', 1),
             'dyWeight'          => '19000',
@@ -157,7 +162,7 @@ class LpcPickupWidget extends LpcPickup {
         return wp_json_encode($widgetInfo);
     }
 
-    public function getWidgetModal($forceCheckout = false) {
+    public function getWidgetModal($forceCheckout = false, $gutenberg = false) {
         $WcSession = WC()->session;
         $customer  = $WcSession->customer;
 
@@ -183,6 +188,7 @@ class LpcPickupWidget extends LpcPickup {
             'showButton'   => is_checkout() || $forceCheckout,
             'showInfo'     => true,
             'type'         => 'button',
+            'gutenberg'    => $gutenberg,
         ];
 
         return LpcHelper::renderPartial('pickup' . DS . 'widget.php', $args);

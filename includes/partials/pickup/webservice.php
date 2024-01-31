@@ -1,18 +1,28 @@
-<?php if ('gmaps' === $args['mapType'] && !empty($args['apiKey'])) { ?>
-    <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-	<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo $args['apiKey']; ?>" async defer></script>
-<?php } ?>
+<?php
+if (is_admin()) {
+    $currentScreen = get_current_screen();
+    if (!empty($currentScreen) && in_array($currentScreen->base, ['woocommerce_page_wc-orders', 'post'])) {
+        if ('gmaps' === $args['mapType'] && !empty($args['apiKey'])) { ?>
+            <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+			<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo $args['apiKey']; ?>" async defer></script>
+            <?php
+        }
 
-<?php if ('leaflet' === $args['mapType']) { ?>
-    <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
-		  integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
-		  crossorigin="" />
-    <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-	<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
-			integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg="
-			crossorigin=""></script>
-<?php } ?>
+        if ('leaflet' === $args['mapType']) {
+            ?>
+            <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
+			<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
+				  integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
+				  crossorigin="" />
+            <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+			<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+					integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg="
+					crossorigin=""></script>
+            <?php
+        }
+    }
+}
+?>
 
 <div>
     <?php
