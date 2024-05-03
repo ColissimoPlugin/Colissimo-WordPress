@@ -37,8 +37,7 @@ class LpcPickUpWidgetApi extends LpcRestApi {
                 [
                     'login'    => $login,
                     'password' => $password,
-                ],
-                self::DATA_TYPE_URL
+                ]
             );
 
             LpcLogger::debug(
