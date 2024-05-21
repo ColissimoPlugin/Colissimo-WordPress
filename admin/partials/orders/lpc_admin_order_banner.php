@@ -2,7 +2,7 @@
 $trackingNumbers          = $args['lpc_tracking_numbers'] ?? [];
 $labelFormat              = $args['lpc_label_formats'] ?? [];
 $orderItems               = isset($args['lpc_order_items']) && is_array($args['lpc_order_items']) ? $args['lpc_order_items'] : [];
-$weightUnity              = LpcHelper::get_option('woocommerce_weight_unit', '');
+$weightUnit               = LpcHelper::get_option('woocommerce_weight_unit', '');
 $currency                 = get_woocommerce_currency_symbol(get_woocommerce_currency());
 $shippingCosts            = $args['lpc_shipping_costs'] ?? 0;
 $bordereauLinks           = $args['lpc_bordereauLinks'] ?? [];
@@ -27,6 +27,10 @@ $multiParcelsLabels       = [
 ];
 $cn23Needed               = $args['lpc_cn23_needed'];
 $defaultCustoms           = $args['lpc_default_customs_category'];
+$packagings               = LpcHelper::get_option('lpc_packagings', []);
+usort($packagings, function ($a, $b) {
+    return $a['priority'] > $b['priority'] ? 1 : - 1;
+});
 ?>
 
 <div class="lpc__admin__order_banner">
@@ -59,7 +63,7 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 						<th><?php echo __('Item', 'woocommerce'); ?></th>
 						<th><?php echo sprintf(__('Unit price (%s)', 'wc_colissimo'), $currency); ?></th>
 						<th><?php echo __('Quantity', 'wc_colissimo'); ?></th>
-						<th><?php echo sprintf(__('Unit weight (%s)', 'wc_colissimo'), $weightUnity); ?></th>
+						<th><?php echo sprintf(__('Unit weight (%s)', 'wc_colissimo'), $weightUnit); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -69,6 +73,10 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
                         ?>
 						<tr>
 							<td class="lpc__admin__order_banner__generate_label__item__td__checkbox check-column">
+								<input type="hidden"
+									   class="lpc__admin__order_banner__generate_label__item__dimensions"
+									   id="<?php echo esc_attr($oneItem['id'] . '-dimensions'); ?>"
+									   value="<?php echo esc_attr($oneItem['dimensions']); ?>" />
 								<input type="checkbox"
 									   data-item-id="<?php echo $oneItem['id']; ?>"
 									   class="lpc__admin__order_banner__generate_label__item__checkbox"
@@ -111,15 +119,11 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 				</tbody>
 			</table>
 			<div class="lpc__admin__order_banner__generate_label__edit_value__container">
-				<span class="woocommerce-help-tip" data-tip="
-				<?php
-                esc_attr_e(
-                    'Editing prices and weights may create inconsistency between CN23 or labels and invoice. Edit these values only if you really need it.',
-                    'wc_colissimo'
+                <?php
+                echo LpcHelper::tooltip(
+                    __('Editing prices and weights may create inconsistency between CN23 or labels and invoice. Edit these values only if you really need it.', 'wc_colissimo')
                 );
                 ?>
-				">
-				</span>
                 <?php echo __('Edit prices and weights', 'wc_colissimo'); ?>
 				<span class="lpc__admin__order_banner__generate_label__edit_value woocommerce-input-toggle woocommerce-input-toggle--disabled"></span>
 			</div>
@@ -137,9 +141,31 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 					   readonly="readonly"
 				>
 			</div>
-			<div class="lpc__admin__order_banner__generate_label__package_weight__container">
+            <?php if (!empty($packagings)) { ?>
+				<div class="lpc__admin__order_banner__generate_label__packaging__container">
+					<input type="hidden" id="lpc__admin__order_banner__generate_label__packagings" value="<?php echo esc_attr(json_encode($packagings)); ?>" />
+					<label for="lpc__admin__order_banner__generate_label__packaging" class="lpc__admin__order_banner_label">
+                        <?php esc_html_e('Packaging', 'wc_colissimo'); ?>
+					</label>
+					<select
+							class="lpc__admin__order_banner__generate_label__packaging"
+							name="lpc__admin__order_banner__generate_label__packaging"
+							id="lpc__admin__order_banner__generate_label__packaging">
+						<option value="auto" id="lpc__admin__order_banner__generate_label__packaging__auto">
+                            <?php esc_html_e('Automatic', 'wc_colissimo'); ?>
+						</option>
+						<option value="custom"><?php esc_html_e('Custom weight', 'wc_colissimo'); ?></option>
+                        <?php
+                        foreach ($packagings as $packaging) {
+                            echo '<option value="' . esc_attr($packaging['weight'] . '-' . ($packaging['width'] + $packaging['length'] + $packaging['depth'])) . '">' . esc_html($packaging['name']) . '</option>';
+                        }
+                        ?>
+					</select>
+				</div>
+            <?php } ?>
+			<div class="lpc__admin__order_banner__generate_label__package_weight__container"<?php echo empty($packagings) ? '' : ' style="display: none;"'; ?>>
 				<label for="lpc__admin__order_banner__generate_label__package_weight" class="lpc__admin__order_banner_label">
-                    <?php echo sprintf(__('Packaging weight (%s)', 'wc_colissimo'), $weightUnity); ?>
+                    <?php echo sprintf(__('Packaging weight (%s)', 'wc_colissimo'), $weightUnit); ?>
 				</label>
 				<input type="number"
 					   min="0"
@@ -147,14 +173,14 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 					   class="lpc__admin__order_banner__generate_label__package_weight"
 					   name="lpc__admin__order_banner__generate_label__package_weight"
 					   id="lpc__admin__order_banner__generate_label__package_weight"
-					   value="<?php echo $args['lpc_packaging_weight']; ?>"
-					   readonly="readonly"
-				>
+					   value="<?php echo esc_attr($args['lpc_packaging_weight']); ?>"
+					   readonly="readonly">
+				<input type="hidden" id="lpc__admin__order_banner__generate_label__package_weight_calculated" value="<?php echo esc_attr($args['lpc_packaging_weight']); ?>">
 			</div>
 			<div class="lpc__admin__order_banner__generate_label__total_weight__container">
                 <?php echo __('Total weight (items + packaging)', 'wc_colissimo'); ?> :
-				<span class="lpc__admin__order_banner__generate_label__total_weight"></span><?php echo ' ' . $weightUnity; ?>
-				<input type="hidden" name="lpc__admin__order_banner__generate_label__weight__unity" value="<?php echo $weightUnity; ?>">
+				<span class="lpc__admin__order_banner__generate_label__total_weight"></span><?php echo ' ' . $weightUnit; ?>
+				<input type="hidden" name="lpc__admin__order_banner__generate_label__weight__unity" value="<?php echo $weightUnit; ?>">
 				<input type="hidden" name="lpc__admin__order_banner__generate_label__total_weight__input">
 			</div>
             <?php if ($ddp) { ?>
@@ -200,9 +226,7 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 				<div class="lpc__admin__order_banner__generate_label__package_description__container">
 					<label for="lpc__admin__order_banner__generate_label__package_description" class="lpc__admin__order_banner_label">
                         <?php esc_html_e('English description', 'wc_colissimo'); ?>
-						<span class="woocommerce-help-tip"
-							  data-tip="<?php esc_attr_e('The customs need a description of the package\'s content, in English.', 'wc_colissimo'); ?>">
-						</span>
+                        <?php echo LpcHelper::tooltip(__('The customs need a description of the package\'s content, in English.', 'wc_colissimo')); ?>
 					</label>
 					<input type="text"
 						   class="lpc__admin__order_banner__generate_label__package_description"
@@ -231,21 +255,13 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 				<label for="lpc__admin__order_banner__generate_label__non_machinable__input">
                     <?php echo __('Non machinable package', 'wc_colissimo'); ?>
 				</label>
-                <?php if (in_array($productCode, ['BPR', 'A2P', 'BDP', 'CMT'])) { ?>
-					<span class="woocommerce-help-tip" data-tip="
-				<?php
-                    echo __(
-                        'The non-machinable option isn\'t available for this shipping method and destination country.',
-                        'wc_colissimo'
-                    );
-                    ?>
-				">
-				</span>
+                <?php if (LpcLabelGenerationPayload::PRODUCT_CODE_RELAY === $productCode) { ?>
+                    <?php echo LpcHelper::tooltip(__('The non-machinable option isn\'t available for this shipping method and destination country.', 'wc_colissimo')); ?>
                 <?php } ?>
 				<input type="checkbox"
 					   name="lpc__admin__order_banner__generate_label__non_machinable__input"
 					   id="lpc__admin__order_banner__generate_label__non_machinable__input"
-                    <?php echo in_array($productCode, ['BPR', 'A2P', 'BDP', 'CMT']) ? 'disabled="disabled"' : ''; ?>>
+                    <?php echo LpcLabelGenerationPayload::PRODUCT_CODE_RELAY === $productCode ? 'disabled="disabled"' : ''; ?>>
 				<p>
                     <?php echo sprintf(__('To determine if your package is non machinable you can visit this %s', 'wc_colissimo'),
                                        '<a target="_blank" href="https://www.colissimo.entreprise.laposte.fr/fr/expedier">' . __('documentation', 'wc_colissimo') . '</a>') ?>
@@ -274,14 +290,10 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 					<option value="300">300€</option>
 					<option value="500">500€</option>
 					<option value="1000">1000€</option>
-                    <?php
-                    if (!in_array($productCode, LpcLabelGenerationPayload::PRODUCT_CODE_INSURANCE_RELAY)) {
-                        ?>
+                    <?php if (LpcLabelGenerationPayload::PRODUCT_CODE_RELAY !== $productCode) { ?>
 						<option value="2000">2000€</option>
 						<option value="5000">5000€</option>
-                        <?php
-                    }
-                    ?>
+                    <?php } ?>
 				</select>
 			</div>
             <?php if ($cn23Needed) { ?>
@@ -305,15 +317,9 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 				<div class="lpc__admin__order_banner__generate_label__multi__parcels">
 					<label for="lpc_multi_parcels">
                         <?php esc_html_e('Use the multi-parcels shipping', 'wc_colissimo'); ?>
-						<span class="woocommerce-help-tip" data-tip="
-						<?php
-                        esc_attr_e(
-                            'If you want your client to receive all the parcels at the same time, activate this option and specify the exact number of parcels.',
-                            'wc_colissimo'
-                        );
-                        ?>
-						">
-						</span>
+                        <?php echo LpcHelper::tooltip(
+                            __('If you want your client to receive all the parcels at the same time, activate this option and specify the exact number of parcels.', 'wc_colissimo')
+                        ); ?>
 					</label>
 					<input type="checkbox"
 						   name="lpc__admin__order_banner__generate_label__multi__parcels__input"
@@ -334,15 +340,9 @@ $defaultCustoms           = $args['lpc_default_customs_category'];
 							   disabled="disabled">
                     <?php } elseif ($parcelCurrentNumber <= $parcelsAmount) { ?>
                         <?php echo sprintf(__('Parcel n°%1$s / %2$s', 'wc_colissimo'), $parcelCurrentNumber, $parcelsAmount); ?>
-						<span class="woocommerce-help-tip" data-tip="
-						<?php
-                        esc_attr_e(
-                            'If you made a mistake or if you want to change the total number of parcels, you can delete generated labels.',
-                            'wc_colissimo'
-                        );
-                        ?>
-						">
-						</span>
+                        <?php echo LpcHelper::tooltip(
+                            __('If you made a mistake or if you want to change the total number of parcels, you can delete generated labels.', 'wc_colissimo')
+                        ); ?>
                     <?php } else { ?>
                         <?php esc_html_e('All labels have been generated.', 'wc_colissimo'); ?>
                     <?php } ?>

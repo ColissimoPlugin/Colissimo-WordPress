@@ -17,7 +17,7 @@ class LpcLabelPurge extends LpcComponent {
     }
 
     public function purgeReadyLabels() {
-        $nbDays = LpcHelper::get_option('lpc_day_purge', 0);
+        $nbDays = LpcHelper::get_option('lpc_day_purge', 30);
 
         if ('0' == $nbDays) {
             return;

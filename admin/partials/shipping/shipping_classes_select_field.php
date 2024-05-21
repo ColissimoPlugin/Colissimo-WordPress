@@ -9,7 +9,7 @@ $description     = empty($args['description']) ? '' : $args['description'];
 <tr valign="top">
 	<th scope="row">
 		<label for="<?php esc_attr_e($id_and_name); ?>"><?php esc_html_e($label, 'wc_colissimo'); ?>
-			<span class="woocommerce-help-tip" data-tip="<?php esc_html_e($description, 'wc_colissimo'); ?>"></span>
+            <?php echo LpcHelper::tooltip(__($description, 'wc_colissimo')); ?>
 		</label>
 	</th>
 	<td>

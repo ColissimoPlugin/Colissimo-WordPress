@@ -111,17 +111,17 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         if (true === $productCode) {
             switch ($shippingMethod) {
                 case 'lpc_relay':
-                    return $order->get_meta(LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY);
+                    return LpcLabelGenerationPayload::PRODUCT_CODE_RELAY;
                 case 'lpc_expert_ddp':
                 case 'lpc_expert':
-                    return 'DOS';
+                    return LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE;
                 case 'lpc_sign_ddp':
                 case 'lpc_sign':
                     if (in_array($countryCode, self::DOM1_COUNTRIES_CODE)) {
                         if ($this->isIntraDOM1($storeCountryCode, $countryCode)) {
-                            return 'COL';
+                            return LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE_INTRA_DOM;
                         } else {
-                            return 'CDS';
+                            return LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE_OM;
                         }
                     }
 
@@ -131,9 +131,9 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
                 case 'lpc_nosign':
                     if (in_array($countryCode, self::DOM1_COUNTRIES_CODE)) {
                         if ($this->isIntraDOM1($storeCountryCode, $countryCode)) {
-                            return 'COLD';
+                            return LpcLabelGenerationPayload::PRODUCT_CODE_WITHOUT_SIGNATURE_INTRA_DOM;
                         } else {
-                            return 'COM';
+                            return LpcLabelGenerationPayload::PRODUCT_CODE_WITHOUT_SIGNATURE_OM;
                         }
                     }
 
@@ -195,9 +195,9 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
 
         if (true === $returnProductCode) {
             if (in_array($countryCode, self::DOM1_COUNTRIES_CODE) && $this->isIntraDOM1($storeCountryCode, $countryCode)) {
-                return 'CORE';
+                return LpcLabelGenerationPayload::PRODUCT_CODE_RETURN_FRANCE;
             } else {
-                return 'CORI';
+                return LpcLabelGenerationPayload::PRODUCT_CODE_RETURN_INT;
             }
         }
 
@@ -207,9 +207,9 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
     public function getInfoForDestination($countryCode, $info) {
         $productInfo = $this->getCapabilitiesForCountry($countryCode, 'return' === $info);
 
-        if ('FR' !== $this->getStoreCountryCode()) {
-            $productInfo[$this->getCapabilitiesFileMethod(LpcSignDDP::ID)]   = false;
-            $productInfo[$this->getCapabilitiesFileMethod(LpcExpertDDP::ID)] = false;
+        // DDP isn't available for stores outside France
+        if ('FR' !== $this->getStoreCountryCode() && in_array($info, [LpcSignDDP::ID, LpcExpertDDP::ID])) {
+            return false;
         }
 
         $info = $this->getCapabilitiesFileMethod($info);

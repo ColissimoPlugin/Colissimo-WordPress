@@ -8,6 +8,7 @@ jQuery(function ($) {
     setSendingService();
     manageInsuranceAmount();
     manageMultiParcels();
+    initAdvancedPackaging();
 
     function initTabSystem() {
         $('.lpc__admin__order_banner__tab').off('click').on('click', function () {
@@ -53,35 +54,110 @@ jQuery(function ($) {
 
         let totalWeight = 0;
         let totalWeightHidden = 0;
+        let numberOfProducts = 0;
+        let productsDimensions = [];
 
-        let weightUnity = $('[name="lpc__admin__order_banner__generate_label__weight__unity"]').val();
+        let weightUnit = $('[name="lpc__admin__order_banner__generate_label__weight__unity"]').val();
 
         $adminOrderBanner.find('.lpc__admin__order_banner__generate_label__item__weight').each(function () {
             let itemId = $(this).attr('data-item-id');
             if ($('#' + itemId + '-checkbox').prop('checked')) {
-                let qty = parseFloat($('#' + itemId + '-qty').val());
+                let quantity = parseFloat($('#' + itemId + '-qty').val());
 
                 let productWeight = parseFloat($(this).val());
-                totalWeight += productWeight * qty;
+                totalWeight += productWeight * quantity;
 
-                if ('g' === weightUnity && productWeight < 2) {
+                if ('g' === weightUnit && productWeight < 2) {
                     productWeight = 2.00;
-                } else if ('kg' === weightUnity && productWeight < 0.002) {
+                } else if ('kg' === weightUnit && productWeight < 0.002) {
                     productWeight = 0.002;
                 }
 
-                totalWeightHidden += productWeight * qty;
+                totalWeightHidden += productWeight * quantity;
+                numberOfProducts += quantity;
+                productsDimensions.push(JSON.parse($('#' + itemId + '-dimensions').val()));
             }
         });
 
-        totalWeight += parseFloat($adminOrderBanner.find('.lpc__admin__order_banner__generate_label__package_weight').val());
-        totalWeightHidden += parseFloat($adminOrderBanner.find('.lpc__admin__order_banner__generate_label__package_weight').val());
+        const defaultPackagingWeight = parseFloat($adminOrderBanner.find('.lpc__admin__order_banner__generate_label__package_weight').val());
+        let packagingWeight = $('#lpc__admin__order_banner__generate_label__packaging').val();
+        if (!packagingWeight || 'custom' === packagingWeight) {
+            packagingWeight = defaultPackagingWeight;
+        } else if ('auto' === packagingWeight) {
+            packagingWeight = getPackagingWeight(defaultPackagingWeight, numberOfProducts, totalWeight, productsDimensions);
+        } else {
+            packagingWeight = parseFloat(packagingWeight.substring(0, packagingWeight.indexOf('-')));
+        }
 
-        let roundedTotalWeight = totalWeight.toFixed(2);
-        let roundedTotalWeightHidden = totalWeightHidden.toFixed(2);
+        $('input[name="lpc__admin__order_banner__generate_label__package_weight_calculated"]').val(packagingWeight);
+        totalWeight += packagingWeight;
+        totalWeightHidden += packagingWeight;
+
+        const roundedTotalWeight = totalWeight.toFixed(2);
+        const roundedTotalWeightHidden = totalWeightHidden.toFixed(2);
 
         $adminOrderBanner.find('.lpc__admin__order_banner__generate_label__total_weight').html(roundedTotalWeight);
         $adminOrderBanner.find('input[name="lpc__admin__order_banner__generate_label__total_weight__input"]').val(roundedTotalWeightHidden);
+    }
+
+    function getPackagingWeight(defaultPackagingWeight, numberOfProducts, totalWeight, productsDimensions) {
+        const packagings = JSON.parse($('#lpc__admin__order_banner__generate_label__packagings').val());
+        const $automaticPackaging = $('#lpc__admin__order_banner__generate_label__packaging__auto');
+
+        for (let packagingNumber = 0; packagingNumber < packagings.length; packagingNumber++) {
+            if (packagings[packagingNumber].max_products && numberOfProducts > packagings[packagingNumber].max_products) {
+                continue;
+            }
+
+            if (packagings[packagingNumber].max_weight && totalWeight > packagings[packagingNumber].max_weight) {
+                continue;
+            }
+
+            const packagingDimensions = [
+                packagings[packagingNumber].length,
+                packagings[packagingNumber].width,
+                packagings[packagingNumber].depth
+            ];
+            packagingDimensions.sort();
+
+            let isFitting = true;
+            for (let i = 0; i < productsDimensions.length; i++) {
+                productsDimensions[i].sort();
+
+                if (!isPackagingFitting(packagingDimensions, productsDimensions[i])) {
+                    isFitting = false;
+                }
+            }
+
+            if (isFitting) {
+                $automaticPackaging.text(lpc_order_banner.automatic + ' (' + packagings[packagingNumber].name + ')');
+                const $nonMachinable = $('#lpc__admin__order_banner__generate_label__non_machinable__input');
+                if (packagingDimensions[0] + packagingDimensions[1] + packagingDimensions[2] > 120) {
+                    $nonMachinable.prop('checked', true);
+                } else {
+                    $nonMachinable.prop('checked', false);
+                }
+
+                return packagings[packagingNumber].weight;
+            }
+        }
+
+        $automaticPackaging.text(lpc_order_banner.automatic + ' (' + lpc_order_banner.default + ')');
+        return defaultPackagingWeight;
+    }
+
+    function isPackagingFitting(packagingDimensions, productDimensions) {
+        if (!productDimensions[0]) {
+            return true;
+        }
+
+        for (let i = 0; i < productDimensions.length; i++) {
+            if (productDimensions[i] > packagingDimensions[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     function lpcDefaultValue(value, defaultValue) {
@@ -122,7 +198,7 @@ jQuery(function ($) {
                     order_id: orderId,
                     label_type: $('select[name="lpc__admin__order_banner__generate_label__outward_or_inward"]').val(),
                     items: itemsForLabel,
-                    package_weight: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_weight"]').val(), 0),
+                    package_weight: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_weight_calculated"]').val(), 0),
                     total_weight: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__total_weight__input"]').val(), 0),
                     package_length: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_length"]').val(), 0),
                     package_width: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__package_width"]').val(), 0),
@@ -243,6 +319,25 @@ jQuery(function ($) {
                 $customSendingService.hide();
             } else {
                 $customSendingService.show();
+            }
+        });
+    }
+
+    function initAdvancedPackaging() {
+        $('#lpc__admin__order_banner__generate_label__packaging').on('change', function () {
+            countTotalWeight();
+            const $packageWeightContainer = $('.lpc__admin__order_banner__generate_label__package_weight__container');
+            const $nonMachinable = $('#lpc__admin__order_banner__generate_label__non_machinable__input');
+            const selectedValue = $(this).val();
+            if ('custom' === selectedValue) {
+                $nonMachinable.prop('checked', false);
+                $packageWeightContainer.show();
+            } else {
+                if ('auto' !== selectedValue) {
+                    $nonMachinable.prop('checked', parseFloat(selectedValue.substring(selectedValue.indexOf('-') + 1)) > 120);
+                }
+
+                $packageWeightContainer.hide();
             }
         });
     }

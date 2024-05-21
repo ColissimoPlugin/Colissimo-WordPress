@@ -1,7 +1,7 @@
 <tr>
 	<td colspan="2">
 		<div id="lpc_feedback">
-			<div data-tf-widget="zBcvlzGp"></div>
+			<div data-tf-widget="hVvPh7kF"></div>
 		</div>
 
         <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
@@ -13,7 +13,7 @@
 			}
 
 			#lpc_feedback [data-tf-widget]{
-				min-height: 500px;
+				min-height: 700px;
 			}
 		</style>
 	</td>

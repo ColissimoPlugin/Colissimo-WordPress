@@ -150,6 +150,7 @@ class LpcLabelPrintAction extends LpcComponent {
                 $emptyLabels[] = $trackingNumber;
             }
         }
+
         if (!empty($emptyLabels)) {
             $trackingNumbers = array_diff($trackingNumbers, $emptyLabels);
 

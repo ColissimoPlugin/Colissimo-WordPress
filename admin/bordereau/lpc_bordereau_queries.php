@@ -60,10 +60,9 @@ class LpcBordereauQueries extends LpcComponent {
 
     public static function countLpcBordereau() {
         global $wpdb;
-        $query = "SELECT COUNT(bordereau_external_id) AS nb FROM {$wpdb->prefix}lpc_bordereau";
 
         // phpcs:disable
-        $result = $wpdb->get_results($query);
+        $result = $wpdb->get_results('SELECT COUNT(DISTINCT bordereau_external_id) AS nb FROM ' . $wpdb->prefix . 'lpc_bordereau');
         // phpcs:enable
 
         if (!empty($result)) {
@@ -76,9 +75,10 @@ class LpcBordereauQueries extends LpcComponent {
     public static function getLpcBordereau($current_page, $per_page) {
         global $wpdb;
 
-        $query = "SELECT bordereau.id, COUNT(order_id) AS number_parcels, bordereau_external_id, created_at, GROUP_CONCAT(DISTINCT order_id SEPARATOR ',') AS order_ids, GROUP_CONCAT(DISTINCT tracking_number SEPARATOR ', ') AS tracking_numbers 
+        $query = "SELECT bordereau.id, COUNT(out_label.order_id) AS number_parcels, bordereau.bordereau_external_id, bordereau.created_at, GROUP_CONCAT(DISTINCT out_label.order_id SEPARATOR ',') AS order_ids, GROUP_CONCAT(DISTINCT out_label.tracking_number SEPARATOR ', ') AS tracking_numbers 
                     FROM {$wpdb->prefix}lpc_bordereau AS bordereau 
-                    LEFT JOIN {$wpdb->prefix}lpc_outward_label AS out_label ON out_label.bordereau_id = bordereau.bordereau_external_id GROUP BY bordereau_external_id
+                    LEFT JOIN {$wpdb->prefix}lpc_outward_label AS out_label ON out_label.bordereau_id = bordereau.bordereau_external_id 
+                    GROUP BY bordereau.bordereau_external_id
                     ORDER BY id DESC";
 
         if (0 < $current_page && 0 < $per_page) {
@@ -91,35 +91,27 @@ class LpcBordereauQueries extends LpcComponent {
         // phpcs:enable
     }
 
-    public static function deleteBordereauById($bordereauId) {
+    public static function deleteBordereauById($bordereauId): bool {
         global $wpdb;
 
-        $queries = [];
-        $queries[] = "UPDATE {$wpdb->prefix}lpc_outward_label SET bordereau_id = NULL WHERE bordereau_id = " . intval($bordereauId);
-        $queries[] = "DELETE FROM {$wpdb->prefix}lpc_bordereau WHERE bordereau_external_id = " . intval($bordereauId);
-
-        $return = true;
-
         // phpcs:disable
-        foreach ($queries as $query) {
-            $result = $wpdb->query($query);
-
-            if (!$result) {
-                LpcLogger::error(
-                    sprintf('Unable to process SQL request'),
-                    [
-                        'request' => $query,
-                        'result'  => $result,
-                        'method'  => __METHOD__,
-                    ]
-                );
-
-                $return = false;
-            }
-        }
-
+        $wpdb->query("UPDATE {$wpdb->prefix}lpc_outward_label SET bordereau_id = NULL WHERE bordereau_id = " . intval($bordereauId));
+        $result = $wpdb->query("DELETE FROM {$wpdb->prefix}lpc_bordereau WHERE bordereau_external_id = " . intval($bordereauId));
         // phpcs:enable
 
-        return $return;
+        if (!$result) {
+            LpcLogger::error(
+                'Unable to delete slip',
+                [
+                    'slipId' => $bordereauId,
+                    'result' => $result,
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return false;
+        }
+
+        return true;
     }
 }

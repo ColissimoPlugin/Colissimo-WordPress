@@ -321,7 +321,7 @@ msgid "Order status once bordereau is generated"
 msgstr "Statut des commandes après génération du bordereau"
 
 msgid "Access denied! (Security check failed)"
-msgstr "Accès refusé ! (Echec de la vérification)"
+msgstr "Accès refusé ! (Échec de la vérification)"
 
 msgid "Automatically create return label at the same time as the outward label"
 msgstr "Créer automatiquement l’étiquette de retour lors de la génération de l’étiquette aller"
@@ -485,8 +485,8 @@ msgstr "AUne erreur est survenue lors de la confirmation du retour boîte aux le
 msgid "Show international Relay Points"
 msgstr "Afficher les points de retrait à l’international"
 
-msgid "Only applicable for map type other than Colissimo widget"
-msgstr "Applicable seulement pour les types de carte autres que le widget Colissimo"
+msgid "Only applicable for map type other than Colissimo widget."
+msgstr "Applicable seulement pour les types de carte autres que le widget Colissimo."
 
 msgid "Outward label was not generated:"
 msgstr "L’étiquette aller n’a pas été générée :"
@@ -590,16 +590,16 @@ msgstr "Actions"
 msgid "Date"
 msgstr "Date"
 
-msgid "Order %s : Outward label generated"
+msgid "Order %s: Outward label generated"
 msgstr "Commande %s : Étiquette aller générée"
 
-msgid "Order %s : Outward label was not generated:"
+msgid "Order %s: Outward label was not generated:"
 msgstr "Commande %s : L’étiquette aller n’a pas été générée :"
 
-msgid "Order %s : Inward label generated"
+msgid "Order %s: Inward label generated"
 msgstr "Commande %s : Étiquette retour générée"
 
-msgid "Order %s : Inward label was not generated:"
+msgid "Order %s: Inward label was not generated:"
 msgstr "Commande %s : L’étiquette retour n’a pas été générée :"
 
 msgid "We found that Colissimo Delivery Integration plugin is installed on your website. This plugin have some compatibility issues with the official Colissimo plugin. To avoid issues, please deactivate Colissimo Delivery Integration."
@@ -765,7 +765,7 @@ msgid "No Colissimo shipping methods are available for this order"
 msgstr "Aucune méthode de livraison Colissimo n’est disponible pour cette commande"
 
 msgid "The packaging weight will be added to the products weight on label generation."
-msgstr "Le poids de l’emballage va être ajouté au poids des produits à la génération de l’étiquette."
+msgstr "Le poids de l’emballage sera ajouté au poids des produits lors de la génération de l’étiquette."
 
 msgid "Packaging weight (%s)"
 msgstr "Poids de l’emballage (%s)"
@@ -1285,8 +1285,8 @@ msgstr "Colissimo avec signature - Option DDP"
 msgid "This shipping method lets you configure the \"Colissimo International - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United States (USA)."
 msgstr "Cette méthode de livraison vous permet de régler l’envoi \"Colissimo International - Option DDP\" qui est disponible et affichée uniquement pour les pays suivants : Afrique du Sud, Arabie Saoudite, Australie, Bahreïn, Canada, Chine, Corée du Sud, Égypte, Émirats Arabes Unis, États-Unis (USA), Hong Kong, Indonésie, Japon, Koweït, Mexique, Oman, Philippines, Singapour, Suisse, Thaïlande."
 
-msgid "This shipping method lets you configure the \"Colissimo with signature - DDP Option\" shipping that is available and shown only for the United Kingdom."
-msgstr "Cette méthode de livraison vous permet de régler l’envoi \"Colissimo avec signature - Option DDP\" qui n’est disponible et affiché uniquement pour le Royaume Uni."
+msgid "This shipping method lets you configure the \"Colissimo with signature - DDP Option\" shipping that is available and shown only for the following countries: Australia, Bahrain, Canada, China, Egypt, Hong Kong, Indonesia, Japan, Kuwait, Mexico, Oman, Philippines, Saudi Arabia, Singapore, South Africa, South Korea, Switzerland, Thailand, United Arab Emirates, United Kingdom, United States (USA)."
+msgstr "Cette méthode de livraison vous permet de régler l’envoi \"Colissimo avec signature - Option DDP\" qui est disponible et affichée uniquement pour les pays suivants : Afrique du Sud, Arabie Saoudite, Australie, Bahreïn, Canada, Chine, Corée du Sud, Égypte, Émirats Arabes Unis, États-Unis (USA), Hong Kong, Indonésie, Japon, Koweït, Mexique, Oman, Philippines, Royaume Uni, Singapour, Suisse, Thaïlande."
 
 msgid "Please define a state / province"
 msgstr "Veuillez définir un état/une province"
@@ -1573,7 +1573,7 @@ msgstr "Colis suiveur"
 msgid "It is restricted to commercial shipments between 160€ and 1050€ included."
 msgstr "Il est réservé aux envois commerciaux entre 160€ et 1050€ inclus."
 
-msgid "The file you import must be a CSV with the column min_weight, max_weight, min_price, max_price, shipping_class, price"
+msgid "The file you import must be a CSV with the columns min_weight, max_weight, min_price, max_price, shipping_class, price"
 msgstr "Le fichier que vous importez doit obligatoirement un CSV avec les colonnes min_weight, max_weight, min_price, max_price, shipping_class, price"
 
 msgid "Choose an amount"
@@ -1614,9 +1614,6 @@ msgstr "Leaflet (gratuit)"
 
 msgid "The shipping costs must not be free for the customs declaration to be valid, you can modify it manually by activating the Edit prices and weights option."
 msgstr "Les frais de livraison ne doivent pas être gratuits pour que la déclaration de douanes soit valide, vous pouvez le modifier manuellement en activant l’option Modifier les prix et les poids."
-
-msgid "Your site's cron system is disabled, the shipping statuses won't be updated."
-msgstr "Le système de cron de votre site est désactivé, les statuts de livraison ne pourront pas être mis à jour."
 
 msgid "The packaging weight you configured is high, the shipping methods may not show up on your store if the packaging weight + the cart weight are greater than 30kg."
 msgstr "Le poids de l’emballage que vous avez configuré est élevé, les méthodes d’expédition peuvent ne pas s’afficher sur votre boutique si le poids de l’emballage + le poids du panier dépassent 30kg."
@@ -1864,9 +1861,6 @@ msgstr "Activez les méthodes d’expédition que vous souhaitez proposer à vos
 msgid "You can customize the titles and shipping prices of the delivery solutions for your customers"
 msgstr "Vous pouvez personnaliser les titres et les prix d’expédition des solutions de livraison pour vos clients"
 
-msgid "Note that shipping prices for Colissimo international are not automatically added"
-msgstr "Notez que les prix d’expédition pour Colissimo international ne sont pas ajoutés automatiquement"
-
 msgid "Beware: Colissimo doesn't handle parcels over 30kg, including packaging weight. Be careful about the weight unit and when you modify the weight ranges."
 msgstr "Attention : Colissimo ne gère pas les colis de plus de 30kg, incluant le poids de l’emballage. Soyez vigilant sur l’unité de poids et lorsque vous modifiez les tranches de poids."
 
@@ -1995,3 +1989,195 @@ msgstr "Calculer les méthodes de livraison avec les prix des produits sans exp�
 
 msgid "If enabled, the available shipping methods and fees will be calculated based on the total cart price, including the price of products that don't require shipment."
 msgstr "Si activé, les méthodes d’expédition disponibles et les frais seront calculés sur la base du prix total du panier, incluant le prix des produits qui ne nécessitent pas d’expédition."
+
+msgid "No shipping class"
+msgstr "Aucune classe d'expédition"
+
+msgid "Import a CSV file"
+msgstr "Importer un fichier CSV"
+
+msgid "Replace by Colissimo prices"
+msgstr "Remplacer par les tarifs Colissimo"
+
+msgid "Are you sure you want to replace the current prices with the default ones?"
+msgstr "Confirmez-vous que vous souhaitez remplacer les prix actuels par les prix par défaut ?"
+
+msgid "Zone not found"
+msgstr "Zone non trouvée"
+
+msgid "Current zone countries not eligible to Colissimo shipping"
+msgstr "Les pays de la zone actuelle ne sont pas éligibles à l’expédition Colissimo"
+
+msgid "This shipping method isn't available for this zone"
+msgstr "Cette méthode d’expédition n’est pas disponible pour cette zone"
+
+msgid "Delete the selected rates?"
+msgstr "Supprimer les tarifs sélectionnés ?"
+
+msgid "Delete the selected discounts?"
+msgstr "Supprimer les réductions sélectionnées ?"
+
+msgid "Number of days for shipment status update"
+msgstr "Nombre de jours pour la mise à jour du statut d’expédition"
+
+msgid "Choose the number of days during which the shipment status is updated. The shipment status will not be updated for orders created more than X days ago."
+msgstr "Choisissez le nombre de jours pendant lesquels le statut d’expédition est mis à jour. Le statut d’expédition ne sera pas mis à jour pour les commandes créées il y a plus de X jours."
+
+msgid "Only post offices are available for this order"
+msgstr "Seuls les bureaux de poste sont disponibles pour cette commande"
+
+msgid "More expensive"
+msgstr "Le plus cher"
+
+msgid "Cheapest"
+msgstr "Le moins cher"
+
+msgid "Concurrent rates available"
+msgstr "Tarifs concurrents disponibles"
+
+msgid "In case several price rates are available for the same shipping method, choose the one to display to the customer."
+msgstr "Dans le cas où plusieurs tarifs sont disponibles pour la même méthode d’expédition, choisissez celui à afficher au client."
+
+msgid "The method \"Colissimo International\" is deprecated, it is strongly recommended to replace it with the method \"Colissimo with signature\".<br />You can export then import your price grid during this modification, the rates remain the same."
+msgstr "La méthode \"Colissimo International\" est obsolète, il est fortement recommandé de la remplacer par la méthode \"Colissimo avec signature\".<br />Vous pouvez exporter puis importer votre grille de prix lors de ce changement, les tarifs restent les mêmes."
+
+msgid "Here are the affected zones:"
+msgstr "Voici les zones concernées :"
+
+msgid "Colissimo International (Deprecated)"
+msgstr "Colissimo International (Obsolète)"
+
+msgid "Parcel"
+msgstr "Colis"
+
+msgid "Tracking"
+msgstr "Suivi"
+
+msgid "Packaging"
+msgstr "Emballage"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Max nb of products"
+msgstr "Nb max de produits"
+
+msgid "The maximum number of products the package can contain."
+msgstr "Le nombre maximum de produits que l’emballage peut contenir."
+
+msgid "Maximum weight (%s)"
+msgstr "Poids maximum (%s)"
+
+msgid "The maximum weight the package can hold."
+msgstr "Le poids maximum que l’emballage peut contenir."
+
+msgid "Add a new packaging"
+msgstr "Ajouter un nouvel emballage"
+
+msgid "Delete packagings"
+msgstr "Supprimer des emballages"
+
+msgid "Are you sure you want to delete the selected packagings?"
+msgstr "Confirmez-vous la suppression des emballages sélectionnés ?"
+
+msgid "Advanced packagings"
+msgstr "Emballages avancés"
+
+msgid "Priority"
+msgstr "Priorité"
+
+msgid "If multiple packagings fit the cart, the one with the highest priority will be used."
+msgstr "Si plusieurs emballages conviennent pour le panier, celui avec la priorité la plus élevée sera utilisé."
+
+msgid "Dimensions (cm)"
+msgstr "Dimensions (cm)"
+
+msgid "New packaging"
+msgstr "Nouvel emballage"
+
+msgid "Length"
+msgstr "Longueur"
+
+msgid "Width"
+msgstr "Largeur"
+
+msgid "Depth"
+msgstr "Profondeur"
+
+msgid "Please fill in mandatory fields"
+msgstr "Veuillez remplir les champs requis"
+
+msgid "If the packaging used has an extra cost, it will be added to the calculated shipping price for the customer."
+msgstr "Si l’emballage utilisé comporte un coût supplémentaire paramétré, il sera ajouté au prix de livraison calculé pour le client."
+
+msgid "If a packaging fits the cart, it will be used for the shipping price calculation. Otherwise, the default packaging weight will be used."
+msgstr "Si un emballage correspond au panier, il sera utilisé pour le calcul des frais de port. Sinon, le poids d’emballage par défaut sera utilisé."
+
+msgid "Default packaging weight (%s)"
+msgstr "Poids de l’emballage par défaut (%s)"
+
+msgid "Packaging not found."
+msgstr "Emballage non trouvé."
+
+msgid "Automatic"
+msgstr "Automatique"
+
+msgid "Custom weight"
+msgstr "Poids personnalisé"
+
+msgid "Default packaging"
+msgstr "Emballage par défaut"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Are you sure you want to delete this packaging?"
+msgstr "Confirmez-vous vouloir supprimer cet emballage ?"
+
+msgid "Per label"
+msgstr "Par étiquette"
+
+msgid "Per product"
+msgstr "Par produit"
+
+msgid "Per label or per product"
+msgstr "Par étiquette ou par produit"
+
+msgid "Select the products you would like to return:"
+msgstr "Sélectionnez les produits que vous souhaitez retourner :"
+
+msgid "Select the parcel you would like to return:"
+msgstr "Sélectionnez le colis que vous souhaitez retourner :"
+
+msgid "Download return label"
+msgstr "Télécharger l’étiquette de retour"
+
+msgid "Please only select products you ordered."
+msgstr "Veuillez sélectionner uniquement les produits que vous avez commandés."
+
+msgid "You are not allowed to generate a return label for this order."
+msgstr "Vous n’êtes pas autorisé à générer une étiquette de retour pour cette commande."
+
+msgid "The sum of the dimensions exceeds 120cm, this packaging will not be mechanizable and may be subject to an extra cost."
+msgstr "La somme des dimensions dépasse 120cm, cet emballage ne sera pas mécanisable et pourra faire l’objet d'un surcoût."
+
+msgid "Number of days during which the customers can download the return label"
+msgstr "Nombre de jours pendant lesquels les clients peuvent télécharger l’étiquette de retour"
+
+msgid "If you authorize customers to download the return label, you can choose the number of days during which it is available after the order creation."
+msgstr "Si vous autorisez les clients à télécharger l’étiquette de retour, vous pouvez choisir le nombre de jours pendant lesquels elle est disponible après la création de la commande."
+
+msgid "For parcels weighing more than 20kg, only the \"Post office\" relay type will be shown."
+msgstr "Pour les colis de plus de 20kg, seul le type de point de retrait \"Bureau de Poste\" sera affiché."
+
+msgid "Order number"
+msgstr "Numéro de commande"
+
+msgid "Change order status to follow shipping status"
+msgstr "Modifier le statut de commande pour suivre le statut d’expédition"
+
+msgid "The order status will be automatically updated when the parcel is in transit, when there is a shipment anomaly or when it is delivered."
+msgstr "Le statut de commande sera automatiquement mis à jour lorsque le colis est en transit, lorsqu’il y a une anomalie d’expédition ou lorsqu’il est livré."

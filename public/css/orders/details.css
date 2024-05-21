@@ -1,0 +1,7 @@
+#lpc_return_table{
+	width: 100%;
+}
+
+#lpc_return_table input[type="checkbox"]{
+	cursor: pointer;
+}

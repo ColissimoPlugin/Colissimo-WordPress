@@ -84,6 +84,8 @@ class LpcAdminInit {
         add_action('woocommerce_settings_page_init', [$this, 'lpc_load_settings_script']);
         add_action('add_meta_boxes', [$this, 'lpc_add_meta_boxes']);
         add_filter('woocommerce_screen_ids', [$this, 'lpc_set_wc_screen_ids']);
+        add_action('wp_ajax_lpc_feedback_dismissed', [$this, 'dismissFeedback']);
+        add_action('woocommerce_page_wc-orders', [$this, 'showFeedbackModal']);
     }
 
     public function lpc_set_wc_screen_ids($screen) {
@@ -129,6 +131,8 @@ class LpcAdminInit {
         $args['get'] = $_GET;
         $args['tab'] = $args['get']['tab'] ?? 'orders';
 
+        $this->askForFeedback();
+
         if ('orders' === $args['tab']) {
             $args['table'] = new LpcOrdersTable();
             echo LpcHelper::renderPartial('orders' . DS . 'lpc_orders_list_table.php', $args);
@@ -139,6 +143,43 @@ class LpcAdminInit {
         } elseif ('slip-history' === $args['tab']) {
             $args['table'] = new LpcBordereauHistoryTable();
             echo LpcHelper::renderPartial('orders' . DS . 'lpc_orders_slip_history.php', $args);
+        }
+    }
+
+    public function dismissFeedback() {
+        update_option('lpc_feedback_dismissed', true);
+    }
+
+    public function showFeedbackModal() {
+        $this->askForFeedback();
+    }
+
+    private function askForFeedback() {
+        $deadline = new DateTime('2024-08-01');
+        $now      = new DateTime();
+
+        if ($now >= $deadline) {
+            return;
+        }
+
+        $feedbackDismissed = LpcHelper::get_option('lpc_feedback_dismissed', false);
+        $lastAskedFeedback = LpcHelper::get_option('lpc_asked_feedback', 0);
+
+        if ($feedbackDismissed || (time() - $lastAskedFeedback) < 86400) {
+            return;
+        }
+
+        update_option('lpc_asked_feedback', time());
+
+        // Get the number of labels generated
+        $outwardLabelDb = LpcRegister::get('outwardLabelDb');
+        $numberOfLabels = $outwardLabelDb->getNumberOfLabels();
+
+        if (10 <= $numberOfLabels) {
+            // Open a popup asking if the user wants to give feedback, with a dismiss button
+            $modal = new LpcModal('', __('Plugin feedback', 'wc_colissimo'));
+            $modal->loadScripts();
+            $modal->open_modal('feedback');
         }
     }
 
@@ -165,9 +206,9 @@ class LpcAdminInit {
             'shipment_change',
             'country_capaibilities_import',
             'shipping_statuses_updated',
-            'disabled_cron',
             'credentials_validity',
             'cgv_invalid',
+            'deprecated_methods',
         ];
         foreach ($notifications as $oneNotification) {
             $notice_content = $adminNotices->get_notice($oneNotification);
@@ -237,17 +278,9 @@ class LpcAdminInit {
             );
         }
 
-        if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
-            $adminNotices->add_notice(
-                'disabled_cron',
-                'notice-warning',
-                __('Your site\'s cron system is disabled, the shipping statuses won\'t be updated.', 'wc_colissimo')
-            );
-        } else {
-            $purgeLabels = LpcHelper::get_option('lpc_day_purge', 0);
-            if (!empty($purgeLabels) && !wp_next_scheduled('purge_colissimo_labels')) {
-                wp_schedule_event(time(), 'daily', 'purge_colissimo_labels');
-            }
+        $purgeLabels = LpcHelper::get_option('lpc_day_purge', 30);
+        if (!empty($purgeLabels) && !wp_next_scheduled('purge_colissimo_labels')) {
+            wp_schedule_event(time(), 'daily', 'purge_colissimo_labels');
         }
     }
 
@@ -277,8 +310,11 @@ class LpcAdminInit {
             ['jquery-core'],
             'lpcShippingRates',
             [
-                'pleaseSelectFile'    => __('Please select a file', 'wc_colissimo'),
-                'errorWhileImporting' => __('Error while saving imported rates', 'wc_colissimo'),
+                'pleaseSelectFile'           => __('Please select a file', 'wc_colissimo'),
+                'errorWhileImporting'        => __('Error while saving imported rates', 'wc_colissimo'),
+                'defaultPricesConfirmation'  => __('Are you sure you want to replace the current prices with the default ones?', 'wc_colissimo'),
+                'deleteRateConfirmation'     => __('Delete the selected rates?', 'wc_colissimo'),
+                'deleteDiscountConfirmation' => __('Delete the selected discounts?', 'wc_colissimo'),
             ]
         );
     }

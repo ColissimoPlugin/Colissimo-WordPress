@@ -273,7 +273,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                 $order->update_meta_data(self::LAST_EVENT_DATE_META_KEY, strtotime($eventLastDate));
                 $order->update_meta_data(self::LAST_EVENT_INTERNAL_CODE_META_KEY, $currentStateInternalCode);
 
-                // The user manually changed the order status to finished, don't change the order after this
+                // The user manually changed the order status to "finished", don't change the order after this
                 if ($orderStatusOnDelivered === $order->get_status()) {
                     $isDelivered = true;
                 }
@@ -281,12 +281,13 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                 $order->save();
 
                 if ($isDelivered) {
-                    $change_order_status = $orderStatusOnDelivered;
-                    if ('unchanged_order_status' === $change_order_status) {
-                        $change_order_status = '';
-                    }
+                    $newOrderStatus = $orderStatusOnDelivered;
                 } else {
-                    $change_order_status = empty($currentStateInfo) ? '' : $currentStateInfo['change_order_status'];
+                    if (empty($currentStateInfo) || LpcHelper::get_option('lpc_order_status_follows_shipping_status', 'yes') === 'no') {
+                        $newOrderStatus = 'unchanged_order_status';
+                    } else {
+                        $newOrderStatus = $currentStateInfo['change_order_status'];
+                    }
                 }
 
                 /**
@@ -294,10 +295,10 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                  *
                  * @since 1.6.7
                  */
-                $change_order_status = apply_filters('lpc_unified_tracking_api_change_order_status', $change_order_status, $order);
+                $newOrderStatus = apply_filters('lpc_unified_tracking_api_change_order_status', $newOrderStatus, $order);
 
-                if (!empty($change_order_status)) {
-                    $order->set_status($change_order_status);
+                if (!empty($newOrderStatus) && 'unchanged_order_status' !== $newOrderStatus) {
+                    $order->set_status($newOrderStatus);
                     $order->save();
                 }
 

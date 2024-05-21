@@ -3,7 +3,6 @@
 require_once LPC_INCLUDES . 'label' . DS . 'lpc_label_generation_payload.php';
 
 class LpcLabelGenerationInward extends LpcComponent {
-    const ACTION_NAME = 'lpc_order_generate_inward_label';
     const INWARD_PARCEL_NUMBER_META_KEY = 'lpc_inward_parcel_number';
     const ORDERS_INWARD_PARCEL_FAILED = 'lpc_orders_inward_parcel_failed';
 
@@ -44,16 +43,10 @@ class LpcLabelGenerationInward extends LpcComponent {
                 })
             );
         }
+
         try {
             $payload  = $this->buildPayload($order, $customParams);
             $response = $this->labelGenerationApi->generateLabel($payload);
-            if (is_admin()) {
-                $lpc_admin_notices->add_notice(
-                    'inward_label_generate',
-                    'notice-success',
-                    sprintf(__('Order %s : Inward label generated', 'wc_colissimo'), $orderId)
-                );
-            }
 
             if (!empty($customParams['outward_label_number']) && !empty($ordersFailed[$customParams['outward_label_number']])) {
                 unset($ordersFailed[$customParams['outward_label_number']]);
@@ -65,18 +58,21 @@ class LpcLabelGenerationInward extends LpcComponent {
                 $lpc_admin_notices->add_notice(
                     'inward_label_generate',
                     'notice-error',
-                    sprintf(__('Order %s : Inward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $errorMessage
+                    sprintf(__('Order %s: Inward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $errorMessage
                 );
             }
 
-            $ordersFailed[$customParams['outward_label_number']] = [
-                'message' => $errorMessage,
-                'time'    => $time,
-            ];
-            update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed);
+            if (!empty($customParams['outward_label_number']) && 'no_outward' !== $customParams['outward_label_number']) {
+                $ordersFailed[$customParams['outward_label_number']] = [
+                    'message' => $errorMessage,
+                    'time'    => $time,
+                ];
+                update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed);
+            }
 
-            return;
+            return false;
         }
+
         $parcelNumber = $response['<jsonInfos>']['labelV2Response']['parcelNumber'];
         $label        = $response['<label>'];
 
@@ -91,9 +87,43 @@ class LpcLabelGenerationInward extends LpcComponent {
         $order->update_meta_data(self::INWARD_PARCEL_NUMBER_META_KEY, $parcelNumber);
         $order->save();
 
-        // PDF label is too big to be stored in an order meta
-        $outwardLabelNumber = isset($customParams['outward_label_number']) ? $customParams['outward_label_number'] : null;
-        $this->inwardLabelDb->insert($order->get_id(), $label, $parcelNumber, $cn23, $labelFormat, $outwardLabelNumber);
+        try {
+            $outwardLabelNumber = $customParams['outward_label_number'] ?? null;
+            $this->inwardLabelDb->insert($order->get_id(), $label, $parcelNumber, $cn23, $labelFormat, $outwardLabelNumber);
+        } catch (Exception $e) {
+            if (is_admin()) {
+                $lpc_admin_notices->add_notice(
+                    'inward_label_generate',
+                    'notice-error',
+                    sprintf(__('Order %s: Inward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $e->getMessage()
+                );
+            }
+
+            return false;
+        }
+
+        if (is_admin()) {
+            $actions = '';
+
+            $labelQueries = new LpcLabelQueries();
+            if (current_user_can('lpc_download_labels')) {
+                $actions .= '<span class="dashicons dashicons-download lpc_label_action_download" ' .
+                            $labelQueries->getLabelInwardDownloadAttr($parcelNumber, $labelFormat) . '></span>';
+            }
+
+            if (current_user_can('lpc_print_labels')) {
+                $printerIcon = $GLOBALS['wp_version'] >= '5.5' ? 'dashicons-printer' : 'dashicons-media-default';
+                $actions     .= '<span class="dashicons ' . $printerIcon . ' lpc_label_action_print" ' .
+                                $labelQueries->getLabelInwardPrintAttr($parcelNumber, $labelFormat) . ' ></span>';
+            }
+
+            $lpc_admin_notices->add_notice(
+                'inward_label_generate',
+                'notice-success',
+                sprintf(__('Order %s: Inward label generated', 'wc_colissimo'), $orderId) . $actions
+            );
+        }
+
         $email_inward_label = LpcHelper::get_option(LpcInwardLabelEmailManager::EMAIL_RETURN_LABEL_OPTION, 'no');
         if ('yes' === $email_inward_label) {
             /**
@@ -109,20 +139,22 @@ class LpcLabelGenerationInward extends LpcComponent {
                 ]
             );
         }
+
+        return $parcelNumber;
     }
 
     protected function buildPayload(WC_Order $order, $customParams = []) {
         $customerAddress = [
-            'companyName'  => $order->get_shipping_company(),
-            'firstName'    => $order->get_shipping_first_name(),
-            'lastName'     => $order->get_shipping_last_name(),
-            'street'       => $order->get_shipping_address_1(),
-            'street2'      => $order->get_shipping_address_2(),
-            'city'         => $order->get_shipping_city(),
-            'zipCode'      => $order->get_shipping_postcode(),
-            'countryCode'  => $order->get_shipping_country(),
-            'email'        => $order->get_billing_email(),
-            'mobileNumber' => $order->get_billing_phone(),
+            'companyName' => $order->get_shipping_company(),
+            'firstName'   => $order->get_shipping_first_name(),
+            'lastName'    => $order->get_shipping_last_name(),
+            'street'      => $order->get_shipping_address_1(),
+            'street2'     => $order->get_shipping_address_2(),
+            'city'        => $order->get_shipping_city(),
+            'zipCode'     => $order->get_shipping_postcode(),
+            'countryCode' => $order->get_shipping_country(),
+            'email'       => $order->get_billing_email(),
+            'phone'       => $order->get_billing_phone(),
         ];
 
         // For Luxembourg, the zip code must not have the "L-" prefix
@@ -133,7 +165,7 @@ class LpcLabelGenerationInward extends LpcComponent {
         if (method_exists($order, 'get_shipping_phone')) {
             $shippingPhone = $order->get_shipping_phone();
             if (!empty($shippingPhone)) {
-                $customerAddress['mobileNumber'] = $shippingPhone;
+                $customerAddress['phone'] = $shippingPhone;
             }
         }
 
@@ -148,8 +180,9 @@ class LpcLabelGenerationInward extends LpcComponent {
         $returnAddress      = $payload->getReturnAddress();
         $shippingMethodUsed = $this->shippingMethods->getColissimoShippingMethodOfOrder($order);
         $payload
-            ->isReturnLabel(true)
+            ->isReturnLabel()
             ->withOrderNumber($order->get_order_number())
+            ->withProductCode($productCode)
             ->withContractNumber()
             ->withPassword()
             ->withCuserInfoText()
@@ -158,10 +191,9 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->withPackage($order, $customParams)
             ->withPreparationDelay()
             ->withInstructions($order->get_customer_note())
-            ->withProductCode($productCode)
-            ->withOutputFormat($shippingMethodUsed)
+            ->withOutputFormat()
             ->withCustomsDeclaration($order, $customParams)
-            ->withInsuranceValue($order->get_subtotal(), $productCode, $order->get_shipping_country(), $shippingMethodUsed, $order->get_order_number(), $customParams, true);
+            ->withInsuranceValue($order->get_subtotal(), $order->get_shipping_country(), $shippingMethodUsed, $customParams);
 
         return $payload->checkConsistency();
     }

@@ -128,10 +128,11 @@
 	margin: 0;
 }
 
-.column-lpc-label .dashicons{
+.column-lpc-label .dashicons, .lpc_label_action_download, .lpc_label_action_print{
 	font-size: 1rem;
 	cursor: pointer;
 	margin: 0 0.1rem;
+	vertical-align: middle;
 }
 
 .column-lpc-date, .column-lpc-woo-status{
@@ -161,6 +162,11 @@
 .woocommerce_page_wc_colissimo_view th#lpc-id, .woocommerce_page_wc_colissimo_view td.lpc-id{
 	max-width: 3.5rem;
 	width: 3.5rem
+}
+
+.woocommerce_page_wc_colissimo_view th#lpc-order-number, .woocommerce_page_wc_colissimo_view td.lpc-order-number{
+	max-width: 4rem;
+	width: 4rem
 }
 
 .woocommerce_page_wc_colissimo_view th#lpc-country, .woocommerce_page_wc_colissimo_view td.lpc-country{

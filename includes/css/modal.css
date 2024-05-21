@@ -150,10 +150,6 @@
 	font-size: 18px !important;
 }
 
-.lpc-modal .lpc-lib-modal-main .lpc-lib-modal-header .modal-close-link:focus{
-	outline: none;
-}
-
 .lpc-modal .lpc-lib-modal-main article{
 	padding: 1em 1.5em;
 }

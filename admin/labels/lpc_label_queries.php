@@ -234,7 +234,7 @@ class LpcLabelQueries extends LpcComponent {
                . 'title="' . __('Delete inward label', 'wc_colissimo') . '"';
     }
 
-    protected function getLabelOutwardDownloadAttr($trackingNumber, $format): string {
+    public function getLabelOutwardDownloadAttr($trackingNumber, $format): string {
         $cn23Data = $this->outwardLabelDb->getCn23For($trackingNumber);
         if (!empty($cn23Data['format']) && LpcLabelGenerationPayload::LABEL_FORMAT_PDF !== $cn23Data['format']) {
             $outwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
@@ -261,7 +261,7 @@ class LpcLabelQueries extends LpcComponent {
             ) . '"';
     }
 
-    protected function getLabelInwardDownloadAttr($trackingNumber, $format): string {
+    public function getLabelInwardDownloadAttr($trackingNumber, $format): string {
         $cn23Data = $this->inwardLabelDb->getCn23For($trackingNumber);
         if (!empty($cn23Data['format']) && LpcLabelGenerationPayload::LABEL_FORMAT_PDF !== $cn23Data['format']) {
             $inwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
@@ -288,7 +288,7 @@ class LpcLabelQueries extends LpcComponent {
             ) . '"';
     }
 
-    protected function getLabelOutwardPrintAttr($trackingNumber, $format) {
+    public function getLabelOutwardPrintAttr($trackingNumber, $format) {
         return 'data-link="' . $this->labelPrintAction->getUrlForTrackingNumbers(
                 [$trackingNumber],
                 false
@@ -298,7 +298,7 @@ class LpcLabelQueries extends LpcComponent {
                . 'title="' . __('Print outward label', 'wc_colissimo') . '"';
     }
 
-    protected function getLabelInwardPrintAttr($trackingNumber, $format) {
+    public function getLabelInwardPrintAttr($trackingNumber, $format) {
         return 'data-link="' . $this->labelPrintAction->getUrlForTrackingNumbers(
                 [$trackingNumber],
                 false

@@ -138,6 +138,7 @@ jQuery(function ($) {
         const $listRelaysDiv = $('#lpc_layer_list_relays');
 
         const $loader = $('#lpc_layer_relays_loader');
+        const orderId = $('#lpc_layer_order_id').val();
 
         if ('' === countryId || undefined === countryId) {
             countryId = $('#shipping_country').val();
@@ -152,7 +153,8 @@ jQuery(function ($) {
             zipCode,
             city,
             countryId,
-            loadMore: loadMore ? 1 : 0
+            loadMore: loadMore ? 1 : 0,
+            orderId: orderId
         };
 
         $.ajax({

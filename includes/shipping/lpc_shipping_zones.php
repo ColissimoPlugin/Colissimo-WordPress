@@ -62,12 +62,6 @@ class LpcShippingZones extends LpcComponent {
                 if (!empty($countryDefinition['pr'])) {
                     $shippingMethods['lpc_relay'] = true;
                 }
-                if (!empty($countryDefinition['expert'])) {
-                    $shippingMethods['lpc_expert'] = true;
-                }
-                if (!empty($countryDefinition['expertddp'])) {
-                    $shippingMethods['lpc_expert_ddp'] = true;
-                }
             }
 
             $this->addCustomZone(
@@ -84,7 +78,6 @@ class LpcShippingZones extends LpcComponent {
 
     protected function addCustomZone($zoneName, array $countries, array $shippingMethods, array $currentZones, array $defaultPrices) {
         global $wpdb;
-        $weightUnit = LpcHelper::get_option('woocommerce_weight_unit', 'kg');
 
         $newZone = null;
         if (!empty($currentZones[$zoneName])) {
@@ -123,6 +116,8 @@ class LpcShippingZones extends LpcComponent {
             },
             $newZone->get_shipping_methods()
         );
+
+        $weightUnit = LpcHelper::get_option('woocommerce_weight_unit', 'kg');
         foreach ($shippingMethods as $shippingMethod) {
             if (!in_array($shippingMethod, $existingShippingMethods)) {
                 $shippingMethodInstanceId = $newZone->add_shipping_method($shippingMethod);
@@ -142,8 +137,8 @@ class LpcShippingZones extends LpcComponent {
                     $optionValues = ['shipping_rates' => []];
                     foreach ($defaultPrices[$shippingMethod] as $onePrice) {
                         $optionValues['shipping_rates'][] = [
-                            'min_weight'     => $this->convertWeightFromGram($onePrice['weight_min'], $weightUnit),
-                            'max_weight'     => $this->convertWeightFromGram($onePrice['weight_max'], $weightUnit),
+                            'min_weight'     => wc_get_weight($onePrice['weight_min'], $weightUnit, 'g'),
+                            'max_weight'     => wc_get_weight($onePrice['weight_max'], $weightUnit, 'g'),
                             'min_price'      => 0,
                             'shipping_class' => [0 => 'all'],
                             'price'          => $onePrice['price'],
@@ -156,19 +151,5 @@ class LpcShippingZones extends LpcComponent {
         }
 
         $newZone->save();
-    }
-
-    private function convertWeightFromGram($weight, $unit) {
-        if ('kg' === $unit) {
-            return $weight / 1000;
-        } elseif ('g' === $unit) {
-            return $weight;
-        } elseif ('lbs' === $unit) {
-            return $weight * 0.00220462262185;
-        } elseif ('oz' === $unit) {
-            return $weight * 0.03527396195;
-        } else {
-            return $weight;
-        }
     }
 }

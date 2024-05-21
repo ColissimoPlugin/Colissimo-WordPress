@@ -73,19 +73,7 @@ class LpcShippingMethods extends LpcComponent {
         add_filter('woocommerce_cart_shipping_method_full_label', [$this, 'addShippingIcon'], 10, 2);
     }
 
-    public function getAllShippingMethods() {
-        // can't use ::ID here because WC may not yet be defined
-        return [
-            'lpc_expert',
-            'lpc_expert_ddp',
-            'lpc_nosign',
-            'lpc_relay',
-            'lpc_sign',
-            'lpc_sign_ddp',
-        ];
-    }
-
-    public function getAllShippingMethodsWithName() {
+    public function getAllShippingMethods(): array {
         // can't use ::ID here because WC may not yet be defined
         return [
             'lpc_expert'     => __('Colissimo International', 'wc_colissimo'),
@@ -106,7 +94,7 @@ class LpcShippingMethods extends LpcComponent {
             $shipping_methods
         );
 
-        return array_intersect($this->getAllShippingMethods(), $shippingMethodIds);
+        return array_intersect(array_keys($this->getAllShippingMethods()), $shippingMethodIds);
     }
 
     public function getColissimoShippingMethodOfOrder(WC_Order $order) {
@@ -117,7 +105,7 @@ class LpcShippingMethods extends LpcComponent {
 
     public function addShippingIcon($label, $method) {
         $img = '';
-        if ('yes' === WC_Admin_Settings::get_option('display_logo') && in_array($method->get_method_id(), $this->getAllShippingMethods())) {
+        if ('yes' === WC_Admin_Settings::get_option('display_logo') && in_array($method->get_method_id(), array_keys($this->getAllShippingMethods()))) {
             $url   = plugins_url('/images/colissimo_icon.png', LPC_INCLUDES . 'init.php');
             $class = 'lpc_shipping_icon lpc_shipping_icon_' . $method->get_method_id();
             $style = 'max-width: 40px; display:inline; vertical-align: middle;';

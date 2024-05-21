@@ -1103,6 +1103,83 @@
         "price": "62.01"
       }
     ],
+    "lpc_sign_ddp": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": "11.76"
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": "14.62"
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": "16.35"
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": "17.82"
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": "19.62"
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": "21.44"
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": "28.24"
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": "29.85"
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": "31.35"
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": "32.85"
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": "34.34"
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": "42.84"
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": "51.21"
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": "59.62"
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": "62.01"
+      }
+    ],
     "lpc_relay": [
       {
         "weight_min": 0,
@@ -1394,10 +1471,164 @@
         "weight_max": 30001,
         "price": "271.97"
       }
+    ],
+    "lpc_sign_ddp": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": "27.12"
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": "29.99"
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": "41.12"
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": "52.24"
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": "59.88"
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": "63.91"
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": "81.70"
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": "94.59"
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": "104.79"
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": "109.21"
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": "114.65"
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": "167.88"
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": "183.86"
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": "236.00"
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": "271.97"
+      }
     ]
   },
   "Z6": {
     "lpc_sign": [
+      {
+        "weight_min": 0,
+        "weight_max": 501,
+        "price": "31.10"
+      },
+      {
+        "weight_min": 501,
+        "weight_max": 1001,
+        "price": "36.59"
+      },
+      {
+        "weight_min": 1001,
+        "weight_max": 2001,
+        "price": "50.24"
+      },
+      {
+        "weight_min": 2001,
+        "weight_max": 3001,
+        "price": "64.17"
+      },
+      {
+        "weight_min": 3001,
+        "weight_max": 4001,
+        "price": "77.82"
+      },
+      {
+        "weight_min": 4001,
+        "weight_max": 5001,
+        "price": "89.48"
+      },
+      {
+        "weight_min": 5001,
+        "weight_max": 6001,
+        "price": "102.79"
+      },
+      {
+        "weight_min": 6001,
+        "weight_max": 7001,
+        "price": "116.23"
+      },
+      {
+        "weight_min": 7001,
+        "weight_max": 8001,
+        "price": "129.56"
+      },
+      {
+        "weight_min": 8001,
+        "weight_max": 9001,
+        "price": "143.19"
+      },
+      {
+        "weight_min": 9001,
+        "weight_max": 10001,
+        "price": "156.52"
+      },
+      {
+        "weight_min": 10001,
+        "weight_max": 15001,
+        "price": "216.87"
+      },
+      {
+        "weight_min": 15001,
+        "weight_max": 20001,
+        "price": "278.54"
+      },
+      {
+        "weight_min": 20001,
+        "weight_max": 25001,
+        "price": "338.88"
+      },
+      {
+        "weight_min": 25001,
+        "weight_max": 30001,
+        "price": "399.24"
+      }
+    ],
+    "lpc_sign_ddp": [
       {
         "weight_min": 0,
         "weight_max": 501,

@@ -15,7 +15,7 @@ class LpcCouponsRestrictions extends LpcComponent {
 
         $options     = [];
         $options[''] = __('No method', 'wc_colissimo');
-        $options     = array_merge($options, LpcRegister::get('shippingMethods')->getAllShippingMethodsWithName());
+        $options     = array_merge($options, LpcRegister::get('shippingMethods')->getAllShippingMethods());
 
         woocommerce_wp_select(
             [

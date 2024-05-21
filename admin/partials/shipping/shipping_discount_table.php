@@ -62,6 +62,3 @@ $currentDiscount = $shippingMethod->get_option('shipping_discount', []);
 		</fieldset>
 	</td>
 </tr>
-<script type="text/javascript">
-    window.lpc_i18n_delete_selected_discount = "<?php echo esc_attr('Delete the selected discount?'); ?>";
-</script>

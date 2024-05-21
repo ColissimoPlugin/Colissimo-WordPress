@@ -350,7 +350,7 @@ class LpcColissimoStatus extends LpcComponent {
             }
         }
 
-        return $this->status_by_clp[$clp];
+        return $this->status_by_clp[$clp] ?? LpcOrderStatuses::WC_LPC_UNKNOWN_STATUS_INTERNAL_CODE;
     }
 
     public function getAnomalyInternalCodes() {

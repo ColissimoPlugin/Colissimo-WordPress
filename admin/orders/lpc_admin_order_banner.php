@@ -93,7 +93,12 @@ class LpcAdminOrderBanner extends LpcComponent {
                         'lpc_order_banner',
                         plugins_url('/js/orders/lpc_order_banner.js', LPC_ADMIN . 'init.php'),
                         null,
-                        ['jquery-core']
+                        ['jquery-core'],
+                        'lpc_order_banner',
+                        [
+                            'automatic' => __('Automatic', 'wc_colissimo'),
+                            'default'   => __('Default packaging', 'wc_colissimo'),
+                        ]
                     );
 
                     LpcLabelQueries::enqueueLabelsActionsScript();
@@ -184,7 +189,7 @@ class LpcAdminOrderBanner extends LpcComponent {
 
             $quantity = $item->get_quantity();
 
-            if (!empty($alreadyGeneratedLabelItems[$item->get_id()])) {
+            if (!empty($alreadyGeneratedLabelItems[$item->get_id()]['qty'])) {
                 $quantity -= $alreadyGeneratedLabelItems[$item->get_id()]['qty'];
             }
 
@@ -194,12 +199,19 @@ class LpcAdminOrderBanner extends LpcComponent {
             }
 
             $args['lpc_order_items'][] = [
-                'id'       => $item->get_id(),
-                'name'     => $item->get_name(),
-                'qty'      => max($quantity, 0),
-                'weight'   => empty($product->get_weight()) ? 0 : $product->get_weight(),
-                'price'    => $price,
-                'base_qty' => $item->get_quantity(),
+                'id'         => $item->get_id(),
+                'name'       => $item->get_name(),
+                'qty'        => max($quantity, 0),
+                'weight'     => empty($product->get_weight()) ? 0 : $product->get_weight(),
+                'price'      => $price,
+                'base_qty'   => $item->get_quantity(),
+                'dimensions' => json_encode(
+                    [
+                        $product->get_width(),
+                        $product->get_length(),
+                        $product->get_height(),
+                    ]
+                ),
             ];
         }
 
@@ -281,27 +293,27 @@ class LpcAdminOrderBanner extends LpcComponent {
         $args['lpc_sending_service_config'] = 'partner';
         $productCode                        = $this->capabilitiesPerCountry->getProductCodeForOrder($order);
         $args['lpc_product_code']           = $productCode;
-        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && !empty($productCode) && in_array($productCode, ['BOS', 'DOS'])) {
+        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE === $productCode) {
             $shippingMethod                     = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
             $args['lpc_sending_service_needed'] = true;
-            if (in_array($shippingMethod, [LpcExpert::ID, LpcExpertDDP::ID])) {
 
-                $countries                          = [
+            if (in_array($shippingMethod, [LpcExpert::ID, LpcExpertDDP::ID])) {
+                $countries = [
                     'AT' => 'lpc_expert_SendingService_austria',
                     'DE' => 'lpc_expert_SendingService_germany',
                     'IT' => 'lpc_expert_SendingService_italy',
                     'LU' => 'lpc_expert_SendingService_luxembourg',
                 ];
-                $args['lpc_sending_service_config'] = LpcHelper::get_option($countries[$countryCode]);
             } else {
-                $countries                          = [
+                $countries = [
                     'AT' => 'lpc_domicileas_SendingService_austria',
                     'DE' => 'lpc_domicileas_SendingService_germany',
                     'IT' => 'lpc_domicileas_SendingService_italy',
                     'LU' => 'lpc_domicileas_SendingService_luxembourg',
                 ];
-                $args['lpc_sending_service_config'] = LpcHelper::get_option($countries[$countryCode]);
             }
+
+            $args['lpc_sending_service_config'] = LpcHelper::get_option($countries[$countryCode]);
         }
 
         // On demand

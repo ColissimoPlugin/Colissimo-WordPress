@@ -45,13 +45,27 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     public function getCurrentPickUpLocationInfo() {
-        return WC()->session->get(self::PICKUP_LOCATION_SESSION_VAR_NAME);
+        $pickUpInfo = WC()->session->get(self::PICKUP_LOCATION_SESSION_VAR_NAME);
+        if (empty($pickUpInfo)) {
+            $this->initSession();
+            $pickUpInfo = $_SESSION[self::PICKUP_LOCATION_SESSION_VAR_NAME] ?? [];
+        }
+
+        return $pickUpInfo;
     }
 
     public function setCurrentPickUpLocationInfo($pickUpInfo) {
         WC()->session->set(self::PICKUP_LOCATION_SESSION_VAR_NAME, $pickUpInfo);
+        $this->initSession();
+        $_SESSION[self::PICKUP_LOCATION_SESSION_VAR_NAME] = $pickUpInfo;
 
         return $this;
+    }
+
+    private function initSession() {
+        if (empty(session_id()) || session_status() !== PHP_SESSION_ACTIVE) {
+            @session_start();
+        }
     }
 
     public function getAjaxUrl() {

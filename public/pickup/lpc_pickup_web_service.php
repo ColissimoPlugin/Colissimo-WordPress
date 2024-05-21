@@ -145,7 +145,7 @@ class LpcPickupWebService extends LpcPickup {
             'countryCode' => LpcHelper::getVar('countryId'),
         ];
 
-        $loadMore = (int) LpcHelper::getVar('loadMore', 0) === 1;
+        $loadMore = LpcHelper::getVar('loadMore', 0, 'int') === 1;
 
         $resultWs = $this->getPickupWS($address);
         // When an exception is throw
@@ -171,6 +171,15 @@ class LpcPickupWebService extends LpcPickup {
             if (empty($relayTypes)) {
                 $relayTypes = 'all';
             }
+
+            // Force Post office type if cart weight > 20kg
+            $cartWeight = wc_get_weight(WC()->cart->get_cart_contents_weight(), 'kg');
+            if ($cartWeight > 20) {
+                $relayTypes  = ['BDP', 'BPR'];
+                $overWarning = __('Only post offices are available for this order', 'wc_colissimo');
+                $html        .= '<div class="lpc_layer_relay_warning_relay_type">' . $overWarning . '</div>';
+            }
+
             if ('all' != $relayTypes) {
                 $listRelaysWS = array_filter($listRelaysWS, function ($relay) use ($relayTypes) {
                     return in_array($relay->typeDePoint, $relayTypes);

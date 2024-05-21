@@ -3,8 +3,6 @@
 use Automattic\WooCommerce\Utilities\OrderUtil;
 
 class LpcOrderQueries {
-    const UPDATE_STATUS_PERIOD = '-90 days';
-
     public static function getLpcOrders($currentPage = 0, $elementsPerPage = 0, $args = [], $filters = []): array {
         global $wpdb;
 
@@ -244,7 +242,7 @@ class LpcOrderQueries {
         $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
         $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
-        $timePeriod = self::UPDATE_STATUS_PERIOD;
+        $timePeriod = '-' . LpcHelper::get_option('lpc_label_status_update_days', 90) . ' days';
 
         /**
          * Filter allowing to modify the time period for which the tracking status should be updated.
@@ -306,7 +304,7 @@ class LpcOrderQueries {
         $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
         $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
-        $nbDays      = LpcHelper::get_option('lpc_day_purge');
+        $nbDays      = LpcHelper::get_option('lpc_day_purge', 30);
         $fromDate    = time() - $nbDays * DAY_IN_SECONDS;
         $isDelivered = LpcUnifiedTrackingApi::IS_DELIVERED_META_VALUE_TRUE;
 

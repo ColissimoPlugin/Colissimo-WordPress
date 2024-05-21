@@ -1,6 +1,5 @@
 <?php
 
-
 class LpcOutwardLabelEmailManager extends LpcComponent {
 
     const EMAIL_OUTWARD_TRACKING_OPTION = 'lpc_email_outward_tracking';
@@ -24,5 +23,4 @@ class LpcOutwardLabelEmailManager extends LpcComponent {
         $lpcOutwardLabelGenerationEmail = new LpcOutwardLabelGenerationEmail();
         $lpcOutwardLabelGenerationEmail->trigger($order_data['order']);
     }
-
 }

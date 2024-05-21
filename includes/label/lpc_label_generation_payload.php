@@ -1,20 +1,53 @@
 <?php
 
 class LpcLabelGenerationPayload {
-    const MAX_INSURANCE_AMOUNT = 5000;
-    const MAX_INSURANCE_AMOUNT_RELAY = 1000;
-    const FORCED_ORIGINAL_IDENT = 'A';
-    const RETURN_LABEL_LETTER_MARK = 'R';
-    const RETURN_TYPE_CHOICE_NO_RETURN = 3;
-    const PRODUCT_CODE_INSURANCE_AVAILABLE = ['DOS', 'COL', 'BPR', 'A2P', 'CDS', 'CORE', 'CORI', 'CORF', 'CMT', 'PCS'];
-    const PRODUCT_CODE_INSURANCE_RELAY = ['BPR', 'A2P', 'CMT', 'PCS'];
-    const CUSTOMS_CATEGORY_RETURN_OF_ARTICLES = 6;
-    const LABEL_FORMAT_PDF = 'PDF';
-    const LABEL_FORMAT_ZPL = 'ZPL';
-    const LABEL_FORMAT_DPL = 'DPL';
-    const LABEL_FORMATS = [self::LABEL_FORMAT_PDF, self::LABEL_FORMAT_ZPL, self::LABEL_FORMAT_DPL];
-    const COUNTRIES_NEEDING_STATE = ['CA', 'US'];
+    private const MAX_INSURANCE_AMOUNT = 5000;
+    private const MAX_INSURANCE_AMOUNT_RELAY = 1000;
+    private const FORCED_ORIGINAL_IDENT = 'A';
+    private const RETURN_TYPE_CHOICE_NO_RETURN = 3;
+    private const CUSTOMS_CATEGORY_RETURN_OF_ARTICLES = 6;
+    private const BELGIAN_MOBILE_NUMBER_REGEX = '/^(?:(?:\+|00)32|0)4\d{8}$/';
+
+    public const PRODUCT_CODE_RELAY = 'HD';
+    public const PRODUCT_CODE_WITHOUT_SIGNATURE = 'DOM';
+    public const PRODUCT_CODE_WITHOUT_SIGNATURE_OM = 'COM';
+    public const PRODUCT_CODE_WITHOUT_SIGNATURE_INTRA_DOM = 'COLD';
+    public const PRODUCT_CODE_WITH_SIGNATURE = 'DOS';
+    public const PRODUCT_CODE_WITH_SIGNATURE_OM = 'CDS';
+    public const PRODUCT_CODE_WITH_SIGNATURE_INTRA_DOM = 'COL';
+    public const PRODUCT_CODE_RETURN_FRANCE = 'CORE';
+    public const PRODUCT_CODE_RETURN_INT = 'CORI';
+
+    private const ALL_PRODUCT_CODES = [
+        self::PRODUCT_CODE_WITH_SIGNATURE_OM,
+        self::PRODUCT_CODE_WITH_SIGNATURE_INTRA_DOM,
+        self::PRODUCT_CODE_WITHOUT_SIGNATURE_INTRA_DOM,
+        self::PRODUCT_CODE_WITHOUT_SIGNATURE_OM,
+        self::PRODUCT_CODE_RETURN_FRANCE,
+        self::PRODUCT_CODE_RETURN_INT,
+        self::PRODUCT_CODE_WITHOUT_SIGNATURE,
+        self::PRODUCT_CODE_WITH_SIGNATURE,
+        self::PRODUCT_CODE_RELAY,
+    ];
+    private const PRODUCT_CODE_INSURANCE_AVAILABLE = [
+        self::PRODUCT_CODE_WITH_SIGNATURE,
+        self::PRODUCT_CODE_WITH_SIGNATURE_OM,
+        self::PRODUCT_CODE_WITH_SIGNATURE_INTRA_DOM,
+        self::PRODUCT_CODE_RELAY,
+        self::PRODUCT_CODE_RETURN_FRANCE,
+        self::PRODUCT_CODE_RETURN_INT,
+    ];
+
+    public const LABEL_FORMAT_PDF = 'PDF';
+    public const LABEL_FORMAT_ZPL = 'ZPL';
+    public const LABEL_FORMAT_DPL = 'DPL';
+    private const LABEL_FORMATS = [self::LABEL_FORMAT_PDF, self::LABEL_FORMAT_ZPL, self::LABEL_FORMAT_DPL];
     const DEFAULT_FORMAT = 'PDF_A4_300dpi';
+
+    private const FRENCH_COUNTRY_CODE = 'FR';
+    private const BELGIAN_COUNTRY_CODE = 'BE';
+    private const US_COUNTRY_CODE = 'US';
+    public const COUNTRIES_NEEDING_STATE = ['CA', self::US_COUNTRY_CODE];
 
     protected $payload;
     protected $isReturnLabel;
@@ -74,8 +107,17 @@ class LpcLabelGenerationPayload {
             $payloadSender['phoneNumber'] = $sender['phoneNumber'];
         }
 
+        if (!empty($sender['phone'])) {
+            $payloadSender['phoneNumber'] = $sender['phone'];
+        }
+
         if (!empty($sender['street2'])) {
-            $payloadSender['address']['line3'] = $sender['street2'];
+            $payloadSender['line3'] = $sender['street2'];
+        }
+
+        $zipDashPos = strpos($sender['zipCode'], '-');
+        if (self::US_COUNTRY_CODE === $sender['countryCode'] && false !== $zipDashPos) {
+            $payloadSender['zipCode'] = substr($sender['zipCode'], 0, $zipDashPos);
         }
 
         /**
@@ -172,8 +214,25 @@ class LpcLabelGenerationPayload {
             $payloadAddressee['address']['stateOrProvinceCode'] = $addressee['stateCode'];
         }
 
+        $zipDashPos = strpos($addressee['zipCode'], '-');
+        if (self::US_COUNTRY_CODE === $addressee['countryCode'] && false !== $zipDashPos) {
+            $payloadAddressee['address']['zipCode'] = substr($addressee['zipCode'], 0, $zipDashPos);
+        }
+
+        if (!$this->getIsReturnLabel() && !empty($addressee['phone'])) {
+            $phoneNumber = str_replace(' ', '', $addressee['phone']);
+            $countryCode = empty($addressee['countryCode']) ? self::FRENCH_COUNTRY_CODE : $addressee['countryCode'];
+
+            if (self::BELGIAN_COUNTRY_CODE === $countryCode && preg_match(self::BELGIAN_MOBILE_NUMBER_REGEX, $phoneNumber)) {
+                $phoneNumber = preg_replace('/(04|00324)([0-9]{8})/', '+324$2', $phoneNumber);
+            }
+
+            $phoneField             = self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode'] ? 'mobileNumber' : 'phoneNumber';
+            $addressee[$phoneField] = $phoneNumber;
+        }
+
         if (!empty($addressee['mobileNumber'])) {
-            $this->setAddresseePhoneNumber($payloadAddressee, $addressee['mobileNumber'], $addressee['countryCode']);
+            $payloadAddressee['address']['mobileNumber'] = $addressee['mobileNumber'];
         }
 
         if (!empty($addressee['phoneNumber'])) {
@@ -215,11 +274,13 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withPackage(WC_Order $order, $customParams = []) {
+    public function withPackage(WC_Order $order, &$customParams = []) {
         if (isset($customParams['totalWeight'])) {
             $totalWeight = wc_get_weight($customParams['totalWeight'], 'kg');
         } else {
-            $totalWeight = 0;
+            $nbProductsToShip   = 0;
+            $totalWeight        = 0;
+            $productsDimensions = [];
             foreach ($order->get_items() as $item) {
                 $data    = $item->get_data();
                 $product = $item->get_product();
@@ -233,8 +294,14 @@ class LpcLabelGenerationPayload {
                     continue;
                 }
 
-                $productWeight = $product->get_weight() < 0.01 ? 0.01 : $product->get_weight();
-                $weight        = (float) $productWeight * $data['quantity'];
+                $productWeight        = $product->get_weight() < 0.01 ? 0.01 : $product->get_weight();
+                $nbProductsToShip     += (float) $data['quantity'];
+                $weight               = (float) $productWeight * $data['quantity'];
+                $productsDimensions[] = [
+                    $product->get_length(),
+                    $product->get_width(),
+                    $product->get_height(),
+                ];
 
                 if ($weight < 0) {
                     throw new Exception(
@@ -242,12 +309,18 @@ class LpcLabelGenerationPayload {
                     );
                 }
 
-                $weightInKg  = wc_get_weight($weight, 'kg');
-                $totalWeight += $weightInKg;
+                $totalWeight += wc_get_weight($weight, 'kg');
             }
 
-            $packagingWeight = wc_get_weight(LpcHelper::get_option('lpc_packaging_weight', '0'), 'kg');
-            $totalWeight     += $packagingWeight;
+            $matchingPackaging = LpcHelper::getMatchingPackaging($nbProductsToShip, $totalWeight, $productsDimensions);
+            if (empty($matchingPackaging)) {
+                $totalWeight += wc_get_weight(LpcHelper::get_option('lpc_packaging_weight', '0'), 'kg');
+            } else {
+                $totalWeight += wc_get_weight($matchingPackaging['weight'], 'kg');
+                if ($matchingPackaging['width'] + $matchingPackaging['length'] + $matchingPackaging['depth'] > 120) {
+                    $customParams['nonMachinable'] = true;
+                }
+            }
         }
 
         if ($totalWeight < 0.01) {
@@ -311,22 +384,6 @@ class LpcLabelGenerationPayload {
     }
 
     public function withProductCode($productCode) {
-        $allowedProductCodes = [
-            'A2P',
-            'BDP',
-            'BPR',
-            'CDS',
-            'CMT',
-            'COL',
-            'COLD',
-            'COM',
-            'CORE',
-            'CORI',
-            'DOM',
-            'DOS',
-            'ECO',
-        ];
-
         /**
          * Filter on the product code when generating a label
          *
@@ -334,19 +391,18 @@ class LpcLabelGenerationPayload {
          */
         $productCode = apply_filters('lpc_payload_letter_service_product_code', $productCode, $this->getOrderNumber(), $this->getIsReturnLabel());
 
-        if (!in_array($productCode, $allowedProductCodes)) {
+        if (!in_array($productCode, self::ALL_PRODUCT_CODES)) {
             LpcLogger::error(
-                'Unknown productCode',
+                'Unknown product code',
                 [
                     'given' => $productCode,
-                    'known' => $allowedProductCodes,
+                    'known' => self::ALL_PRODUCT_CODES,
                 ]
             );
             throw new Exception('Unknown Product code!');
         }
 
-        $this->payload['letter']['service']['productCode'] = $productCode;
-
+        $this->payload['letter']['service']['productCode']      = $productCode;
         $this->payload['letter']['service']['returnTypeChoice'] = self::RETURN_TYPE_CHOICE_NO_RETURN;
 
         return $this;
@@ -412,10 +468,10 @@ class LpcLabelGenerationPayload {
         return $this->withDepositDate($depositDate);
     }
 
-    public function withOutputFormat($shippingMethodUsed = null) {
+    public function withOutputFormat() {
         if ($this->getIsReturnLabel()) {
             $outputFormat = LpcHelper::get_option('lpc_returnLabelFormat');
-            if (in_array($shippingMethodUsed, [LpcExpert::ID, LpcExpertDDP::ID])) {
+            if (self::PRODUCT_CODE_RETURN_INT === $this->payload['letter']['service']['productCode']) {
                 $outputFormat = self::DEFAULT_FORMAT;
             }
         } else {
@@ -454,11 +510,11 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withInsuranceValue($amount, $productCode, $countryCode, $shippingMethodUsed, $orderNumber, $customParams = [], $inward = false) {
+    public function withInsuranceValue($amount, $countryCode, $shippingMethodUsed, $customParams = []) {
         if (!empty($customParams['useInsurance'])) {
             $usingInsurance = $customParams['useInsurance'];
         } else {
-            $option         = $inward ? 'lpc_using_insurance_inward' : 'lpc_using_insurance';
+            $option         = $this->getIsReturnLabel() ? 'lpc_using_insurance_inward' : 'lpc_using_insurance';
             $usingInsurance = LpcHelper::get_option($option, 'no');
         }
 
@@ -469,7 +525,7 @@ class LpcLabelGenerationPayload {
          */
         $usingInsurance = apply_filters('lpc_payload_letter_parcel_using_insurance', $usingInsurance, $this->getOrderNumber(), $this->getIsReturnLabel());
 
-        if ('yes' !== $usingInsurance || !in_array($productCode, self::PRODUCT_CODE_INSURANCE_AVAILABLE)) {
+        if ('yes' !== $usingInsurance || !in_array($this->payload['letter']['service']['productCode'], self::PRODUCT_CODE_INSURANCE_AVAILABLE)) {
             return $this;
         }
 
@@ -483,7 +539,7 @@ class LpcLabelGenerationPayload {
                 $lpc_admin_notices->add_notice(
                     'insurance_unavailable_for_country',
                     'notice-warning',
-                    sprintf(__('Order %s: insurance is not available for this country', 'wc_colissimo'), $orderNumber)
+                    sprintf(__('Order %s: insurance is not available for this country', 'wc_colissimo'), $this->payload['letter']['service']['orderNumber'])
                 );
             }
 
@@ -491,7 +547,7 @@ class LpcLabelGenerationPayload {
         }
 
         // Use user defined insurance amount if exists (from Colissimo banner in order edition)
-        if (isset($customParams['insuranceAmount']) && !empty($customParams['insuranceAmount'])) {
+        if (!empty($customParams['insuranceAmount'])) {
             $amount = $customParams['insuranceAmount'];
         }
 
@@ -501,7 +557,7 @@ class LpcLabelGenerationPayload {
          * @since 1.6
          */
         $amount             = (float) apply_filters('lpc_payload_letter_parcel_insurance_value', $amount, $this->getOrderNumber(), $this->getIsReturnLabel());
-        $maxInsuranceAmount = $this->getMaxInsuranceAmountByProductCode($productCode);
+        $maxInsuranceAmount = $this->getMaxInsuranceAmountByProductCode($this->payload['letter']['service']['productCode']);
 
         if ($amount > $maxInsuranceAmount) {
             LpcLogger::warn(
@@ -513,7 +569,7 @@ class LpcLabelGenerationPayload {
             );
 
             if (is_admin()) {
-                $shippingMethods = $this->lpcShippingMethods->getAllShippingMethodsWithName();
+                $shippingMethods = $this->lpcShippingMethods->getAllShippingMethods();
                 $lpc_admin_notices->add_notice(
                     'outward_label_generate',
                     'notice-info',
@@ -545,7 +601,7 @@ class LpcLabelGenerationPayload {
     }
 
     public function withNonMachinable($customParams = []) {
-        if (in_array($this->payload['letter']['service']['productCode'], ['BPR', 'A2P', 'BDP', 'CMT'])) {
+        if (self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode']) {
             $this->payload['letter']['parcel']['nonMachinable'] = 'false';
 
             return $this;
@@ -562,7 +618,6 @@ class LpcLabelGenerationPayload {
 
     public function withDDP($shippingMethodUsed) {
         if (!in_array($shippingMethodUsed, [LpcSignDDP::ID, LpcExpertDDP::ID])) {
-
             $this->payload['letter']['parcel']['ddp'] = 'false';
 
             return $this;
@@ -793,6 +848,7 @@ class LpcLabelGenerationPayload {
             $originalInvoiceDate = $order->get_date_created()
                                          ->date('Y-m-d');
 
+            // For custom return labels this is not the "correct" original number since there is none, but this field is mandatory, so we add it
             $originalParcelNumber = $this->getOriginalParcelNumberFromInvoice($order);
 
             $customsDeclarationPayload['contents']['original'] =
@@ -864,31 +920,6 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    /** Set phone number or mobile number depend on formatting and country
-     *
-     * @param        $payloadAddress
-     * @param        $phoneNumber
-     * @param string $countryCode
-     */
-    protected function setAddresseePhoneNumber(&$payloadAddress, $phoneNumber, $countryCode = 'FR') {
-        if (empty($phoneNumber)) {
-            return;
-        }
-
-        $phoneNumber              = str_replace(' ', '', $phoneNumber);
-        $frenchMobileNumberRegex  = '/^(?:(?:\+|00)33|0)(?:6|7)\d{8}$/';
-        $belgianMobileNumberRegex = '/^(?:(?:\+|00)32|0)4\d{8}$/';
-
-        if (preg_match($frenchMobileNumberRegex, $phoneNumber) && 'FR' === $countryCode) {
-            $payloadAddress['address']['mobileNumber'] = $phoneNumber;
-        } elseif (preg_match($belgianMobileNumberRegex, $phoneNumber) && 'BE' === $countryCode) {
-            $phoneNumber                               = preg_replace('/(04|00324)([0-9]{8})/', '+324$2', $phoneNumber);
-            $payloadAddress['address']['mobileNumber'] = $phoneNumber;
-        } else {
-            $payloadAddress['address']['phoneNumber'] = $phoneNumber;
-        }
-    }
-
     /**
      * Retrieve product Origin Country
      *
@@ -949,8 +980,8 @@ class LpcLabelGenerationPayload {
         return $defaultHsCode;
     }
 
-    public function isReturnLabel($isReturnLabel = true) {
-        $this->isReturnLabel = $isReturnLabel;
+    public function isReturnLabel() {
+        $this->isReturnLabel = true;
 
         return $this;
     }
@@ -988,17 +1019,7 @@ class LpcLabelGenerationPayload {
     }
 
     protected function checkPickupLocationId() {
-        $productCodesNeedingPickupLocationIdSet = [
-            'A2P',
-            'BPR',
-            'ACP',
-            'CDI',
-            'CMT',
-            'BDP',
-            'PCS',
-        ];
-
-        if (in_array($this->payload['letter']['service']['productCode'], $productCodesNeedingPickupLocationIdSet)
+        if (self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode']
             && (!isset($this->payload['letter']['parcel']['pickupLocationId'])
                 || empty($this->payload['letter']['parcel']['pickupLocationId']))) {
             throw new Exception(
@@ -1006,7 +1027,7 @@ class LpcLabelGenerationPayload {
             );
         }
 
-        if (!in_array($this->payload['letter']['service']['productCode'], $productCodesNeedingPickupLocationIdSet)
+        if (self::PRODUCT_CODE_RELAY !== $this->payload['letter']['service']['productCode']
             && isset($this->payload['letter']['parcel']['pickupLocationId'])) {
             throw new Exception(
                 __('The ProductCode used requires that a pickupLocationId is *not* set!', 'wc_colissimo')
@@ -1015,12 +1036,7 @@ class LpcLabelGenerationPayload {
     }
 
     protected function checkCommercialName() {
-        $productCodesNeedingCommercialName = [
-            'A2P',
-            'BPR',
-        ];
-
-        if (in_array($this->payload['letter']['service']['productCode'], $productCodesNeedingCommercialName)
+        if (self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode']
             && (!isset($this->payload['letter']['service']['commercialName'])
                 || empty($this->payload['letter']['service']['commercialName']))) {
             throw new Exception(
@@ -1067,11 +1083,6 @@ class LpcLabelGenerationPayload {
      * @throws Exception When the address format is refused.
      */
     protected function checkAddresseeAddress() {
-        $productCodesNeedingMobileNumber = [
-            'A2P',
-            'BPR',
-        ];
-
         $address = $this->payload['letter']['addressee']['address'];
 
         if (empty($address['companyName'])
@@ -1106,7 +1117,7 @@ class LpcLabelGenerationPayload {
             );
         }
 
-        if (in_array($this->payload['letter']['service']['productCode'], $productCodesNeedingMobileNumber)
+        if (self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode']
             && empty($address['mobileNumber'])) {
             throw new Exception(
                 __('The ProductCode used requires that a mobile number is set!', 'wc_colissimo')
@@ -1314,22 +1325,20 @@ class LpcLabelGenerationPayload {
             return false;
         }
 
-        return in_array($productCode, self::PRODUCT_CODE_INSURANCE_RELAY) ? self::MAX_INSURANCE_AMOUNT_RELAY : self::MAX_INSURANCE_AMOUNT;
+        return self::PRODUCT_CODE_RELAY === $productCode ? self::MAX_INSURANCE_AMOUNT_RELAY : self::MAX_INSURANCE_AMOUNT;
     }
 
-    public function withPostalNetwork($countryCode, $productCode, $order) {
-        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && in_array($productCode, ['BOS', 'DOS'])) {
+    public function withPostalNetwork($countryCode, $order) {
+        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && self::PRODUCT_CODE_WITH_SIGNATURE === $this->payload['letter']['service']['productCode']) {
             $shippingMethod = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
 
             if (in_array($shippingMethod, [LpcExpert::ID, LpcExpertDDP::ID])) {
-
                 $countries = [
                     'AT' => 'lpc_expert_SendingService_austria',
                     'DE' => 'lpc_expert_SendingService_germany',
                     'IT' => 'lpc_expert_SendingService_italy',
                     'LU' => 'lpc_expert_SendingService_luxembourg',
                 ];
-                $network   = LpcHelper::get_option($countries[$countryCode]);
             } else {
                 $countries = [
                     'AT' => 'lpc_domicileas_SendingService_austria',
@@ -1337,8 +1346,9 @@ class LpcLabelGenerationPayload {
                     'IT' => 'lpc_domicileas_SendingService_italy',
                     'LU' => 'lpc_domicileas_SendingService_luxembourg',
                 ];
-                $network   = LpcHelper::get_option($countries[$countryCode]);
             }
+
+            $network = LpcHelper::get_option($countries[$countryCode]);
 
             $customSendingService = isset($_REQUEST['lpc__admin__order_banner__generate_label__sending_service']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__sending_service'])) : $network;
 

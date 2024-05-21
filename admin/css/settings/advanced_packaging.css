@@ -1,0 +1,105 @@
+/* Packagings listing */
+#lpc_packaging_weight{
+	max-width: 1120px;
+}
+
+#lpc_packaging_weight tr th:first-of-type, #lpc_packaging_weight tr td:first-of-type{
+	max-width: 20px;
+}
+
+#lpc_packaging_weight th{
+	padding: 10px;
+}
+
+.lpc_packaging_row .packaging_priority_up, .lpc_packaging_row .packaging_priority_down{
+	padding: 0 4px;
+}
+
+.lpc_column_priority{
+	max-width: 90px;
+}
+
+.packaging_priority_up span, .packaging_priority_down span{
+	vertical-align: middle;
+}
+
+.lpc_column_name{
+	max-width: 130px;
+}
+
+.lpc_column_actions .lpc_packaging_edit{
+	cursor: pointer;
+}
+
+.lpc_column_actions .lpc_packaging_delete{
+	cursor: pointer;
+}
+
+.lpc_column_packaging_weight{
+	max-width: 175px;
+}
+
+.lpc_column_max_products{
+	max-width: 100px;
+}
+
+.lpc_column_max_weight{
+	max-width: 150px;
+}
+
+.lpc_column_extra_cost{
+	max-width: 170px;
+}
+
+.lpc_column_actions{
+	max-width: 60px;
+}
+
+#lpc_packaging_weight tfoot td{
+	padding-left: 0;
+	padding-top: 0;
+}
+
+
+/* New packaging modal */
+#lpc-modallpc-packaging .lpc-lib-modal-content{
+	max-width: 500px;
+	min-width: 250px;
+	max-height: 400px;
+}
+
+#lpc_new_packaging_option_name_input{
+	width: 352px;
+}
+
+@media (max-width: 782px){
+	#lpc-modallpc-packaging .lpc-lib-modal-content{
+		max-height: 100%;
+	}
+
+	#lpc_new_packaging_option_name_input{
+		width: 197px;
+	}
+}
+
+#lpc_new_packaging_options{
+	text-align: center;
+}
+
+.lpc_new_packaging_option{
+	display: inline-block;
+	margin-top: 1rem;
+}
+
+.lpc_new_packaging_option_label{
+	text-align: left;
+	display: block;
+}
+
+#lpc_new_packaging_option_length input, #lpc_new_packaging_option_width input, #lpc_new_packaging_option_depth input{
+	max-width: 114px;
+}
+
+#lpc_new_packaging_buttons{
+	margin-top: 1rem;
+}

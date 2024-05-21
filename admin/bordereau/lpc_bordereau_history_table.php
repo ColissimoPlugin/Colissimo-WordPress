@@ -95,7 +95,7 @@ END_HTML;
                 'data-id'              => $slip->bordereau_external_id,
                 'lpc-number'           => $slip->bordereau_external_id,
                 'lpc-parcels-number'   => $slip->number_parcels,
-                'lpc-order-ids'        => implode(', ', $orderIdsLinks),
+                'lpc-order-ids'        => str_replace(', N/A', '', implode(', ', $orderIdsLinks)),
                 'lpc-tracking-numbers' => $slip->tracking_numbers,
                 'lpc-creation-date'    => $date,
                 'lpc-actions'          => $this->bordereauQueries->getBordereauActionsIcons($bordereauLink,

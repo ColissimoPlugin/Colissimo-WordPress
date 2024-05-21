@@ -16,13 +16,14 @@ class LpcAdminPickupWebService extends LpcComponent {
     }
 
     public function init() {
-        $this->ajaxDispatcher->register('pickupWS', [$this, 'pickupWS']);
+        $this->ajaxDispatcher->register('adminPickupWS', [$this, 'adminPickupWS']);
 
-        add_action('current_screen',
+        add_action(
+            'current_screen',
             function ($currentScreen) {
                 if ('woocommerce_page_wc-orders' === $currentScreen->base || ('post' === $currentScreen->base && 'shop_order' === $currentScreen->post_type)) {
                     $args = [
-                        'ajaxURL'   => $this->ajaxDispatcher->getUrlForTask('pickupWS'),
+                        'ajaxURL'   => $this->ajaxDispatcher->getUrlForTask('adminPickupWS'),
                         'mapType'   => LpcHelper::get_option('lpc_pickup_map_type', 'widget'),
                         'mapMarker' => plugins_url('/images/map_marker.png', LPC_INCLUDES . 'init.php'),
                     ];
@@ -62,6 +63,7 @@ class LpcAdminPickupWebService extends LpcComponent {
                 'ceTown'        => !empty($order->get_shipping_city()) ? str_replace('’', "'", $order->get_shipping_city()) : '',
                 'ceCountryId'   => !empty($order->get_shipping_country()) ? $order->get_shipping_country() : '',
                 'maxRelayPoint' => LpcHelper::get_option('lpc_max_relay_point', 20),
+                'orderId'       => $order->get_id(),
             ]
         );
 
@@ -79,7 +81,7 @@ class LpcAdminPickupWebService extends LpcComponent {
         return LpcHelper::renderPartial('pickup' . DS . 'webservice.php', $args);
     }
 
-    public function pickupWS() {
+    public function adminPickupWS() {
         require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_relays_api.php';
         require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_generate_relays_payload.php';
 
@@ -133,6 +135,28 @@ class LpcAdminPickupWebService extends LpcComponent {
             if (empty($relayTypes)) {
                 $relayTypes = 'all';
             }
+
+            // Force Post office type if cart weight > 20kg
+            $weight  = 0;
+            $orderId = (int) LpcHelper::getVar('orderId', 0);
+            if ($orderId > 0) {
+                $order = wc_get_order($orderId);
+                $items = $order->get_items();
+                foreach ($items as $item) {
+                    if (!empty($item['product_id'])) {
+                        $product = $item->get_product();
+                        if (!$product->is_virtual()) {
+                            $weight += wc_get_weight($product->get_weight(), 'kg') * $item['quantity'];
+                        }
+                    }
+                }
+            }
+            if ($weight > 20) {
+                $relayTypes  = ['BDP', 'BPR'];
+                $overWarning = __('Only post offices are available for this order', 'wc_colissimo');
+                $html        .= '<div class="lpc_layer_relay_warning_relay_type">' . $overWarning . '</div>';
+            }
+
             if ('all' != $relayTypes) {
                 $listRelaysWS = array_filter($listRelaysWS, function ($relay) use ($relayTypes) {
                     return in_array($relay->typeDePoint, $relayTypes);

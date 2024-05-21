@@ -4,13 +4,11 @@ require_once LPC_INCLUDES . 'shipping' . DS . 'lpc_capabilities_per_country.php'
 
 abstract class LpcAbstractShipping extends WC_Shipping_Method {
     const LPC_ALL_SHIPPING_CLASS_CODE = 'all';
+    const LPC_NO_SHIPPING_CLASS_CODE = 'none';
     const LPC_LAPOSTE_TRACKING_LINK = 'https://www.laposte.fr/outils/suivre-vos-envois?code={lpc_tracking_number}';
     const CUSTOMS_CATEGORY_COMMERCIAL = 3;
 
     protected $lpcCapabilitiesPerCountry;
-    /**
-     * @var mixed
-     */
 
     /**
      * LpcAbstractShipping constructor.
@@ -114,6 +112,13 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $removed = remove_filter('terms_clauses', [$sitepress, 'terms_clauses']);
         }
         $shippingClasses = $shipping->get_shipping_classes();
+        array_unshift(
+            $shippingClasses,
+            (object) [
+                'term_id' => self::LPC_NO_SHIPPING_CLASS_CODE,
+                'name'    => __('No shipping class', 'wc_colissimo'),
+            ]
+        );
         if (!empty($sitepress) && $removed) {
             add_filter('terms_clauses', [$sitepress, 'terms_clauses'], 10, 3);
         }
@@ -123,10 +128,11 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         return LpcHelper::renderPartial(
             'shipping' . DS . 'shipping_rates_table.php',
             [
-                'shippingMethod'  => $this,
-                'shippingClasses' => $shippingClasses,
-                'exportUrl'       => $shippingRates->getUrlExport($this->instance_id),
-                'importUrl'       => $shippingRates->getUrlImport($this->instance_id),
+                'shippingMethod'   => $this,
+                'shippingClasses'  => $shippingClasses,
+                'exportUrl'        => $shippingRates->getUrlExport($this->instance_id),
+                'importUrl'        => $shippingRates->getUrlImport($this->instance_id),
+                'importDefaultUrl' => $shippingRates->getUrlDefaultPrices($this->instance_id),
             ]
         );
     }
@@ -138,6 +144,13 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $removed = remove_filter('terms_clauses', [$sitepress, 'terms_clauses']);
         }
         $shippingClasses = $shipping->get_shipping_classes();
+        array_unshift(
+            $shippingClasses,
+            (object) [
+                'term_id' => self::LPC_NO_SHIPPING_CLASS_CODE,
+                'name'    => __('No shipping class', 'wc_colissimo'),
+            ]
+        );
         if (!empty($sitepress) && $removed) {
             add_filter('terms_clauses', [$sitepress, 'terms_clauses'], 10, 3);
         }
@@ -252,7 +265,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         return $this->get_option('use_cart_price', 'no');
     }
 
-    public function getFreeForItemsWithoutShippingClasses() {
+    public function getFreeForItemsWithoutFreeShippingClasses() {
         return $this->get_option('free_for_items_without_free_shipping_classes', 'no');
     }
 
@@ -269,7 +282,6 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             return;
         }
 
-        $totalWeight         = LpcHelper::get_option('lpc_packaging_weight', 0);
         $cartShippingClasses = [];
         $rates               = $this->getRates();
 
@@ -286,22 +298,25 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             }
         );
 
-        $lineTotal       = 0;
-        $lineTax         = 0;
-        $lineSubTotal    = 0;
-        $lineSubTax      = 0;
-        $articleQuantity = 0;
-        $discountToApply = 0;
+        $lineTotal          = 0;
+        $lineTax            = 0;
+        $lineSubTotal       = 0;
+        $lineSubTax         = 0;
+        $articleQuantity    = 0;
+        $nbProductsToShip   = 0;
+        $discountToApply    = 0;
+        $totalWeight        = 0;
+        $productsDimensions = [];
 
         $noshipProductsCount = LpcHelper::get_option('lpc_calculate_shipping_with_noship_products', 'no') === 'yes';
 
         foreach ($package['contents'] as $item) {
-            $articleQuantity += $item['quantity'];
-            $product         = $item['data'];
+            $product = $item['data'];
             if (empty($product)) {
                 continue;
             }
 
+            $articleQuantity += $item['quantity'];
             if ($noshipProductsCount) {
                 $lineTotal    = $lineTotal + $item['line_total'];
                 $lineTax      = $lineTax + $item['line_tax'];
@@ -320,9 +335,28 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 $lineSubTax   = $lineSubTax + $item['line_subtotal_tax'];
             }
 
+            $productsDimensions[] = [
+                $product->get_length(),
+                $product->get_width(),
+                $product->get_height(),
+            ];
+
+            $nbProductsToShip      += (float) $item['quantity'];
             $totalWeight           += (float) $product->get_weight() * $item['quantity'];
-            $cartShippingClasses[] = $product->get_shipping_class_id();
+            $shippingClassId       = $product->get_shipping_class_id();
+            $cartShippingClasses[] = empty($shippingClassId) ? self::LPC_NO_SHIPPING_CLASS_CODE : $shippingClassId;
         }
+
+        $packagingMatchingCart = LpcHelper::getMatchingPackaging($nbProductsToShip, $totalWeight, $productsDimensions);
+
+        if (empty($packagingMatchingCart)) {
+            $totalWeight += LpcHelper::get_option('lpc_packaging_weight', 0);
+        } else {
+            $totalWeight += $packagingMatchingCart['weight'];
+        }
+
+        // Remove duplicate shipping classes
+        $cartShippingClasses = array_unique($cartShippingClasses);
 
         // Check if there is an available discount
         $discounts = $this->getDiscounts();
@@ -354,8 +388,6 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             return;
         }
 
-        // Remove duplicate shipping classes
-        $cartShippingClasses = array_unique($cartShippingClasses);
         /**
          * Filter on the package's total weight, before the checkout calculation
          *
@@ -446,36 +478,25 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
 
             // Step 2 : Match each shipping classes with corresponding line rates
             foreach ($cartShippingClasses as $oneCartShippingClassId) {
-
-                // Step 2.1 : First check if a line rates is corresponding with a shipping class defined
-                if (!empty($oneCartShippingClassId)) {
-                    $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
-                        $matchingRates,
-                        function ($rate) use ($oneCartShippingClassId) {
-                            return in_array($oneCartShippingClassId, $rate['shipping_class']);
-                        }
-                    );
-                }
-
-                // Step 2.2 : If no line rates corresponding with shipping rates or if no shipping class is set, check the line rates for all shipping classes
-                if (empty($matchingShippingClassesRates[$oneCartShippingClassId]) || '0' == $oneCartShippingClassId) {
-                    $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
-                        $matchingRates,
-                        function ($rate) use ($oneCartShippingClassId) {
-                            return in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class']);
-                        }
-                    );
-                }
+                // Check if a line rates is corresponding with a shipping class defined
+                $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
+                    $matchingRates,
+                    function ($rate) use ($oneCartShippingClassId) {
+                        return in_array($oneCartShippingClassId, $rate['shipping_class']) || in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class']);
+                    }
+                );
             }
 
             $shippingClassPrices = [];
 
-            // Step 3 : For each shipping class of the cart, take the cheapest line rate
+            // Step 3 : For each shipping class of the cart, take the cheapest or more expensive line rate depending on configuration
+            $rateToChoose = LpcHelper::get_option('lpc_choose_min_max_rate', 'lowest');
             foreach ($matchingShippingClassesRates as $shippingClassId => $oneShippingMethodRate) {
                 foreach ($oneShippingMethodRate as $oneRate) {
                     if (!isset($shippingClassPrices[$shippingClassId])) {
                         $shippingClassPrices[$shippingClassId] = $oneRate['price'];
-                    } elseif ($shippingClassPrices[$shippingClassId] > $oneRate['price']) {
+                    } elseif (($shippingClassPrices[$shippingClassId] > $oneRate['price'] && 'lowest' === $rateToChoose)
+                              || ($shippingClassPrices[$shippingClassId] < $oneRate['price'] && 'highest' === $rateToChoose)) {
                         $shippingClassPrices[$shippingClassId] = $oneRate['price'];
                     }
                 }
@@ -493,7 +514,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             // Handle free shipping options
             $classesFreeShipping     = $this->getFreeShippingClasses();
             $isClassesFreeShipping   = !empty(array_intersect($classesFreeShipping, $cartShippingClasses));
-            $isMethodFreeForAllItems = $this->getFreeForItemsWithoutShippingClasses();
+            $isMethodFreeForAllItems = $this->getFreeForItemsWithoutFreeShippingClasses();
             $areOtherPayingClasses   = !empty(array_diff($cartShippingClasses, $classesFreeShipping));
             $freeFromOrderValue      = $this->freeFromOrderValue();
 
@@ -501,7 +522,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 'yes' === $this->get_option('always_free')
                 || ($freeFromOrderValue > 0 && $totalPrice >= $freeFromOrderValue)
                 || $isCouponFreeShipping
-                || $isClassesFreeShipping && (!$areOtherPayingClasses || 'yes' === $isMethodFreeForAllItems)
+                || ($isClassesFreeShipping && (!$areOtherPayingClasses || 'yes' === $isMethodFreeForAllItems))
             ) {
                 $cost = 0.0;
             }
@@ -526,6 +547,10 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 $extraCost = LpcHelper::get_option('lpc_extra_cost', 0);
                 if (!empty($extraCost)) {
                     $cost += $extraCost;
+                }
+
+                if (!empty($packagingMatchingCart['extra_cost'])) {
+                    $cost += $packagingMatchingCart['extra_cost'];
                 }
             }
 

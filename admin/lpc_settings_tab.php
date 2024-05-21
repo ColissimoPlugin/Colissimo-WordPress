@@ -41,23 +41,8 @@ class LpcSettingsTab extends LpcComponent {
     }
 
     public function init() {
-        // Add configuration tab in Woocommerce
-        add_filter('woocommerce_settings_tabs_array', [$this, 'configurationTab'], 70);
-        // Add configuration tab content
-        add_action('woocommerce_settings_tabs_' . self::LPC_SETTINGS_TAB_ID, [$this, 'settingsPage']);
-        // Save settings page
-        add_action('woocommerce_update_options_' . self::LPC_SETTINGS_TAB_ID, [$this, 'saveLpcSettings']);
-        // Settings tabs
-        add_action('woocommerce_sections_' . self::LPC_SETTINGS_TAB_ID, [$this, 'settingsSections']);
-        // Invalid weight warning
-        add_action('load-woocommerce_page_wc-settings', [$this, 'warningPackagingWeight']);
-        // Invalid credentials warning
-        add_action('load-woocommerce_page_wc-settings', [$this, 'warningCredentials']);
-        // DIVI breaking the pickup map in widget mode
-        add_action('load-woocommerce_page_wc-settings', [$this, 'warningDivi']);
-        // CGV not accepted warning
-        add_action('load-woocommerce_page_wc-settings', [$this, 'warningCgv']);
-
+        $this->initSettingsPage();
+        $this->initWarningMessages();
         $this->initOnboarding();
         $this->initSeeLog();
         $this->initMailto();
@@ -75,10 +60,40 @@ class LpcSettingsTab extends LpcComponent {
         $this->initMultiSelectRelayType();
         $this->fixSavePassword();
         $this->initVideoTutorials();
+        $this->initAdvancedPackaging();
+        $this->initFeedback();
+    }
+
+    private function initSettingsPage() {
+        // Add configuration tab in Woocommerce
+        add_filter('woocommerce_settings_tabs_array', [$this, 'configurationTab'], 70);
+        // Add configuration tab content
+        add_action('woocommerce_settings_tabs_' . self::LPC_SETTINGS_TAB_ID, [$this, 'settingsPage']);
+        // Save settings page
+        add_action('woocommerce_update_options_' . self::LPC_SETTINGS_TAB_ID, [$this, 'saveLpcSettings']);
+        // Settings tabs
+        add_action('woocommerce_sections_' . self::LPC_SETTINGS_TAB_ID, [$this, 'settingsSections']);
+    }
+
+    private function initWarningMessages() {
+        // Invalid weight warning
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningPackagingWeight']);
+        // Invalid credentials warning
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningCredentials']);
+        // DIVI breaking the pickup map in widget mode
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningDivi']);
+        // CGV not accepted warning
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningCgv']);
+        // Warn about deprecated shipping methods
+        add_action('load-woocommerce_page_wc-settings', [$this, 'warningDeprecatedMethods']);
     }
 
     protected function initVideoTutorials() {
         add_action('woocommerce_admin_field_videotutorials', [$this, 'displayVideoTutorials']);
+    }
+
+    protected function initFeedback() {
+        add_action('woocommerce_admin_field_feedback', [$this, 'displayFeedback']);
     }
 
     protected function fixSavePassword() {
@@ -163,6 +178,16 @@ class LpcSettingsTab extends LpcComponent {
             'woocommerce_admin_field_defaultcountry',
             [$this, 'defaultCountry']
         );
+    }
+
+    protected function initAdvancedPackaging() {
+        add_action(
+            'woocommerce_admin_field_lpc_packaging_advanced',
+            [$this, 'displayAdvancedPackaging']
+        );
+        add_action('wp_ajax_lpc_new_packaging', [$this, 'saveNewPackaging']);
+        add_action('wp_ajax_lpc_switch_packagings', [$this, 'switchPackagings']);
+        add_action('wp_ajax_lpc_delete_packagings', [$this, 'deletePackagings']);
     }
 
     public function encryptPassword($value, $option, $rawValue) {
@@ -283,7 +308,7 @@ class LpcSettingsTab extends LpcComponent {
     public function displayNumberInputWithWeightUnit() {
         $args                = [];
         $args['id_and_name'] = 'lpc_packaging_weight';
-        $args['label']       = 'Packaging weight (%s)';
+        $args['label']       = 'Default packaging weight (%s)';
         $args['value']       = get_option($args['id_and_name']);
         $args['desc']        = __('The packaging weight will be added to the products weight on label generation.', 'wc_colissimo');
         echo LpcHelper::renderPartial('settings' . DS . 'number_input_weight.php', $args);
@@ -339,6 +364,183 @@ class LpcSettingsTab extends LpcComponent {
         echo LpcHelper::renderPartial('settings' . DS . 'video_tutorials.php', $args);
     }
 
+    public function displayAdvancedPackaging() {
+        wp_enqueue_style('lpc_settings_packaging', plugins_url('/css/settings/advanced_packaging.css', __FILE__), [], LPC_VERSION);
+
+        wp_enqueue_script(
+            'lpc_settings_packagingjs',
+            plugins_url('/js/settings/advanced_packaging.js', __FILE__),
+            ['jquery'],
+            LPC_VERSION,
+            true
+        );
+        wp_localize_script(
+            'lpc_settings_packagingjs',
+            'lpcSettingsPackaging',
+            [
+                'messageDeleteMultiple' => __('Are you sure you want to delete the selected packagings?', 'wc_colissimo'),
+                'messageDeleteOne'      => __('Are you sure you want to delete this packaging?', 'wc_colissimo'),
+                'messageMissingField'   => __('Please fill in mandatory fields', 'wc_colissimo'),
+                'messageDimensions'     => __(
+                    'The sum of the dimensions exceeds 120cm, this packaging will not be mechanizable and may be subject to an extra cost.',
+                    'wc_colissimo'
+                ),
+            ]
+        );
+
+        $packagings = LpcHelper::get_option('lpc_packagings', []);
+        usort($packagings, function ($a, $b) {
+            return $a['priority'] > $b['priority'] ? 1 : - 1;
+        });
+
+        $args = [
+            'packagings' => $packagings,
+            'weightUnit' => LpcHelper::get_option('woocommerce_weight_unit', 'kg'),
+        ];
+
+        $modalContent = LpcHelper::renderPartial('settings' . DS . 'new_packaging.php', $args);
+        $modal        = new LpcModal($modalContent, __('New packaging', 'wc_colissimo'), 'lpc-packaging');
+        $modal->loadScripts();
+
+        $args['modal'] = $modal;
+
+        echo LpcHelper::renderPartial('settings' . DS . 'advanced_packaging.php', $args);
+    }
+
+    public function saveNewPackaging() {
+        if (empty($_POST['nonce']) || !current_user_can('manage_options')) {
+            LpcHelper::endAjax(false, ['message' => __('Access denied! (Security check failed)', 'wc_colissimo')]);
+        }
+
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'lpc_packaging_nonce')) {
+            LpcHelper::endAjax(false, ['message' => __('Access denied! (Security check failed)', 'wc_colissimo')]);
+        }
+
+        $newPackageData = LpcHelper::getVar('packageData', [], 'array');
+        $identifier     = LpcHelper::getVar('identifier', 0, 'int');
+        $packagings     = LpcHelper::get_option('lpc_packagings', []);
+
+        $mandatoryProperties = ['name', 'weight', 'width', 'length', 'depth'];
+        foreach ($mandatoryProperties as $property) {
+            if (empty($newPackageData[$property])) {
+                LpcHelper::endAjax(false, ['message' => __('Please fill in mandatory fields', 'wc_colissimo')]);
+            }
+        }
+
+        try {
+            $newPackaging = [
+                'name'         => (string) $newPackageData['name'],
+                'weight'       => floatval($newPackageData['weight']),
+                'width'        => floatval($newPackageData['width']),
+                'length'       => floatval($newPackageData['length']),
+                'depth'        => floatval($newPackageData['depth']),
+                'max_weight'   => empty($newPackageData['max_weight']) ? 0 : floatval($newPackageData['max_weight']),
+                'max_products' => empty($newPackageData['max_products']) ? 0 : intval($newPackageData['max_products']),
+                'extra_cost'   => empty($newPackageData['extra_cost']) ? 0 : floatval($newPackageData['extra_cost']),
+            ];
+
+            if (!empty($identifier)) {
+                $key = $this->getPackagingKey($packagings, $identifier);
+
+                if (null === $key) {
+                    LpcHelper::endAjax(false, ['message' => __('Packaging not found.', 'wc_colissimo')]);
+                }
+
+                $newPackaging['identifier'] = $identifier;
+                $newPackaging['priority']   = $packagings[$key]['priority'];
+
+                $packagings[$key] = $newPackaging;
+            } else {
+                $newPackaging['identifier'] = time();
+                $newPackaging['priority']   = empty($packagings) ? 1 : max(array_column($packagings, 'priority')) + 1;
+
+                $packagings[] = $newPackaging;
+            }
+
+            update_option('lpc_packagings', $packagings);
+        } catch (Exception $e) {
+            LpcHelper::endAjax(false, ['message' => $e->getMessage()]);
+        }
+
+        LpcHelper::endAjax(true, ['newPackaging' => end($packagings)]);
+    }
+
+    public function switchPackagings() {
+        if (empty($_POST['nonce']) || !current_user_can('manage_options')) {
+            LpcHelper::endAjax(false, ['message' => __('Access denied! (Security check failed)', 'wc_colissimo')]);
+        }
+
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'lpc_packaging_nonce')) {
+            LpcHelper::endAjax(false, ['message' => __('Access denied! (Security check failed)', 'wc_colissimo')]);
+        }
+
+        $firstPackagingData  = json_decode(LpcHelper::getVar('firstPackaging', '{}'), true);
+        $secondPackagingData = json_decode(LpcHelper::getVar('secondPackaging', '{}'), true);
+        $packagings          = LpcHelper::get_option('lpc_packagings', []);
+
+        $firstKey  = $this->getPackagingKey($packagings, $firstPackagingData['identifier']);
+        $secondKey = $this->getPackagingKey($packagings, $secondPackagingData['identifier']);
+
+        if (null === $firstKey || null === $secondKey) {
+            LpcHelper::endAjax(false, ['message' => __('Packaging not found.', 'wc_colissimo')]);
+        }
+
+        $firstPackaging  = $packagings[$firstKey];
+        $secondPackaging = $packagings[$secondKey];
+
+        $packagings[$firstKey]['priority']  = $secondPackaging['priority'];
+        $packagings[$secondKey]['priority'] = $firstPackaging['priority'];
+
+        update_option('lpc_packagings', $packagings);
+
+        LpcHelper::endAjax();
+    }
+
+    public function deletePackagings() {
+        if (empty($_POST['nonce']) || !current_user_can('manage_options')) {
+            LpcHelper::endAjax(false, ['message' => __('Access denied! (Security check failed)', 'wc_colissimo')]);
+        }
+
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'lpc_packaging_nonce')) {
+            LpcHelper::endAjax(false, ['message' => __('Access denied! (Security check failed)', 'wc_colissimo')]);
+        }
+
+        $packagings  = LpcHelper::get_option('lpc_packagings', []);
+        $identifiers = LpcHelper::getVar('identifiers', [], 'int');
+
+        foreach ($identifiers as $identifier) {
+            $key = $this->getPackagingKey($packagings, $identifier);
+
+            if (null === $key) {
+                LpcHelper::endAjax(false, ['message' => __('Packaging not found.', 'wc_colissimo')]);
+            }
+
+            unset($packagings[$key]);
+        }
+
+        update_option('lpc_packagings', $packagings);
+
+        LpcHelper::endAjax();
+    }
+
+    private function getPackagingKey($packagings, $identifier) {
+        foreach ($packagings as $key => $onePackaging) {
+            if ($onePackaging['identifier'] === $identifier) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    public function displayFeedback() {
+        $args                = [];
+        $args['id_and_name'] = 'lpc_feedback';
+        $args['label']       = 'Plugin feedback';
+        update_option('lpc_feedback_dismissed', true);
+        echo LpcHelper::renderPartial('settings' . DS . 'feedback.php', $args);
+    }
+
     /**
      * Build tab
      *
@@ -370,6 +572,10 @@ class LpcSettingsTab extends LpcComponent {
         }
 
         WC_Admin_Settings::output_fields($this->configOptions[$section]);
+
+        // Load custom styles
+        wp_register_style('lpc_settings_styles', plugins_url('/css/settings/lpc_settings_styles.css', __FILE__), [], LPC_VERSION);
+        wp_enqueue_style('lpc_settings_styles');
     }
 
     /**
@@ -382,12 +588,20 @@ class LpcSettingsTab extends LpcComponent {
             'home'     => __('Home', 'wc_colissimo'),
             'main'     => __('General', 'wc_colissimo'),
             'label'    => __('Label', 'wc_colissimo'),
+            'parcel'   => __('Parcel', 'wc_colissimo'),
             'shipping' => __('Shipping methods', 'wc_colissimo'),
             'custom'   => __('Custom', 'wc_colissimo'),
             'ddp'      => __('DDP', 'wc_colissimo'),
             'support'  => __('Support', 'wc_colissimo'),
             'video'    => __('Video tutorials', 'wc_colissimo'),
         ];
+
+        $deadline = new DateTime('2024-08-01');
+        $now      = new DateTime();
+
+        if ($now < $deadline) {
+            $sections['feedback'] = __('Plugin feedback', 'wc_colissimo');
+        }
 
         echo '<ul class="subsubsub">';
 
@@ -404,7 +618,7 @@ class LpcSettingsTab extends LpcComponent {
     }
 
     /**
-     * Save using Woocomerce default method
+     * Save using WooCommerce default method
      */
     public function saveLpcSettings() {
         if (empty($this->configOptions)) {
@@ -420,6 +634,7 @@ class LpcSettingsTab extends LpcComponent {
             if (empty($_REQUEST['_wpnonce']) || !wp_verify_nonce(wp_unslash($_REQUEST['_wpnonce']), 'woocommerce-settings')) {
                 die('Invalid Token');
             }
+
             if ('shipping' == $currentSection && !isset($_POST['lpc_relay_point_type'])) {
                 $relayTypeOption = [
                     'id'   => 'lpc_relay_point_type',
@@ -609,6 +824,42 @@ class LpcSettingsTab extends LpcComponent {
         }
     }
 
+    public function warningDeprecatedMethods() {
+        if ('shipping' === LpcHelper::getVar('tab')) {
+            if (!empty(LpcHelper::getVar('zone_id'))) {
+                // The expert methods are deprecated, but will never be removed to avoid breaking existing installations. Make sure they cannot be added on zones.
+                LpcHelper::enqueueScript('lpc_settings_zones', plugins_url('/js/shipping/zones.js', __FILE__), null, ['jquery']);
+            }
+        }
+
+        // Add a message if deprecated methods are used
+        $zonesToChange = [];
+        $zones         = WC_Shipping_Zones::get_zones();
+
+        foreach ($zones as $zone) {
+            $shippingMethods = $zone['shipping_methods'];
+            foreach ($shippingMethods as $shippingMethod) {
+                if (in_array($shippingMethod->id, [LpcExpert::ID, LpcExpertDDP::ID]) && 'yes' === $shippingMethod->enabled) {
+                    $zonesToChange[$zone['zone_id']] = '<a target="_blank" href="' . admin_url('admin.php?page=wc-settings&tab=shipping&zone_id=' . intval($zone['zone_id'])) . '">' . $zone['zone_name'] . '</a>';
+                }
+            }
+        }
+
+        if (!empty($zonesToChange)) {
+            $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
+            $lpc_admin_notices->add_notice(
+                'deprecated_methods',
+                'notice-warning',
+                __(
+                    'The method "Colissimo International" is deprecated, it is strongly recommended to replace it with the method "Colissimo with signature".<br />You can export then import your price grid during this modification, the rates remain the same.',
+                    'wc_colissimo'
+                ) . '<br /><br />' .
+                __('Here are the affected zones:', 'wc_colissimo') . '<br />' .
+                implode(', ', $zonesToChange)
+            );
+        }
+    }
+
     private function logCredentialsValidity($token) {
         update_option('lpc_current_credentials_tested', true);
         update_option('lpc_current_credentials_valid', !empty($token));
@@ -637,10 +888,14 @@ class LpcSettingsTab extends LpcComponent {
             ],
         ];
 
+        $tips = __('Only applicable for map type other than Colissimo widget.', 'wc_colissimo');
+        $tips .= ' ';
+        $tips .= __('For parcels weighing more than 20kg, only the "Post office" relay type will be shown.', 'wc_colissimo');
+
         $args                    = [];
         $args['id_and_name']     = 'lpc_relay_point_type';
         $args['label']           = 'Type of displayed relays';
-        $args['tips']            = 'Only applicable for map type other than Colissimo widget';
+        $args['tips']            = $tips;
         $args['values']          = $relayTypesValues;
         $args['selected_values'] = get_option($args['id_and_name']);
         $args['multiple']        = true;

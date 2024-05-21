@@ -46,7 +46,7 @@ class LpcUpdate extends LpcComponent {
     }
 
     public function getDependencies() {
-        return ['capabilitiesPerCountry', 'dbDefinition', 'outwardLabelDb', 'inwardLabelDb', 'lpcAdminNotices'];
+        return ['capabilitiesPerCountry', 'dbDefinition', 'outwardLabelDb', 'inwardLabelDb', 'lpcAdminNotices', 'shippingZones', 'shippingMethods', 'bordereauDb'];
     }
 
     public function init() {
@@ -257,6 +257,20 @@ class LpcUpdate extends LpcComponent {
             $this->outwardLabelDb->updateToVersion192();
             $this->inwardLabelDb->updateToVersion192();
         }
+
+        // Update from version under 1.9.4
+        if (version_compare($versionInstalled, '1.9.4') === - 1) {
+            $noShippingClassUpdated = LpcHelper::get_option('lpc_no_shipping_class_updated', 0);
+            if (empty($noShippingClassUpdated)) {
+                update_option('lpc_no_shipping_class_updated', 1);
+                $this->addNoShippingClass();
+            }
+        }
+
+        // Update from version under 2.0.0
+        if (version_compare($versionInstalled, '2.0.0') === - 1) {
+            $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
+        }
     }
 
     /** Functions for update to 1.3 **/
@@ -303,6 +317,36 @@ class LpcUpdate extends LpcComponent {
             && $this->inwardLabelDb->migrateDataFromLabelTableForOrderIds($orderIdsToMigrateForCurrentBatch)
         ) {
             update_option(self::LPC_ORDERS_TO_MIGRATE_OPTION_NAME, json_encode($orderIdsToMigrate));
+        }
+    }
+
+    private function addNoShippingClass() {
+        foreach (WC_Shipping_Zones::get_zones() as $oneZone) {
+            $zone = WC_Shipping_Zones::get_zone($oneZone['id']);
+
+            $existingShippingMethods = array_map(
+                function ($v) {
+                    return $v->id;
+                },
+                $zone->get_shipping_methods()
+            );
+
+            foreach ($existingShippingMethods as $shippingMethodInstanceId => $shippingMethodNamekey) {
+                $methodOptionKey = 'woocommerce_' . $shippingMethodNamekey . '_' . $shippingMethodInstanceId . '_settings';
+                $methodSettings  = LpcHelper::get_option($methodOptionKey, 'no');
+
+                if (empty($methodSettings['shipping_rates'])) {
+                    continue;
+                }
+
+                foreach ($methodSettings['shipping_rates'] as $key => $rate) {
+                    if (!in_array(LpcAbstractShipping::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class'])) {
+                        $methodSettings['shipping_rates'][$key]['shipping_class'][] = LpcAbstractShipping::LPC_NO_SHIPPING_CLASS_CODE;
+                    }
+                }
+
+                update_option($methodOptionKey, $methodSettings);
+            }
         }
     }
 }

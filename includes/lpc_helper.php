@@ -1,10 +1,6 @@
 <?php
 
-/**
- * Class LpcHelper
- */
 class LpcHelper {
-
     const CONFIG_FILE = 'config_options.json';
     const ENCRYPTION_KEY = 'colissimo-key-encryption';
     const ENCRYPTION_METHOD = 'AES-128-CTR';
@@ -101,35 +97,112 @@ class LpcHelper {
         self::displayNotice('error', $e->getMessage());
     }
 
-    /**
-     * @param        $var
-     * @param        $default
-     * @param string $type
-     * @param string $hash
-     *
-     * @return array|string
-     */
-    public static function getVar($var, $default = '', $type = 'string', $hash = 'REQUEST') {
+    public static function getVar(string $var, $default = '', string $type = 'string', string $source = 'REQUEST') {
+        $source = strtoupper($source);
 
-        // TODO: Handle the hash if needed
-        $input = $_REQUEST;
-
-        $result = isset($input[$var]) ? $input[$var] : $default;
-
-        // TODO: Handle the type filtering
-        if ('string' == $type) {
-            $result = (string) $result;
+        switch ($source) {
+            case 'GET':
+                $input = &$_GET;
+                break;
+            case 'POST':
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing
+                $input = &$_POST;
+                break;
+            case 'FILES':
+                $input = &$_FILES;
+                break;
+            case 'COOKIE':
+                $input = &$_COOKIE;
+                break;
+            case 'ENV':
+                $input = &$_ENV;
+                break;
+            case 'SERVER':
+                $input = &$_SERVER;
+                break;
+            default:
+                $input = &$_REQUEST;
+                break;
         }
 
-        return wp_unslash($result);
+        if (!isset($input[$var])) {
+            return $default;
+        }
+
+        $result = $input[$var];
+        unset($input);
+
+        if ('array' === $type) {
+            $result = (array) $result;
+        }
+
+        if (in_array($source, ['POST', 'REQUEST', 'GET', 'COOKIE'])) {
+            $result = self::stripSlashes($result);
+        }
+
+        return self::cleanVar($result, $type);
     }
 
-    /**
-     * @param        $option
-     * @param mixed  $default
-     *
-     * @return array|string
-     */
+    public static function stripSlashes($element) {
+        if (is_array($element)) {
+            foreach ($element as &$oneCell) {
+                $oneCell = self::stripSlashes($oneCell);
+            }
+        } elseif (is_string($element)) {
+            $element = stripslashes($element);
+        }
+
+        return $element;
+    }
+
+    public static function cleanVar($var, $type) {
+        if (is_array($var)) {
+            foreach ($var as $i => $val) {
+                $var[$i] = self::cleanVar($val, $type);
+            }
+
+            return $var;
+        }
+
+        switch ($type) {
+            case 'string':
+                $var = strval($var);
+                break;
+            case 'int':
+                $var = intval($var);
+                break;
+            case 'float':
+                $var = floatval($var);
+                break;
+            case 'bool':
+            case 'boolean':
+                $var = boolval($var);
+                break;
+            case 'word':
+                $var = preg_replace('#[^a-zA-Z_]#', '', $var);
+                break;
+            case 'cmd':
+                $var = preg_replace('#[^a-zA-Z0-9_\.-]#', '', $var);
+                $var = ltrim($var, '.');
+                break;
+            default:
+                break;
+        }
+
+        if (!is_string($var)) {
+            return $var;
+        }
+
+        $var = trim($var);
+
+        if (!preg_match('//u', $var)) {
+            // String contains invalid byte sequence, remove it
+            $var = htmlspecialchars_decode(htmlspecialchars($var, ENT_IGNORE, 'UTF-8'));
+        }
+
+        return preg_replace('#<[a-zA-Z/]+[^>]*>#Ui', '', $var);
+    }
+
     public static function get_option($option, $default = '') {
         // Return the saved option if available
         if (get_option($option)) {
@@ -215,5 +288,58 @@ class LpcHelper {
             ['\'', 'e', 'e', 'e', 'e', 'a', 'a', 'a', 'o', 'o', 'i', 'i', 'u', 'u', 'u', 'c', 'y', 'E', 'E', 'E', 'E', 'A', 'A', 'A', 'O', 'O', 'I', 'I', 'U', 'U', 'U', 'C', 'Y'],
             $text
         );
+    }
+
+    public static function tooltip(string $text): string {
+        return '<span class="woocommerce-help-tip" data-tip="' . esc_attr($text) . '"></span>';
+    }
+
+    public static function getMatchingPackaging(float $numberOfProducts, float $cartWeight, array $productDimensions) {
+        $packagings = self::get_option('lpc_packagings', []);
+        usort($packagings, function ($a, $b) {
+            return $a['priority'] > $b['priority'] ? 1 : - 1;
+        });
+
+        foreach ($packagings as $packaging) {
+            if (!empty($packaging['max_products']) && $numberOfProducts > $packaging['max_products']) {
+                continue;
+            }
+
+            if (!empty($packaging['max_weight']) && $cartWeight > $packaging['max_weight']) {
+                continue;
+            }
+
+            $packagingDimensions = [
+                $packaging['length'],
+                $packaging['width'],
+                $packaging['depth'],
+            ];
+            foreach ($productDimensions as $dimensions) {
+                if (!self::isPackagingFitting($packagingDimensions, $dimensions)) {
+                    continue 2;
+                }
+            }
+
+            return $packaging;
+        }
+
+        return null;
+    }
+
+    private static function isPackagingFitting(array $packagingDimensions, array $productDimensions): bool {
+        sort($packagingDimensions);
+        sort($productDimensions);
+
+        if (empty($productDimensions[0])) {
+            return true;
+        }
+
+        foreach ($productDimensions as $key => $dimension) {
+            if ($dimension > $packagingDimensions[$key]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

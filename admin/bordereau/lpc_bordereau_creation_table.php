@@ -114,13 +114,14 @@ END_HTML;
              */
             $date = apply_filters('woocommerce_admin_order_date_format', __('M j, Y', 'woocommerce'));
 
+            $orderDate = $wc_order->get_date_created();
             $data[] = [
                 'data-id'             => $orderId,
                 'cb'                  => '<input type="checkbox" />',
                 'lpc-id'              => LpcOrdersTable::getSeeOrderLink($orderId),
                 'lpc-tracking-number' => $order['tracking_number'],
                 'lpc-date-label'      => (new WC_DateTime($order['label_created_at']))->date_i18n($date),
-                'lpc-date-order'      => $wc_order->get_date_created()->date_i18n($date),
+                'lpc-date-order'      => empty($orderDate) ? '-' : $orderDate->date_i18n($date),
                 'lpc-country'         => $wc_order->get_shipping_country(),
                 'lpc-shipping-method' => $wc_order->get_shipping_method(),
             ];

@@ -74,6 +74,7 @@ class LpcOrdersTable extends WP_List_Table {
         $columns = [
             'cb'                  => '<input type="checkbox" />',
             'lpc-id'              => __('ID', 'wc_colissimo'),
+            'lpc-order-number'    => __('Order number', 'wc_colissimo'),
             'lpc-date'            => __('Date', 'wc_colissimo'),
             'lpc-customer'        => __('Customer', 'wc_colissimo'),
             'lpc-address'         => __('Address', 'wc_colissimo'),
@@ -209,11 +210,13 @@ END_HTML;
              */
             $date = apply_filters('woocommerce_admin_order_date_format', __('M j, Y', 'woocommerce'));
 
-            $data[] = [
+            $orderDate = $wc_order->get_date_created();
+            $data[]    = [
                 'data-id'             => $orderId,
                 'cb'                  => '<input type="checkbox" />',
                 'lpc-id'              => self::getSeeOrderLink($orderId),
-                'lpc-date'            => $wc_order->get_date_created()->date_i18n($date),
+                'lpc-order-number'    => $wc_order->get_order_number(),
+                'lpc-date'            => empty($orderDate) ? '-' : $orderDate->date_i18n($date),
                 'lpc-customer'        => $wc_order->get_shipping_first_name() . ' ' . $wc_order->get_shipping_last_name(),
                 'lpc-address'         => $address,
                 'lpc-country'         => $wc_order->get_shipping_country(),
@@ -530,8 +533,9 @@ END_HTML;
     }
 
     public function process_bulk_action() {
-        if (isset($_REQUEST['_wpnonce']) && !empty($_REQUEST['_wpnonce'])) {
-            $nonce  = filter_input(INPUT_POST, '_wpnonce', FILTER_SANITIZE_STRING);
+        if (!empty($_REQUEST['_wpnonce'])) {
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+            $nonce  = wp_unslash($_REQUEST['_wpnonce']);
             $action = 'bulk-' . $this->_args['plural'];
 
             if (!wp_verify_nonce($nonce, $action)) {

@@ -39,14 +39,6 @@ class LpcWooOrdersTableBulkActions extends LpcComponent {
                         'id'   => LpcSignDDP::ID,
                         'name' => __('Colissimo with signature - DDP option', 'wc_colissimo'),
                     ],
-                    'ship_lpc_expert'     => [
-                        'id'   => LpcExpert::ID,
-                        'name' => __('Colissimo International', 'wc_colissimo'),
-                    ],
-                    'ship_lpc_expert_ddp' => [
-                        'id'   => LpcExpertDDP::ID,
-                        'name' => __('Colissimo International - DDP option', 'wc_colissimo'),
-                    ],
                 ];
             }
         );

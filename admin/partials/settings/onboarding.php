@@ -116,7 +116,6 @@ $videoTutorials    = admin_url('admin.php?page=wc-settings&tab=lpc&section=video
 		<p>- <?php esc_html_e('The Colissimo plugin automatically creates its zones based on shipping costs rules', 'wc_colissimo'); ?></p>
 		<p>- <?php esc_html_e('Activate the shipping methods you want to show to your customers', 'wc_colissimo'); ?></p>
 		<p>- <?php esc_html_e('You can customize the titles and shipping prices of the delivery solutions for your customers', 'wc_colissimo'); ?></p>
-		<p>- <?php esc_html_e('Note that shipping prices for Colissimo international are not automatically added', 'wc_colissimo'); ?></p>
 		<br>
 		<p>
             <?php

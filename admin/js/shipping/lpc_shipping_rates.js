@@ -73,14 +73,14 @@ jQuery(function ($) {
     });
 
     $('#lpc_shipping_rates_remove').click(function () {
-        if (confirm(window.lpc_i18n_delete_selected_rate)) {
+        if (confirm(lpcShippingRates.deleteRateConfirmation)) {
             $('.table_rates input:checked').closest('tr').remove();
             $('.table_rates input:checked').prop('checked', false);
         }
     });
 
     $('#lpc_shipping_discount_remove').click(function () {
-        if (confirm(window.lpc_i18n_delete_selected_discount)) {
+        if (confirm(lpcShippingRates.deleteDiscountConfirmation)) {
             $('.table_discount input:checked').closest('tr').remove();
             $('.table_discount input:checked').prop('checked', false);
         }
@@ -126,8 +126,6 @@ jQuery(function ($) {
         const formData = new FormData();
         formData.append('lpc_shipping_rates_import', inputFile.files[0]);
 
-        const $buttonSave = $('[name="save"]');
-
         $.ajax({
             type: 'POST',
             url: url,
@@ -141,6 +139,35 @@ jQuery(function ($) {
             location.reload();
         }).error(function () {
             alert(lpcShippingRates.errorWhileImporting);
+        });
+    });
+
+    $('#lpc_shipping_rates_import_default_button').on('click', function () {
+        if (!confirm(lpcShippingRates.defaultPricesConfirmation)) {
+            return;
+        }
+
+        const url = this.getAttribute('data-lpc-ajax-url');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                if (response.type === 'error') {
+                    alert(response.message);
+                } else {
+                    $('.table_rates tr').remove();
+
+                    for (let i = 0; i < response.data.prices.length; i++) {
+                        $('#lpc_shipping_rates_add').trigger('click');
+
+                        $('[name="shipping_rates[' + i + '][min_weight]"]').val(response.data.prices[i].weight_min);
+                        $('[name="shipping_rates[' + i + '][max_weight]"]').val(response.data.prices[i].weight_max);
+                        $('[name="shipping_rates[' + i + '][price]"]').val(response.data.prices[i].price);
+                    }
+                }
+            }
         });
     });
 

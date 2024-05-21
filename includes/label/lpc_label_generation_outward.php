@@ -71,15 +71,11 @@ class LpcLabelGenerationOutward extends LpcComponent {
         }
 
         try {
-            $payload  = $this->buildPayload($order, $customParams);
-            $response = $this->labelGenerationApi->generateLabel($payload);
-            if (is_admin()) {
-                $lpc_admin_notices->add_notice(
-                    'outward_label_generate',
-                    'notice-success',
-                    sprintf(__('Order %s : Outward label generated', 'wc_colissimo'), $orderId)
-                );
+            $payload     = $this->buildPayload($order, $customParams);
+            $response    = $this->labelGenerationApi->generateLabel($payload);
+            $labelFormat = $payload->getLabelFormat();
 
+            if (is_admin()) {
                 $accountApi = LpcRegister::get('accountApi');
                 if (!$accountApi->isCgvAccepted()) {
                     $lpc_admin_notices->add_notice(
@@ -105,7 +101,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
                 $lpc_admin_notices->add_notice(
                     'outward_label_generate',
                     'notice-error',
-                    sprintf(__('Order %s : Outward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $errorMessage
+                    sprintf(__('Order %s: Outward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $errorMessage
                 );
             }
 
@@ -121,8 +117,6 @@ class LpcLabelGenerationOutward extends LpcComponent {
         $parcelNumber = $response['<jsonInfos>']['labelV2Response']['parcelNumber'];
         $label        = $response['<label>'];
         $cn23         = @$response['<cn23>'];
-
-        $labelFormat = $payload->getLabelFormat();
 
         $order->update_meta_data(self::OUTWARD_PARCEL_NUMBER_META_KEY, $parcelNumber);
         $order->save();
@@ -142,7 +136,42 @@ class LpcLabelGenerationOutward extends LpcComponent {
         }
 
         // PDF label is too big to be stored in an order meta
-        $this->outwardLabelDb->insert($order->get_id(), $label, $parcelNumber, $type, $cn23, $labelFormat, $detail);
+        try {
+            $this->outwardLabelDb->insert($order->get_id(), $label, $parcelNumber, $type, $cn23, $labelFormat, $detail);
+        } catch (Exception $e) {
+            if (is_admin()) {
+                $lpc_admin_notices->add_notice(
+                    'outward_label_generate',
+                    'notice-error',
+                    sprintf(__('Order %s : Outward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $e->getMessage()
+                );
+            }
+
+            return false;
+        }
+
+        if (is_admin()) {
+            $actions = '';
+
+            $labelQueries = new LpcLabelQueries();
+            if (current_user_can('lpc_download_labels')) {
+                $actions .= '<span class="dashicons dashicons-download lpc_label_action_download" ' .
+                            $labelQueries->getLabelOutwardDownloadAttr($parcelNumber, $labelFormat) . '></span>';
+            }
+
+            if (current_user_can('lpc_print_labels')) {
+                $printerIcon = $GLOBALS['wp_version'] >= '5.5' ? 'dashicons-printer' : 'dashicons-media-default';
+                $actions     .= '<span class="dashicons ' . $printerIcon . ' lpc_label_action_print" ' .
+                                $labelQueries->getLabelOutwardPrintAttr($parcelNumber, $labelFormat) . ' ></span>';
+            }
+
+            $lpc_admin_notices->add_notice(
+                'outward_label_generate',
+                'notice-success',
+                sprintf(__('Order %s : Outward label generated', 'wc_colissimo'), $orderId) . $actions
+            );
+        }
+
         if ($fullyShipped) {
             $this->applyStatusAfterLabelGeneration($order);
         } else {
@@ -210,6 +239,9 @@ class LpcLabelGenerationOutward extends LpcComponent {
                 $alreadyGeneratedLabelItems[$itemId] = $oneItemDetail;
             } else {
                 foreach ($oneItemDetail as $itemParams => $itemParamsValue) {
+                    if(!isset($alreadyGeneratedLabelItems[$itemId][$itemParams])){
+                        $alreadyGeneratedLabelItems[$itemId][$itemParams] = 0;
+                    }
                     $alreadyGeneratedLabelItems[$itemId][$itemParams] += $itemParamsValue;
                 }
             }
@@ -221,17 +253,17 @@ class LpcLabelGenerationOutward extends LpcComponent {
      */
     protected function buildPayload(WC_Order $order, $customParams = []) {
         $recipient = [
-            'companyName'  => $order->get_shipping_company(),
-            'firstName'    => $order->get_shipping_first_name(),
-            'lastName'     => $order->get_shipping_last_name(),
-            'street'       => $order->get_shipping_address_1(),
-            'street2'      => $order->get_shipping_address_2(),
-            'city'         => $order->get_shipping_city(),
-            'zipCode'      => $order->get_shipping_postcode(),
-            'countryCode'  => $order->get_shipping_country(),
-            'stateCode'    => $order->get_shipping_state(),
-            'email'        => $order->get_billing_email(),
-            'mobileNumber' => $order->get_billing_phone(),
+            'companyName' => $order->get_shipping_company(),
+            'firstName'   => $order->get_shipping_first_name(),
+            'lastName'    => $order->get_shipping_last_name(),
+            'street'      => $order->get_shipping_address_1(),
+            'street2'     => $order->get_shipping_address_2(),
+            'city'        => $order->get_shipping_city(),
+            'zipCode'     => $order->get_shipping_postcode(),
+            'countryCode' => $order->get_shipping_country(),
+            'stateCode'   => $order->get_shipping_state(),
+            'email'       => $order->get_billing_email(),
+            'phone'       => $order->get_billing_phone(),
         ];
 
         // For Luxembourg, the zip code must not have the "L-" prefix
@@ -242,7 +274,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
         if (method_exists($order, 'get_shipping_phone')) {
             $shippingPhone = $order->get_shipping_phone();
             if (!empty($shippingPhone)) {
-                $recipient['mobileNumber'] = $shippingPhone;
+                $recipient['phone'] = $shippingPhone;
             }
         }
 
@@ -257,6 +289,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
         $payload = new LpcLabelGenerationPayload();
         $payload
             ->withOrderNumber($order->get_order_number())
+            ->withProductCode($productCode)
             ->withContractNumber()
             ->withPassword()
             ->withCommercialName(LpcHelper::get_option('lpc_origin_company_name'))
@@ -267,9 +300,8 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withPreparationDelay()
             ->withInstructions($order->get_customer_note())
             ->withCustomsDeclaration($order, $customParams, $shippingMethodUsed)
-            ->withProductCode($productCode)
             ->withOutputFormat()
-            ->withPostalNetwork($recipient['countryCode'], $productCode, $order)
+            ->withPostalNetwork($recipient['countryCode'], $order)
             ->withNonMachinable($customParams)
             ->withDDP($shippingMethodUsed)
             ->withMultiParcels($order->get_id(), $customParams);
@@ -279,7 +311,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             $payload->withPickupLocationId($relayId);
         }
 
-        $payload->withInsuranceValue($order->get_subtotal(), $productCode, $order->get_shipping_country(), $shippingMethodUsed, $order->get_order_number(), $customParams);
+        $payload->withInsuranceValue($order->get_subtotal(), $order->get_shipping_country(), $shippingMethodUsed, $customParams);
 
         return $payload->checkConsistency();
     }
