@@ -7,7 +7,6 @@ class LpcOutwardLabelDb extends LpcDb {
     const TABLE_NAME = 'lpc_outward_label';
     const LABEL_TYPE_OUTWARD = 'outward';
 
-
     public function getTableName() {
         global $wpdb;
 
@@ -677,5 +676,11 @@ END_SQL;
         }
 
         return $labels;
+    }
+
+    public function getNumberOfLabels() {
+        global $wpdb;
+
+        return $wpdb->get_var('SELECT COUNT(*) FROM ' . $wpdb->prefix . 'lpc_outward_label');
     }
 }
