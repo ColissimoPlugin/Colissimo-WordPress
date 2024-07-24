@@ -20,10 +20,16 @@ class LpcLabelGenerationApi extends LpcRestApi {
                 ]
             );
 
+            $headers = [];
+            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+                $headers[] = 'apiKey: ' . LpcHelper::get_option('lpc_apikey');
+            }
+
             $response = $this->query(
                 'generateLabel',
                 $assembledPayload,
-                self::DATA_TYPE_JSON
+                self::DATA_TYPE_JSON,
+                $headers
             );
 
             $jsonResponse = $response['<jsonInfos>'];
@@ -68,7 +74,17 @@ class LpcLabelGenerationApi extends LpcRestApi {
             ]
         );
 
-        $response = $this->query('getListMailBoxPickingDates', $payload, self::DATA_TYPE_JSON);
+        $headers = [];
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            $headers[] = 'apiKey: ' . LpcHelper::get_option('lpc_apikey');
+        }
+
+        $response = $this->query(
+            'getListMailBoxPickingDates',
+            $payload,
+            self::DATA_TYPE_JSON,
+            $headers
+        );
 
         LpcLogger::debug(
             'List mail box picking dates response',

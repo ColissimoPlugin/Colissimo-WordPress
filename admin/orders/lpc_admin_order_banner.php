@@ -43,6 +43,9 @@ class LpcAdminOrderBanner extends LpcComponent {
     /** @var LpcAdminPickupWebService */
     protected $lpcAdminPickupWebService;
 
+    /** @var LpcAccountApi */
+    protected $accountApi;
+
     public function __construct(
         LpcLabelQueries $lpcLabelQueries = null,
         LpcBordereauQueries $lpcBordereauQueries = null,
@@ -57,7 +60,8 @@ class LpcAdminOrderBanner extends LpcComponent {
         LpcColissimoStatus $colissimoStatus = null,
         LpcAdminOrderAffect $lpcAdminOrderAffect = null,
         LpcAdminPickupWebService $lpcAdminPickupWebService = null,
-        LpcAdminPickupWidget $lpcAdminPickupWidget = null
+        LpcAdminPickupWidget $lpcAdminPickupWidget = null,
+        LpcAccountApi $accountApi = null
     ) {
         $this->lpcLabelQueries           = LpcRegister::get('labelQueries', $lpcLabelQueries);
         $this->lpcBordereauQueries       = LpcRegister::get('bordereauQueries', $lpcBordereauQueries);
@@ -71,11 +75,30 @@ class LpcAdminOrderBanner extends LpcComponent {
         $this->customsDocumentsApi       = LpcRegister::get('customsDocumentsApi', $customsDocumentsApi);
         $this->colissimoStatus           = LpcRegister::get('colissimoStatus', $colissimoStatus);
         $this->lpcAdminOrderAffect       = LpcRegister::get('lpcAdminOrderAffect', $lpcAdminOrderAffect);
+        $this->accountApi                = LpcRegister::get('accountApi', $accountApi);
         if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
             $this->lpcAdminPickupWidget = LpcRegister::get('adminPickupWidget', $lpcAdminPickupWidget);
         } else {
             $this->lpcAdminPickupWebService = LpcRegister::get('adminPickupWebService', $lpcAdminPickupWebService);
         }
+    }
+
+    public function getDependencies(): array {
+        return [
+            'labelQueries',
+            'bordereauQueries',
+            'shippingMethods',
+            'labelGenerationOutward',
+            'labelGenerationInward',
+            'lpcAdminNotices',
+            'outwardLabelDb',
+            'bordereauDownloadAction',
+            'capabilitiesPerCountry',
+            'customsDocumentsApi',
+            'colissimoStatus',
+            'lpcAdminOrderAffect',
+            'accountApi',
+        ];
     }
 
     public function init() {
@@ -110,7 +133,7 @@ class LpcAdminOrderBanner extends LpcComponent {
         );
 
         add_action('wp_ajax_lpc_order_generate_label', [$this, 'generateLabel']);
-        add_action('save_post', [$this, 'sendCustomsDocuments'], 10, 2);
+        add_action('wp_ajax_lpc_order_send_documents', [$this, 'sendCustomsDocuments']);
     }
 
     public function bannerContent($post) {
@@ -181,6 +204,7 @@ class LpcAdminOrderBanner extends LpcComponent {
 
         $args['lpc_order_items'] = [];
 
+        $orderValue = 0;
         foreach ($items as $item) {
             $product = $item->get_product();
             if (empty($product) || !$product->needs_shipping()) {
@@ -213,6 +237,8 @@ class LpcAdminOrderBanner extends LpcComponent {
                     ]
                 ),
             ];
+
+            $orderValue += $price * $quantity;
         }
 
         if (empty($args['lpc_order_items'])) {
@@ -329,6 +355,24 @@ class LpcAdminOrderBanner extends LpcComponent {
         $args['lpc_multi_parcels_amount']     = $order->get_meta('lpc_multi_parcels_amount');
         $args['lpc_multi_parcels_existing']   = $this->outwardLabelDb->getMultiParcelsLabels($args['order_id']);
 
+        $args['blocking_code'] = 'FR' === $countryCode && in_array(
+                $productCode,
+                [
+                    LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE,
+                    LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE_OM,
+                    LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE_INTRA_DOM,
+                ]
+            );
+
+        if ($args['blocking_code']) {
+            $accountInformation    = $this->accountApi->getAccountInformation();
+            $args['blocking_code'] = !empty($accountInformation['statutCodeBloquant']);
+
+            $minLimit = LpcHelper::get_option('lpc_domicileas_block_code_min', []);
+            $maxLimit = LpcHelper::get_option('lpc_domicileas_block_code_max', []);
+            $args['blocking_code_checked'] = (empty($minLimit) || $orderValue >= $minLimit) && (empty($maxLimit) || $orderValue <= $maxLimit);
+        }
+
         echo LpcHelper::renderPartial('orders' . DS . 'lpc_admin_order_banner.php', $args);
     }
 
@@ -371,6 +415,7 @@ class LpcAdminOrderBanner extends LpcComponent {
         $insuranceAmount    = LpcHelper::getVar('insurance_amount');
         $multiParcels       = LpcHelper::getVar('multi_parcels');
         $multiParcelsAmount = LpcHelper::getVar('parcels_amount');
+        $blockCode          = LpcHelper::getVar('block_code');
 
         if (!empty($multiParcels)) {
             if (empty($multiParcelsAmount)) {
@@ -397,6 +442,7 @@ class LpcAdminOrderBanner extends LpcComponent {
             'multiParcelsAmount'        => $multiParcelsAmount,
             'multiParcelsCurrentNumber' => $multiParcelsCurrentNumber ?? 0,
             'customsCategory'           => $customCategory,
+            'blockCode'                 => $blockCode,
         ];
 
         $outwardOrInward = LpcHelper::getVar('label_type');
@@ -420,48 +466,54 @@ class LpcAdminOrderBanner extends LpcComponent {
         LpcHelper::endAjax();
     }
 
-    public function sendCustomsDocuments($orderId, $post) {
-        if (!is_admin() || 'shop_order' !== $post->post_type || !isset($_FILES['lpc__customs_document'])) {
-            return;
+    public function sendCustomsDocuments() {
+        $orderId = LpcHelper::getVar('order_id');
+        $order   = wc_get_order($orderId);
+        if (empty($order)) {
+            LpcHelper::endAjax(false, ['message' => __('Order not found', 'wc_colissimo')]);
         }
 
-        $order = wc_get_order($orderId);
-        if (empty($order) || 'shop_order' !== $order->get_type()) {
-            return;
+        $filesByType = LpcHelper::getVar('fileTypes', [], 'array');
+        if (empty($filesByType) || !isset($_FILES['files'])) {
+            LpcHelper::endAjax(false, ['message' => 'files not found']);
         }
 
         $sentDocuments = $order->get_meta('lpc_customs_sent_documents');
         $sentDocuments = empty($sentDocuments) ? [] : json_decode($sentDocuments, true);
         $orderLabels   = $this->outwardLabelDb->getMultiParcelsLabels($orderId);
 
-        $documentsPerLabel = $_FILES['lpc__customs_document']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-        foreach ($documentsPerLabel['name'] as $parcelNumber => $documentTypes) {
-            foreach ($documentTypes as $documentType => $documentNames) {
-                foreach ($documentNames as $documentNumber => $oneDocumentName) {
-                    try {
-                        $document   = $documentsPerLabel['tmp_name'][$parcelNumber][$documentType][$documentNumber];
-                        $documentId = $this->customsDocumentsApi->storeDocument($orderLabels, $documentType, $parcelNumber, $document, $oneDocumentName);
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+        $documents = $_FILES['files'];
 
-                        // Old version of API maybe, keep this test
-                        $dotPosition = strrpos($documentId, '.');
-                        if (!empty($dotPosition)) {
-                            $documentId = substr($documentId, 0, $dotPosition);
-                        }
+        foreach ($filesByType as $index => $oneDefinition) {
+            preg_match('#.*\[([^[]*)\]\[([^[]*)\]#U', $oneDefinition, $matches);
+            $parcelNumber = $matches[1];
+            $documentType = $matches[2];
 
-                        $sentDocuments[$parcelNumber][$documentId] = [
-                            'documentName' => $oneDocumentName,
-                            'documentType' => $documentType,
-                        ];
-                    } catch (Exception $e) {
-                        $this->lpcAdminNotices->add_notice('lpc_notice', 'notice-error', $e->getMessage());
-                    }
+            try {
+                $documentPath    = $documents['tmp_name'][$index];
+                $oneDocumentName = $documents['name'][$index];
+
+                $documentId = $this->customsDocumentsApi->storeDocument($orderLabels, $documentType, $parcelNumber, $documentPath, $oneDocumentName);
+
+                // Old version of API maybe, keep this test
+                $dotPosition = strrpos($documentId, '.');
+                if (!empty($dotPosition)) {
+                    $documentId = substr($documentId, 0, $dotPosition);
                 }
+
+                $sentDocuments[$parcelNumber][$documentId] = [
+                    'documentName' => $oneDocumentName,
+                    'documentType' => $documentType,
+                ];
+            } catch (Exception $e) {
+                LpcHelper::endAjax(false, ['message' => $e->getMessage()]);
             }
         }
 
         $order->update_meta_data('lpc_customs_sent_documents', json_encode($sentDocuments));
-        unset($_FILES['lpc__customs_document']);
-
         $order->save();
+
+        LpcHelper::endAjax();
     }
 }

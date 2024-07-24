@@ -28,7 +28,7 @@ class LpcDbDefinition extends LpcComponent {
         );
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['outwardLabelDb', 'inwardLabelDb'];
     }
 

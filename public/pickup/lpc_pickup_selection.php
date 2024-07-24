@@ -16,7 +16,7 @@ class LpcPickupSelection extends LpcComponent {
         add_action('woocommerce_checkout_process', [$this, 'preventCheckoutProcess']);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher'];
     }
 
@@ -102,7 +102,6 @@ class LpcPickupSelection extends LpcComponent {
                 $shippings = $order->get_shipping_methods();
                 $shipping  = current($shippings);
 
-                // TODO on rare cases the pickup data is not saved on the order
                 if (!empty($shipping)) {
                     $shippingMethod = $shipping->get_method_id();
                     if (LpcRelay::ID === $shippingMethod) {
@@ -140,7 +139,7 @@ class LpcPickupSelection extends LpcComponent {
         $order->save();
     }
 
-    private function setPickupAsShippingAddress($order, $pickupData) {
+    private function setPickupAsShippingAddress($order, $pickupData, $isSubOrder = false) {
         $order->set_shipping_address_1(!empty($pickupData['adresse1']) ? $pickupData['adresse1'] : '');
         $order->set_shipping_address_2(!empty($pickupData['adresse2']) ? $pickupData['adresse2'] : '');
         $order->set_shipping_postcode(!empty($pickupData['codePostal']) ? $pickupData['codePostal'] : '');
@@ -150,6 +149,16 @@ class LpcPickupSelection extends LpcComponent {
         $order->set_shipping_state('');
 
         $order->save();
+
+        if (!$isSubOrder && class_exists('YITH_Vendors_Orders') && method_exists('YITH_Vendors_Orders', 'get_suborders')) {
+            $subOrderIds = YITH_Vendors_Orders::get_suborders($order->get_id());
+            if (!empty($subOrderIds)) {
+                foreach ($subOrderIds as $subOrderId) {
+                    $subOrder = wc_get_order($subOrderId);
+                    $this->setPickupAsShippingAddress($subOrder, $pickupData, true);
+                }
+            }
+        }
     }
 
     public function preventPlaceOrderButton($orderButton) {
@@ -230,51 +239,44 @@ class LpcPickupSelection extends LpcComponent {
             );
         }
 
-        if ('FR' === $customerShippingCountry && !preg_match('/^(\+33|0033|\+330|00330|0)(6|7)\d{8}$/', $customerPhoneNumber)) {
+        if ('BE' !== $customerShippingCountry) {
+            return;
+        }
+
+        if (!preg_match('/^\+324\d{8}$/', $customerPhoneNumber)) {
+            $acceptableNumber = false;
+        } else {
+            $mobileNumbers = array_reverse(str_split($customerPhoneNumber));
+            $mobileNumbers = array_map('intval', $mobileNumbers);
+            $suiteAsc      = true;
+            $suiteDesc     = true;
+            $suiteEqual    = true;
+            foreach ($mobileNumbers as $key => $val) {
+                if (7 === $key) {
+                    break;
+                }
+
+                if ($mobileNumbers[$key + 1] !== $val - 1) {
+                    $suiteAsc = false;
+                }
+                if ($mobileNumbers[$key + 1] !== $val + 1) {
+                    $suiteDesc = false;
+                }
+                if ($mobileNumbers[$key + 1] !== $val) {
+                    $suiteEqual = false;
+                }
+            }
+
+            $acceptableNumber = !$suiteAsc && !$suiteDesc && !$suiteEqual;
+        }
+
+        if (!$acceptableNumber) {
             throw new Exception(
                 __(
-                    'The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX',
+                    'The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX',
                     'wc_colissimo'
                 )
             );
-        }
-
-        if ('BE' === $customerShippingCountry) {
-            if (!preg_match('/^\+324\d{8}$/', $customerPhoneNumber)) {
-                $acceptableNumber = false;
-            } else {
-                $mobileNumbers = array_reverse(str_split($customerPhoneNumber));
-                $mobileNumbers = array_map('intval', $mobileNumbers);
-                $suiteAsc      = true;
-                $suiteDesc     = true;
-                $suiteEqual    = true;
-                foreach ($mobileNumbers as $key => $val) {
-                    if (7 === $key) {
-                        break;
-                    }
-
-                    if ($mobileNumbers[$key + 1] !== $val - 1) {
-                        $suiteAsc = false;
-                    }
-                    if ($mobileNumbers[$key + 1] !== $val + 1) {
-                        $suiteDesc = false;
-                    }
-                    if ($mobileNumbers[$key + 1] !== $val) {
-                        $suiteEqual = false;
-                    }
-                }
-
-                $acceptableNumber = !$suiteAsc && !$suiteDesc && !$suiteEqual;
-            }
-
-            if (!$acceptableNumber) {
-                throw new Exception(
-                    __(
-                        'The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX',
-                        'wc_colissimo'
-                    )
-                );
-            }
         }
     }
 

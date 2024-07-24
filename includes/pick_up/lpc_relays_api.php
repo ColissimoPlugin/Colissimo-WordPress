@@ -1,17 +1,16 @@
 <?php
 
-require_once LPC_INCLUDES . 'lpc_soap_api.php';
+require_once LPC_INCLUDES . 'lpc_rest_api.php';
 
-class LpcRelaysApi extends LpcSoapApi {
-    const API_RELAYS_WSDL_URL = 'https://ws.colissimo.fr/pointretrait-ws-cxf/PointRetraitServiceWS/2.0?wsdl';
+class LpcRelaysApi extends LpcRestApi {
+    const API_BASE_URL = 'https://ws.colissimo.fr/pointretrait-ws-cxf/rest/v2/pointretrait/';
 
-    public function getApiUrl() {
-        return self::API_RELAYS_WSDL_URL;
+    public function getApiUrl($action) {
+        return self::API_BASE_URL . $action;
     }
 
-    public function getRelays($params) {
-        $paramsWithoutPassword = $params;
-
+    public function getRelays($payload) {
+        $paramsWithoutPassword = $payload;
         unset($paramsWithoutPassword['password']);
 
         LpcLogger::debug(
@@ -19,11 +18,11 @@ class LpcRelaysApi extends LpcSoapApi {
             [
                 'method'  => __METHOD__,
                 'payload' => $paramsWithoutPassword,
-                'url'     => $this->getApiUrl(),
+                'url'     => $this->getApiUrl('findRDVPointRetraitAcheminement'),
             ]
         );
 
-        $response = $this->getSoapClient()->findRDVPointRetraitAcheminement($params);
+        $response = $this->query('findRDVPointRetraitAcheminement', $payload);
 
         LpcLogger::debug(
             'Get relays webservice response',

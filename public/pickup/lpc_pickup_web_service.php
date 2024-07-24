@@ -21,7 +21,7 @@ class LpcPickupWebService extends LpcPickup {
         $this->lpcPickUpSelection = LpcRegister::get('pickupSelection', $lpcPickUpSelection);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'pickupSelection'];
     }
 
@@ -138,32 +138,28 @@ class LpcPickupWebService extends LpcPickup {
     }
 
     public function pickupWS() {
-        $address = [
+        $address  = [
             'address'     => LpcHelper::getVar('address'),
             'zipCode'     => LpcHelper::getVar('zipCode'),
             'city'        => LpcHelper::getVar('city'),
             'countryCode' => LpcHelper::getVar('countryId'),
         ];
-
         $loadMore = LpcHelper::getVar('loadMore', 0, 'int') === 1;
 
         $resultWs = $this->getPickupWS($address);
-        // When an exception is throw
-        if (empty($resultWs->return)) {
 
+        if (empty($resultWs)) {
             return $resultWs;
         }
 
-        $return = $resultWs->return;
-
-        if (0 == $return->errorCode) {
-            if (empty($return->listePointRetraitAcheminement)) {
+        if (0 == $resultWs['errorCode']) {
+            if (empty($resultWs['listePointRetraitAcheminement'])) {
                 LpcLogger::warn(__('The web service returned 0 relay', 'wc_colissimo'));
 
                 return $this->ajaxDispatcher->makeError(['message' => __('No relay available', 'wc_colissimo')]);
             }
 
-            $listRelaysWS = $return->listePointRetraitAcheminement;
+            $listRelaysWS = $resultWs['listePointRetraitAcheminement'];
             $html         = '';
 
             // Choose displayed relay types
@@ -181,9 +177,12 @@ class LpcPickupWebService extends LpcPickup {
             }
 
             if ('all' != $relayTypes) {
-                $listRelaysWS = array_filter($listRelaysWS, function ($relay) use ($relayTypes) {
-                    return in_array($relay->typeDePoint, $relayTypes);
-                });
+                $listRelaysWS = array_filter(
+                    $listRelaysWS,
+                    function ($relay) use ($relayTypes) {
+                        return in_array($relay['typeDePoint'], $relayTypes);
+                    }
+                );
             }
 
             // Limit number of displayed relays
@@ -205,7 +204,7 @@ class LpcPickupWebService extends LpcPickup {
             ];
 
             foreach ($listRelaysWS as $oneRelay) {
-                if (empty($oneRelay->identifiant) || empty($oneRelay->typeDePoint)) {
+                if (empty($oneRelay['identifiant']) || empty($oneRelay['typeDePoint'])) {
                     continue;
                 }
 
@@ -222,8 +221,8 @@ class LpcPickupWebService extends LpcPickup {
                     'loadMore'        => $loadMore ? 1 : 0,
                 ]
             );
-        } elseif (in_array($return->errorCode, [301, 300, 203])) {
-            LpcLogger::warn($return->errorCode . ' : ' . $return->errorMessage);
+        } elseif (in_array($resultWs['errorCode'], [301, 300, 203])) {
+            LpcLogger::warn($resultWs['errorCode'] . ' : ' . $resultWs['errorMessage']);
 
             return $this->ajaxDispatcher->makeError(['message' => __('No relay available', 'wc_colissimo')]);
         } else {
@@ -240,10 +239,10 @@ class LpcPickupWebService extends LpcPickup {
                 '146',
             ];
 
-            if (in_array($return->errorCode, $errorCodesWSClientSide)) {
-                return $this->ajaxDispatcher->makeAndLogError(['message' => $return->errorCode . ' : ' . $return->errorMessage]);
+            if (in_array($resultWs['errorCode'], $errorCodesWSClientSide)) {
+                return $this->ajaxDispatcher->makeAndLogError(['message' => $resultWs['errorCode'] . ' : ' . $resultWs['errorMessage']]);
             } else {
-                LpcLogger::error($return->errorCode . ' : ' . $return->errorMessage);
+                LpcLogger::error($resultWs['errorCode'] . ' : ' . $resultWs['errorMessage']);
 
                 return $this->ajaxDispatcher->makeError(['message' => __('Error', 'wc_colissimo')]);
             }
@@ -256,14 +255,18 @@ class LpcPickupWebService extends LpcPickup {
 
         try {
             $generateRelaysPaypload = new LpcGenerateRelaysPayload();
-            $relaysApi              = new LpcRelaysApi(['trace' => false]);
+            $relaysApi              = new LpcRelaysApi();
 
-            $generateRelaysPaypload->withLogin()->withPassword()->withAddress($address)->withShippingDate()->withOptionInter($optionInter)->checkConsistency();
+            $generateRelaysPaypload
+                ->withCredentials()
+                ->withAddress($address)
+                ->withShippingDate()
+                ->withOptionInter($optionInter)
+                ->checkConsistency();
+
             $relaysPayload = $generateRelaysPaypload->assemble();
 
             return $relaysApi->getRelays($relaysPayload);
-        } catch (\SoapFault $fault) {
-            return $this->ajaxDispatcher->makeAndLogError(['message' => $fault]);
         } catch (Exception $exception) {
             return $this->ajaxDispatcher->makeAndLogError(['message' => $exception->getMessage()]);
         }
@@ -271,17 +274,13 @@ class LpcPickupWebService extends LpcPickup {
 
     public function getDefaultPickupLocationInfoWS($address, $optionInter = null) {
         $resultWs = $this->getPickupWS($address, $optionInter);
-        if (!empty($resultWs->return)) {
-            $return = $resultWs->return;
+        if (!empty($resultWs) && '0' == $resultWs['errorCode']) {
+            $relays = $resultWs['listePointRetraitAcheminement'];
+            if (count($relays) >= 1) {
+                $defaultRelay = array_shift($relays);
+                $this->lpcPickUpSelection->setCurrentPickUpLocationInfo($defaultRelay);
 
-            if ('0' == $return->errorCode) {
-                $relays = (array) $return->listePointRetraitAcheminement;
-                if (count($relays) >= 1) {
-                    $defaultRelay = (array) $relays[0];
-                    $this->lpcPickUpSelection->setCurrentPickUpLocationInfo($defaultRelay);
-
-                    return $defaultRelay;
-                }
+                return $defaultRelay;
             }
         }
 

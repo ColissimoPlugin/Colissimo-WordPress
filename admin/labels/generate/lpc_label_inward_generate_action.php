@@ -20,7 +20,7 @@ class LpcLabelInwardGenerateAction extends LpcComponent {
         $this->labelGenerationInward = LpcRegister::get('labelGenerationInward', $labelGenerationInward);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'labelGenerationInward'];
     }
 

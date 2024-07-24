@@ -1,8 +1,6 @@
 <?php
 $faciliteUrl      = 'https://www.colissimo.entreprise.laposte.fr/contrat-facilite';
-$faciliteForm     = 'https://www.colissimo.fr/entreprise/subscription/inscription';
 $privilegeUrl     = 'https://www.colissimo.entreprise.laposte.fr/contrat-privilege';
-$privilegeForm    = 'https://www.colissimo.entreprise.laposte.fr/contact#edit-votre-besoin-vous-souhaitez-ouvrir-un-compte-colissimo-entreprise';
 $colissimoWebsite = 'https://www.colissimo.entreprise.laposte.fr/';
 
 $originAddress     = admin_url('admin.php?page=wc-settings&tab=lpc&section=main#lpc_pwd_webservices');
@@ -23,9 +21,17 @@ $videoTutorials    = admin_url('admin.php?page=wc-settings&tab=lpc&section=video
 		<p>
 			- <?php
             printf(
+                __('Choose %s best matching your needs.', 'wc_colissimo'),
+                '<a target="_blank" href="' . esc_url($args['contractTypes']) . '">' . __('the contract', 'wc_colissimo') . '</a>'
+            );
+            ?>
+		</p>
+		<p>
+			- <?php
+            printf(
                 __('To register for the %1$s option, fill %2$s to create an account and receive your ids within a few days.', 'wc_colissimo'),
                 '<a target="_blank" href="' . esc_url($faciliteUrl) . '">Colissimo Facilité</a>',
-                '<a target="_blank" href="' . esc_url($faciliteForm) . '">' . __('this commercial contact form', 'wc_colissimo') . '</a>'
+                '<a target="_blank" href="' . esc_url($args['faciliteForm']) . '">' . __('this commercial contact form', 'wc_colissimo') . '</a>'
             );
             ?>
 		</p>
@@ -34,7 +40,7 @@ $videoTutorials    = admin_url('admin.php?page=wc-settings&tab=lpc&section=video
             printf(
                 __('To register for the %1$s option, fill %2$s to be contacted by a sales representative.', 'wc_colissimo'),
                 '<a target="_blank" href="' . esc_url($privilegeUrl) . '">Colissimo Privilège</a>',
-                '<a target="_blank" href="' . esc_url($privilegeForm) . '">' . __('this commercial contact form', 'wc_colissimo') . '</a>'
+                '<a target="_blank" href="' . esc_url($args['privilegeForm']) . '">' . __('this commercial contact form', 'wc_colissimo') . '</a>'
             );
             ?>
 		</p>
@@ -46,7 +52,7 @@ $videoTutorials    = admin_url('admin.php?page=wc-settings&tab=lpc&section=video
 		<b>1. <?php esc_html_e('I associate my account to the Colissimo plugin', 'wc_colissimo'); ?></b>
 		<p>
             <?php
-            esc_html_e('To connect the plugin, you must enter your Colissimo ID and password in the "General" tab of this plugin.', 'wc_colissimo');
+            esc_html_e('To connect the plugin, you must enter your Colissimo credentials in the "General" tab of this plugin.', 'wc_colissimo');
             echo ' ';
             printf(
                 __('The ID must be a 6 digits number, this is the one you use to connect to %s.', 'wc_colissimo'),

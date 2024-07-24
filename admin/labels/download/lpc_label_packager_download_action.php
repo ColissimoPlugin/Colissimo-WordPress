@@ -12,19 +12,23 @@ class LpcLabelPackagerDownloadAction extends LpcComponent {
     protected $ajaxDispatcher;
     /** @var LpcOutwardLabelDb */
     protected $outwardLabelDb;
+    /** @var LpcInwardLabelDb */
+    protected $inwardLabelDb;
 
     public function __construct(
         LpcAjax $ajaxDispatcher = null,
         LpcLabelPackager $labelPackager = null,
-        LpcOutwardLabelDb $outwardLabelDb = null
+        LpcOutwardLabelDb $outwardLabelDb = null,
+        LpcInwardLabelDb $inwardLabelDb = null
     ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->labelPackager  = LpcRegister::get('labelPackager', $labelPackager);
         $this->outwardLabelDb = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
+        $this->inwardLabelDb  = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
     }
 
-    public function getDependencies() {
-        return ['ajaxDispatcher', 'labelPackager'];
+    public function getDependencies(): array {
+        return ['ajaxDispatcher', 'labelPackager', 'outwardLabelDb', 'inwardLabelDb'];
     }
 
     public function init() {
@@ -76,14 +80,20 @@ class LpcLabelPackagerDownloadAction extends LpcComponent {
         }
     }
 
-    public function getUrlForTrackingNumbers(array $trackingNumbers) {
+    public function getUrlForTrackingNumbers(array $trackingNumbers, bool $isOutward = true) {
         $emptyLabels = [];
         foreach ($trackingNumbers as $trackingNumber) {
-            $label = $this->outwardLabelDb->getLabelFor($trackingNumber);
+            if ($isOutward) {
+                $label = $this->outwardLabelDb->getLabelFor($trackingNumber);
+            } else {
+                $label = $this->inwardLabelDb->getLabelFor($trackingNumber);
+            }
+
             if (empty($label['label'])) {
                 $emptyLabels[] = $trackingNumber;
             }
         }
+
         if (!empty($emptyLabels)) {
             $trackingNumbers = array_diff($trackingNumbers, $emptyLabels);
 

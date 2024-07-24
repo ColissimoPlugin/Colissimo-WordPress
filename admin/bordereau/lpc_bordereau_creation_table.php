@@ -172,9 +172,9 @@ END_HTML;
 
         $orders = $this->getOrdersByIds($ids);
 
-        $bordereau = $this->bordereauGeneration->generate($orders);
+        $bordereauId = $this->bordereauGeneration->generate($orders);
 
-        if (!empty($bordereau)) {
+        if (!empty($bordereauId)) {
             wp_redirect(admin_url('admin.php?page=wc_colissimo_view&tab=slip-history'));
         }
     }

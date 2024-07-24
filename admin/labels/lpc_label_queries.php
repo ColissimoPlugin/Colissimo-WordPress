@@ -265,14 +265,16 @@ class LpcLabelQueries extends LpcComponent {
         $cn23Data = $this->inwardLabelDb->getCn23For($trackingNumber);
         if (!empty($cn23Data['format']) && LpcLabelGenerationPayload::LABEL_FORMAT_PDF !== $cn23Data['format']) {
             $inwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
-                [$trackingNumber]
+                [$trackingNumber],
+                false
             );
         } else {
             switch ($format) {
                 case LpcLabelGenerationPayload::LABEL_FORMAT_ZPL:
                 case LpcLabelGenerationPayload::LABEL_FORMAT_DPL:
                     $inwardLabelDownloadLink = $this->labelPackagerDownloadAction->getUrlForTrackingNumbers(
-                        [$trackingNumber]
+                        [$trackingNumber],
+                        false
                     );
                     break;
                 case LpcLabelGenerationPayload::LABEL_FORMAT_PDF:
@@ -282,10 +284,7 @@ class LpcLabelQueries extends LpcComponent {
             }
         }
 
-        return 'data-link="' . $inwardLabelDownloadLink . '" title="' . __(
-                'Download inward label',
-                'wc_colissimo'
-            ) . '"';
+        return 'data-link="' . esc_url($inwardLabelDownloadLink) . '" title="' . esc_attr__('Download inward label', 'wc_colissimo') . '"';
     }
 
     public function getLabelOutwardPrintAttr($trackingNumber, $format) {
@@ -295,7 +294,7 @@ class LpcLabelQueries extends LpcComponent {
             ) . '" data-label-type="' . LpcOutwardLabelDb::LABEL_TYPE_OUTWARD . '" '
                . 'data-tracking-number="' . $trackingNumber . '" '
                . 'data-format="' . $format . '" '
-               . 'title="' . __('Print outward label', 'wc_colissimo') . '"';
+               . 'title="' . esc_attr__('Print outward label', 'wc_colissimo') . '"';
     }
 
     public function getLabelInwardPrintAttr($trackingNumber, $format) {
@@ -305,12 +304,12 @@ class LpcLabelQueries extends LpcComponent {
             ) . '" data-label-type="' . LpcInwardLabelDb::LABEL_TYPE_INWARD . '" '
                . 'data-tracking-number="' . $trackingNumber . '" '
                . 'data-format="' . $format . '" '
-               . 'title="' . __('Print inward label', 'wc_colissimo') . '"';
+               . 'title="' . esc_attr__('Print inward label', 'wc_colissimo') . '"';
     }
 
     protected function getLabelInwardSendAttr($trackingNumber, $redirection) {
         return 'data-link="' . $this->inwardLabelEmailManager->labelEmailingUrl($trackingNumber, $redirection) . '" '
-               . 'title="' . __('Email Return Label', 'wc_colissimo') . '"';
+               . 'title="' . esc_attr__('Email Return Label', 'wc_colissimo') . '"';
     }
 
     public static function enqueueLabelsActionsScript() {

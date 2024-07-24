@@ -36,21 +36,21 @@ usort($packagings, function ($a, $b) {
 <div class="lpc__admin__order_banner">
 	<div class="lpc__admin__order_banner__header">
 		<div data-lpc-tab="label_listing" class="lpc__admin__order_banner__tab lpc__admin__order_banner__header__listing nav-tab nav-tab-active">
-            <?php echo __('Labels listing', 'wc_colissimo'); ?>
+            <?php esc_html_e('Labels listing', 'wc_colissimo'); ?>
 		</div>
         <?php if (current_user_can('lpc_manage_labels')) { ?>
 			<div data-lpc-tab="generate_label" class="lpc__admin__order_banner__tab lpc__admin__order_banner__header__generation nav-tab">
-                <?php echo __('Labels generation', 'wc_colissimo'); ?>
+                <?php esc_html_e('Labels generation', 'wc_colissimo'); ?>
 			</div>
         <?php } ?>
         <?php if (current_user_can('lpc_manage_documents') && $customsDocumentsNeeded) { ?>
 			<div data-lpc-tab="send_documents" class="lpc__admin__order_banner__tab lpc__admin__order_banner__header__documents nav-tab">
-                <?php echo __('Customs documents', 'wc_colissimo'); ?>
+                <?php esc_html_e('Customs documents', 'wc_colissimo'); ?>
 			</div>
         <?php } ?>
         <?php if ($collectionAllowed) { ?>
 			<div data-lpc-tab="on_demand" class="lpc__admin__order_banner__tab lpc__admin__order_banner__header__ondemand nav-tab">
-                <?php echo __('Colissimo collection', 'wc_colissimo'); ?>
+                <?php esc_html_e('Colissimo collection', 'wc_colissimo'); ?>
 			</div>
         <?php } ?>
 	</div>
@@ -60,9 +60,9 @@ usort($packagings, function ($a, $b) {
 				<thead>
 					<tr>
 						<th class="check-column"><input type="checkbox" class="lpc__admin__order_banner__generate_label__item__check_all" checked="checked"></th>
-						<th><?php echo __('Item', 'woocommerce'); ?></th>
+						<th><?php esc_html_e('Item', 'woocommerce'); ?></th>
 						<th><?php echo sprintf(__('Unit price (%s)', 'wc_colissimo'), $currency); ?></th>
-						<th><?php echo __('Quantity', 'wc_colissimo'); ?></th>
+						<th><?php esc_html_e('Quantity', 'wc_colissimo'); ?></th>
 						<th><?php echo sprintf(__('Unit weight (%s)', 'wc_colissimo'), $weightUnit); ?></th>
 					</tr>
 				</thead>
@@ -124,7 +124,7 @@ usort($packagings, function ($a, $b) {
                     __('Editing prices and weights may create inconsistency between CN23 or labels and invoice. Edit these values only if you really need it.', 'wc_colissimo')
                 );
                 ?>
-                <?php echo __('Edit prices and weights', 'wc_colissimo'); ?>
+                <?php esc_html_e('Edit prices and weights', 'wc_colissimo'); ?>
 				<span class="lpc__admin__order_banner__generate_label__edit_value woocommerce-input-toggle woocommerce-input-toggle--disabled"></span>
 			</div>
 			<div class="lpc__admin__order_banner__generate_label__shipping_costs__container">
@@ -178,7 +178,7 @@ usort($packagings, function ($a, $b) {
 				<input type="hidden" id="lpc__admin__order_banner__generate_label__package_weight_calculated" value="<?php echo esc_attr($args['lpc_packaging_weight']); ?>">
 			</div>
 			<div class="lpc__admin__order_banner__generate_label__total_weight__container">
-                <?php echo __('Total weight (items + packaging)', 'wc_colissimo'); ?> :
+                <?php esc_html_e('Total weight (items + packaging)', 'wc_colissimo'); ?> :
 				<span class="lpc__admin__order_banner__generate_label__total_weight"></span><?php echo ' ' . $weightUnit; ?>
 				<input type="hidden" name="lpc__admin__order_banner__generate_label__weight__unity" value="<?php echo $weightUnit; ?>">
 				<input type="hidden" name="lpc__admin__order_banner__generate_label__total_weight__input">
@@ -253,7 +253,7 @@ usort($packagings, function ($a, $b) {
             <?php } ?>
 			<div class="lpc__admin__order_banner__generate_label__non_machinable">
 				<label for="lpc__admin__order_banner__generate_label__non_machinable__input">
-                    <?php echo __('Non machinable package', 'wc_colissimo'); ?>
+                    <?php esc_html_e('Non machinable package', 'wc_colissimo'); ?>
 				</label>
                 <?php if (LpcLabelGenerationPayload::PRODUCT_CODE_RELAY === $productCode) { ?>
                     <?php echo LpcHelper::tooltip(__('The non-machinable option isn\'t available for this shipping method and destination country.', 'wc_colissimo')); ?>
@@ -269,7 +269,7 @@ usort($packagings, function ($a, $b) {
 			</div>
 			<div class="lpc__admin__order_banner__generate_label__insurance">
 				<label for="lpc_use_insurance">
-                    <?php echo __('Use Colissimo Insurance?', 'wc_colissimo'); ?>
+                    <?php esc_html_e('Use Colissimo Insurance?', 'wc_colissimo'); ?>
 				</label>
 				<input type="checkbox" <?php echo 'yes' == LpcHelper::get_option('lpc_using_insurance') ? 'checked' : ''; ?>
 					   name="lpc__admin__order_banner__generate_label__using__insurance__input"
@@ -278,7 +278,7 @@ usort($packagings, function ($a, $b) {
 			</div>
 			<div class="lpc__admin__order_banner__generate_label__insurance__amount">
 				<label for="lpc_insurance_amount">
-                    <?php echo __('Personalized amount of insurance:', 'wc_colissimo'); ?>
+                    <?php esc_html_e('Personalized amount of insurance:', 'wc_colissimo'); ?>
 				</label>
 				<select
 						class="lpc__admin__order_banner__generate_label__insurance__amount"
@@ -299,17 +299,17 @@ usort($packagings, function ($a, $b) {
             <?php if ($cn23Needed) { ?>
 				<div class="lpc__admin__order_banner__generate_label__type">
 					<label for="lpc_cn23_type">
-                        <?php echo __('Customs category', 'wc_colissimo'); ?>
+                        <?php esc_html_e('Customs category', 'wc_colissimo'); ?>
 					</label>
 					<select
 							class="lpc__admin__order_banner__generate_label__cn23__type"
 							name="lpc__admin__order_banner__generate_label__cn23__type"
 							id="lpc_cn23_type">
-						<option value="1" <?php echo 1 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Gift', 'wc_colissimo'); ?></option>
-						<option value="2" <?php echo 2 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Commercial sample', 'wc_colissimo'); ?></option>
-						<option value="3" <?php echo 3 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Commercial shipment', 'wc_colissimo'); ?></option>
-						<option value="4" <?php echo 4 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Document', 'wc_colissimo'); ?></option>
-						<option value="5" <?php echo 5 == $defaultCustoms ? 'selected' : ''; ?>><?php echo __('Other', 'wc_colissimo'); ?></option>
+						<option value="1" <?php echo 1 == $defaultCustoms ? 'selected' : ''; ?>><?php esc_html_e('Gift', 'wc_colissimo'); ?></option>
+						<option value="2" <?php echo 2 == $defaultCustoms ? 'selected' : ''; ?>><?php esc_html_e('Commercial sample', 'wc_colissimo'); ?></option>
+						<option value="3" <?php echo 3 == $defaultCustoms ? 'selected' : ''; ?>><?php esc_html_e('Commercial shipment', 'wc_colissimo'); ?></option>
+						<option value="4" <?php echo 4 == $defaultCustoms ? 'selected' : ''; ?>><?php esc_html_e('Document', 'wc_colissimo'); ?></option>
+						<option value="5" <?php echo 5 == $defaultCustoms ? 'selected' : ''; ?>><?php esc_html_e('Other', 'wc_colissimo'); ?></option>
 					</select>
 				</div>
             <?php } ?>
@@ -348,16 +348,38 @@ usort($packagings, function ($a, $b) {
                     <?php } ?>
 				</div>
             <?php } ?>
+            <?php if ($args['blocking_code']) { ?>
+				<div class="lpc__admin__order_banner__generate_label__block_code">
+					<label for="lpc__admin__order_banner__generate_label__block_code__input">
+                        <?php esc_html_e('Activate blocking code', 'wc_colissimo'); ?>
+					</label>
+                    <?php
+                    echo wc_help_tip(
+                        __(
+                            'This parcel will be delivered via a secure service requiring a code. The code will be sent to the customer by email the day before delivery or by SMS on the morning of delivery, and must be given to the delivery person in order to receive the parcel. You can deactivate this option if you do not want secure delivery using a code.',
+                            'wc_colissimo'
+                        ) . '<br>' .
+                        __(
+                            'Please note: If you have not provided the recipient\'s email address and phone number, the code cannot be sent to the recipient and will block delivery of the parcel.',
+                            'wc_colissimo'
+                        )
+                    );
+                    ?>
+					<input type="checkbox"
+						   name="lpc__admin__order_banner__generate_label__block_code__input"
+						   id="lpc__admin__order_banner__generate_label__block_code__input"
+						   <?php checked(!empty($args['blocking_code_checked'])); ?>>
+				</div>
+            <?php } ?>
 			<div class="lpc__admin__order_banner__generate_label__generate-label-button__container">
 				<select name="lpc__admin__order_banner__generate_label__outward_or_inward">
-					<option value="outward"><?php echo __('Outward label', 'wc_colissimo'); ?></option>
-					<option value="inward"><?php echo __('Inward label', 'wc_colissimo'); ?></option>
-					<option value="both"><?php echo __('Outward and inward labels', 'wc_colissimo'); ?></option>
+					<option value="outward"><?php esc_html_e('Outward label', 'wc_colissimo'); ?></option>
+					<option value="inward"><?php esc_html_e('Inward label', 'wc_colissimo'); ?></option>
+					<option value="both"><?php esc_html_e('Outward and inward labels', 'wc_colissimo'); ?></option>
 				</select>
-				<button type="button" class="button button-primary lpc__admin__order_banner__generate_label__generate-label-button"><?php echo __(
-                        'Generate',
-                        'wc_colissimo'
-                    ); ?></button>
+				<button type="button" class="button button-primary lpc__admin__order_banner__generate_label__generate-label-button">
+                    <?php esc_html_e('Generate', 'wc_colissimo'); ?>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -373,9 +395,9 @@ usort($packagings, function ($a, $b) {
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
-						<th><?php echo __('Outward labels', 'wc_colissimo'); ?></th>
-						<th><?php echo __('Bordereau', 'wc_colissimo'); ?></th>
-						<th><?php echo __('Inward labels', 'wc_colissimo'); ?></th>
+						<th><?php esc_html_e('Outward labels', 'wc_colissimo'); ?></th>
+						<th><?php esc_html_e('Bordereau', 'wc_colissimo'); ?></th>
+						<th><?php esc_html_e('Inward labels', 'wc_colissimo'); ?></th>
 					</tr>
 				</thead>
 				<tbody class="lpc__admin__order_banner__label_listing__body">
@@ -511,7 +533,7 @@ usort($packagings, function ($a, $b) {
 										data-lpc-parcelnumber="<?php esc_attr_e($outwardTrackingNumber); ?>">
                                     <?php esc_html_e('Add an other document', 'wc_colissimo'); ?>
 								</button>
-								<button type="submit" class="button button-primary lpc__admin__order_banner__send_documents__listing__send_button">
+								<button type="button" class="button button-primary lpc__admin__order_banner__send_documents__listing__send_button">
                                     <?php esc_html_e('Submit the documents', 'wc_colissimo'); ?>
 								</button>
 							</div>
@@ -533,12 +555,12 @@ usort($packagings, function ($a, $b) {
 		<div><?php echo sprintf(__('Here is the link for %s', 'wc_colissimo'), $onDemandMacLink); ?></div>
 		<div><?php echo sprintf(__('Here is the link for %s', 'wc_colissimo'), $onDemandWindowsLink); ?></div>
 		<br />
-		<div><?php echo __('To benefit from on-demand collection, you must have subscribed to the service from your Colissimo space.', 'wc_colissimo'); ?></div>
+		<div><?php esc_html_e('To benefit from on-demand collection, you must have subscribed to the service from your Colissimo space.', 'wc_colissimo'); ?></div>
 		<div>
 			<ol>
-				<li><?php echo __('If you are a Facilité customer, go to your Colissimo space in the Collection section and make a subscription request.',
-                                  'wc_colissimo'); ?></li>
-				<li><?php echo __('If you are a Privilege customer, contact your usual sales contact so that he can give you access to the section.', 'wc_colissimo'); ?></li>
+				<li><?php esc_html_e('If you are a Facilité customer, go to your Colissimo space in the Collection section and make a subscription request.',
+                                     'wc_colissimo'); ?></li>
+				<li><?php esc_html_e('If you are a Privilege customer, contact your usual sales contact so that he can give you access to the section.', 'wc_colissimo'); ?></li>
 			</ol>
 		</div>
 	</div>

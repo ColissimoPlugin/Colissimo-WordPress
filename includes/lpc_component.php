@@ -1,7 +1,7 @@
 <?php
 
 abstract class LpcComponent {
-    public function getDependencies() {
+    public function getDependencies(): array {
         return [];
     }
 

@@ -12,7 +12,7 @@
 		<span id="lpc_layer_relay_switch_mobile">
 			<span class="lpc_layer_relay_switch_mobile_icon dashicons <?php echo $mobileIcon; ?>"></span>
 		</span>
-        <?php if (is_admin()) { ?>
+        <?php if (is_admin() && !empty($args['orderId'])) { ?>
 			<input type="hidden" id="lpc_layer_order_id" value="<?php echo esc_attr($args['orderId']); ?>">
         <?php } ?>
 		<div id="lpc_search_address">

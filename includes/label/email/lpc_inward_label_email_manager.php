@@ -19,7 +19,7 @@ class LpcInwardLabelEmailManager extends LpcComponent {
         $this->inwardLabelDb  = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'inwardLabelDb'];
     }
 
@@ -80,7 +80,7 @@ class LpcInwardLabelEmailManager extends LpcComponent {
             $label                         = $this->inwardLabelDb->getLabelFor($trackingNumber);
             $order                         = new WC_Order($label['order_id']);
             $sent                          = $lpcInwardLabelGenerationEmail->trigger($order, $label['label']);
-            // TODO : Try to find out a better way for the admin_notices
+            // TODO: Try to find a better way for the admin_notices
             $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
             if ($sent) {
                 $lpc_admin_notices->add_notice('inward_label_sent', 'notice-success', __('Label sent', 'wc_colissimo'));

@@ -20,7 +20,7 @@ class LpcAdminPickupWidget extends LpcComponent {
         $this->lpcCapabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $lpcCapabilitiesPerCountry);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['pickupWidgetApi', 'capabilitiesPerCountry'];
     }
 

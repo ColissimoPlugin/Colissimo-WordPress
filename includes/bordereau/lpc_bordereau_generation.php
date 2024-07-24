@@ -29,7 +29,7 @@ class LpcBordereauGeneration extends LpcComponent {
         $this->bordereauDb            = LpcRegister::get('bordereauDb', $bordereauDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'bordereauGenerationApi', 'outwardLabelDb', 'lpcAdminNotices'];
     }
 
@@ -106,11 +106,19 @@ class LpcBordereauGeneration extends LpcComponent {
                 $this->lpcAdminNotices->add_notice('lpc_notice', 'notice-error', $e->getMessage());
                 continue;
             }
+            $bordereauId = $retrievedBordereau['bordereauHeader']['bordereauNumber'];
 
-            $bordereau = $retrievedBordereau->bordereau;
-            $bordereauId = $bordereau->bordereauHeader->bordereauNumber;
-
-            $this->bordereauDb->insert($bordereauId, $bordereau->bordereauHeader->publishingDate);
+            $this->bordereauDb->insert(
+                $bordereauId,
+                date(
+                    'Y-m-d H:i:s',
+                    substr(
+                        $retrievedBordereau['bordereauHeader']['publishingDate'],
+                        0,
+                        strlen($retrievedBordereau['bordereauHeader']['publishingDate']) - 3
+                    )
+                )
+            );
 
             $newStatus = LpcHelper::get_option('lpc_order_status_on_bordereau_generated');
 
@@ -144,8 +152,10 @@ class LpcBordereauGeneration extends LpcComponent {
 
         if (!empty($bordereauId) && 1 === count($trackingNumbersPerBatch)) {
             // when only 1 bordereau is generated, we return it
-            return $this->bordereauGenerationApi->getBordereauByNumber($bordereauId)->bordereau;
+            return $bordereauId;
         }
+
+        return null;
     }
 
     public function getGenerationBordereauEndDayUrl() {

@@ -2,7 +2,7 @@
 $id_and_name     = $args['id_and_name'];
 $label           = $args['label'];
 $multiple        = empty($args['multiple']) ? '' : 'multiple';
-$selected_values = ($args['selected_values']) ? $args['selected_values'] : [];
+$selected_values = $args['selected_values'] ? $args['selected_values'] : [];
 $values          = $args['values'];
 $tips            = empty($args['tips']) ? '' : $args['tips'];
 ?>

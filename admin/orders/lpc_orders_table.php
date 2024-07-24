@@ -337,7 +337,7 @@ END_HTML;
             ?>
 			<div id="lpc__orders_listing__page__more_options--toggle">
 				<a id="lpc__orders_listing__page__more_options--toggle--text">
-                    <?php echo __('Show filters', 'wc_colissimo'); ?>
+                    <?php esc_html_e('Show filters', 'wc_colissimo'); ?>
 				</a>
                 <?php if ($filtersNumbers > 0) { ?>
 					<span id="lpc__orders_listing__page__more_options--toggle--numbers_filters">
@@ -358,7 +358,7 @@ END_HTML;
 				<div id="lpc__orders_listing__page__more_options--options__bottom-actions">
                     <?php submit_button(__('Filter', 'wc_colissimo'), '', 'filter-action', false); ?>
 					<a id="lpc__orders_listing__page__more_options--options__bottom-actions__reset">
-                        <?php echo __('Reset', 'wc_colissimo'); ?>
+                        <?php esc_html_e('Reset', 'wc_colissimo'); ?>
 					</a>
 				</div>
 			</div>
@@ -367,102 +367,97 @@ END_HTML;
     }
 
     protected function countryFilters() {
-        $displayedCountries = false === get_option('lpc_orders_filters_country') ? [''] : get_option('lpc_orders_filters_country');
+        $orderCountries = LpcOrderQueries::getLpcOrdersPostMetaList('_shipping_country', true);
+        if (empty($orderCountries)) {
+            return;
+        }
 
-        $countries = LpcOrderQueries::getLpcOrdersPostMetaList('_shipping_country', true);
+        $selectedCountries = LpcHelper::get_option('lpc_orders_filters_country', ['']);
 
-        if (!empty($countries)) {
-            ?>
-			<br>
-			<p class="lpc__orders_listing__page__more_options--options__title">
-                <?php esc_html_e('Country', 'wc_colissimo'); ?></p>
+        ?>
+		<br>
+		<p class="lpc__orders_listing__page__more_options--options__title">
+            <?php esc_html_e('Country', 'wc_colissimo'); ?></p>
 
-			<label>
-				<input type="checkbox"
-					   name="order_country[]" <?php checked(in_array('', $displayedCountries)); ?>
-					   value="">
-                <?php esc_html_e('All countries', 'wc_colissimo'); ?>
-			</label>
-            <?php
-            $wcCountries  = new WC_Countries();
-            $countryNames = $wcCountries->__get('countries');
-            foreach ($countryNames as $countryCode => $countryName) {
-                if (!in_array($countryCode, $countries)) {
-                    continue;
-                }
-
-                printf(
-                    '<label><input type="checkbox" name="order_country[]" %1$s value="%2$s">%3$s</label>',
-                    checked(in_array($countryCode, $displayedCountries), true, false),
-                    esc_attr($countryCode),
-                    esc_html($countryName)
-                );
+		<label>
+			<input type="checkbox"
+				   name="order_country[]" <?php checked(in_array('', $selectedCountries)); ?>
+				   value="">
+            <?php esc_html_e('All countries', 'wc_colissimo'); ?>
+		</label>
+        <?php
+        $wcCountries  = new WC_Countries();
+        $countryNames = $wcCountries->__get('countries');
+        foreach ($countryNames as $countryCode => $countryName) {
+            if (!in_array($countryCode, $orderCountries)) {
+                continue;
             }
+
+            printf(
+                '<label><input type="checkbox" name="order_country[]" %1$s value="%2$s">%3$s</label>',
+                checked(in_array($countryCode, $selectedCountries), true, false),
+                esc_attr($countryCode),
+                esc_html($countryName)
+            );
         }
     }
 
     protected function statusFilters() {
-        $displayedStatus = false === get_option('lpc_orders_filters_status') ? [''] : get_option('lpc_orders_filters_status');
+        $orderShippingStatuses = LpcOrderQueries::getLpcOrdersPostMetaList(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY);
+        if (empty($orderShippingStatuses)) {
+            return;
+        }
 
-        $status = LpcOrderQueries::getLpcOrdersPostMetaList(LpcUnifiedTrackingApi::LAST_EVENT_INTERNAL_CODE_META_KEY);
+        $selectedStatuses = LpcHelper::get_option('lpc_orders_filters_status', ['']);
+        ?>
+		<br>
+		<p class="lpc__orders_listing__page__more_options--options__title">
+            <?php esc_html_e('Status', 'wc_colissimo'); ?>
+		</p>
 
-        if (!empty($status)) {
-            ?>
-			<br>
-			<p class="lpc__orders_listing__page__more_options--options__title">
-                <?php echo __(
-                    'Status',
-                    'wc_colissimo'
-                );
-                ?>
-			</p>
-
-			<label>
-				<input type="checkbox" name="order_status[]" <?php echo in_array('', $displayedStatus) ? 'checked' : ''; ?> value="">
-                <?php echo __('All statuses', 'wc_colissimo'); ?>
-			</label>
-            <?php
-            foreach ($status as $oneStatusCode) {
-                printf(
-                    '<label><input type="checkbox" name="order_status[]" %1$s value="%2$s">%3$s</label>',
-                    in_array($oneStatusCode, $displayedStatus) ? 'checked' : '',
-                    esc_attr($oneStatusCode),
-                    esc_html($this->colissimoStatus->getStatusInfo($oneStatusCode)['label'])
-                );
-            }
+		<label>
+			<input type="checkbox" name="order_status[]" <?php checked(in_array('', $selectedStatuses)); ?> value="">
+            <?php esc_html_e('All statuses', 'wc_colissimo'); ?>
+		</label>
+        <?php
+        foreach ($orderShippingStatuses as $oneStatusCode) {
+            printf(
+                '<label><input type="checkbox" name="order_status[]" %1$s value="%2$s">%3$s</label>',
+                checked(in_array($oneStatusCode, $selectedStatuses), true, false),
+                esc_attr($oneStatusCode),
+                esc_html($this->colissimoStatus->getStatusInfo($oneStatusCode)['label'])
+            );
         }
     }
 
     protected function shippingMethodFilters() {
-        $displayedShippingMethods = false === get_option('lpc_orders_filters_shipping_method') ? [''] : get_option('lpc_orders_filters_shipping_method');
+        $orderShippingMethods = LpcOrderQueries::getLpcOrdersShippingMethods();
+        if (empty($orderShippingMethods)) {
+            return;
+        }
 
-        $shippingMethods = LpcOrderQueries::getLpcOrdersShippingMethods();
+        $selectedShippingMethods = LpcHelper::get_option('lpc_orders_filters_shipping_method', ['']);
+        ?>
+		<br>
+		<p class="lpc__orders_listing__page__more_options--options__title"><?php esc_html_e('Shipping method', 'wc_colissimo'); ?></p>
 
-        if (!empty($shippingMethods)) {
-            ?>
-			<br>
-			<p class="lpc__orders_listing__page__more_options--options__title"><?php echo __('Shipping method', 'wc_colissimo'); ?></p>
+		<label>
+			<input type="checkbox" name="order_shipping_method[]" <?php checked(in_array('', $selectedShippingMethods)); ?> value="">
+            <?php esc_html_e('All shipping methods', 'wc_colissimo'); ?>
+		</label>
+        <?php
 
-			<label>
-				<input type="checkbox" name="order_shipping_method[]" <?php echo in_array('', $displayedShippingMethods) ? 'checked' : ''; ?> value="">
-                <?php echo __('All shipping methods', 'wc_colissimo'); ?>
-			</label>
-            <?php
-
-            foreach ($shippingMethods as $oneShippingMethod) {
-                printf(
-                    '<label><input type="checkbox" name="order_shipping_method[]" %1$s value="%2$s">%3$s</label>',
-                    in_array($oneShippingMethod, $displayedShippingMethods) ? 'checked' : '',
-                    esc_attr($oneShippingMethod),
-                    esc_html($oneShippingMethod)
-                );
-            }
+        foreach ($orderShippingMethods as $oneShippingMethod) {
+            printf(
+                '<label><input type="checkbox" name="order_shipping_method[]" %1$s value="%2$s">%3$s</label>',
+                checked(in_array($oneShippingMethod, $selectedShippingMethods), true, false),
+                esc_attr($oneShippingMethod),
+                esc_html($oneShippingMethod)
+            );
         }
     }
 
     protected function labelFilters() {
-        $displayedLabelTypes = false === get_option('lpc_orders_filters_label_type') ? [''] : get_option('lpc_orders_filters_label_type');
-
         $labelTypes = [
             'none'                => __('No label generated', 'wc_colissimo'),
             'outward'             => __('Outward label generated', 'wc_colissimo'),
@@ -471,64 +466,65 @@ END_HTML;
             'outward_not_printed' => __('Outward label not printed', 'wc_colissimo'),
         ];
 
+        $selectedLabelTypes = LpcHelper::get_option('lpc_orders_filters_label_type', ['']);
         ?>
 		<br>
-		<p class="lpc__orders_listing__page__more_options--options__title"><?php echo __('Labels', 'wc_colissimo'); ?></p>
+		<p class="lpc__orders_listing__page__more_options--options__title"><?php esc_html_e('Labels', 'wc_colissimo'); ?></p>
 
 		<label>
-			<input type="checkbox" name="label_type[]" <?php echo in_array('', $displayedLabelTypes) ? 'checked' : ''; ?> value="">
-            <?php echo __('All', 'wc_colissimo'); ?>
+			<input type="checkbox" name="label_type[]" <?php checked(in_array('', $selectedLabelTypes)); ?> value="">
+            <?php esc_html_e('All', 'wc_colissimo'); ?>
 		</label>
 
         <?php
         foreach ($labelTypes as $oneLabelCode => $oneLabelType) {
             printf(
                 '<label><input type="checkbox" name="label_type[]" %1$s value="%2$s">%3$s</label>',
-                in_array($oneLabelCode, $displayedLabelTypes) ? 'checked' : '',
+                checked(in_array($oneLabelCode, $selectedLabelTypes), true, false),
                 esc_attr($oneLabelCode),
                 esc_html($oneLabelType)
             );
         }; ?>
 		<br>
 
-		<p class="lpc__orders_listing__page__more_options--options__title"><?php echo __('Outward labels generation date', 'wc_colissimo'); ?></p>
+		<p class="lpc__orders_listing__page__more_options--options__title"><?php esc_html_e('Outward labels generation date', 'wc_colissimo'); ?></p>
 		<div>
 			<label>
                 <?php esc_html_e('From:', 'wc_colissimo'); ?>
-				<input type="date" name="label_start_date" value="<?php echo get_option('lpc_orders_filters_label_start_date', ''); ?>">
+				<input type="date" name="label_start_date" value="<?php echo esc_attr(LpcHelper::get_option('lpc_orders_filters_label_start_date')); ?>">
 			</label>
 			<label>
                 <?php esc_html_e('to:', 'wc_colissimo'); ?>
-				<input type="date" name="label_end_date" value="<?php echo get_option('lpc_orders_filters_label_end_date', ''); ?>">
+				<input type="date" name="label_end_date" value="<?php echo esc_attr(LpcHelper::get_option('lpc_orders_filters_label_end_date')); ?>">
 			</label>
 		</div>
         <?php
     }
 
     public function wooStatusFilters() {
-        $displayedWooStatuses = false === get_option('lpc_orders_filters_woo_status') ? [''] : get_option('lpc_orders_filters_woo_status');
+        $orderWooStatuses = LpcOrderQueries::getLpcOrdersWooStatuses();
+        if (empty($orderWooStatuses)) {
+            return;
+        }
 
-        $wooStatuses = LpcOrderQueries::getLpcOrdersWooStatuses();
+        $selectedWooStatuses = LpcHelper::get_option('lpc_orders_filters_woo_status', ['']);
+        ?>
+		<br>
+		<p class="lpc__orders_listing__page__more_options--options__title"><?php esc_html_e('Order status', 'wc_colissimo'); ?></p>
 
-        if (!empty($wooStatuses)) {
-            ?>
-			<br>
-			<p class="lpc__orders_listing__page__more_options--options__title"><?php echo __('Order status', 'wc_colissimo'); ?></p>
+		<label>
+			<input type="checkbox" name="order_woo_status[]" <?php checked(in_array('', $selectedWooStatuses)); ?> value="">
+            <?php esc_html_e('All order statuses', 'wc_colissimo'); ?>
+		</label>
+        <?php
 
-			<label>
-				<input type="checkbox" name="order_woo_status[]" <?php echo in_array('', $displayedWooStatuses) ? 'checked' : ''; ?> value="">
-                <?php echo __('All order statuses', 'wc_colissimo'); ?>
-			</label>
-            <?php
-
-            foreach ($wooStatuses as $oneWooStatus) {
-                printf(
-                    '<label><input type="checkbox" name="order_woo_status[]" %1$s value="%2$s">%3$s</label>',
-                    in_array($oneWooStatus, $displayedWooStatuses) ? 'checked' : '',
-                    esc_attr($oneWooStatus),
-                    wc_get_order_status_name(esc_html($oneWooStatus))
-                );
-            }
+        foreach ($orderWooStatuses as $oneWooStatus) {
+            printf(
+                '<label><input type="checkbox" name="order_woo_status[]" %1$s value="%2$s">%3$s</label>',
+                checked(in_array($oneWooStatus, $selectedWooStatuses), true, false),
+                esc_attr($oneWooStatus),
+                esc_html(wc_get_order_status_name($oneWooStatus))
+            );
         }
     }
 
@@ -601,7 +597,7 @@ END_HTML;
     protected function bulkBordereauGeneration(array $ids) {
         $orders = $this->getOrdersByIds($ids);
 
-        $bordereau = $this->bordereauGeneration->generate($orders);
+        $bordereauId = $this->bordereauGeneration->generate($orders);
         /** Special handling of the generation result :
          *  - if its empty, certainly because multiple bordereaux were generated (remembering that one
          *    bordereau can only have 50 tracking numbers), we prefer not to download any of the generate
@@ -609,9 +605,8 @@ END_HTML;
          *  - else, i.e. if its *not* empty, it means that only one bordereau was generated, as a convenience
          *    for the user, we directly initiate a download of it.
          */
-        if (!empty($bordereau)) {
+        if (!empty($bordereauId)) {
             if (current_user_can('lpc_download_bordereau')) {
-                $bordereauId                  = $bordereau->bordereauHeader->bordereauNumber;
                 $bordereauGenerationActionUrl = $this->bordereauDownloadAction->getUrlForBordereau($bordereauId);
                 $i18n                         = __('Click here to download your created bordereau', 'wc_colissimo');
                 echo <<<END_DOWNLOAD_LINK
@@ -757,25 +752,16 @@ END_PRINT_SCRIPT;
         echo '<hr class="wp-header-end">';
     }
 
-    protected function lpcGetFilters() {
-
+    protected function lpcGetFilters(): array {
         return [
-            'country'          =>
-                false === get_option('lpc_orders_filters_country') ? [''] : get_option('lpc_orders_filters_country'),
-            'shipping_method'  => false === get_option('lpc_orders_filters_shipping_method') ?
-                [''] : get_option('lpc_orders_filters_shipping_method'),
-            'status'           => false === get_option('lpc_orders_filters_status') ?
-                [''] : get_option('lpc_orders_filters_status'),
-            'label_type'       => false === get_option('lpc_orders_filters_label_type') ?
-                [''] : get_option('lpc_orders_filters_label_type'),
-            'woo_status'       => false === get_option('lpc_orders_filters_woo_status') ?
-                [''] : get_option('lpc_orders_filters_woo_status'),
-            'search'           => isset($_REQUEST['s']) ?
-                esc_attr(sanitize_text_field(wp_unslash($_REQUEST['s']))) : '',
-            'label_start_date' => false === get_option('lpc_orders_filters_label_start_date') ?
-                '' : get_option('lpc_orders_filters_label_start_date'),
-            'label_end_date'   => false === get_option('lpc_orders_filters_label_end_date') ?
-                '' : get_option('lpc_orders_filters_label_end_date'),
+            'country'          => LpcHelper::get_option('lpc_orders_filters_country', ['']),
+            'shipping_method'  => LpcHelper::get_option('lpc_orders_filters_shipping_method', ['']),
+            'status'           => LpcHelper::get_option('lpc_orders_filters_status', ['']),
+            'label_type'       => LpcHelper::get_option('lpc_orders_filters_label_type', ['']),
+            'woo_status'       => LpcHelper::get_option('lpc_orders_filters_woo_status', ['']),
+            'search'           => isset($_REQUEST['s']) ? esc_attr(sanitize_text_field(wp_unslash($_REQUEST['s']))) : '',
+            'label_start_date' => LpcHelper::get_option('lpc_orders_filters_label_start_date'),
+            'label_end_date'   => LpcHelper::get_option('lpc_orders_filters_label_end_date'),
         ];
     }
 

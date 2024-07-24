@@ -364,8 +364,7 @@ jQuery(function ($) {
 
     // Add display relay detail click event
     function lpcGmapsAttachClickInfoWindow(marker, infoWindow, index) {
-        // TODO: in the Gmaps documentation but addListener is deprecated
-        marker.addListener('click', function () {
+        marker.addEventListener('click', function () {
             lpcGmapsClickHandler(marker, infoWindow);
         });
 

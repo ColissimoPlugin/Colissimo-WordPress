@@ -62,14 +62,19 @@ class LpcLabelGenerationPayload {
     /** @var LpcOutwardLabelDb */
     protected $outwardLabelDb;
 
+    /** @var LpcAccountApi */
+    protected $accountApi;
+
     public function __construct(
         LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
         LpcShippingMethods $lpcShippingMethods = null,
-        LpcOutwardLabelDb $outwardLabelDb = null
+        LpcOutwardLabelDb $outwardLabelDb = null,
+        LpcAccountApi $accountApi = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->lpcShippingMethods     = LpcRegister::get('shippingMethods', $lpcShippingMethods);
         $this->outwardLabelDb         = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
+        $this->accountApi             = LpcRegister::get('accountApi', $accountApi);
 
         $this->payload = [
             'letter' => [
@@ -100,15 +105,15 @@ class LpcLabelGenerationPayload {
         ];
 
         if (!empty($sender['mobileNumber'])) {
-            $payloadSender['mobileNumber'] = $sender['mobileNumber'];
+            $payloadSender['mobileNumber'] = $this->formatPhone($sender['mobileNumber']);
         }
 
         if (!empty($sender['phoneNumber'])) {
-            $payloadSender['phoneNumber'] = $sender['phoneNumber'];
+            $payloadSender['phoneNumber'] = $this->formatPhone($sender['phoneNumber']);
         }
 
         if (!empty($sender['phone'])) {
-            $payloadSender['phoneNumber'] = $sender['phone'];
+            $payloadSender['phoneNumber'] = $this->formatPhone($sender['phone']);
         }
 
         if (!empty($sender['street2'])) {
@@ -149,48 +154,36 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withContractNumber($contractNumber = null) {
-        if (null === $contractNumber) {
+    public function withCredentials() {
+        if ('api_key' !== LpcHelper::get_option('lpc_credentials_type', 'account')) {
             $contractNumber = LpcHelper::get_option('lpc_id_webservices');
-        }
 
-        /**
-         * Filter on the contract number when generating a label
-         *
-         * @since 1.6
-         */
-        $contractNumber = apply_filters('lpc_payload_contract_number', $contractNumber, $this->getOrderNumber(), $this->getIsReturnLabel());
+            /**
+             * Filter on the contract number when generating a label
+             *
+             * @since 1.6
+             */
+            $contractNumber = apply_filters('lpc_payload_contract_number', $contractNumber, $this->getOrderNumber(), $this->getIsReturnLabel());
 
-        if (empty($contractNumber)) {
-            unset($this->payload['contractNumber']);
-        } else {
-            $this->payload['contractNumber'] = $contractNumber;
-
-            // Option removed the 15 November 2022 14h25 because pickup and bordereau APIs didn't work with it
-
-            /*
-            $parentAccountId = LpcHelper::get_option('lpc_parent_id_webservices');
-            if (!empty($parentAccountId)) {
-                $this->payload['fields']['field'][] = [
-                    'key'   => 'ACCOUNT_NUMBER',
-                    'value' => $parentAccountId,
-                ];
+            if (!empty($contractNumber)) {
+                $this->payload['contractNumber'] = $contractNumber;
             }
-            */
-        }
 
-        return $this;
-    }
-
-    public function withPassword($password = null) {
-        if (null === $password) {
             $password = LpcHelper::getPasswordWebService();
+
+            if (empty($password)) {
+                unset($this->payload['password']);
+            } else {
+                $this->payload['password'] = $password;
+            }
         }
 
-        if (empty($password)) {
-            unset($this->payload['password']);
-        } else {
-            $this->payload['password'] = $password;
+        $parentAccountId = LpcHelper::get_option('lpc_parent_account');
+        if (!empty($parentAccountId)) {
+            $this->payload['fields']['field'][] = [
+                'key'   => 'ACCOUNT_NUMBER',
+                'value' => $parentAccountId,
+            ];
         }
 
         return $this;
@@ -232,11 +225,11 @@ class LpcLabelGenerationPayload {
         }
 
         if (!empty($addressee['mobileNumber'])) {
-            $payloadAddressee['address']['mobileNumber'] = $addressee['mobileNumber'];
+            $payloadAddressee['address']['mobileNumber'] = $this->formatPhone($addressee['mobileNumber']);
         }
 
         if (!empty($addressee['phoneNumber'])) {
-            $payloadAddressee['address']['phoneNumber'] = $addressee['phoneNumber'];
+            $payloadAddressee['address']['phoneNumber'] = $this->formatPhone($addressee['phoneNumber']);
         }
 
         $this->setFtdGivenCountryCodeId($addressee['countryCode']);
@@ -468,10 +461,14 @@ class LpcLabelGenerationPayload {
         return $this->withDepositDate($depositDate);
     }
 
-    public function withOutputFormat() {
+    public function withOutputFormat(array $customParams = []) {
         if ($this->getIsReturnLabel()) {
             $outputFormat = LpcHelper::get_option('lpc_returnLabelFormat');
             if (self::PRODUCT_CODE_RETURN_INT === $this->payload['letter']['service']['productCode']) {
+                $outputFormat = self::DEFAULT_FORMAT;
+            }
+
+            if (!empty($customParams['format']) && self::LABEL_FORMAT_PDF === $customParams['format'] && strpos($outputFormat, self::LABEL_FORMAT_PDF) !== 0) {
                 $outputFormat = self::DEFAULT_FORMAT;
             }
         } else {
@@ -1405,5 +1402,65 @@ class LpcLabelGenerationPayload {
         ];
 
         return $this;
+    }
+
+    public function withBlockingCode($shippingMethodUsed, $order, $customParams) {
+        if (!empty($customParams['blockCode'])) {
+            if ('disabled' === $customParams['blockCode']) {
+                $this->payload['letter']['parcel']['disabledDeliveryBlockingCode'] = '1';
+            }
+        } elseif (in_array($shippingMethodUsed, [LpcSign::ID, LpcSignDDP::ID])) {
+            $accountInformation = $this->accountApi->getAccountInformation();
+            if (!empty($accountInformation['statutCodeBloquant'])) {
+                $minimumOrderValue = LpcHelper::get_option('lpc_domicileas_block_code_min');
+                $maximumOrderValue = LpcHelper::get_option('lpc_domicileas_block_code_max');
+
+                if (!empty($minimumOrderValue) || !empty($maximumOrderValue)) {
+                    $orderValue = 0;
+                    foreach ($order->get_items() as $item) {
+                        $product = $item->get_product();
+                        if (empty($product)) {
+                            throw new Exception(
+                                __('The product couldn\'t be found.', 'wc_colissimo')
+                            );
+                        }
+
+                        if (!$product->needs_shipping()) {
+                            continue;
+                        }
+
+                        $quantity = $item->get_quantity();
+
+                        if (!empty(wc_get_order_item_meta($item->get_id(), '_line_total'))) {
+                            $unitaryValue = wc_get_order_item_meta($item->get_id(), '_line_total');
+                            if (!empty(wc_get_order_item_meta($item->get_id(), '_qty'))) {
+                                $unitaryValue /= wc_get_order_item_meta($item->get_id(), '_qty');
+                            }
+                        } else {
+                            $productPrice = wc_get_price_excluding_tax($product);
+                            $unitaryValue = $productPrice;
+                        }
+
+                        if (empty($unitaryValue)) {
+                            $unitaryValue = 0;
+                        }
+
+                        $orderValue += $unitaryValue * $quantity;
+                    }
+
+                    if (!empty($minimumOrderValue) && $orderValue < $minimumOrderValue) {
+                        $this->payload['letter']['parcel']['disabledDeliveryBlockingCode'] = '1';
+                    } elseif (!empty($maximumOrderValue) && $orderValue > $maximumOrderValue) {
+                        $this->payload['letter']['parcel']['disabledDeliveryBlockingCode'] = '1';
+                    }
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    private function formatPhone(string $phoneNumber): string {
+        return str_replace(' ', '', $phoneNumber);
     }
 }

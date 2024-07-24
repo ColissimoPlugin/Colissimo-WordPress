@@ -26,7 +26,7 @@ class LpcThermalLabelPrintAction extends LpcComponent {
         $this->inwardLabelDb  = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'outwardLabelDb', 'inwardLabelDb'];
     }
 
@@ -71,10 +71,7 @@ class LpcThermalLabelPrintAction extends LpcComponent {
             $isOutward = true;
             $label     = $this->getLabel($trackingNumber, $isOutward);
 
-            if (
-                LpcLabelGenerationPayload::LABEL_FORMAT_DPL !== $label['format']
-                && LpcLabelGenerationPayload::LABEL_FORMAT_ZPL !== $label['format']
-            ) {
+            if (!in_array($label['format'], [LpcLabelGenerationPayload::LABEL_FORMAT_DPL, LpcLabelGenerationPayload::LABEL_FORMAT_ZPL])) {
                 continue;
             }
 

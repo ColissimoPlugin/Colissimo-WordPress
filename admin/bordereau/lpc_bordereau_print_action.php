@@ -21,7 +21,7 @@ class LpcBordereauPrintAction extends LpcComponent {
         $this->bordereauGenerationApi = LpcRegister::get('bordereauGenerationApi', $bordereauGenerationApi);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'bordereauGenerationApi'];
     }
 

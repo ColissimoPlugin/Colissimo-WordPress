@@ -13,14 +13,15 @@ abstract class LpcRestApi extends LpcComponent {
         $action,
         $params = [],
         $dataType = self::DATA_TYPE_JSON,
-        $credentials = [],
-        $credentialsIntoHeader = false,
-        $unsafeFileUpload = false,
-        $throwError = true
+        $headers = [],
+        $unsafeFileUpload = false
     ) {
+        $url = $this->getApiUrl($action);
+        LpcLogger::debug(__METHOD__, ['url' => $url]);
+
         switch ($dataType) {
             case self::DATA_TYPE_URL:
-                $data       = http_build_query($params);
+                $url        .= '?' . http_build_query($params);
                 $httpHeader = ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'];
                 break;
             case self::DATA_TYPE_MULTIPART:
@@ -29,18 +30,12 @@ abstract class LpcRestApi extends LpcComponent {
                 break;
             case self::DATA_TYPE_JSON:
             default:
-                $data = wp_json_encode($params);
+                $data       = wp_json_encode($params);
                 $httpHeader = ['Content-Type: application/json'];
                 break;
         }
 
-        if ($credentialsIntoHeader) {
-            $httpHeader = array_merge($httpHeader, $credentials);
-        }
-
-        $url = $this->getApiUrl($action);
-
-        LpcLogger::debug(__METHOD__, ['url' => $url]);
+        $httpHeader = array_merge($httpHeader, $headers);
 
         $ch = curl_init();
         curl_setopt_array(
@@ -48,18 +43,21 @@ abstract class LpcRestApi extends LpcComponent {
             [
                 CURLOPT_URL            => $url,
                 CURLOPT_HTTPHEADER     => $httpHeader,
-                CURLOPT_POST           => 1,
-                CURLOPT_POSTFIELDS     => $data,
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_BINARYTRANSFER => 1,
             ]
         );
+
+        if (self::DATA_TYPE_URL !== $dataType) {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }
 
         if ($unsafeFileUpload) {
             curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false);
         }
 
         $response = curl_exec($ch);
+
         if (!$response) {
             $curlError = curl_error($ch);
             $curlErrno = curl_errno($ch);
@@ -79,52 +77,50 @@ abstract class LpcRestApi extends LpcComponent {
         $returnStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        return $this->parseResponse($returnStatus, $response, $throwError);
+        if (self::DATA_TYPE_URL === $dataType) {
+            return $response;
+        }
+
+        return $this->parseResponse($returnStatus, $response);
     }
 
-    protected function parseResponse($returnStatus, $response, $throwError) {
+    protected function parseResponse($returnStatus, $response) {
         preg_match('/--(.*)\b/', $response, $boundary);
 
         $content = empty($boundary)
             ? $this->parseMonoPartBody($response)
             : $this->parseMultiPartBody($response, $boundary[0]);
 
-        switch ($returnStatus) {
-            case 200:
-                return $content;
-
-            default:
-                LpcLogger::warn(
-                    __METHOD__,
-                    [
-                        'returnStatus' => $returnStatus,
-                        'jsonInfos'    => !empty($content['<jsonInfos>']) ? $content['<jsonInfos>'] : $content,
-                    ]
-                );
-
-                if (!empty($content['<jsonInfos>'])) {
-                    $content = $content['<jsonInfos>'];
-                }
-
-                if (isset($content['messages'])) {
-                    $message = $content['messages'][0]['id'] . ' : ' . $content['messages'][0]['messageContent'];
-                } elseif (!empty($content['error'])) {
-                    $message = $content['error'];
-                    if (!empty($content['message'])) {
-                        $message .= ' : ' . $content['message'];
-                    }
-                } elseif (!empty($content['errorCode']) && !empty($content['errorLabel'])) {
-                    $message = $content['errorCode'] . ': ' . $content['errorLabel'];
-                } else {
-                    $message = __('Unknown error', 'wc_colissimo');
-                }
-
-                if ($throwError) {
-                    throw new Exception('CURL error: ' . '(' . $returnStatus . ') ' . $message, $returnStatus);
-                }
-
-                return $content;
+        if (200 === $returnStatus) {
+            return $content;
         }
+
+        LpcLogger::warn(
+            __METHOD__,
+            [
+                'returnStatus' => $returnStatus,
+                'jsonInfos'    => !empty($content['<jsonInfos>']) ? $content['<jsonInfos>'] : $content,
+            ]
+        );
+
+        if (!empty($content['<jsonInfos>'])) {
+            $content = $content['<jsonInfos>'];
+        }
+
+        if (isset($content['messages'])) {
+            $message = $content['messages'][0]['id'] . ' : ' . $content['messages'][0]['messageContent'];
+        } elseif (!empty($content['error'])) {
+            $message = $content['error'];
+            if (!empty($content['message'])) {
+                $message .= ' : ' . $content['message'];
+            }
+        } elseif (!empty($content['errorCode']) && !empty($content['errorLabel'])) {
+            $message = $content['errorCode'] . ': ' . $content['errorLabel'];
+        } else {
+            $message = __('Unknown error', 'wc_colissimo');
+        }
+
+        throw new Exception('CURL error: ' . '(' . $returnStatus . ') ' . $message, $returnStatus);
     }
 
     protected function parseMultiPartBody($body, $boundary) {

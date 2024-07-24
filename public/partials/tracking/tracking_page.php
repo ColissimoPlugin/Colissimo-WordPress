@@ -1,3 +1,14 @@
+<style>
+	.lpc_tracking{
+		max-width: 1000px;
+		margin: auto;
+	}
+
+	.lpc_tracking_summary td, .lpc_tracking_events td, .lpc_tracking_steps td{
+		padding: 10px;
+	}
+</style>
+
 <div class="lpc_tracking">
 	<div class="lpc_tracking_logo">
 		<img src="<?php echo esc_html($args['logoUrl']); ?>" alt="Logo colissimo" style="margin: auto;" />
@@ -13,13 +24,13 @@
 	</p>
 
     <?php
-    $trackingNumber = $args['trackingInfo']->parcel->parcelNumber;
+    $trackingNumber = $args['trackingInfo']['parcel']['parcelNumber'];
     ?>
 
 	<hr class="lpc_tracking_separator" />
 
 	<div class="lpc_tracking_summary">
-		<table>
+		<table cellspacing="0">
 			<thead>
 				<tr>
 					<th>
@@ -37,7 +48,7 @@
                         <?php echo esc_html($trackingNumber); ?>
 					</td>
 					<td>
-                        <?php echo esc_html($args['trackingInfo']->mainStatus); ?>
+                        <?php echo esc_html($args['trackingInfo']['mainStatus']); ?>
 					</td>
 					<td>
 						<a target="_blank"
@@ -51,38 +62,38 @@
 	</div>
 
 	<div class="lpc_tracking_message">
-        <?php echo @$args['trackingInfo']->message->message; ?>
+        <?php echo @$args['trackingInfo']['message']['message']; ?>
 	</div>
 
 	<h3>
-        <?php echo esc_html__('Status history', 'wc_colissimo'); ?>
+        <?php esc_html_e('Status history', 'wc_colissimo'); ?>
 	</h3>
 	<div class="lpc_tracking_events">
-		<table>
+		<table cellspacing="0">
 			<thead>
 				<tr>
 					<th>
-                        <?php echo esc_html__('Status Date', 'wc_colissimo'); ?>
+                        <?php esc_html_e('Status Date', 'wc_colissimo'); ?>
 					</th>
 					<th>
-                        <?php echo esc_html__('Status', 'wc_colissimo'); ?>
+                        <?php esc_html_e('Status', 'wc_colissimo'); ?>
 					</th>
 				</tr>
 			</thead>
 			<tbody>
                 <?php
-                foreach ($args['trackingInfo']->parcel->event as $event) {
+                foreach ($args['trackingInfo']['parcel']['event'] as $event) {
                     ?>
 					<tr>
 						<td>
                             <?php
-                            $date = new DateTime($event->date);
+                            $date = new DateTime($event['date']);
                             $date = $date->format('d/m/Y');
                             echo esc_html($date);
                             ?>
 						</td>
 						<td>
-                            <?php echo esc_html($event->labelLong); ?>
+                            <?php echo esc_html($event['labelLong']); ?>
 						</td>
 					</tr>
                 <?php } ?>
@@ -90,37 +101,37 @@
 		</table>
 	</div>
 	<h3>
-        <?php echo esc_html__('Timeline', 'wc_colissimo'); ?>
+        <?php esc_html_e('Timeline', 'wc_colissimo'); ?>
 	</h3>
 	<div class="lpc_tracking_steps">
-		<table>
+		<table cellspacing="0">
 			<thead>
 				<tr>
 					<th>
-                        <?php echo esc_html__('Step number', 'wc_colissimo'); ?>
+                        <?php esc_html_e('Step number', 'wc_colissimo'); ?>
 					</th>
 					<th>
-                        <?php echo esc_html__('Status', 'wc_colissimo'); ?>
+                        <?php esc_html_e('Status', 'wc_colissimo'); ?>
 					</th>
 				</tr>
 			</thead>
 			<tbody>
                 <?php
                 $stepNumber = 0;
-                foreach ($args['trackingInfo']->parcel->step as $step) {
-                    if (empty($step->labelShort) && empty($step->labelLong)) {
+                foreach ($args['trackingInfo']['parcel']['step'] as $step) {
+                    if (empty($step['labelShort']) && empty($step['labelLong'])) {
                         continue;
                     }
 
                     $stepNumber ++;
-                    $stepStatus = 'STEP_STATUS_INACTIVE' === $step->status ? 'lpc__timeline__inactive' : 'lpc__timeline__active';
+                    $stepStatus = 'STEP_STATUS_INACTIVE' === $step['status'] ? 'lpc__timeline__inactive' : 'lpc__timeline__active';
                     ?>
 					<tr class="<?php esc_attr_e($stepStatus); ?>">
 						<td>
                             <?php echo esc_html($stepNumber); ?>
 						</td>
 						<td>
-                            <?php echo esc_html(empty($step->labelLong) ? $step->labelShort : $step->labelLong); ?>
+                            <?php echo esc_html(empty($step['labelLong']) ? $step['labelShort'] : $step['labelLong']); ?>
 						</td>
 					</tr>
                 <?php } ?>

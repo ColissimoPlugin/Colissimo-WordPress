@@ -45,7 +45,7 @@ class LpcUpdate extends LpcComponent {
         $this->bordereauDb            = LpcRegister::get('bordereauDb', $bordereauDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['capabilitiesPerCountry', 'dbDefinition', 'outwardLabelDb', 'inwardLabelDb', 'lpcAdminNotices', 'shippingZones', 'shippingMethods', 'bordereauDb'];
     }
 

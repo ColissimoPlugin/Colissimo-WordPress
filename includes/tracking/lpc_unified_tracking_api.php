@@ -1,7 +1,7 @@
 <?php
 
-class LpcUnifiedTrackingApi extends LpcComponent {
-    const API_WSDL_URL = 'https://ws.colissimo.fr/tracking-timeline-ws/soap/tracking/TrackingTimelineServiceWS?wsdl';
+class LpcUnifiedTrackingApi extends LpcRestApi {
+    const API_BASE_URL = 'https://ws.colissimo.fr/tracking-timeline-ws/rest/tracking/';
 
     const CIPHER = 'aes-128-cbc';
     const CRYPT_KEY = 'lpc_crypt_key';
@@ -18,7 +18,6 @@ class LpcUnifiedTrackingApi extends LpcComponent {
     const ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME = 'lpc_order_ids_to_update_tracking';
     const UPDATE_TRACKING_ORDER_CRON_NAME = 'lpc_update_tracking';
 
-    protected $soapClient;
     protected $ivSize;
     protected $shippingMethods;
     protected $ajaxDispatcher;
@@ -47,93 +46,99 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         add_action(self::UPDATE_TRACKING_ORDER_CRON_NAME, [$this, 'updateAllStatusesTask']);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['shippingMethods', 'colissimoStatus', 'ajaxDispatcher', 'outwardLabelDb'];
     }
 
-    protected function getSoapClient() {
-        if (null === $this->soapClient) {
-            $this->soapClient = new SoapClient(self::API_WSDL_URL);
-        }
-
-        return $this->soapClient;
+    protected function getApiUrl($action) {
+        return self::API_BASE_URL . $action;
     }
 
     /**
      * @throws Exception When the response status code couldn't be retrieved.
      */
-    public function getTrackingInfo(
-        $trackingNumber,
-        $ip,
-        $lang = null,
-        $login = null,
-        $password = null
-    ) {
-        if (empty($login)) {
-            $login = LpcHelper::get_option('lpc_id_webservices');
-        }
-
-        if (empty($password)) {
-            $password = LpcHelper::getPasswordWebService();
-        }
-
-        if (null === $lang) {
-            $lang = 'fr_FR';
-        }
-
+    public function getTrackingInfo($trackingNumber, $ip) {
         $request = [
-            'login'        => $login,
             'parcelNumber' => $trackingNumber,
             'ip'           => $ip,
-            'lang'         => $lang,
-            'profil'       => 'TRACKING_PARTNER',
+            'lang'         => 'fr_FR',
         ];
 
-        LpcLogger::debug(
-            'Get tracking info query',
-            [
-                'method'  => __METHOD__,
-                'payload' => $request,
-                'url'     => self::API_WSDL_URL,
-            ]
-        );
-
-        $request['password'] = $password;
-
-        $response = $this->getSoapClient()->timelineCompany($request);
-
-        LpcLogger::debug(
-            'Get tracking info response',
-            [
-                'method'   => __METHOD__,
-                'response' => $response,
-            ]
-        );
-
-        $response = $response->return;
-
-        if (0 != $response->status->code) {
-            LpcLogger::error(
-                __METHOD__ . ' error in API response',
-                ['response' => $response]
-            );
-            throw new Exception(
-                $response->status->message, $response->status->code
-            );
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            $request['apiKey'] = LpcHelper::get_option('lpc_apikey');
+        } else {
+            $request['login']    = LpcHelper::get_option('lpc_id_webservices');
+            $request['password'] = LpcHelper::getPasswordWebService();
         }
 
-        if (!is_array($response->parcel->event)) {
-            $response->parcel->event = [$response->parcel->event];
+        $response = $this->getTimeline($request);
+
+        if (!is_array($response['parcel']['event'])) {
+            $response['parcel']['event'] = [$response['parcel']['event']];
         }
 
         // Sort events first to last in case it isn't done on the API side
-        usort($response->parcel->event,
+        usort($response['parcel']['event'],
             function ($a, $b) {
-                return strtotime($a->date) > strtotime($b->date) ? 1 : - 1;
+                return strtotime($a['date']) > strtotime($b['date']) ? 1 : - 1;
             }
         );
 
         return $response;
+    }
+
+    private function getTimeline(array $payload) {
+        try {
+            $payloadWithoutCredentials = $payload;
+            unset($payloadWithoutCredentials['password']);
+            unset($payloadWithoutCredentials['apiKey']);
+
+            LpcLogger::debug(
+                'Label generation request',
+                [
+                    'method'  => __METHOD__,
+                    'payload' => $payloadWithoutCredentials,
+                ]
+            );
+
+            $response = $this->query(
+                'timelineCompany',
+                $payload
+            );
+
+            LpcLogger::debug(
+                'Label generation response',
+                [
+                    'method'   => __METHOD__,
+                    'response' => $response,
+                ]
+            );
+
+            if (!isset($response['status'][0]['code'])) {
+                throw new Exception('Error getting tracking last status.');
+            }
+
+            if (0 != $response['status'][0]['code']) {
+                LpcLogger::error(
+                    __METHOD__ . ' error in API response',
+                    ['response' => $response]
+                );
+                throw new Exception(
+                    $response['status'][0]['message'], $response['status'][0]['code']
+                );
+            }
+
+            return $response;
+        } catch (Exception $e) {
+            LpcLogger::error(
+                'Error getting tracking information.',
+                [
+                    'exception' => $e->getMessage(),
+                ]
+            );
+
+            throw $e;
+        }
     }
 
     public function updateAllStatuses($login = null, $password = null, $ip = null, $lang = null) {
@@ -165,12 +170,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
         }
     }
 
-    public function updateAllStatusesTask($login = null, $password = null, $ip = null, $lang = null) {
-        $result = [
-            'success' => [],
-            'failure' => [],
-        ];
-
+    public function updateAllStatusesTask() {
         $allOrderIdsToUpdateTrackingEncoded = get_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME);
 
         if (empty($allOrderIdsToUpdateTrackingEncoded)) {
@@ -217,9 +217,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                 $mainTrackingNumber = $trackingNumbers[count($trackingNumbers) - 1];
             }
 
-            if (null === $ip) {
-                $ip = WC_Geolocation::get_ip_address();
-            }
+            $ip = WC_Geolocation::get_ip_address();
 
             foreach ($trackingNumbers as $trackingNumber) {
                 LpcLogger::debug(
@@ -231,7 +229,7 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                 );
 
                 try {
-                    $currentState = $this->getTrackingInfo($trackingNumber, $ip, $lang, $login, $password);
+                    $currentState = $this->getTrackingInfo($trackingNumber, $ip);
                 } catch (Exception $e) {
                     LpcLogger::error(
                         __METHOD__ . ' can\'t update status',
@@ -242,15 +240,14 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                         ]
                     );
 
-                    $result['failure'][$orderId] = $e->getMessage();
                     continue;
                 }
 
                 // Get the last event of the label and store it
-                $lastEvent = end($currentState->parcel->event);
+                $lastEvent = end($currentState['parcel']['event']);
 
-                $eventLastCode = $lastEvent->code;
-                $eventLastDate = $lastEvent->date;
+                $eventLastCode = $lastEvent['code'];
+                $eventLastDate = $lastEvent['date'];
 
                 $currentStateInternalCode = $this->colissimoStatus->getInternalCodeForClp($eventLastCode);
 
@@ -301,8 +298,6 @@ class LpcUnifiedTrackingApi extends LpcComponent {
                     $order->set_status($newOrderStatus);
                     $order->save();
                 }
-
-                $result['success'][$orderId] = $eventLastCode;
             }
         }
 

@@ -19,7 +19,7 @@ class LpcLabelPackager extends LpcComponent {
         $this->inwardLabelDb         = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['invoiceGenerateAction', 'outwardLabelDb', 'inwardLabelDb'];
     }
 

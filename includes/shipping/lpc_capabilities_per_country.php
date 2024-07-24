@@ -18,7 +18,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         $this->shippingMethods = LpcRegister::get('shippingMethods', $shippingMethods);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['shippingMethods'];
     }
 

@@ -28,7 +28,7 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
         $this->adminNotices   = LpcRegister::get('lpcAdminNotices', $adminNotices);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'outwardLabelDb', 'lpcAdminNotices'];
     }
 

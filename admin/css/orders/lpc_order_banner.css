@@ -101,3 +101,8 @@
 	margin: 0 0.1rem;
 	vertical-align: middle;
 }
+
+#tiptip_content{
+	text-align: left;
+	max-width: 400px;
+}

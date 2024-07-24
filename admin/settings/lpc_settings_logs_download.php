@@ -14,7 +14,7 @@ class LpcSettingsLogsDownload extends LpcComponent {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher'];
     }
 

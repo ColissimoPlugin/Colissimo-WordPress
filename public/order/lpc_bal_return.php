@@ -145,8 +145,7 @@ class LpcBalReturn extends LpcComponent {
      */
     protected function getPayload($sender) {
         $payload        = new LpcLabelGenerationPayload();
-        $payloadPicking = $payload->withContractNumber()
-                                  ->withPassword()
+        $payloadPicking = $payload->withCredentials()
                                   ->withSender($sender)
                                   ->assemble();
 

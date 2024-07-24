@@ -12,7 +12,7 @@ class LpcTrackingPage extends LpcComponent {
         $this->lpcUnifiedTrackingApi = LpcRegister::get('unifiedTrackingApi', $lpcUnifiedTrackingApi);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['unifiedTrackingApi'];
     }
 
@@ -56,9 +56,7 @@ class LpcTrackingPage extends LpcComponent {
                 if (isset($_SERVER['REMOTE_ADDR'])) {
                     $trackingInfo = $this->lpcUnifiedTrackingApi->getTrackingInfo(
                         $trackingNumber,
-                        wc_clean(wp_unslash($_SERVER['REMOTE_ADDR'])),
-                        null,
-                        null
+                        wc_clean(wp_unslash($_SERVER['REMOTE_ADDR']))
                     );
                 }
             } catch (Exception $e) {
@@ -77,7 +75,7 @@ class LpcTrackingPage extends LpcComponent {
                     )
                 );
             }
-            $trackingInfo->mainStatus = $this->getMainStatus($trackingInfo);
+            $trackingInfo['mainStatus'] = $this->getMainStatus($trackingInfo);
 
             die(
             LpcHelper::renderPartialInLayout(
@@ -104,15 +102,15 @@ class LpcTrackingPage extends LpcComponent {
         );
     }
 
-    protected function getMainStatus(stdClass $trackingInfo) {
+    protected function getMainStatus(array $trackingInfo) {
         try {
-            if (!empty($trackingInfo->statusDelivery)) {
+            if (!empty($trackingInfo['statusDelivery'])) {
                 return __('Delivered', 'wc_colissimo');
             }
 
-            $lastEvent = end($trackingInfo->parcel->event);
+            $lastEvent = end($trackingInfo['parcel']['event']);
 
-            return $lastEvent->labelLong;
+            return $lastEvent['labelLong'];
         } catch (\Exception $e) {
             return '';
         }

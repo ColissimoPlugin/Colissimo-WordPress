@@ -21,7 +21,7 @@ class LpcLabelInwardDownloadAction extends LpcComponent {
         $this->inwardLabelDb  = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'inwardLabelDb'];
     }
 

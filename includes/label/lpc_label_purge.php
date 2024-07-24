@@ -12,7 +12,7 @@ class LpcLabelPurge extends LpcComponent {
         $this->outwardLabelDb = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['inwardLabelDb', 'outwardLabelDb'];
     }
 

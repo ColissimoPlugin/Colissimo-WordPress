@@ -10,6 +10,49 @@ class LpcAccountApi extends LpcRestApi {
         return self::API_BASE_URL . $action;
     }
 
+    public function getAutologinURLs(): array {
+        $payload = [];
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            $payload['credential']['apiKey'] = LpcHelper::get_option('lpc_apikey');
+        } else {
+            $payload['credential']['login']    = LpcHelper::get_option('lpc_id_webservices');
+            $payload['credential']['password'] = LpcHelper::getPasswordWebService();
+        }
+
+        $parentAccountId = LpcHelper::get_option('lpc_parent_account');
+        if (!empty($parentAccountId)) {
+            $payload['partnerClientCode'] = $parentAccountId;
+        }
+
+        try {
+            $response = $this->query('v1/rest/urlCboxExt', $payload);
+
+            if (!empty($response['messageErreur'])) {
+                LpcLogger::error(
+                    'Auto login request failed',
+                    [
+                        'method' => __METHOD__,
+                        'error'  => $response['messageErreur'],
+                    ]
+                );
+
+                return [];
+            }
+        } catch (Exception $e) {
+            LpcLogger::error(
+                'Auto login request failed',
+                [
+                    'method' => __METHOD__,
+                    'error'  => $e->getMessage(),
+                ]
+            );
+
+            return [];
+        }
+
+        return $response;
+    }
+
     public function isCgvAccepted(): bool {
         $acceptedCgv = LpcHelper::get_option('lpc_accepted_cgv');
 
@@ -18,10 +61,10 @@ class LpcAccountApi extends LpcRestApi {
         }
 
         // Get contract type
-        $accountInformation = $this->getCgvInformation();
+        $accountInformation = $this->getAccountInformation();
 
         // We couldn't get the account information, we can't check the CGV
-        if (empty($accountInformation)) {
+        if (empty($accountInformation['contractType'])) {
             return true;
         }
 
@@ -34,57 +77,59 @@ class LpcAccountApi extends LpcRestApi {
         return false;
     }
 
-    public function getCgvInformation() {
-        $login    = LpcHelper::get_option('lpc_id_webservices');
-        $password = LpcHelper::getPasswordWebService();
+    public function getAccountInformation(array $payload = []): array {
+        if (empty($payload)) {
+            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+                $payload['credential']['apiKey'] = LpcHelper::get_option('lpc_apikey');
+            } else {
+                $payload['credential']['login']    = LpcHelper::get_option('lpc_id_webservices');
+                $payload['credential']['password'] = LpcHelper::getPasswordWebService();
+            }
 
-        if (empty($login) || empty($password)) {
-            return false;
+            $parentAccountId = LpcHelper::get_option('lpc_parent_account');
+            if (!empty($parentAccountId)) {
+                $payload['partnerClientCode'] = $parentAccountId;
+            }
         }
 
-        $payload = [
-            'credential' => [
-                'login'    => $login,
-                'password' => $password,
-            ],
-        ];
+        $payload['tagInfoPartner'] = 'WOOCOMMERCE';
 
         try {
             $response = $this->query('v1/rest/additionalinformations', $payload);
 
             if (!empty($response['messageErreur'])) {
                 LpcLogger::error(
-                    'CGV information request failed',
+                    'Contract information request failed',
                     [
                         'method' => __METHOD__,
                         'error'  => $response['messageErreur'],
                     ]
                 );
 
-                return false;
+                return [];
             }
         } catch (Exception $e) {
             LpcLogger::error(
-                'CGV information request failed',
+                'Contract information request failed',
                 [
                     'method' => __METHOD__,
                     'error'  => $e->getMessage(),
                 ]
             );
 
-            return false;
+            return [];
         }
 
         LpcLogger::debug(
-            'Getting CGV information',
+            'Getting contract information',
             [
                 'method'   => __METHOD__,
                 'response' => $response,
             ]
         );
 
-        if (empty($response['contractType'])) {
-            return false;
+        if (empty($response['cgv'])) {
+            return [];
         }
 
         return $response;

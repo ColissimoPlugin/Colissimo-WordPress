@@ -189,6 +189,16 @@ jQuery(function ($) {
                 orderId = urlParams.get('id');
             }
 
+            let block_code = 'none';
+            const blockCodeInput = $('input[name="lpc__admin__order_banner__generate_label__block_code__input"]');
+            if (blockCodeInput.length > 0) {
+                if (blockCodeInput.is(':checked')) {
+                    block_code = 'enabled';
+                } else {
+                    block_code = 'disabled';
+                }
+            }
+
             $.ajax({
                 url: ajaxurl,
                 type: 'POST',
@@ -210,7 +220,8 @@ jQuery(function ($) {
                     using_insurance: $('input[name="lpc__admin__order_banner__generate_label__using__insurance__input"]:checked').length > 0 ? 'yes' : 'no',
                     insurance_amount: lpcDefaultValue($('select[name="lpc__admin__order_banner__generate_label__insurance__amount"]').val(), 0),
                     multi_parcels: $('input[name="lpc__admin__order_banner__generate_label__multi__parcels__input"]:checked').length > 0 ? 'yes' : '',
-                    parcels_amount: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__parcels_amount"]').val(), 0)
+                    parcels_amount: lpcDefaultValue($('input[name="lpc__admin__order_banner__generate_label__parcels_amount"]').val(), 0),
+                    block_code: block_code
                 },
                 success: function (response) {
                     generatingLabel = false;
@@ -309,6 +320,63 @@ jQuery(function ($) {
             if (0 === $rows.length) {
                 $(this).click();
             }
+        });
+
+        let sendingDocuments = false;
+        $('.lpc__admin__order_banner__send_documents__listing__send_button').off('click').on('click', function () {
+            if (sendingDocuments) {
+                return;
+            }
+
+            const formData = new FormData();
+            const $container = $(this).closest('.lpc__admin__order_banner__send_documents__container');
+            const $filesToUpload = $container.find('.lpc__admin__order_banner__document__file');
+            if ($filesToUpload.length === 0) {
+                return;
+            }
+
+            sendingDocuments = true;
+
+            let orderId = $('#post_ID').val();
+            if (!orderId) {
+                const urlParams = new URLSearchParams($(this).closest('form').attr('action'));
+                orderId = urlParams.get('id');
+            }
+
+            formData.append('action', 'lpc_order_send_documents');
+            formData.append('order_id', orderId);
+
+            $filesToUpload.each(function () {
+                const fileName = $(this).prop('name');
+                const file = $(this).prop('files');
+
+                if (fileName.indexOf('__TYPE__') !== -1 || file.length === 0) {
+                    return;
+                }
+
+                formData.append('fileTypes[]', fileName);
+                formData.append('files[]', file[0]);
+            });
+
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                dataType: 'text',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (response) {
+                    sendingDocuments = false;
+                    response = JSON.parse(response);
+
+                    if (response.type === 'error') {
+                        alert(response.data.message);
+                    } else {
+                        location.reload();
+                    }
+                }
+            });
         });
     }
 

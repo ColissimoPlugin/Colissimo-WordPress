@@ -11,7 +11,7 @@ class LpcAdminPickupWebService extends LpcComponent {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher'];
     }
 
@@ -98,36 +98,31 @@ class LpcAdminPickupWebService extends LpcComponent {
 
         try {
             $generateRelaysPaypload
-                ->withLogin()
-                ->withPassword()
+                ->withCredentials()
                 ->withAddress($address)
                 ->withShippingDate()
                 ->withOptionInter()
                 ->checkConsistency();
 
-            $relaysApi = new LpcRelaysApi(['trace' => false]);
+            $relaysApi = new LpcRelaysApi();
 
             $relaysPayload = $generateRelaysPaypload->assemble();
 
             $resultWs = $relaysApi->getRelays($relaysPayload);
-        } catch (\SoapFault $fault) {
-            return $this->ajaxDispatcher->makeAndLogError(['message' => $fault]);
         } catch (Exception $exception) {
             LpcLogger::error($exception->getMessage());
 
             return $this->ajaxDispatcher->makeError(['message' => $exception->getMessage()]);
         }
 
-        $return = $resultWs->return;
-
-        if (0 == $return->errorCode) {
-            if (empty($return->listePointRetraitAcheminement)) {
+        if (0 == $resultWs['errorCode']) {
+            if (empty($resultWs['listePointRetraitAcheminement'])) {
                 LpcLogger::warn(__('The web service returned 0 relay', 'wc_colissimo'));
 
                 return $this->ajaxDispatcher->makeError(['message' => __('No relay available', 'wc_colissimo')]);
             }
 
-            $listRelaysWS = $return->listePointRetraitAcheminement;
+            $listRelaysWS = $resultWs['listePointRetraitAcheminement'];
             $html         = '';
 
             // Choose displayed relay types
@@ -158,9 +153,12 @@ class LpcAdminPickupWebService extends LpcComponent {
             }
 
             if ('all' != $relayTypes) {
-                $listRelaysWS = array_filter($listRelaysWS, function ($relay) use ($relayTypes) {
-                    return in_array($relay->typeDePoint, $relayTypes);
-                });
+                $listRelaysWS = array_filter(
+                    $listRelaysWS,
+                    function ($relay) use ($relayTypes) {
+                        return in_array($relay['typeDePoint'], $relayTypes);
+                    }
+                );
             }
 
             // Limit number of displayed relays
@@ -182,7 +180,7 @@ class LpcAdminPickupWebService extends LpcComponent {
             ];
 
             foreach ($listRelaysWS as $oneRelay) {
-                if (empty($oneRelay->identifiant) || empty($oneRelay->typeDePoint)) {
+                if (empty($oneRelay['identifiant']) || empty($oneRelay['typeDePoint'])) {
                     continue;
                 }
 
@@ -200,8 +198,8 @@ class LpcAdminPickupWebService extends LpcComponent {
                 ]
             );
         } else {
-            if (in_array($return->errorCode, [301, 300, 203])) {
-                LpcLogger::warn($return->errorCode . ' : ' . $return->errorMessage);
+            if (in_array($resultWs['errorCode'], [301, 300, 203])) {
+                LpcLogger::warn($resultWs['errorCode'] . ' : ' . $resultWs['errorMessage']);
 
                 return $this->ajaxDispatcher->makeError(['message' => __('No relay available', 'wc_colissimo')]);
             } else {
@@ -218,10 +216,10 @@ class LpcAdminPickupWebService extends LpcComponent {
                     '146',
                 ];
 
-                if (in_array($return->errorCode, $errorCodesWSClientSide)) {
-                    return $this->ajaxDispatcher->makeAndLogError(['message' => $return->errorCode . ' : ' . $return->errorMessage]);
+                if (in_array($resultWs['errorCode'], $errorCodesWSClientSide)) {
+                    return $this->ajaxDispatcher->makeAndLogError(['message' => $resultWs['errorCode'] . ' : ' . $resultWs['errorMessage']]);
                 } else {
-                    LpcLogger::error($return->errorCode . ' : ' . $return->errorMessage);
+                    LpcLogger::error($resultWs['errorCode'] . ' : ' . $resultWs['errorMessage']);
 
                     return $this->ajaxDispatcher->makeError(['message' => __('Error', 'wc_colissimo')]);
                 }

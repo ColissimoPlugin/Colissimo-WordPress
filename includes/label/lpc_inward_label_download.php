@@ -31,7 +31,7 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
         $this->outwardLabelDb        = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'inwardLabelDb', 'labelGenerationInward', 'outwardLabelDb'];
     }
 
@@ -69,13 +69,19 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
 
     private function generateFromOutwardLabel(string $trackingNumber) {
         try {
-            $label        = $this->inwardLabelDb->getLabelByOutwardNumber($trackingNumber);
+            $label        = $this->inwardLabelDb->getLabelByOutwardNumber($trackingNumber, LpcLabelGenerationPayload::LABEL_FORMAT_PDF);
             $labelContent = $label['label'];
             if (empty($labelContent)) {
                 $outwardLabel = $this->outwardLabelDb->getLabelFor($trackingNumber);
                 $order        = wc_get_order($outwardLabel['order_id']);
-                $this->labelGenerationInward->generate($order, ['outward_label_number' => $trackingNumber]);
-                $label        = $this->inwardLabelDb->getLabelByOutwardNumber($trackingNumber);
+                $this->labelGenerationInward->generate(
+                    $order,
+                    [
+                        'outward_label_number' => $trackingNumber,
+                        'format'               => LpcLabelGenerationPayload::LABEL_FORMAT_PDF,
+                    ]
+                );
+                $label        = $this->inwardLabelDb->getLabelByOutwardNumber($trackingNumber, LpcLabelGenerationPayload::LABEL_FORMAT_PDF);
                 $labelContent = $label['label'];
 
                 if (empty($labelContent)) {
@@ -146,6 +152,7 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
                     'outward_label_number' => 'no_outward',
                     'totalWeight'          => $totalWeight,
                     'insuranceAmount'      => $insuranceAmount,
+                    'format'               => LpcLabelGenerationPayload::LABEL_FORMAT_PDF,
                 ]
             );
             $label                = $this->inwardLabelDb->getLabelFor($inwardTrackingNumber);

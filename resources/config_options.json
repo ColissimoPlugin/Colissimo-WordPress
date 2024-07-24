@@ -22,9 +22,35 @@
       "title": "General configuration"
     },
     {
+      "id": "lpc_credentials_type",
+      "type": "lpcCredentials",
+      "title": "Connection type"
+    },
+    {
+      "id": "lpc_contract_number",
+      "type": "text",
+      "title": "Contract number",
+      "desc": "Your user name on colissimo.entreprise.laposte.fr",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_apikey",
+      "type": "password",
+      "title": "Application key",
+      "desc": "Key used to connect to Colissimo services. It can be created from your Colissimo Box account.",
+      "desc_tip": true,
+      "class": "",
+      "default": "",
+      "custom_attributes": {
+        "autocomplete": "new-password"
+      }
+    },
+    {
       "id": "lpc_id_webservices",
       "type": "text",
-      "title": "ID",
+      "title": "User Name",
       "desc": "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr",
       "desc_tip": true,
       "class": "",
@@ -41,6 +67,20 @@
       "custom_attributes": {
         "autocomplete": "new-password"
       }
+    },
+    {
+      "id": "lpc_parent_account",
+      "type": "text",
+      "title": "Parent account user name",
+      "desc": "The 6 digits number of the parent account, if you are using an advanced Colissimo user.",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_cbox",
+      "type": "lpc_cbox",
+      "title": "Access Colissimo Box"
     },
     {
       "id": "lpc_section_general",
@@ -789,6 +829,35 @@
       "options": {
         "partner": "Local postal service",
         "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_block_code",
+      "type": "block_code"
+    },
+    {
+      "id": "lpc_domicileas_block_code_min",
+      "type": "number",
+      "title": "Minimum order value for the secured code",
+      "desc": "The secured code will only be activated for orders over the given value.",
+      "desc_tip": true,
+      "row_class": "lpc_domicileas_block_code_min",
+      "default": "0",
+      "custom_attributes": {
+        "min": "0",
+        "step": "any"
+      }
+    },
+    {
+      "id": "lpc_domicileas_block_code_max",
+      "type": "number",
+      "title": "Maximum order value for the secured code",
+      "desc": "The secured code will only be activated for orders under the given value. Keep empty to disable this limitation.",
+      "desc_tip": true,
+      "row_class": "lpc_domicileas_block_code_max",
+      "default": "",
+      "custom_attributes": {
+        "step": "any"
       }
     },
     {

@@ -78,6 +78,8 @@ class LpcLabelGenerationOutward extends LpcComponent {
             if (is_admin()) {
                 $accountApi = LpcRegister::get('accountApi');
                 if (!$accountApi->isCgvAccepted()) {
+                    $urls       = $accountApi->getAutologinURLs();
+                    $accountUrl = $urls['urlConnectedCbox'] ?? 'https://www.colissimo.entreprise.laposte.fr';
                     $lpc_admin_notices->add_notice(
                         'cgv_invalid',
                         'notice-error',
@@ -85,7 +87,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
                         __(
                             'We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:',
                             'wc_colissimo'
-                        ) . '<br/><a href="https://www.colissimo.entreprise.laposte.fr" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
+                        ) . '<br/><a href="' . $accountUrl . '" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
                         . '</span>'
                     );
                 }
@@ -239,7 +241,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
                 $alreadyGeneratedLabelItems[$itemId] = $oneItemDetail;
             } else {
                 foreach ($oneItemDetail as $itemParams => $itemParamsValue) {
-                    if(!isset($alreadyGeneratedLabelItems[$itemId][$itemParams])){
+                    if (!isset($alreadyGeneratedLabelItems[$itemId][$itemParams])) {
                         $alreadyGeneratedLabelItems[$itemId][$itemParams] = 0;
                     }
                     $alreadyGeneratedLabelItems[$itemId][$itemParams] += $itemParamsValue;
@@ -290,8 +292,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
         $payload
             ->withOrderNumber($order->get_order_number())
             ->withProductCode($productCode)
-            ->withContractNumber()
-            ->withPassword()
+            ->withCredentials()
             ->withCommercialName(LpcHelper::get_option('lpc_origin_company_name'))
             ->withCuserInfoText()
             ->withSender()
@@ -304,7 +305,8 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withPostalNetwork($recipient['countryCode'], $order)
             ->withNonMachinable($customParams)
             ->withDDP($shippingMethodUsed)
-            ->withMultiParcels($order->get_id(), $customParams);
+            ->withMultiParcels($order->get_id(), $customParams)
+            ->withBlockingCode($shippingMethodUsed, $order, $customParams);
 
         if ('lpc_relay' === $shippingMethodUsed) {
             $relayId = $order->get_meta(LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY);

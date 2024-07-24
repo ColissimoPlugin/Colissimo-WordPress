@@ -1168,12 +1168,6 @@ msgstr "Sending service used for Austria, Germany, Italy and Luxembourg"
 msgid "Local postal service"
 msgstr "Local postal service"
 
-msgid "Parent account ID"
-msgstr "Parent account ID"
-
-msgid "If you use an advanced account, please enter the parent account ID"
-msgstr "If you use an advanced account, please enter the parent account ID"
-
 msgid "Insured"
 msgstr "Insured"
 
@@ -1432,9 +1426,6 @@ msgstr "The country and state or province, if any, in which your return location
 msgid "The postal code, if any, in which your return location is located"
 msgstr "The postal code, if any, in which your return location is located"
 
-msgid "The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX"
-msgstr "The mobile number for a French destination must start with +33 or 0, followed by 6 or 7 and be 12 or 10 characters long. For example 06XXXXXXXX or +336XXXXXXXX"
-
 msgid "The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX"
 msgstr "The mobile number for a Belgian destination must start with +324 and be 12 characters long. For example +324XXXXXXXX"
 
@@ -1621,8 +1612,8 @@ msgstr "The packaging weight you configured is high, the shipping methods may no
 msgid "Maximum number of displayed relays"
 msgstr "Maximum number of displayed relays"
 
-msgid "Your ID must be a 6 digits number and your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract."
-msgstr "Your ID must be a 6 digits number and your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract."
+msgid "Your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract."
+msgstr "Your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract."
 
 msgid "Valid Colissimo credentials"
 msgstr "Valid Colissimo credentials"
@@ -1789,8 +1780,8 @@ msgstr "<u>Already registered on Colissimo?</u> Here is how to configure your pl
 msgid "I associate my account to the Colissimo plugin"
 msgstr "I associate my account to the Colissimo plugin"
 
-msgid "To connect the plugin, you must enter your Colissimo ID and password in the \"General\" tab of this plugin."
-msgstr "To connect the plugin, you must enter your Colissimo ID and password in the \"General\" tab of this plugin."
+msgid "To connect the plugin, you must enter your Colissimo credentials in the \"General\" tab of this plugin."
+msgstr "To connect the plugin, you must enter your Colissimo credentials in the \"General\" tab of this plugin."
 
 msgid "The ID must be a 6 digits number, this is the one you use to connect to %s."
 msgstr "The ID must be a 6 digits number, this is the one you use to connect to %s."
@@ -2068,6 +2059,9 @@ msgstr "The maximum number of products the package can contain."
 msgid "Maximum weight (%s)"
 msgstr "Maximum weight (%s)"
 
+msgid "The maximum weight the package can hold."
+msgstr "The maximum weight the package can hold."
+
 msgid "Add a new packaging"
 msgstr "Add a new packaging"
 
@@ -2178,3 +2172,75 @@ msgstr "Change order status to follow shipping status"
 
 msgid "The order status will be automatically updated when the parcel is in transit, when there is a shipment anomaly or when it is delivered."
 msgstr "The order status will be automatically updated when the parcel is in transit, when there is a shipment anomaly or when it is delivered."
+
+msgid "Application key"
+msgstr "Application key"
+
+msgid "Key used to connect to Colissimo services. It can be created from your Colissimo Box account."
+msgstr "Key used to connect to Colissimo services. It can be created from your Colissimo Box account."
+
+msgid "Connection type"
+msgstr "Connection type"
+
+msgid "Parent account user name"
+msgstr "Parent account user name"
+
+msgid "The 6 digits number of the parent account, if you are using an advanced Colissimo user."
+msgstr "The 6 digits number of the parent account, if you are using an advanced Colissimo user."
+
+msgid "Please enter your Colissimo application key to be able to generate labels and show the pickup map."
+msgstr "Please enter your Colissimo application key to be able to generate labels and show the pickup map."
+
+msgid "User Name/Password"
+msgstr "User Name/Password"
+
+msgid "User Name"
+msgstr "User Name"
+
+msgid "Contract number"
+msgstr "Contract number"
+
+msgid "Your user name on colissimo.entreprise.laposte.fr"
+msgstr "Your user name on colissimo.entreprise.laposte.fr"
+
+msgid "Choose %s best matching your needs."
+msgstr "Choose %s best matching your needs."
+
+msgid "the contract"
+msgstr "the contract"
+
+msgid "Activate blocking code"
+msgstr "Activate blocking code"
+
+msgid "Set secured code during delivery"
+msgstr "Set secured code during delivery"
+
+msgid "To benefit from the secured code during delivery, you must contact your Colissimo advisor and they will activate it for you. This option will be visible in your Colissimo Box enterprise space."
+msgstr "To benefit from the secured code during delivery, you must contact your Colissimo advisor and they will activate it for you. This option will be visible in your Colissimo Box enterprise space."
+
+msgid "This parcel will be delivered via a secure service requiring a code. The code will be sent to the customer by email the day before delivery or by SMS on the morning of delivery, and must be given to the delivery person in order to receive the parcel. You can deactivate this option if you do not want secure delivery using a code."
+msgstr "This parcel will be delivered via a secure service requiring a code. The code will be sent to the customer by email the day before delivery or by SMS on the morning of delivery, and must be given to the delivery person in order to receive the parcel. You can deactivate this option if you do not want secure delivery using a code."
+
+msgid "Please note: If you have not provided the recipient's email address and phone number, the code cannot be sent to the recipient and will block delivery of the parcel."
+msgstr "Please note: If you have not provided the recipient's email address and phone number, the code cannot be sent to the recipient and will block delivery of the parcel."
+
+msgid "Access Colissimo Box"
+msgstr "Accéder à Colissimo Box"
+
+msgid "Colissimo account"
+msgstr "Colissimo account"
+
+msgid "Services settings"
+msgstr "Services settings"
+
+msgid "Minimum order value for the secured code"
+msgstr "Minimum order value for the secured code"
+
+msgid "Maximum order value for the secured code"
+msgstr "Maximum order value for the secured code"
+
+msgid "The secured code will only be activated for orders over the given value."
+msgstr "The secured code will only be activated for orders over the given value."
+
+msgid "The secured code will only be activated for orders under the given value. Keep empty to disable this limitation."
+msgstr "The secured code will only be activated for orders under the given value. Keep empty to disable this limitation."

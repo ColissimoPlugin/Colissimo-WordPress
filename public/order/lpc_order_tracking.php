@@ -20,7 +20,7 @@ class LpcOrderTracking extends LpcComponent {
         $this->lpcCapabilitiesPerCountry        = LpcRegister::get('capabilitiesPerCountry', $lpcCapabilitiesPerCountry);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['outwardLabelDb', 'labelInwardDownloadAccountAction', 'capabilitiesPerCountry'];
     }
 
@@ -118,7 +118,7 @@ class LpcOrderTracking extends LpcComponent {
         if (in_array($returnGenerationType, ['product', 'both'])) {
             $output[] = '<script type="text/javascript">const lpc_orders_return = {
                 selectProducts: "' . esc_attr__('You need to select at least one item to generate a label', 'wc_colissimo') . '",
-                downloadUrlBase: "' . esc_url($this->labelInwardDownloadAccountAction->getUrlForCustom($order->get_id())) . '"
+                downloadUrlBase: "' . esc_url($this->labelInwardDownloadAccountAction->getUrlForCustom($order->get_id()), null, 'javascript') . '"
             }</script>';
             // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
             $output[] = '<script src="' . esc_url(plugins_url('/js/orders/details.js', LPC_PUBLIC . 'init.php')) . '"></script>';

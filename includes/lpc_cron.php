@@ -13,7 +13,7 @@ class LpcCron extends LpcComponent {
         $this->lpcLabelPurge      = LpcRegister::get('labelPurge', $lpcLabelPurge);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['unifiedTrackingApi', 'labelPurge'];
     }
 

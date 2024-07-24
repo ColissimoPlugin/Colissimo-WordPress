@@ -17,7 +17,7 @@ class LpcUpdateStatusesAction extends LpcComponent {
         $this->unifiedTrackingApi = LpcRegister::get('unifiedTrackingApi', $unifiedTrackingApi);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'unifiedTrackingApi'];
     }
 

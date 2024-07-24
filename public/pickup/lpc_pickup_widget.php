@@ -28,7 +28,7 @@ class LpcPickupWidget extends LpcPickup {
         $this->lpcPickupWebService       = LpcRegister::get('pickupWebService', $lpcPickupWebService);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['pickupWidgetApi', 'pickupSelection', 'capabilitiesPerCountry', 'pickupWebService'];
     }
 

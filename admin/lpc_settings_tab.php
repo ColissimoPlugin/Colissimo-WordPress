@@ -17,8 +17,6 @@ class LpcSettingsTab extends LpcComponent {
 
     /** @var LpcAdminNotices */
     protected $adminNotices;
-    /** @var LpcPickUpWidgetApi */
-    private $pickUpWidgetApi;
     /** @var LpcAccountApi */
     private $accountApi;
     /** @var LpcSettingsLogsDownload */
@@ -26,18 +24,16 @@ class LpcSettingsTab extends LpcComponent {
 
     public function __construct(
         LpcAdminNotices $adminNotices = null,
-        LpcPickUpWidgetApi $pickUpWidgetApi = null,
         LpcAccountApi $accountApi = null,
         LpcSettingsLogsDownload $settingsLogsDownload = null
     ) {
         $this->adminNotices         = LpcRegister::get('lpcAdminNotices', $adminNotices);
-        $this->pickUpWidgetApi      = LpcRegister::get('pickupWidgetApi', $pickUpWidgetApi);
         $this->accountApi           = LpcRegister::get('accountApi', $accountApi);
         $this->settingsLogsDownload = LpcRegister::get('settingsLogsDownload', $settingsLogsDownload);
     }
 
-    public function getDependencies() {
-        return ['lpcAdminNotices', 'pickupWidgetApi', 'accountApi', 'settingsLogsDownload'];
+    public function getDependencies(): array {
+        return ['lpcAdminNotices', 'accountApi', 'settingsLogsDownload'];
     }
 
     public function init() {
@@ -53,11 +49,14 @@ class LpcSettingsTab extends LpcComponent {
         $this->initSelectOrderStatusOnBordereauGenerated();
         $this->initSelectOrderStatusPartialExpedition();
         $this->initSelectOrderStatusDelivered();
+        $this->initDisplayCredentials();
+        $this->initDisplayCBox();
         $this->initDisplayNumberInputWithWeightUnit();
         $this->initDisplaySelectAddressCountry();
         $this->initCheckStatus();
         $this->initDefaultCountry();
         $this->initMultiSelectRelayType();
+        $this->initBlockCode();
         $this->fixSavePassword();
         $this->initVideoTutorials();
         $this->initAdvancedPackaging();
@@ -173,6 +172,20 @@ class LpcSettingsTab extends LpcComponent {
         );
     }
 
+    protected function initDisplayCredentials() {
+        add_action(
+            'woocommerce_admin_field_lpcCredentials',
+            [$this, 'displayCredentials']
+        );
+    }
+
+    protected function initDisplayCBox() {
+        add_action(
+            'woocommerce_admin_field_lpc_cbox',
+            [$this, 'displayCBox']
+        );
+    }
+
     protected function initDefaultCountry() {
         add_action(
             'woocommerce_admin_field_defaultcountry',
@@ -202,7 +215,14 @@ class LpcSettingsTab extends LpcComponent {
     public function displayOnboarding($field) {
         wp_register_style('lpc_onboarding', plugins_url('/css/settings/lpc_settings_home.css', __FILE__), [], LPC_VERSION);
         wp_enqueue_style('lpc_onboarding');
-        include LPC_FOLDER . 'admin' . DS . 'partials' . DS . 'settings' . DS . 'onboarding.php';
+
+        $urls = $this->accountApi->getAutologinURLs();
+        $args = [
+            'contractTypes' => $urls['urlContrats'] ?? 'https://www.colissimo.entreprise.laposte.fr/nos-contrats',
+            'faciliteForm'  => $urls['urlInscription'] ?? 'https://www.colissimo.entreprise.laposte.fr/contrat-facilite',
+            'privilegeForm' => $urls['urlContact'] ?? 'https://www.colissimo.entreprise.laposte.fr/contact',
+        ];
+        echo LpcHelper::renderPartial('settings' . DS . 'onboarding.php', $args);
     }
 
     /**
@@ -355,6 +375,42 @@ class LpcSettingsTab extends LpcComponent {
         $args['selected_values'] = $value;
 
         echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
+    }
+
+    public function displayCredentials() {
+        wp_enqueue_script(
+            'lpc_settings_credentialsjs',
+            plugins_url('/js/settings/credentials.js', __FILE__),
+            ['jquery'],
+            LPC_VERSION,
+            true
+        );
+
+        $args = [
+            'id_and_name'     => 'lpc_credentials_type',
+            'label'           => 'Connection type',
+            'selected_values' => LpcHelper::get_option('lpc_credentials_type', 'account'),
+            'values'          => [
+                'account' => __('Colissimo account', 'wc_colissimo'),
+                'api_key' => __('Application key', 'wc_colissimo'),
+            ],
+        ];
+
+        echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
+    }
+
+    public function displayCBox() {
+        $urls = $this->accountApi->getAutologinURLs();
+
+        $args = [
+            'type'        => 'lpc_cbox',
+            'url'         => $urls['urlConnectedCbox'] ?? 'https://www.colissimo.entreprise.laposte.fr',
+            'urlServices' => $urls['urlParamServices'] ?? 'https://www.applications.colissimo.entreprise.laposte.fr/entreprise/mes-services/',
+            'text'        => 'Access Colissimo Box',
+            'class'       => '',
+        ];
+
+        echo LpcHelper::renderPartial('settings' . DS . 'link.php', $args);
     }
 
     public function displayVideoTutorials() {
@@ -711,25 +767,45 @@ class LpcSettingsTab extends LpcComponent {
             return;
         }
 
-        $oldLogin    = LpcHelper::get_option('lpc_id_webservices');
-        $newLogin    = LpcHelper::getVar('lpc_id_webservices');
-        $oldPassword = LpcHelper::get_option('lpc_pwd_webservices');
-        $newPassword = LpcHelper::getVar('lpc_pwd_webservices');
+        $authentication = [];
+        if ('api_key' === LpcHelper::getVar('lpc_credentials_type', 'account')) {
+            $oldApiKey = LpcHelper::get_option('lpc_apikey');
+            $newApiKey = LpcHelper::getVar('lpc_apikey');
 
-        if ($oldLogin === $newLogin && $oldPassword === $newPassword) {
-            return;
+            if ($oldApiKey === $newApiKey) {
+                return;
+            }
+
+            $authentication['credential']['apiKey'] = $newApiKey;
+        } else {
+            $oldLogin    = LpcHelper::get_option('lpc_id_webservices');
+            $newLogin    = LpcHelper::getVar('lpc_id_webservices');
+            $oldPassword = LpcHelper::get_option('lpc_pwd_webservices');
+            $newPassword = LpcHelper::getVar('lpc_pwd_webservices');
+
+            if ($oldLogin === $newLogin && $oldPassword === $newPassword) {
+                return;
+            }
+
+            $authentication['credential']['login']    = $newLogin;
+            $authentication['credential']['password'] = $newPassword;
         }
 
         // Reset accepted CGV status when credentials change
         update_option('lpc_accepted_cgv', false);
 
-        $token = $this->pickUpWidgetApi->authenticate($newLogin, $newPassword);
+        $parentAccountId = LpcHelper::getVar('lpc_parent_account');
+        if (!empty($parentAccountId)) {
+            $authentication['partnerClientCode'] = $parentAccountId;
+        }
 
-        if (!empty($token)) {
+        $accountInformation = $this->accountApi->getAccountInformation($authentication);
+        $isValid            = !empty($accountInformation);
+        if ($isValid) {
             WC_Admin_Settings::add_message(__('Valid Colissimo credentials', 'wc_colissimo'));
         }
 
-        $this->logCredentialsValidity($token);
+        $this->logCredentialsValidity($isValid);
     }
 
     public function warningCredentials() {
@@ -742,21 +818,35 @@ class LpcSettingsTab extends LpcComponent {
         $testedCredentials = LpcHelper::get_option('lpc_current_credentials_tested');
 
         if (!$testedCredentials) {
-            $login    = LpcHelper::get_option('lpc_id_webservices');
-            $password = LpcHelper::getPasswordWebService();
+            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+                $apikey = LpcHelper::get_option('lpc_apikey');
 
-            if (empty($login) || empty($password)) {
-                $this->adminNotices->add_notice(
-                    'credentials_validity',
-                    'notice-info',
-                    __('Please enter your Colissimo credentials to be able to generate labels and show the pickup map.', 'wc_colissimo')
-                );
+                if (empty($apikey)) {
+                    $this->adminNotices->add_notice(
+                        'credentials_validity',
+                        'notice-info',
+                        __('Please enter your Colissimo application key to be able to generate labels and show the pickup map.', 'wc_colissimo')
+                    );
 
-                return;
+                    return;
+                }
+            } else {
+                $login    = LpcHelper::get_option('lpc_id_webservices');
+                $password = LpcHelper::getPasswordWebService();
+
+                if (empty($login) || empty($password)) {
+                    $this->adminNotices->add_notice(
+                        'credentials_validity',
+                        'notice-info',
+                        __('Please enter your Colissimo credentials to be able to generate labels and show the pickup map.', 'wc_colissimo')
+                    );
+
+                    return;
+                }
             }
 
-            $token = $this->pickUpWidgetApi->authenticate($login, $password);
-            $this->logCredentialsValidity($token);
+            $accountInformation = $this->accountApi->getAccountInformation();
+            $this->logCredentialsValidity(!empty($accountInformation));
         }
 
         $validCredentials = LpcHelper::get_option('lpc_current_credentials_valid');
@@ -764,7 +854,7 @@ class LpcSettingsTab extends LpcComponent {
         if (!$validCredentials) {
             WC_Admin_Settings::add_error(
                 __(
-                    'Your ID must be a 6 digits number and your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract.',
+                    'Your credentials must correspond to an account on https://www.colissimo.entreprise.laposte.fr with a valid Facilité or Privilège contract.',
                     'wc_colissimo'
                 ) . "\n" .
                 __('Your Colissimo credentials are incorrect, you won\'t be able to generate labels or show the pickup map to your customers.', 'wc_colissimo')
@@ -811,6 +901,8 @@ class LpcSettingsTab extends LpcComponent {
         }
 
         if (!$this->accountApi->isCgvAccepted()) {
+            $urls       = $this->accountApi->getAutologinURLs();
+            $accountUrl = $urls['urlConnectedCbox'] ?? 'https://www.colissimo.entreprise.laposte.fr';
             $this->adminNotices->add_notice(
                 'cgv_invalid',
                 'notice-error',
@@ -818,7 +910,7 @@ class LpcSettingsTab extends LpcComponent {
                 __(
                     'We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:',
                     'wc_colissimo'
-                ) . '<br/><a href="https://www.colissimo.entreprise.laposte.fr" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
+                ) . '<br/><a href="' . $accountUrl . '" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
                 . '</span>'
             );
         }
@@ -860,13 +952,17 @@ class LpcSettingsTab extends LpcComponent {
         }
     }
 
-    private function logCredentialsValidity($token) {
+    private function logCredentialsValidity(bool $isValid) {
         update_option('lpc_current_credentials_tested', true);
-        update_option('lpc_current_credentials_valid', !empty($token));
+        update_option('lpc_current_credentials_valid', $isValid);
     }
 
     protected function initMultiSelectRelayType() {
         add_action('woocommerce_admin_field_multiselectrelaytype', [$this, 'displayMultiSelectRelayType']);
+    }
+
+    protected function initBlockCode() {
+        add_action('woocommerce_admin_field_block_code', [$this, 'displayBlockCode']);
     }
 
     public function displayMultiSelectRelayType() {
@@ -901,5 +997,16 @@ class LpcSettingsTab extends LpcComponent {
         $args['multiple']        = true;
         $args['optgroup']        = true;
         echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
+    }
+
+    public function displayBlockCode() {
+        $accountInformation = $this->accountApi->getAccountInformation();
+        if (isset($accountInformation['statutCodeBloquant'])) {
+            $args = [
+                'block_code' => !empty($accountInformation['statutCodeBloquant']),
+            ];
+
+            echo LpcHelper::renderPartial('settings' . DS . 'block_code.php', $args);
+        }
     }
 }

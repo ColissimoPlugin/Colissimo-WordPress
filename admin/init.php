@@ -266,6 +266,8 @@ class LpcAdminInit {
         $adminNotices = LpcRegister::get('lpcAdminNotices');
         $accountApi   = LpcRegister::get('accountApi');
         if (!$accountApi->isCgvAccepted()) {
+            $urls       = $accountApi->getAutologinURLs();
+            $accountUrl = $urls['urlConnectedCbox'] ?? 'https://www.colissimo.entreprise.laposte.fr';
             $adminNotices->add_notice(
                 'cgv_invalid',
                 'notice-error',
@@ -273,7 +275,7 @@ class LpcAdminInit {
                 __(
                     'We have detected that you have not yet signed the latest version of our GTC. Your consent is necessary in order to continue using Colissimo services. We therefore invite you to sign them on your Colissimo entreprise space, by clicking on the link below:',
                     'wc_colissimo'
-                ) . '<br/><a href="https://www.colissimo.entreprise.laposte.fr" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
+                ) . '<br/><a href="' . $accountUrl . '" target="_blank">' . __('Sign the GTC', 'wc_colissimo') . '</a>'
                 . '</span>'
             );
         }

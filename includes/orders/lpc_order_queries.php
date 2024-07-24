@@ -264,10 +264,12 @@ class LpcOrderQueries {
                     FROM ' . $orderItems . '
                     JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
                     JOIN ' . $orders . ' ON ' . $orders . '.id = ' . $orderItems . '.order_id
-                    LEFT JOIN ' . $ordersMeta . ' ON ' . $ordersMeta . '.order_id = ' . $orderItems . '.order_id AND ' . $ordersMeta . '.meta_key = "_lpc_is_delivered"';
+                    LEFT JOIN ' . $ordersMeta . ' 
+                        ON ' . $ordersMeta . '.order_id = ' . $orderItems . '.order_id 
+                        AND ' . $ordersMeta . '.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '"';
             $params[]   = $orders . '.type = "shop_order"';
             $params[]   = $orders . '.date_created_gmt > "' . esc_sql($fromDate) . '"';
-            $params[]   = $ordersMeta . '.meta_value IS NULL OR ' . $ordersMeta . '.meta_value = "0"';
+            $params[]   = $ordersMeta . '.meta_value IS NULL OR ' . $ordersMeta . '.meta_value = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_VALUE_FALSE . '"';
         } else {
             $posts    = $wpdb->prefix . 'posts';
             $postmeta = $wpdb->prefix . 'postmeta';
@@ -275,10 +277,12 @@ class LpcOrderQueries {
                     FROM ' . $orderItems . '
                     JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
                     JOIN ' . $posts . ' ON ' . $posts . '.ID = ' . $orderItems . '.order_id
-                    LEFT JOIN ' . $postmeta . ' ON ' . $postmeta . '.post_id = ' . $orderItems . '.order_id AND ' . $postmeta . '.meta_key = "_lpc_is_delivered"';
+                    LEFT JOIN ' . $postmeta . ' 
+                        ON ' . $postmeta . '.post_id = ' . $orderItems . '.order_id 
+                        AND ' . $postmeta . '.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '"';
             $params[] = $posts . '.post_type = "shop_order"';
             $params[] = $posts . '.post_date > "' . esc_sql($fromDate) . '"';
-            $params[] = $postmeta . '.meta_value IS NULL OR ' . $postmeta . '.meta_value = "0"';
+            $params[] = $postmeta . '.meta_value IS NULL OR ' . $postmeta . '.meta_value = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_VALUE_FALSE . '"';
         }
 
         $query .= ' WHERE (' . implode(') AND (', $params) . ') ';
@@ -298,44 +302,33 @@ class LpcOrderQueries {
         return $ordersId;
     }
 
-    public static function getLpcOrdersIdsForPurge() {
+    public static function getLpcOrdersIdsForPurge(): array {
         global $wpdb;
 
-        $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
-        $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
-
         $nbDays      = LpcHelper::get_option('lpc_day_purge', 30);
-        $fromDate    = time() - $nbDays * DAY_IN_SECONDS;
+        $fromDate    = time() - $nbDays * 86400;
         $isDelivered = LpcUnifiedTrackingApi::IS_DELIVERED_META_VALUE_TRUE;
 
         if (self::isHposActive()) {
-            $orders     = $wpdb->prefix . 'wc_orders';
             $ordersMeta = $wpdb->prefix . 'wc_orders_meta';
-            $query      = 'SELECT DISTINCT ' . $orderItems . '.order_id 
-                FROM ' . $orderItems . '
-                JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
-                JOIN ' . $orders . ' ON ' . $orderItems . '.order_id = ' . $orders . '.id
-                JOIN ' . $ordersMeta . ' AS lastEventDate ON lastEventDate.order_id = ' . $orders . '.id AND lastEventDate.meta_key = "' . LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY . '"
-                JOIN ' . $ordersMeta . ' AS isDelivered ON isDelivered.order_id = ' . $orders . '.id AND isDelivered.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '"
-                WHERE ' . $orderItemMeta . '.meta_key = "method_id" 
-                    AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%" 
-                    AND ' . $orders . '.type = "shop_order" 
-                    AND lastEventDate.meta_value < ' . $fromDate . '
-                    AND isDelivered.meta_value = ' . intval($isDelivered);
+            $query      = 'SELECT DISTINCT isDelivered.order_id 
+                FROM ' . $ordersMeta . ' AS isDelivered
+                JOIN ' . $ordersMeta . ' AS lastEventDate 
+                    ON lastEventDate.order_id = isDelivered.order_id 
+                WHERE isDelivered.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '" 
+                    AND isDelivered.meta_value = ' . intval($isDelivered) . ' 
+                    AND lastEventDate.meta_key = "' . LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY . '"
+                    AND lastEventDate.meta_value < ' . $fromDate;
         } else {
-            $posts    = $wpdb->prefix . 'posts';
             $postmeta = $wpdb->prefix . 'postmeta';
-            $query    = 'SELECT DISTINCT ' . $orderItems . '.order_id 
-                FROM ' . $orderItems . '
-                JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
-                JOIN ' . $posts . ' ON  ' . $orderItems . '.order_id = ' . $posts . '.ID
-                JOIN ' . $postmeta . ' AS lastEventDate ON lastEventDate.post_id = ' . $posts . '.ID AND lastEventDate.meta_key = "' . LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY . '"
-                JOIN ' . $postmeta . ' AS isDelivered ON isDelivered.post_id = ' . $posts . '.ID AND isDelivered.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '"
-                WHERE (' . $orderItemMeta . '.meta_key = "method_id" 
-                    AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%" 
-                    AND ' . $posts . '.post_type = "shop_order") 
-                    AND lastEventDate.meta_value < ' . $fromDate . '
-                    AND isDelivered.meta_value = ' . intval($isDelivered);
+            $query    = 'SELECT DISTINCT isDelivered.post_id 
+                FROM ' . $postmeta . ' AS isDelivered 
+                JOIN ' . $postmeta . ' AS lastEventDate 
+                    ON lastEventDate.post_id = isDelivered.post_id 
+                WHERE isDelivered.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '" 
+                    AND isDelivered.meta_value = ' . intval($isDelivered) . ' 
+                    AND lastEventDate.meta_key = "' . LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY . '"
+                    AND lastEventDate.meta_value < ' . $fromDate;
         }
 
         // phpcs:disable
@@ -354,31 +347,18 @@ class LpcOrderQueries {
     }
 
     public static function getLpcOrdersPostMetaList(string $metaName, bool $isAddressMeta = false) {
-        if (empty($metaName)) {
-            return [];
-        }
-
         global $wpdb;
-        $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
-        $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
         if (self::isHposActive()) {
-            $orderAddresses = $wpdb->prefix . 'wc_order_addresses';
             if ($isAddressMeta) {
+                $orderAddresses = $wpdb->prefix . 'wc_order_addresses';
                 [$none, $addressType, $addressPart] = explode('_', $metaName);
                 // phpcs:disable
                 $query = $wpdb->prepare(
                     'SELECT DISTINCT ' . $orderAddresses . '.' . $addressPart . '
 					FROM ' . $orderAddresses . '
-         			JOIN ' . $orderItems . '
-              			ON ' . $orderAddresses . '.order_id = ' . $orderItems . '.order_id
-         			JOIN ' . $orderItemMeta . '
-              			ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
-					WHERE ' . $orderItemMeta . '.meta_key = "method_id"
-	  					AND ' . $orderItemMeta . '.meta_value LIKE %s
-						AND ' . $orderAddresses . '.address_type = %s
+					WHERE ' . $orderAddresses . '.address_type = %s
 					ORDER BY ' . $orderAddresses . '.' . $addressPart . ' ASC',
-                    'lpc_%',
                     $addressType
                 );
                 // phpcs:enable
@@ -388,15 +368,8 @@ class LpcOrderQueries {
                 $query = $wpdb->prepare(
                     'SELECT DISTINCT ' . $ordersMeta . '.meta_value
 					FROM ' . $ordersMeta . '
-         			JOIN ' . $orderItems . '
-              			ON ' . $ordersMeta . '.order_id = ' . $orderItems . '.order_id
-         			JOIN ' . $orderItemMeta . '
-              			ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
-					WHERE ' . $orderItemMeta . '.meta_key = "method_id"
-	  					AND ' . $orderItemMeta . '.meta_value LIKE %s
-						AND ' . $ordersMeta . '.meta_key = %s
+					WHERE ' . $ordersMeta . '.meta_key = %s
 					ORDER BY ' . $ordersMeta . '.meta_value ASC',
-                    'lpc_%',
                     $metaName
                 );
                 // phpcs:enable
@@ -406,16 +379,9 @@ class LpcOrderQueries {
             // phpcs:disable
             $query = $wpdb->prepare(
                 'SELECT DISTINCT ' . $postmeta . '.meta_value
-					FROM ' . $postmeta . '
-         			JOIN ' . $orderItems . '
-              			ON ' . $postmeta . '.post_id = ' . $orderItems . '.order_id
-         			JOIN ' . $orderItemMeta . '
-              			ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
-					WHERE ' . $orderItemMeta . '.meta_key = "method_id"
-	  					AND ' . $orderItemMeta . '.meta_value LIKE %s
-						AND ' . $postmeta . '.meta_key = %s
-					ORDER BY ' . $postmeta . '.meta_value ASC',
-                'lpc_%',
+                FROM ' . $postmeta . '
+                WHERE ' . $postmeta . '.meta_key = %s
+                ORDER BY ' . $postmeta . '.meta_value ASC',
                 $metaName
             );
             // phpcs:enable
@@ -432,21 +398,19 @@ class LpcOrderQueries {
         // phpcs:disable
         return $wpdb->get_col(
             'SELECT DISTINCT ' . $orderItems . '.order_item_name
-					FROM ' . $orderItems . '
-                    JOIN ' . $orderItemMeta . '
-                        ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
-					WHERE ' . $orderItemMeta . '.meta_key = "method_id"
-                        AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%"
-                        AND ' . $orderItems . '.order_item_type = "shipping"
-  					ORDER BY ' . $orderItems . '.order_item_name ASC;'
+            FROM ' . $orderItems . '
+            JOIN ' . $orderItemMeta . '
+                ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
+            WHERE ' . $orderItemMeta . '.meta_key = "method_id"
+                AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%"
+                AND ' . $orderItems . '.order_item_type = "shipping"
+            ORDER BY ' . $orderItems . '.order_item_name ASC'
         );
         // phpcs:enable
     }
 
     public static function getLpcOrdersWooStatuses() {
         global $wpdb;
-        $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
-        $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
         if (self::isHposActive()) {
             $orders = $wpdb->prefix . 'wc_orders';
@@ -454,15 +418,9 @@ class LpcOrderQueries {
             // phpcs:disable
             return $wpdb->get_col(
                 'SELECT DISTINCT ' . $orders . '.status
-					FROM ' . $orders . '
-         			JOIN ' . $orderItems . '
-        				ON ' . $orders . '.id = ' . $orderItems . '.order_id
-        			JOIN ' . $orderItemMeta . '
-        				ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
-					WHERE ' . $orderItemMeta . '.meta_key = "method_id" 
-					    AND ' . $orders . '.type = "shop_order" 
-  						AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%"
-					ORDER BY ' . $orders . '.status ASC'
+                FROM ' . $orders . '
+                WHERE ' . $orders . '.type = "shop_order" 
+                ORDER BY ' . $orders . '.status ASC'
             );
             // phpcs:enable
         } else {
@@ -471,15 +429,9 @@ class LpcOrderQueries {
             // phpcs:disable
             return $wpdb->get_col(
                 'SELECT DISTINCT ' . $posts . '.post_status
-					FROM ' . $posts . '
-         			JOIN ' . $orderItems . '
-        				ON ' . $posts . '.id = ' . $orderItems . '.order_id
-        			JOIN ' . $orderItemMeta . '
-        				ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
-					WHERE ' . $orderItemMeta . '.meta_key = "method_id" 
-					    AND ' . $posts . '.post_type = "shop_order" 
-  						AND ' . $orderItemMeta . '.meta_value LIKE "lpc_%"
-					ORDER BY ' . $posts . '.post_status ASC'
+                FROM ' . $posts . '
+                WHERE ' . $posts . '.post_type = "shop_order" 
+                ORDER BY ' . $posts . '.post_status ASC'
             );
             // phpcs:enable
         }
@@ -490,8 +442,6 @@ class LpcOrderQueries {
 
         $orderItems      = $wpdb->prefix . 'woocommerce_order_items';
         $orderItemMeta   = $wpdb->prefix . 'woocommerce_order_itemmeta';
-        $posts           = $wpdb->prefix . 'posts';
-        $postmeta        = $wpdb->prefix . 'postmeta';
         $lpcOutwardLabel = $wpdb->prefix . 'lpc_outward_label';
         $lpcInwardLabel  = $wpdb->prefix . 'lpc_inward_label';
 
@@ -614,6 +564,9 @@ class LpcOrderQueries {
             // Make sure we take only orders and not subscriptions
             $filters[] = $orders . '.type = "shop_order"';
         } else {
+            $posts    = $wpdb->prefix . 'posts';
+            $postmeta = $wpdb->prefix . 'postmeta';
+
             if (!empty($requestFilters['search'])) {
                 $search = $requestFilters['search'];
 

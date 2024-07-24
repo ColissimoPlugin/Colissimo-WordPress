@@ -11,34 +11,25 @@ class LpcPickUpWidgetApi extends LpcRestApi {
         return self::API_BASE_URL . $action;
     }
 
-    public function authenticate($login = null, $password = null) {
-        if (empty($login)) {
-            $login = LpcHelper::get_option('lpc_id_webservices');
-        }
-
-        if (empty($password)) {
-            $password = LpcHelper::getPasswordWebService();
-        }
-
+    public function authenticate() {
         try {
-            LpcLogger::debug(
-                'Widget authenticate query',
-                [
-                    'method'  => __METHOD__,
-                    'payload' => [
-                        'login' => $login,
-                        'url'   => $this->getApiUrl('authenticate.rest'),
-                    ],
-                ]
-            );
+            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+                $credentials = [
+                    'apikey' => LpcHelper::get_option('lpc_apikey'),
+                ];
+            } else {
+                $credentials = [
+                    'login'    => LpcHelper::get_option('lpc_id_webservices'),
+                    'password' => LpcHelper::getPasswordWebService(),
+                ];
+            }
 
-            $response = $this->query(
-                'authenticate.rest',
-                [
-                    'login'    => $login,
-                    'password' => $password,
-                ]
-            );
+            $parentAccountId = LpcHelper::get_option('lpc_parent_account');
+            if (!empty($parentAccountId)) {
+                $credentials['partnerClientCode'] = $parentAccountId;
+            }
+
+            $response = $this->query('authenticate.rest', $credentials);
 
             LpcLogger::debug(
                 'Widget authenticate response',
@@ -54,7 +45,7 @@ class LpcPickUpWidgetApi extends LpcRestApi {
 
             return $this->token;
         } catch (Exception $e) {
-            LpcLogger::error('Error during authentication. Check your credentials."', ['exception' => $e]);
+            LpcLogger::error('Error during authentication. Check your credentials."', ['message' => $e->getMessage()]);
 
             return '';
         }

@@ -244,26 +244,28 @@ END_SQL;
         ];
     }
 
-    public function getLabelByOutwardNumber($trackingNumber) {
+    public function getLabelByOutwardNumber($trackingNumber, $format = null) {
         global $wpdb;
         $tableName = $this->getTableName();
 
-        $label       = '';
-        $format      = '';
-        $orderId     = '';
-        $labelNumber = '';
-
         // phpcs:disable
-        $query = <<<END_SQL
-SELECT label, label_format, order_id, tracking_number
-FROM $tableName
-WHERE outward_tracking_number = "%s"
-END_SQL;
+        $query = 'SELECT label, label_format, order_id, tracking_number 
+        FROM ' . $tableName . ' 
+        WHERE outward_tracking_number = %s';
+
+        if (!empty($format)) {
+            $query .= ' AND label_format = \'' . esc_sql($format) . '\'';
+        }
 
         $query = $wpdb->prepare($query, $trackingNumber);
 
         $outwardLabelAndFormat = $wpdb->get_results($query);
         // phpcs:enable
+
+        $label       = '';
+        $format      = '';
+        $orderId     = '';
+        $labelNumber = '';
 
         if (!empty($outwardLabelAndFormat[0])) {
             $label       = $outwardLabelAndFormat[0]->label;

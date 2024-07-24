@@ -205,8 +205,9 @@ class LpcHelper {
 
     public static function get_option($option, $default = '') {
         // Return the saved option if available
-        if (get_option($option)) {
-            return get_option($option);
+        $value = get_option($option);
+        if ($value) {
+            return $value;
         }
 
         // Return the default value if provided

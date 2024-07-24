@@ -1,6 +1,5 @@
 <?php
 
-
 class LpcCustomsDocumentsApi extends LpcRestApi {
     const API_BASE_URL = 'https://ws.colissimo.fr/api-document/rest/';
 
@@ -12,27 +11,42 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
      * @param array  $orderLabels  All the labels and their type for the current order, for multi-parcels
      * @param string $documentType The type among the ones provided in the WS documentation (see lpc_admin_order_banner.php)
      * @param string $parcelNumber The label number
-     * @param string $document     The "binary data" of the uploaded file according to the doc (@/tmp/xxxx.pdf in the examples)
+     * @param string $documentPath
      * @param string $documentName The uploaded file name for the error message
      *
      * @return string
      * @throws Exception When an error occurs.
      */
-    public function storeDocument(array $orderLabels, string $documentType, string $parcelNumber, string $document, string $documentName): string {
-        $accountNumber = LpcHelper::get_option('lpc_id_webservices');
-        $login         = LpcHelper::get_option('lpc_id_webservices');
-        $password      = LpcHelper::getPasswordWebService();
-
+    public function storeDocument(array $orderLabels, string $documentType, string $parcelNumber, string $documentPath, string $documentName): string {
         if (function_exists('curl_file_create')) {
-            $document         = curl_file_create($document, mime_content_type($document), $documentName);
+            $document         = curl_file_create($documentPath, mime_content_type($documentPath), $documentName);
             $unsafeFileUpload = false;
         } else {
-            $document         = '@' . realpath($document);
+            $document = '@' . realpath($documentPath);
+            // TODO $document = new CurlFile($documentPath, mime_content_type($documentPath), $documentName);
             $unsafeFileUpload = true;
         }
 
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            // TODO remove this option once the documents API has been fixed
+            $contractNumber = LpcHelper::get_option('lpc_contract_number');
+            $headers        = [
+                'apiKey: ' . LpcHelper::get_option('lpc_apikey'),
+            ];
+        } else {
+            $login          = LpcHelper::get_option('lpc_id_webservices');
+            $contractNumber = LpcHelper::get_option('lpc_parent_account');
+            if (empty($contractNumber)) {
+                $contractNumber = $login;
+            }
+            $headers = [
+                'login: ' . $login,
+                'password: ' . LpcHelper::getPasswordWebService(),
+            ];
+        }
+
         $payload = [
-            'accountNumber' => $accountNumber,
+            'accountNumber' => $contractNumber,
             'parcelNumber'  => $parcelNumber,
             'documentType'  => $documentType,
             'file'          => $document,
@@ -58,10 +72,14 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
             ]
         );
 
-        $credentials = ['login: ' . $login, 'password: ' . $password];
-
         try {
-            $response = $this->query('storedocument', $payload, self::DATA_TYPE_MULTIPART, $credentials, true, $unsafeFileUpload);
+            $response = $this->query(
+                'storedocument',
+                $payload,
+                self::DATA_TYPE_MULTIPART,
+                $headers,
+                $unsafeFileUpload
+            );
 
             LpcLogger::debug(
                 'Customs Documents Sending Response',
@@ -93,7 +111,6 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
                 'Error during customs documents sending',
                 [
                     'payload'   => $payload,
-                    'login'     => $login,
                     'exception' => implode(', ', $message),
                 ]
             );
@@ -103,87 +120,6 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
             }
 
             throw new Exception(sprintf(__('An error occurred when transmitting the file %1$s: %2$s', 'wc_colissimo'), $documentName, implode(', ', $message)));
-        }
-    }
-
-    /**
-     * @param string $parcelNumber
-     *
-     * @return array
-     */
-    public function getDocuments($parcelNumber) {
-        $login    = LpcHelper::get_option('lpc_id_webservices');
-        $password = LpcHelper::getPasswordWebService();
-
-        $payload = [
-            'credential' => [
-                'login'    => $login,
-                'password' => $password,
-            ],
-            'cab'        => $parcelNumber,
-        ];
-
-        LpcLogger::debug(
-            'Customs Documents Get Request',
-            [
-                'method'  => __METHOD__,
-                'payload' => $payload,
-            ]
-        );
-
-        try {
-            $response = $this->query(
-                'documents',
-                $payload,
-                self::DATA_TYPE_JSON,
-                [],
-                false,
-                false,
-                false
-            );
-
-            LpcLogger::debug(
-                'Customs Documents Get Response',
-                [
-                    'method'   => __METHOD__,
-                    'response' => $response,
-                ]
-            );
-
-            if (!in_array($response['errorCode'], ['000', '003'])) {
-                return [
-                    'status'  => 'error',
-                    'message' => $response['errorCode'] . ' - ' . $response['errorLabel'],
-                ];
-            }
-
-            // {
-            // "errorCode": "000",
-            // "errorLabel": "OK",
-            // "documents": [
-            // {
-            // "documentType": "CN23",
-            // "path": "/uds/e35f56ae-e1f2-3d3d-9901-347c5d1d1b88.pdf",
-            // "uuid": "912d976c-30e1-3c3a-b24d-dd9420d48a52",
-            // "cab": "8Q53782186134"
-            // }
-            // ]
-            // }
-            return $response;
-        } catch (Exception $e) {
-            LpcLogger::error(
-                'Error during customs documents get',
-                [
-                    'payload'   => $payload,
-                    'login'     => $login,
-                    'exception' => $e->getMessage(),
-                ]
-            );
-
-            return [
-                'status'  => 'error',
-                'message' => sprintf(__('An error occurred while getting the customs files for this order: %s', 'wc_colissimo'), $e->getMessage()),
-            ];
         }
     }
 }

@@ -10,7 +10,7 @@ class LpcRegisterWCEmail extends LpcComponent {
         $this->lpc_outward_label_email_manager = LpcRegister::get('lpcOutwardLabelEmailManager');
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['lpcInwardLabelEmailManager', 'lpcOutwardLabelEmailManager'];
     }
 

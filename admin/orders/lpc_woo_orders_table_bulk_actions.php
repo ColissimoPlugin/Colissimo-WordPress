@@ -15,7 +15,7 @@ class LpcWooOrdersTableBulkActions extends LpcComponent {
         $this->lpcAdminNotices           = LpcRegister::get('lpcAdminNotices', $lpcAdminNotices);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['capabilitiesPerCountry', 'lpcAdminNotices'];
     }
 

@@ -18,7 +18,7 @@ class LpcShippingRates extends LpcComponent {
         $this->shippingZones  = LpcRegister::get('shippingZones', $shippingZones);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'shippingZones'];
     }
 

@@ -10,7 +10,7 @@ class LpcPickupAjaxContent extends LpcComponent {
         $this->lpcPickupWidget     = LpcRegister::get('pickupWidget', $lpcPickupWidget);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['pickupWebService', 'pickupWidget'];
     }
 

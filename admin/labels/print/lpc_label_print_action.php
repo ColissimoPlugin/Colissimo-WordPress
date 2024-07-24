@@ -27,7 +27,7 @@ class LpcLabelPrintAction extends LpcComponent {
         $this->inwardLabelDb  = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['ajaxDispatcher', 'outwardLabelDb', 'inwardLabelDb'];
     }
 
@@ -116,7 +116,7 @@ class LpcLabelPrintAction extends LpcComponent {
                 if ($isOutward) {
                     $this->outwardLabelDb->updatePrintedLabel($trackingNumber);
                 } else {
-                    $this->inwardLabelDb->updatePrintedLabel($trackingNumbers);
+                    $this->inwardLabelDb->updatePrintedLabel($trackingNumber);
                 }
             }
 

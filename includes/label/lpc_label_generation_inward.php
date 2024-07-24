@@ -23,7 +23,7 @@ class LpcLabelGenerationInward extends LpcComponent {
         $this->shippingMethods        = LpcRegister::get('shippingMethods', $shippingMethods);
     }
 
-    public function getDependencies() {
+    public function getDependencies(): array {
         return ['capabilitiesPerCountry', 'labelGenerationApi', 'inwardLabelDb', 'shippingMethods'];
     }
 
@@ -183,15 +183,14 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->isReturnLabel()
             ->withOrderNumber($order->get_order_number())
             ->withProductCode($productCode)
-            ->withContractNumber()
-            ->withPassword()
+            ->withCredentials()
             ->withCuserInfoText()
             ->withSender($customerAddress)
             ->withAddressee($returnAddress)
             ->withPackage($order, $customParams)
             ->withPreparationDelay()
             ->withInstructions($order->get_customer_note())
-            ->withOutputFormat()
+            ->withOutputFormat($customParams)
             ->withCustomsDeclaration($order, $customParams)
             ->withInsuranceValue($order->get_subtotal(), $order->get_shipping_country(), $shippingMethodUsed, $customParams);
 

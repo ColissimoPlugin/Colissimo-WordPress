@@ -7,29 +7,17 @@ class LpcGenerateRelaysPayload {
         $this->payload = [];
     }
 
-    public function withLogin($login = null) {
-        if (null === $login) {
-            $login = LpcHelper::get_option('lpc_id_webservices', '');
-        }
-
-        if (empty($login)) {
-            unset($this->payload['accountNumber']);
+    public function withCredentials() {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            $this->payload['apiKey'] = LpcHelper::get_option('lpc_apikey');
         } else {
-            $this->payload['accountNumber'] = $login;
+            $this->payload['accountNumber'] = LpcHelper::get_option('lpc_id_webservices');
+            $this->payload['password']      = LpcHelper::getPasswordWebService();
         }
 
-        return $this;
-    }
-
-    public function withPassword($password = null) {
-        if (null === $password) {
-            $password = LpcHelper::getPasswordWebService();
-        }
-
-        if (empty($password)) {
-            unset($this->payload['password']);
-        } else {
-            $this->payload['password'] = $password;
+        $parentAccountId = LpcHelper::get_option('lpc_parent_account');
+        if (!empty($parentAccountId)) {
+            $this->payload['codTiersPourPartenaire'] = $parentAccountId;
         }
 
         return $this;
@@ -91,8 +79,14 @@ class LpcGenerateRelaysPayload {
     }
 
     protected function checkLogin() {
-        if (empty($this->payload['accountNumber']) || empty($this->payload['password'])) {
-            throw new Exception(__('Login and password required to get relay points', 'wc_colissimo'));
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            if (empty($this->payload['apikey'])) {
+                throw new Exception(__('Application key required to get relay points', 'wc_colissimo'));
+            }
+        } else {
+            if (empty($this->payload['accountNumber']) || empty($this->payload['password'])) {
+                throw new Exception(__('Login and password required to get relay points', 'wc_colissimo'));
+            }
         }
     }
 
