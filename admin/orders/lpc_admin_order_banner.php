@@ -207,7 +207,8 @@ class LpcAdminOrderBanner extends LpcComponent {
         $orderValue = 0;
         foreach ($items as $item) {
             $product = $item->get_product();
-            if (empty($product) || !$product->needs_shipping()) {
+            // Compatibility with WPC Product Bundles for WooCommerce, don't count bundled products twice
+            if (empty($product) || !$product->needs_shipping() || 'woosb' === $product->get_type()) {
                 continue;
             }
 
@@ -370,6 +371,7 @@ class LpcAdminOrderBanner extends LpcComponent {
 
             $minLimit = LpcHelper::get_option('lpc_domicileas_block_code_min', []);
             $maxLimit = LpcHelper::get_option('lpc_domicileas_block_code_max', []);
+
             $args['blocking_code_checked'] = (empty($minLimit) || $orderValue >= $minLimit) && (empty($maxLimit) || $orderValue <= $maxLimit);
         }
 

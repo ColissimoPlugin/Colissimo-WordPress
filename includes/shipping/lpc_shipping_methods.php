@@ -139,7 +139,7 @@ class LpcShippingMethods extends LpcComponent {
                     update_option($optionName, $option);
                 } else {
                     $option['always_free'] = $globalMethods[$shippingMethod->method_id];
-                    add_option($optionName, $option);
+                    add_option($optionName, $option, '', false);
                 }
             }
         }

@@ -66,7 +66,8 @@ class LpcLabelGenerationOutward extends LpcComponent {
                 self::ORDERS_OUTWARD_PARCEL_FAILED,
                 array_filter($ordersFailed, function ($error) use ($time) {
                     return $error['time'] < $time - 604800;
-                })
+                }),
+                false
             );
         }
 
@@ -95,7 +96,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
 
             if (!empty($ordersFailed[$orderId])) {
                 unset($ordersFailed[$orderId]);
-                update_option(self::ORDERS_OUTWARD_PARCEL_FAILED, $ordersFailed);
+                update_option(self::ORDERS_OUTWARD_PARCEL_FAILED, $ordersFailed, false);
             }
         } catch (Exception $e) {
             $errorMessage = $e->getMessage();
@@ -111,7 +112,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
                 'message' => $errorMessage,
                 'time'    => $time,
             ];
-            update_option(self::ORDERS_OUTWARD_PARCEL_FAILED, $ordersFailed);
+            update_option(self::ORDERS_OUTWARD_PARCEL_FAILED, $ordersFailed, false);
 
             return false;
         }
@@ -271,6 +272,11 @@ class LpcLabelGenerationOutward extends LpcComponent {
         // For Luxembourg, the zip code must not have the "L-" prefix
         if ('LU' === strtoupper($recipient['countryCode'])) {
             $recipient['zipCode'] = ltrim($recipient['zipCode'], 'lL-');
+        }
+
+        // United Arab Emirates don't use zip codes
+        if ('AE' === strtoupper($recipient['countryCode'])) {
+            $recipient['zipCode'] = '00000';
         }
 
         if (method_exists($order, 'get_shipping_phone')) {

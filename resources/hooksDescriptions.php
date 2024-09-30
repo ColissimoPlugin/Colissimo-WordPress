@@ -48,7 +48,7 @@
 		<p>Example:</p>
 		<pre>
 	add_filter('lpc_payload_letter_addressee', function($payloadAddressee, $orderNumber, $isReturnLabel){
-		$payloadAddressee['phoneNumber'] = '0612345678';
+		$payloadAddressee['address']['phoneNumber'] = '0612345678';
 		return $payloadAddressee;
 	}, 10, 3);
 		</pre>

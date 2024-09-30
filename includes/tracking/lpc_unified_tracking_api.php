@@ -94,7 +94,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
             unset($payloadWithoutCredentials['apiKey']);
 
             LpcLogger::debug(
-                'Label generation request',
+                'Label tracking request',
                 [
                     'method'  => __METHOD__,
                     'payload' => $payloadWithoutCredentials,
@@ -107,7 +107,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
             );
 
             LpcLogger::debug(
-                'Label generation response',
+                'Label tracking response',
                 [
                     'method'   => __METHOD__,
                     'response' => $response,
@@ -159,7 +159,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
 
         $encodedMatchingOrdersId = is_array($matchingOrdersId) ? json_encode($matchingOrdersId) : '[]';
 
-        update_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME, $encodedMatchingOrdersId);
+        update_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME, $encodedMatchingOrdersId, false);
 
         if (!wp_next_scheduled(self::UPDATE_TRACKING_ORDER_CRON_NAME)) {
             wp_schedule_event(time(), 'fifteen_minutes', self::UPDATE_TRACKING_ORDER_CRON_NAME);
@@ -301,7 +301,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
             }
         }
 
-        update_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME, json_encode($allOrderIdsToUpdateTracking));
+        update_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME, json_encode($allOrderIdsToUpdateTracking), false);
     }
 
     public function encrypt($trackNumber) {

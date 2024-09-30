@@ -311,10 +311,11 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         $noshipProductsCount = LpcHelper::get_option('lpc_calculate_shipping_with_noship_products', 'no') === 'yes';
 
         foreach ($package['contents'] as $item) {
-            $product = $item['data'];
-            if (empty($product)) {
+            if (empty($item['data'])) {
                 continue;
             }
+
+            $product = $item['data'];
 
             $articleQuantity += $item['quantity'];
             if ($noshipProductsCount) {
@@ -384,7 +385,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
 
         // DDP for GB must be commercial and between 160€ and 1050€
         $isCommercialSend = self::CUSTOMS_CATEGORY_COMMERCIAL == LpcHelper::get_option('lpc_customs_defaultCustomsCategory');
-        if (LpcSignDDP::ID === $this->id && ($totalPrice < 160 || $totalPrice > 1050 || !$isCommercialSend)) {
+        if ('GB' === $package['destination']['country'] && LpcSignDDP::ID === $this->id && ($totalPrice < 160 || $totalPrice > 1050 || !$isCommercialSend)) {
             return;
         }
 

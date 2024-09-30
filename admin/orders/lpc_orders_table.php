@@ -121,8 +121,8 @@ END_HTML;
                     $requestValue = sanitize_text_field(wp_unslash($_REQUEST[$oneRequestKey]));
                 }
 
-                if (false === update_option($oneOptionFilter, $requestValue)) {
-                    add_option($oneOptionFilter, $requestValue);
+                if (false === update_option($oneOptionFilter, $requestValue, false)) {
+                    add_option($oneOptionFilter, $requestValue, '', false);
                 }
             }
         }
@@ -170,11 +170,11 @@ END_HTML;
         );
 
         $trackingNumbers     = $this->getTrackingNumbersFormatted($ordersIds);
-        $ordersOutwardFailed = get_option(LpcLabelGenerationOutward::ORDERS_OUTWARD_PARCEL_FAILED, []);
+        $ordersOutwardFailed = LpcHelper::get_option(LpcLabelGenerationOutward::ORDERS_OUTWARD_PARCEL_FAILED, []);
 
         foreach ($ordersIds as $orderId) {
             try {
-                $wc_order = new WC_Order($orderId);
+                $wc_order = wc_get_order($orderId);
             } catch (Exception $exception) {
                 continue;
             }
@@ -519,6 +519,9 @@ END_HTML;
         <?php
 
         foreach ($orderWooStatuses as $oneWooStatus) {
+            if (empty($oneWooStatus)) {
+                continue;
+            }
             printf(
                 '<label><input type="checkbox" name="order_woo_status[]" %1$s value="%2$s">%3$s</label>',
                 checked(in_array($oneWooStatus, $selectedWooStatuses), true, false),

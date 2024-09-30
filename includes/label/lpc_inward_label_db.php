@@ -244,47 +244,6 @@ END_SQL;
         ];
     }
 
-    public function getLabelByOutwardNumber($trackingNumber, $format = null) {
-        global $wpdb;
-        $tableName = $this->getTableName();
-
-        // phpcs:disable
-        $query = 'SELECT label, label_format, order_id, tracking_number 
-        FROM ' . $tableName . ' 
-        WHERE outward_tracking_number = %s';
-
-        if (!empty($format)) {
-            $query .= ' AND label_format = \'' . esc_sql($format) . '\'';
-        }
-
-        $query = $wpdb->prepare($query, $trackingNumber);
-
-        $outwardLabelAndFormat = $wpdb->get_results($query);
-        // phpcs:enable
-
-        $label       = '';
-        $format      = '';
-        $orderId     = '';
-        $labelNumber = '';
-
-        if (!empty($outwardLabelAndFormat[0])) {
-            $label       = $outwardLabelAndFormat[0]->label;
-            $orderId     = $outwardLabelAndFormat[0]->order_id;
-            $labelNumber = $outwardLabelAndFormat[0]->tracking_number;
-
-            $format = !empty($outwardLabelAndFormat[0]->label_format) ? $outwardLabelAndFormat[0]->label_format : LpcLabelGenerationPayload::LABEL_FORMAT_PDF;
-        }
-
-        $result = [
-            'format'       => $format,
-            'label'        => $label,
-            'order_id'     => $orderId,
-            'label_number' => $labelNumber,
-        ];
-
-        return $result;
-    }
-
     public function getCn23For($trackingNumber): array {
         global $wpdb;
         $tableName = $this->getTableName();

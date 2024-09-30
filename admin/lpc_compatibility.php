@@ -97,7 +97,7 @@ class LpcCompatibility extends LpcComponent {
             return;
         }
 
-        update_option('lpc_jquery_warning_dismissed_notice', true);
+        update_option('lpc_jquery_warning_dismissed_notice', true, false);
     }
 
     public static function checkJQueryMigrateWP56() {
@@ -159,6 +159,6 @@ class LpcCompatibility extends LpcComponent {
             return;
         }
 
-        update_option('lpc_jquery_migrate_wp56_dismissed_notice', true);
+        update_option('lpc_jquery_migrate_wp56_dismissed_notice', true, false);
     }
 }

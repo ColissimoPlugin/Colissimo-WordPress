@@ -133,6 +133,9 @@ class LpcInvoiceGenerateAction extends LpcComponent {
         // Billing address
         $html_output .= '<td><div>';
         $html_output .= '<span style="font-weight: bold;text-decoration: underline;">' . __('Billing address', 'wc_colissimo') . '</span><br>';
+        if (!empty($order->get_billing_company())) {
+            $html_output .= $order->get_billing_company() . '<br>';
+        }
         $html_output .= $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() . '<br>';
         $html_output .= $order->get_billing_address_1() . '<br>';
         $html_output .= $billing_address2 . $order->get_billing_postcode() . ' <br>';
@@ -144,6 +147,9 @@ class LpcInvoiceGenerateAction extends LpcComponent {
         // Shipping address
         $html_output .= '<td><div style="float:right;">';
         $html_output .= '<span style="font-weight: bold;text-decoration: underline;">' . __('Shipping address', 'wc_colissimo') . '</span><br>';
+        if (!empty($order->get_shipping_company())) {
+            $html_output .= $order->get_shipping_company() . '<br>';
+        }
         $html_output .= $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name() . '<br>';
         $html_output .= $order->get_shipping_address_1() . '<br>';
         $html_output .= $shipping_address2 . $order->get_shipping_postcode() . ' <br>';

@@ -116,18 +116,27 @@ class LpcUpdate extends LpcComponent {
     }
 
     public function update() {
-        if (is_multisite()) {
-            global $wpdb;
+        $lpcVersionInstalled = LpcHelper::get_option(self::LPC_DB_VERSION_OPTION_NAME, LPC_VERSION);
+        if (LPC_VERSION === $lpcVersionInstalled) {
+            return;
+        }
 
-            foreach ($wpdb->get_col("SELECT blog_id FROM $wpdb->blogs") as $blog_id) {
-                switch_to_blog($blog_id);
+        if (is_multisite()) {
+            $currentBlog = get_current_blog_id();
+            $sites       = get_sites();
+
+            foreach ($sites as $site) {
+                if (is_object($site)) {
+                    $site = get_object_vars($site);
+                }
+                switch_to_blog($site['blog_id']);
                 $lpcVersionInstalled = get_option(self::LPC_DB_VERSION_OPTION_NAME, LPC_VERSION);
                 $this->runUpdate($lpcVersionInstalled);
                 update_option(self::LPC_DB_VERSION_OPTION_NAME, LPC_VERSION);
-                restore_current_blog();
             }
+
+            switch_to_blog($currentBlog);
         } else {
-            $lpcVersionInstalled = LpcHelper::get_option(self::LPC_DB_VERSION_OPTION_NAME, LPC_VERSION);
             $this->runUpdate($lpcVersionInstalled);
             update_option(self::LPC_DB_VERSION_OPTION_NAME, LPC_VERSION);
         }
@@ -167,7 +176,7 @@ class LpcUpdate extends LpcComponent {
                 $newlpc_email_outward_tracking = 'no';
             }
 
-            update_option(LpcOutwardLabelEmailManager::EMAIL_OUTWARD_TRACKING_OPTION, $newlpc_email_outward_tracking);
+            update_option(LpcOutwardLabelEmailManager::EMAIL_OUTWARD_TRACKING_OPTION, $newlpc_email_outward_tracking, false);
         }
 
         // Update from version under 1.6.4
@@ -213,13 +222,13 @@ class LpcUpdate extends LpcComponent {
             $expert     = LpcHelper::get_option('lpc_expert_SendingService', 'partner');
             $domicileas = LpcHelper::get_option('lpc_domicileas_SendingService', 'partner');
             foreach ($countries as $country) {
-                update_option('lpc_expert_' . $country, $expert);
-                update_option('lpc_domicileas_' . $country, $domicileas);
+                update_option('lpc_expert_' . $country, $expert, false);
+                update_option('lpc_domicileas_' . $country, $domicileas, false);
             }
 
             $companyName = LpcHelper::get_option('lpc_company_name');
             if (!empty($companyName)) {
-                update_option('lpc_origin_company_name', $companyName);
+                update_option('lpc_origin_company_name', $companyName, false);
             }
         }
 
@@ -271,6 +280,14 @@ class LpcUpdate extends LpcComponent {
         if (version_compare($versionInstalled, '2.0.0') === - 1) {
             $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
         }
+
+        // Update from version under 2.2.0
+        if (version_compare($versionInstalled, '2.2.0') === - 1) {
+            $returnByClient = LpcHelper::get_option('lpc_customers_download_return_label', 'no');
+            if ('no' !== $returnByClient) {
+                update_option('lpc_customers_download_return_label', 'yes', false);
+            }
+        }
     }
 
     /** Functions for update to 1.3 **/
@@ -290,7 +307,7 @@ class LpcUpdate extends LpcComponent {
         // If we have to retry the migration, we don't erase orders ids to migrate
         if (!LpcHelper::get_option(self::LPC_ORDERS_TO_MIGRATE_OPTION_NAME, false)) {
             $orderIdsToMigrate = $this->outwardLabelDb->getOldTableOrdersToMigrate();
-            update_option(self::LPC_ORDERS_TO_MIGRATE_OPTION_NAME, json_encode($orderIdsToMigrate));
+            update_option(self::LPC_ORDERS_TO_MIGRATE_OPTION_NAME, json_encode($orderIdsToMigrate), false);
         }
 
         if (!wp_next_scheduled(self::LPC_MIGRATION13_HOOK_NAME)) {
@@ -305,7 +322,7 @@ class LpcUpdate extends LpcComponent {
             $timestamp = wp_next_scheduled(self::LPC_MIGRATION13_HOOK_NAME);
             wp_unschedule_event($timestamp, self::LPC_MIGRATION13_HOOK_NAME);
             delete_option(self::LPC_ORDERS_TO_MIGRATE_OPTION_NAME);
-            update_option(self::LPC_MIGRATION13_DONE_OPTION_NAME, 1);
+            update_option(self::LPC_MIGRATION13_DONE_OPTION_NAME, 1, false);
 
             return;
         }
@@ -316,7 +333,7 @@ class LpcUpdate extends LpcComponent {
             $this->outwardLabelDb->migrateDataFromLabelTableForOrderIds($orderIdsToMigrateForCurrentBatch)
             && $this->inwardLabelDb->migrateDataFromLabelTableForOrderIds($orderIdsToMigrateForCurrentBatch)
         ) {
-            update_option(self::LPC_ORDERS_TO_MIGRATE_OPTION_NAME, json_encode($orderIdsToMigrate));
+            update_option(self::LPC_ORDERS_TO_MIGRATE_OPTION_NAME, json_encode($orderIdsToMigrate), false);
         }
     }
 

@@ -449,14 +449,8 @@ msgstr "Your order was initially sent to the following address:"
 msgid "You may change the address the return will be made from via the following fields:"
 msgstr "You may change the address the return will be made from via the following fields:"
 
-msgid "Street"
-msgstr "Street"
-
 msgid "Zip code"
 msgstr "Zip code"
-
-msgid "Only France is allowed"
-msgstr "Only France is allowed"
 
 msgid "Check that this address is allowed for MailBox picking return"
 msgstr "Check that this address is allowed for MailBox picking return"
@@ -1176,9 +1170,6 @@ msgstr "Allow customers to download return label from their account"
 
 msgid "If the return doesn't exist, it will be generated"
 msgstr "If the return doesn't exist, it will be generated"
-
-msgid "For outward label %s"
-msgstr "For outward label %s"
 
 msgid "Default country for products without country"
 msgstr "Default country for products without country"
@@ -2128,23 +2119,8 @@ msgstr "Delete"
 msgid "Are you sure you want to delete this packaging?"
 msgstr "Are you sure you want to delete this packaging?"
 
-msgid "Per label"
-msgstr "Per label"
-
-msgid "Per product"
-msgstr "Per product"
-
-msgid "Per label or per product"
-msgstr "Per label or per product"
-
 msgid "Select the products you would like to return:"
 msgstr "Select the products you would like to return:"
-
-msgid "Select the parcel you would like to return:"
-msgstr "Select the parcel you would like to return:"
-
-msgid "Download return label"
-msgstr "Download return label"
 
 msgid "Please only select products you ordered."
 msgstr "Please only select products you ordered."
@@ -2244,3 +2220,57 @@ msgstr "The secured code will only be activated for orders over the given value.
 
 msgid "The secured code will only be activated for orders under the given value. Keep empty to disable this limitation."
 msgstr "The secured code will only be activated for orders under the given value. Keep empty to disable this limitation."
+
+msgid "Return products"
+msgstr "Return products"
+
+msgid "Return details"
+msgstr "Return details"
+
+msgid "Activate secured return"
+msgstr "Activate secured return"
+
+msgid "Generate a QR code that your clients can scan at a post office to print a label. This format is used to secure the return parcel deposit."
+msgstr "Generate a QR code that your clients can scan at a post office to print a label. This format is used to secure the return parcel deposit."
+
+msgid "This option depends on the service activation in your Colissimo client space [%s]"
+msgstr "This option depends on the service activation in your Colissimo client space [%s]"
+
+msgid "activate the service"
+msgstr "activate the service"
+
+msgid "Only active for return labels generated from the client's order page."
+msgstr "Only active for return labels generated from the client's order page."
+
+msgid "How to return your parcel?"
+msgstr "How to return your parcel?"
+
+msgid "Pack your products."
+msgstr "Pack your products."
+
+msgid "Go to the post office of your choice:"
+msgstr "Go to the post office of your choice:"
+
+msgid "At the drop-off point, present your barcode to your contact or to the machine (or your 9-character code) to have your label printed and make your deposit."
+msgstr "At the drop-off point, present your barcode to your contact or to the machine (or your 9-character code) to have your label printed and make your deposit."
+
+msgid "Track your parcel shipment on %s"
+msgstr "Track your parcel shipment on %s"
+
+msgid "Return from a post office"
+msgstr "Return from a post office"
+
+msgid "Print your label and stick it on your parcel."
+msgstr "Print your label and stick it on your parcel."
+
+msgid "Drop off your parcel at the post office of your choice:"
+msgstr "Drop off your parcel at the post office of your choice:"
+
+msgid "Put your parcel in your mailbox before the appointment time."
+msgstr "Put your parcel in your mailbox before the appointment time."
+
+msgid "Your label %s has been generated"
+msgstr "Your label %s has been generated"
+
+msgid "Your secured code for the return label %s has been generated."
+msgstr "Your secured code for the return label %s has been generated."

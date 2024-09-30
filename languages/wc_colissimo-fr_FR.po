@@ -357,10 +357,10 @@ msgid "Not allowed for this destination"
 msgstr "Non autorisé pour cette destination"
 
 msgid "Generate inward labels"
-msgstr "Générer l’étiquette retour"
+msgstr "Générer les étiquettes retour"
 
 msgid "Generate outward labels"
-msgstr "Générer l’étiquette aller"
+msgstr "Générer les étiquettes aller"
 
 msgid "Click here to download your created label package"
 msgstr "Cliquez ici pour télécharger les étiquettes"
@@ -429,7 +429,7 @@ msgid "[Order #%s]"
 msgstr "[Commande #%s]"
 
 msgid "MailBox picking return"
-msgstr "Dépôt de colis retour en boîte aux lettres"
+msgstr "Déposer le colis en boîte aux lettres"
 
 msgid "MailBox pick-up"
 msgstr "Enlèvement dans ma boîte aux lettres"
@@ -444,19 +444,13 @@ msgid "Retrieval address"
 msgstr "Adresse de retour"
 
 msgid "Your order was initially sent to the following address:"
-msgstr "Votre commande a été livrée initiallement à l’adresse suivante :"
+msgstr "Votre commande a été initiallement livrée à l’adresse suivante :"
 
 msgid "You may change the address the return will be made from via the following fields:"
 msgstr "Vous pouvez changer l’adresse depuis laquelle le retour sera envoyé via les champs suivants :"
 
-msgid "Street"
-msgstr "Rue"
-
 msgid "Zip code"
 msgstr "Code postal"
-
-msgid "Only France is allowed"
-msgstr "Seule la France est autorisée"
 
 msgid "Check that this address is allowed for MailBox picking return"
 msgstr "Verifier que cette adresse est éligible au retour en boîte aux lettres."
@@ -1176,9 +1170,6 @@ msgstr "Autoriser les clients a télécharger l’étiquette de retour depuis le
 
 msgid "If the return doesn't exist, it will be generated"
 msgstr "Si l’étiquette de retour n’éxiste pas elle sera générée"
-
-msgid "For outward label %s"
-msgstr "Pour l’étiquette aller %s"
 
 msgid "Default country for products without country"
 msgstr "Pays par défaut pour les produits sans pays d’origine"
@@ -2128,23 +2119,8 @@ msgstr "Supprimer"
 msgid "Are you sure you want to delete this packaging?"
 msgstr "Confirmez-vous vouloir supprimer cet emballage ?"
 
-msgid "Per label"
-msgstr "Par étiquette"
-
-msgid "Per product"
-msgstr "Par produit"
-
-msgid "Per label or per product"
-msgstr "Par étiquette ou par produit"
-
 msgid "Select the products you would like to return:"
 msgstr "Sélectionnez les produits que vous souhaitez retourner :"
-
-msgid "Select the parcel you would like to return:"
-msgstr "Sélectionnez le colis que vous souhaitez retourner :"
-
-msgid "Download return label"
-msgstr "Télécharger l’étiquette de retour"
 
 msgid "Please only select products you ordered."
 msgstr "Veuillez sélectionner uniquement les produits que vous avez commandés."
@@ -2222,7 +2198,7 @@ msgid "This parcel will be delivered via a secure service requiring a code. The 
 msgstr "Ce colis sera livré via un service sécurisé nécessitant un code. Le code sera envoyé au client par e-mail la veille de la livraison ou par SMS le matin de la livraison, et devra être communiqué au livreur pour recevoir le colis. Vous pouvez désactiver cette option si vous ne souhaitez pas une livraison sécurisée par code."
 
 msgid "Please note: If you have not provided the recipient's email address and phone number, the code cannot be sent to the recipient and will block delivery of the parcel."
-msgstr "À noter : Si vous n'avez pas fourni l'e-mail et le numéro de téléphone du destinataire, le code ne pourra pas être transmis au destinataire et bloquera la remise du colis."
+msgstr "À noter : Si vous n'avez pas fourni l'e-mail et le numéro de téléphone du destinataire, le code ne pourra pas être transmis au destinataire et bloquera la remise du colis."
 
 msgid "Access Colissimo Box"
 msgstr "Accéder à Colissimo Box"
@@ -2244,3 +2220,58 @@ msgstr "Le code sécurisé ne sera activé que pour les commandes dont la valeur
 
 msgid "The secured code will only be activated for orders under the given value. Keep empty to disable this limitation."
 msgstr "Le code sécurisé ne sera activé que pour les commandes dont la valeur est inférieure à la valeur donnée. Laissez vide pour désactiver cette limitation."
+
+msgid "Return products"
+msgstr "Effectuer un retour"
+
+msgid "Return details"
+msgstr "Détails du retour"
+
+msgid "Activate secured return"
+msgstr "Activer le retour sécurisé"
+
+msgid "Generate a QR code that your clients can scan at a post office to print a label. This format is used to secure the return parcel deposit."
+msgstr "Générez un code QR permettant à vos clients de le scanner en bureau de poste pour imprimer une étiquette. Ce format sert à sécuriser le dépôt du colis retour."
+
+msgid "This option depends on the service activation in your Colissimo client space [%s]"
+msgstr "Cette option est conditionnée à l'activation du service dans votre espace client Colissimo [%s]"
+
+msgid "activate the service"
+msgstr "activer le service"
+
+msgid "Only active for return labels generated from the client's order page."
+msgstr "Uniquement actif pour les étiquettes de retour générées depuis la page de commande du client."
+
+msgid "How to return your parcel?"
+msgstr "Comment retourner votre colis ?"
+
+msgid "Pack your products."
+msgstr "Emballez votre marchandise."
+
+msgid "Go to the post office of your choice:"
+msgstr "Rendez-vous dans le bureau de poste de votre choix :"
+
+msgid "At the drop-off point, present your barcode to your contact or to the machine (or your 9-character code) to have your label printed and make your deposit."
+msgstr "En point de dépôt, présentez votre code à barres à votre interlocuteur ou à l'automate (ou votre code à 9 caractères) pour bénéficier de l'impression de votre étiquette et effectuer votre dépôt."
+
+msgid "Track your parcel shipment on %s"
+msgstr "Suivez la livraison de votre colis sur %s"
+
+msgid "Return from a post office"
+msgstr "Retour depuis un bureau de poste"
+
+msgid "Print your label and stick it on your parcel."
+msgstr "Imprimez votre étiquette et collez-la sur votre colis."
+
+msgid "Drop off your parcel at the post office of your choice:"
+msgstr "Déposez votre colis dans le bureau de poste de votre choix :"
+
+msgid "Put your parcel in your mailbox before the appointment time."
+msgstr "Mettez votre colis dans votre boîte aux lettres avant l'heure du rendez-vous."
+
+msgid "Your label %s has been generated"
+msgstr "Votre étiquette %s a bien été générée"
+
+msgid "Your secured code for the return label %s has been generated."
+msgstr "Votre code sécurisé pour l'étiquette retour %s a bien été généré."
+

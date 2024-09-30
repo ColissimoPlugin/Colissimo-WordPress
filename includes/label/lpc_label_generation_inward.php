@@ -6,29 +6,37 @@ class LpcLabelGenerationInward extends LpcComponent {
     const INWARD_PARCEL_NUMBER_META_KEY = 'lpc_inward_parcel_number';
     const ORDERS_INWARD_PARCEL_FAILED = 'lpc_orders_inward_parcel_failed';
 
+    /** @var LpcCapabilitiesPerCountry */
     protected $capabilitiesPerCountry;
+    /** @var LpcLabelGenerationApi */
     protected $labelGenerationApi;
+    /** @var LpcInwardLabelDb */
     protected $inwardLabelDb;
+    /** @var LpcShippingMethods */
     protected $shippingMethods;
+    /** @var LpcAccountApi */
+    protected $accountApi;
 
     public function __construct(
         LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
         LpcLabelGenerationApi $labelGenerationApi = null,
         LpcInwardLabelDb $inwardLabelDb = null,
-        LpcShippingMethods $shippingMethods = null
+        LpcShippingMethods $shippingMethods = null,
+        LpcAccountApi $accountApi = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->labelGenerationApi     = LpcRegister::get('labelGenerationApi', $labelGenerationApi);
         $this->inwardLabelDb          = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
         $this->shippingMethods        = LpcRegister::get('shippingMethods', $shippingMethods);
+        $this->accountApi             = LpcRegister::get('accountApi', $accountApi);
     }
 
     public function getDependencies(): array {
-        return ['capabilitiesPerCountry', 'labelGenerationApi', 'inwardLabelDb', 'shippingMethods'];
+        return ['capabilitiesPerCountry', 'labelGenerationApi', 'inwardLabelDb', 'shippingMethods', 'accountApi'];
     }
 
     public function generate(WC_Order $order, $customParams = []) {
-        if (is_admin()) {
+        if (is_admin() && empty($customParams['is_from_client'])) {
             $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
         }
 
@@ -40,21 +48,29 @@ class LpcLabelGenerationInward extends LpcComponent {
                 self::ORDERS_INWARD_PARCEL_FAILED,
                 array_filter($ordersFailed, function ($error) use ($time) {
                     return $error['time'] < $time - 604800;
-                })
+                }),
+                false
             );
         }
 
         try {
-            $payload  = $this->buildPayload($order, $customParams);
-            $response = $this->labelGenerationApi->generateLabel($payload);
+            $payload         = $this->buildPayload($order, $customParams);
+            $isSecuredReturn = false;
+            if (!empty($customParams['is_from_client'])) {
+                $accountInformation = $this->accountApi->getAccountInformation();
+                if (!empty($accountInformation['optionRetourToken'])) {
+                    $isSecuredReturn = 1 === intval(LpcHelper::get_option('lpc_secured_return', 0));
+                }
+            }
+            $response = $this->labelGenerationApi->generateLabel($payload, $isSecuredReturn);
 
             if (!empty($customParams['outward_label_number']) && !empty($ordersFailed[$customParams['outward_label_number']])) {
                 unset($ordersFailed[$customParams['outward_label_number']]);
-                update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed);
+                update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed, false);
             }
         } catch (Exception $e) {
             $errorMessage = $e->getMessage();
-            if (is_admin()) {
+            if (!empty($lpc_admin_notices)) {
                 $lpc_admin_notices->add_notice(
                     'inward_label_generate',
                     'notice-error',
@@ -67,14 +83,15 @@ class LpcLabelGenerationInward extends LpcComponent {
                     'message' => $errorMessage,
                     'time'    => $time,
                 ];
-                update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed);
+                update_option(self::ORDERS_INWARD_PARCEL_FAILED, $ordersFailed, false);
             }
 
             return false;
         }
 
-        $parcelNumber = $response['<jsonInfos>']['labelV2Response']['parcelNumber'];
-        $label        = $response['<label>'];
+        $contentResponseName = $isSecuredReturn ? 'tokenV2Response' : 'labelV2Response';
+        $parcelNumber        = $response['<jsonInfos>'][$contentResponseName]['parcelNumber'];
+        $label               = $response['<label>'];
 
         // currently, and contrary to the not-return/outward CN23, in the return/inward CN23
         // the API always inlines the CN23 elements at the end of the label (and not in a dedicated field...)
@@ -91,7 +108,7 @@ class LpcLabelGenerationInward extends LpcComponent {
             $outwardLabelNumber = $customParams['outward_label_number'] ?? null;
             $this->inwardLabelDb->insert($order->get_id(), $label, $parcelNumber, $cn23, $labelFormat, $outwardLabelNumber);
         } catch (Exception $e) {
-            if (is_admin()) {
+            if (!empty($lpc_admin_notices)) {
                 $lpc_admin_notices->add_notice(
                     'inward_label_generate',
                     'notice-error',
@@ -102,7 +119,7 @@ class LpcLabelGenerationInward extends LpcComponent {
             return false;
         }
 
-        if (is_admin()) {
+        if (!empty($lpc_admin_notices)) {
             $actions = '';
 
             $labelQueries = new LpcLabelQueries();
@@ -185,7 +202,7 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->withProductCode($productCode)
             ->withCredentials()
             ->withCuserInfoText()
-            ->withSender($customerAddress)
+            ->withSender($customerAddress, $customParams)
             ->withAddressee($returnAddress)
             ->withPackage($order, $customParams)
             ->withPreparationDelay()

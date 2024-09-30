@@ -1,0 +1,49 @@
+#lpc_return_table{
+	width: 100%;
+}
+
+#lpc_return_table th{
+	text-align: left;
+}
+
+[data-lpc-product]{
+	min-width: 100px;
+	padding: .5rem .7rem;
+	cursor: pointer;
+}
+
+#lpc_return_table label, #lpc_return_table input[type="checkbox"]{
+	cursor: pointer;
+}
+
+.margin-top-0{
+	margin-top: 0;
+}
+
+#lpc_download_return_label{
+	margin-top: 1rem;
+}
+
+#lpc_return_label_confirmation{
+	display: none;
+	margin-bottom: 2rem;
+}
+
+#lpc_return_instructions_container{
+	display: none;
+	padding: 1.5rem 2rem;
+	background-color: #efefef;
+}
+
+#lpc_return_instructions_container li{
+	margin-bottom: 1rem;
+}
+
+#lpc_return_instructions_container li::marker{
+	font-weight: bold;
+}
+
+#lpc_return_instructions_container #instructions_title{
+	margin-top: 0;
+	font-weight: bold;
+}

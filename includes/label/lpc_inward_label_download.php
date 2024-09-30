@@ -1,14 +1,14 @@
 <?php
 
 defined('ABSPATH') || die('Restricted Access');
-require_once LPC_FOLDER . DS . 'lib' . DS . 'MergePdf.class.php';
 
+require_once LPC_FOLDER . DS . 'lib' . DS . 'MergePdf.class.php';
 
 class LpcLabelInwardDownloadAccountAction extends LpcComponent {
     const AJAX_TASK_NAME = 'account/label/inward/download';
-    const TRACKING_NUMBER_VAR_NAME = 'lpc_label_tracking_number';
     const PRODUCTS_VAR_NAME = 'lpc_label_products';
     const ORDER_ID_VAR_NAME = 'lpc_label_order_id';
+    const LABEL_NUMBER_VAR_NAME = 'lpc_label_number';
 
     /** @var LpcAjax */
     protected $ajaxDispatcher;
@@ -44,63 +44,28 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
     }
 
     public function control() {
-        $trackingNumber = LpcHelper::getVar(self::TRACKING_NUMBER_VAR_NAME);
-        if (!empty($trackingNumber)) {
-            $this->generateFromOutwardLabel($trackingNumber);
-        }
+        $orderId     = LpcHelper::getVar(self::ORDER_ID_VAR_NAME);
+        $products    = LpcHelper::getVar(self::PRODUCTS_VAR_NAME);
+        $labelNumber = LpcHelper::getVar(self::LABEL_NUMBER_VAR_NAME);
 
-        $orderId  = LpcHelper::getVar(self::ORDER_ID_VAR_NAME);
-        $products = LpcHelper::getVar(self::PRODUCTS_VAR_NAME);
-
-        if (!empty($orderId) && !empty($products)) {
-            $this->generateCustomLabel($orderId, $products);
+        if (!empty($orderId)) {
+            if (!empty($products)) {
+                $this->generateCustomLabel($orderId, $products);
+            } elseif (!empty($labelNumber)) {
+                $label = $this->inwardLabelDb->getLabelFor($labelNumber);
+                $this->downloadLabel($labelNumber, $label['label']);
+            }
         }
 
         $this->handleErrorRedirect(__('There has been an error while downloading the return label, please contact us for more information.', 'wc_colissimo'));
-    }
-
-    public function getUrlForTrackingNumber($trackingNumber): string {
-        return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME) . '&' . self::TRACKING_NUMBER_VAR_NAME . '=' . $trackingNumber;
     }
 
     public function getUrlForCustom(int $orderId): string {
         return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME) . '&' . self::ORDER_ID_VAR_NAME . '=' . $orderId . '&' . self::PRODUCTS_VAR_NAME . '=';
     }
 
-    private function generateFromOutwardLabel(string $trackingNumber) {
-        try {
-            $label        = $this->inwardLabelDb->getLabelByOutwardNumber($trackingNumber, LpcLabelGenerationPayload::LABEL_FORMAT_PDF);
-            $labelContent = $label['label'];
-            if (empty($labelContent)) {
-                $outwardLabel = $this->outwardLabelDb->getLabelFor($trackingNumber);
-                $order        = wc_get_order($outwardLabel['order_id']);
-                $this->labelGenerationInward->generate(
-                    $order,
-                    [
-                        'outward_label_number' => $trackingNumber,
-                        'format'               => LpcLabelGenerationPayload::LABEL_FORMAT_PDF,
-                    ]
-                );
-                $label        = $this->inwardLabelDb->getLabelByOutwardNumber($trackingNumber, LpcLabelGenerationPayload::LABEL_FORMAT_PDF);
-                $labelContent = $label['label'];
-
-                if (empty($labelContent)) {
-                    $this->handleErrorRedirect(__('There has been an error while downloading the return label, please contact us for more information.', 'wc_colissimo'));
-                }
-            }
-
-            $inwardTrackingNumber = $label['label_number'];
-
-            $this->downloadLabel($inwardTrackingNumber, $labelContent);
-        } catch (Exception $e) {
-            header('HTTP/1.0 404 Not Found');
-
-            $this->ajaxDispatcher->makeAndLogError(
-                [
-                    'message' => $e->getMessage(),
-                ]
-            );
-        }
+    public function getUrlForDownload(int $orderId, string $trackingNumber): string {
+        return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME) . '&' . self::ORDER_ID_VAR_NAME . '=' . $orderId . '&' . self::LABEL_NUMBER_VAR_NAME . '=' . $trackingNumber;
     }
 
     private function generateCustomLabel($orderId, $products) {
@@ -153,6 +118,7 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
                     'totalWeight'          => $totalWeight,
                     'insuranceAmount'      => $insuranceAmount,
                     'format'               => LpcLabelGenerationPayload::LABEL_FORMAT_PDF,
+                    'is_from_client'       => true,
                 ]
             );
             $label                = $this->inwardLabelDb->getLabelFor($inwardTrackingNumber);
@@ -162,10 +128,22 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
                 $this->handleErrorRedirect(__('There has been an error while downloading the return label, please contact us for more information.', 'wc_colissimo'));
             }
 
-            $this->downloadLabel($inwardTrackingNumber, $labelContent);
+            echo json_encode(
+                [
+                    'type'           => 'success',
+                    'trackingNumber' => $inwardTrackingNumber,
+                ]
+            );
         } catch (Exception $e) {
             $this->handleErrorRedirect($e->getMessage());
+            echo json_encode(
+                [
+                    'type'  => 'error',
+                    'error' => $e->getMessage(),
+                ]
+            );
         }
+        exit;
     }
 
     private function downloadLabel(string $inwardTrackingNumber, string $labelContent) {

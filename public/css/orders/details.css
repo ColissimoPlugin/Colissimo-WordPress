@@ -1,7 +1,8 @@
-#lpc_return_table{
-	width: 100%;
+#lpc_return_products{
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 
-#lpc_return_table input[type="checkbox"]{
-	cursor: pointer;
+#lpc_return_products + p.order-again{
+	display: inline-block;
 }

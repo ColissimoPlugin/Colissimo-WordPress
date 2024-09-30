@@ -295,15 +295,6 @@
       "default": ""
     },
     {
-      "id": "lpc_using_insurance_inward",
-      "type": "checkbox",
-      "title": "Use Colissimo Insurance for inward label?",
-      "desc": "If enabled, each inward label generation will use Colissimo Insurance feature by default.",
-      "desc_tip": true,
-      "class": "",
-      "default": ""
-    },
-    {
       "id": "lpc_calculate_shipping_before_coupon",
       "type": "checkbox",
       "title": "Calculate shipping method before applying coupons",
@@ -495,6 +486,45 @@
       "title": "Return labels"
     },
     {
+      "id": "lpc_secured_return",
+      "type": "secured_return"
+    },
+    {
+      "id": "lpc_customers_download_return_label",
+      "type": "select",
+      "title": "Allow customers to download return label from their account",
+      "desc": "If the return label doesn't exist, it will be generated",
+      "desc_tip": true,
+      "class": "",
+      "default": "no",
+      "options": {
+        "no": "No",
+        "yes": "Yes"
+      }
+    },
+    {
+      "id": "lpc_customers_download_return_label_days",
+      "type": "number",
+      "title": "Number of days during which the customers can download the return label",
+      "desc": "If you authorize customers to download the return label, you can choose the number of days during which it is available after the order creation.",
+      "desc_tip": true,
+      "class": "",
+      "row_class": "lpc_customers_download_return_label_days_container",
+      "default": "14",
+      "custom_attributes": {
+        "min": "1"
+      }
+    },
+    {
+      "id": "lpc_bal_return",
+      "type": "checkbox",
+      "title": "MailBox pick-up",
+      "desc": "Allow customers to automatically create return labels and use them to return the parcel from their MailBox",
+      "desc_tip": true,
+      "row_class": "lpc_bal_return_container",
+      "class": ""
+    },
+    {
       "id": "lpc_using_insurance_inward",
       "type": "checkbox",
       "title": "Use Colissimo Insurance for inward label?",
@@ -541,41 +571,6 @@
       "desc": "If enabled, the return label will be automatically emailed to the customer when it is generated. Please make sure that the 'Inward label generated' email is enabled in WooCommerce->Settings->Emails.",
       "desc_tip": true,
       "class": ""
-    },
-    {
-      "id": "lpc_bal_return",
-      "type": "checkbox",
-      "title": "MailBox pick-up",
-      "desc": "Allow customers to automatically create return labels and use them to return the parcel from their MailBox",
-      "desc_tip": true,
-      "class": ""
-    },
-    {
-      "id": "lpc_customers_download_return_label",
-      "type": "select",
-      "title": "Allow customers to download return label from their account",
-      "desc": "If the return label doesn't exist, it will be generated",
-      "desc_tip": true,
-      "class": "",
-      "default": "no",
-      "options": {
-        "no": "No",
-        "yes": "Per label",
-        "product": "Per product",
-        "both": "Per label or per product"
-      }
-    },
-    {
-      "id": "lpc_customers_download_return_label_days",
-      "type": "number",
-      "title": "Number of days during which the customers can download the return label",
-      "desc": "If you authorize customers to download the return label, you can choose the number of days during which it is available after the order creation.",
-      "desc_tip": true,
-      "class": "",
-      "default": "14",
-      "custom_attributes": {
-        "min": "1"
-      }
     },
     {
       "id": "lpc_section_return_labels",

@@ -98,56 +98,20 @@ class LpcOrderTracking extends LpcComponent {
             return;
         }
 
-        $output   = [];
-        $output[] = '<div class="woocommerce-column woocommerce-column--1 woocommerce-column--billing-address col-1">';
-        $output[] = '<h2 class="woocommerce-column__title">' . __('Download inward label', 'wc_colissimo') . '</h2>';
+        $output = [];
+        // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+        $output[] = '<script src="' . esc_url(plugins_url('/js/orders/details.js', LPC_PUBLIC . 'init.php')) . '"></script>';
+        // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+        $output[] = '<link rel="stylesheet" href="' . esc_url(plugins_url('/css/orders/details.css', LPC_PUBLIC . 'init.php')) . '" />';
 
-        if (in_array($returnGenerationType, ['yes', 'both'])) {
-            $output[] = '<p>' . __('Select the parcel you would like to return:', 'wc_colissimo') . '</p>';
-            $output[] = '<ul>';
-            $links    = [];
-            foreach ($trackingNumbers as $oneTrackingNumber) {
-                $downloadInwardLabel = $this->labelInwardDownloadAccountAction->getUrlForTrackingNumber($oneTrackingNumber);
-                $text                = sprintf(__('For outward label %s', 'wc_colissimo'), $oneTrackingNumber);
-                $links[]             = '<li><a href="' . esc_url($downloadInwardLabel) . '">' . $text . '</a></li>';
-            }
-            $output[] = implode('', $links);
-            $output[] = '</ul>';
-        }
+        $myAccountUrl = get_permalink(get_option('woocommerce_myaccount_page_id'));
+        $myAccountUrl = add_query_arg('lpcreturn', '', $myAccountUrl);
+        $myAccountUrl = add_query_arg('order_id', $order->get_id(), $myAccountUrl);
 
-        if (in_array($returnGenerationType, ['product', 'both'])) {
-            $output[] = '<script type="text/javascript">const lpc_orders_return = {
-                selectProducts: "' . esc_attr__('You need to select at least one item to generate a label', 'wc_colissimo') . '",
-                downloadUrlBase: "' . esc_url($this->labelInwardDownloadAccountAction->getUrlForCustom($order->get_id()), null, 'javascript') . '"
-            }</script>';
-            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-            $output[] = '<script src="' . esc_url(plugins_url('/js/orders/details.js', LPC_PUBLIC . 'init.php')) . '"></script>';
-            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
-            $output[] = '<link rel="stylesheet" href="' . esc_url(plugins_url('/css/orders/details.css', LPC_PUBLIC . 'init.php')) . '" />';
-            $output[] = '<p>' . __('Select the products you would like to return:', 'wc_colissimo') . '</p>';
-            $output[] = '<table id="lpc_return_table" class="shop_table">';
-            $output[] = '<thead><tr><th></th><th>' . __('Product', 'wc_colissimo') . '</th><th>' . __('Quantity', 'wc_colissimo') . '</th></tr></thead>';
-            $output[] = '<tbody>';
-            foreach ($order->get_items() as $item) {
-                $output[] = '<tr>';
-                $output[] = '<td><input type="checkbox" /></td>';
-                $output[] = '<td>' . $item->get_name() . '</td>';
-                $output[] = '<td><input type="number" 
-                                        class="input-text" 
-                                        data-lpc-product="' . esc_attr($item->get_id()) . '"
-                                        value="' . esc_attr($item->get_quantity()) . '" 
-                                        min="0" 
-                                        max="' . esc_attr($item->get_quantity()) . '" /></td>';
-                $output[] = '</tr>';
-            }
-            $output[] = '</tbody>';
-            $output[] = '<tfoot><tr><td colspan="3"><button type="button" class="button wp-element-button" id="lpc_download_return_label">';
-            $output[] = __('Download return label', 'wc_colissimo');
-            $output[] = '</button></td></tr></tfoot>';
-            $output[] = '</table>';
-        }
-
-        $output[] = '</div>';
+        $output[] = '<input type="hidden" id="lpc_return_label_url" value="' . esc_url($myAccountUrl, null, 'javascript') . '" />';
+        $output[] = '<a href="#" class="button wp-element-button" id="lpc_return_products">';
+        $output[] = __('Return products', 'wc_colissimo');
+        $output[] = '</a>';
 
         echo implode('', $output);
     }

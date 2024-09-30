@@ -9,7 +9,7 @@ class LpcLabelGenerationApi extends LpcRestApi {
         return self::API_BASE_URL . $action;
     }
 
-    public function generateLabel(LpcLabelGenerationPayload $payload) {
+    public function generateLabel(LpcLabelGenerationPayload $payload, bool $isSecuredReturn = false) {
         try {
             $assembledPayload = $payload->assemble();
             LpcLogger::debug(
@@ -25,8 +25,9 @@ class LpcLabelGenerationApi extends LpcRestApi {
                 $headers[] = 'apiKey: ' . LpcHelper::get_option('lpc_apikey');
             }
 
+            $queryAction = $isSecuredReturn ? 'generateToken' : 'generateLabel';
             $response = $this->query(
-                'generateLabel',
+                $queryAction,
                 $assembledPayload,
                 self::DATA_TYPE_JSON,
                 $headers

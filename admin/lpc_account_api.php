@@ -69,7 +69,7 @@ class LpcAccountApi extends LpcRestApi {
         }
 
         if (self::LPC_CONTRACT_TYPE_FACILITE !== $accountInformation['contractType'] || !empty($accountInformation['cgv']['accepted'])) {
-            update_option('lpc_accepted_cgv', true);
+            update_option('lpc_accepted_cgv', true, false);
 
             return true;
         }

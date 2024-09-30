@@ -24,7 +24,7 @@
         <?php if ('link' === $args['type']) { ?>
 			<a id="lpc_pick_up_widget_show_map" class="lpc_pick_up_widget_show_map"><?php echo $linkText; ?></a>
         <?php } else { ?>
-			<button type="button" id="lpc_pick_up_widget_show_map" class="lpc_pick_up_widget_show_map"><?php echo $linkText; ?></button>
+			<button type="button" id="lpc_pick_up_widget_show_map" class="lpc_pick_up_widget_show_map wp-element-button"><?php echo $linkText; ?></button>
         <?php } ?>
 	</div>
 <?php } ?>

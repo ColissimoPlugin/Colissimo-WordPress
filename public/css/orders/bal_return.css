@@ -1,0 +1,41 @@
+.lpc_balreturn .lpc_balreturn_shipping_address, .lpc_balreturn .lpc_balreturn_return_address{
+	margin-left: 20px;
+}
+
+.lpc_balreturn .lpc_balreturn_subtitle, .lpc_balreturn .lpc_balreturn_withseparator{
+	border-bottom: 1px solid #c6c6c6;
+	margin-bottom: 20px;
+	padding-bottom: 10px;
+}
+
+.lpc_balreturn_btn{
+	margin-top: 1rem;
+	float: left;
+}
+
+.lpc_balreturn .lpc_balreturn_error{
+	color: red;
+}
+
+.margin-top-0{
+	margin-top: 0;
+}
+
+#lpc_return_instructions_container{
+	margin-top:1rem;
+	padding: 1.5rem 2rem;
+	background-color: #efefef;
+}
+
+#lpc_return_instructions_container li{
+	margin-bottom: 1rem;
+}
+
+#lpc_return_instructions_container li::marker{
+	font-weight: bold;
+}
+
+#lpc_return_instructions_container #instructions_title{
+	margin-top: 0;
+	font-weight: bold;
+}

@@ -1,14 +1,11 @@
 <?php
 
-
 class LpcInwardLabelGenerationEmail extends WC_Email {
     public function __construct() {
         $this->id             = 'lpc_inward_label_generation';
+        $this->customer_email = true;
         $this->title          = __('Inward label generated', 'wc_colissimo');
         $this->description    = __('An email is sent to the customer when the inward label is generated, if this option is set up', 'wc_colissimo');
-        $this->customer_email = true;
-        $this->heading        = __('Inward label generated', 'wc_colissimo');
-        $this->subject        = sprintf(__('[%s] Your inward label', 'wc_colissimo'), '{blogname}');
         $this->template_html  = 'lpc_inward_label_generated.php';
         $this->template_plain = 'plain' . DS . 'lpc_inward_label_generated.php';
         $this->template_base  = untrailingslashit(plugin_dir_path(__FILE__)) . DS . 'templates' . DS;
@@ -22,16 +19,24 @@ class LpcInwardLabelGenerationEmail extends WC_Email {
         parent::__construct();
     }
 
+    public function get_default_subject() {
+        return sprintf(__('[%s] Your inward label', 'wc_colissimo'), '{blogname}');
+    }
+
+    public function get_default_heading() {
+        return __('Inward label generated', 'wc_colissimo');
+    }
+
     public function get_content_html() {
         return wc_get_template_html(
             $this->template_html,
             [
                 'order'              => $this->object,
-                'email_heading'      => $this->heading,
+                'email_heading'      => $this->get_heading(),
+                'additional_content' => $this->get_additional_content(),
                 'sent_to_admin'      => false,
                 'plain_text'         => false,
                 'email'              => $this,
-                'additional_content' => $this->get_additional_content(),
             ],
             '',
             $this->template_base
@@ -43,11 +48,11 @@ class LpcInwardLabelGenerationEmail extends WC_Email {
             $this->template_plain,
             [
                 'order'              => $this->object,
-                'email_heading'      => $this->heading,
+                'email_heading'      => $this->get_heading(),
+                'additional_content' => $this->get_additional_content(),
                 'sent_to_admin'      => false,
                 'plain_text'         => true,
                 'email'              => $this,
-                'additional_content' => $this->get_additional_content(),
             ],
             '',
             $this->template_base
@@ -59,26 +64,42 @@ class LpcInwardLabelGenerationEmail extends WC_Email {
             return false;
         }
 
-        $this->object = $order;
+        $recipientId = $order->get_customer_id();
 
-        $this->setup_locale();
+        global $wp_locale_switcher;
+        $switchedLocale = false;
+        if (isset($wp_locale_switcher) && !empty($recipientId)) {
+            $switchedLocale = switch_to_user_locale($recipientId);
+            load_textdomain('wc_colissimo', LPC_FOLDER . 'languages/wc_colissimo-' . get_locale() . '.mo');
+        }
+
+        $this->object                         = $order;
+        $this->recipient                      = $order->get_billing_email();
         $this->placeholders['{order_date}']   = wc_format_datetime($this->object->get_date_created());
         $this->placeholders['{order_number}'] = $this->object->get_order_number();
-        $this->restore_locale();
 
         $label_full_filename = sys_get_temp_dir() . DS . $label_filename . $this->get_extention_from_format();
-        $sending             = false;
+        $sent                = false;
         try {
             $this->create_attachment($label_full_filename, $label);
 
-            $this->recipient = $order->get_billing_email();
-            $sending         = $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $label_full_filename);
+            $sent = $this->send(
+                $this->get_recipient(),
+                $this->get_subject(),
+                $this->get_content(),
+                $this->get_headers(),
+                $label_full_filename
+            );
         } catch (Exception $e) {
-            return false;
+            LpcLogger::error('Error sending inward label email', ['error' => $e->getMessage()]);
         } finally {
             $this->delete_attachment($label_full_filename);
 
-            return $sending;
+            if ($switchedLocale) {
+                restore_previous_locale();
+            }
+
+            return $sent;
         }
     }
 
@@ -94,17 +115,12 @@ class LpcInwardLabelGenerationEmail extends WC_Email {
 
     protected function get_extention_from_format() {
         $extention = LpcHelper::get_option('lpc_returnLabelFormat', 'PDF_A4_300dpi');
+
         switch ($extention) {
-            case 'PDF_A4_300dpi':
-                return '.pdf';
-            case 'PDF_10x15_300dpi':
-                return '.pdf';
             case 'ZPL_10x15_203dpi':
-                return '.zpl';
             case 'ZPL_10x15_300dpi':
                 return '.zpl';
             case 'DPL_10x15_203dpi':
-                return '.dpl';
             case 'DPL_10x15_300dpi':
                 return '.dpl';
             default:

@@ -174,7 +174,7 @@ class LpcShippingRates extends LpcComponent {
 
         $currentOptions['shipping_rates'] = $rates;
 
-        if (update_option($optionName, $currentOptions)) {
+        if (update_option($optionName, $currentOptions, false)) {
             die(json_encode(
                 [
                     'type' => 'success',

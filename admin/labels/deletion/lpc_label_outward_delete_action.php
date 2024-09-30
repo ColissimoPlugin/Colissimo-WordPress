@@ -64,9 +64,12 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
 
         switch ($redirection) {
             case LpcLabelQueries::REDIRECTION_WOO_ORDER_EDIT_PAGE:
-                $order          = wc_get_order($orderId);
-                $urlRedirection = $order->get_edit_order_url();
-                break;
+                $order = wc_get_order($orderId);
+                if (!empty($order)) {
+                    $urlRedirection = $order->get_edit_order_url();
+                    break;
+                }
+            // We didn't find the order, redirect to the default page
             case LpcLabelQueries::REDIRECTION_COLISSIMO_ORDERS_LISTING:
             default:
                 $urlRedirection = admin_url('admin.php?page=wc_colissimo_view');
@@ -119,16 +122,15 @@ class LpcLabelOutwardDeleteAction extends LpcComponent {
             );
         } else {
             $order = wc_get_order($orderId);
-            // If it's the last following parcel, remove also the multi-parcels number
-            if (1 === count($multiParcelsLabels) && !empty($multiParcelsLabels[$trackingNumber])) {
-                if (!empty($order)) {
+
+            if (!empty($order)) {
+                // If it's the last following parcel, remove also the multi-parcels number
+                if (1 === count($multiParcelsLabels) && !empty($multiParcelsLabels[$trackingNumber])) {
                     $order->update_meta_data('lpc_multi_parcels_amount', '');
                     $order->save();
                 }
-            }
 
-            // Remove the related order meta
-            if (!empty($order)) {
+                // Remove the related order meta
                 $order->update_meta_data(LpcLabelGenerationOutward::OUTWARD_PARCEL_NUMBER_META_KEY, '');
                 $order->save();
             }

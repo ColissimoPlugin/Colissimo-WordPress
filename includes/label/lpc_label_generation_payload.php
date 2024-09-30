@@ -88,7 +88,7 @@ class LpcLabelGenerationPayload {
         $this->dimensionsAdded = false;
     }
 
-    public function withSender(array $sender = null) {
+    public function withSender(array $sender = null, array $customParams = []) {
         if (null === $sender) {
             $sender = $this->getStoreAddress();
         }
@@ -104,6 +104,12 @@ class LpcLabelGenerationPayload {
             'email'       => @$sender['email'],
         ];
 
+        if (!empty($customParams['sender'])) {
+            $payloadSender = array_merge($payloadSender, $customParams['sender']);
+        } elseif (!empty($sender['street2'])) {
+            $payloadSender['line3'] = $sender['street2'];
+        }
+
         if (!empty($sender['mobileNumber'])) {
             $payloadSender['mobileNumber'] = $this->formatPhone($sender['mobileNumber']);
         }
@@ -116,13 +122,9 @@ class LpcLabelGenerationPayload {
             $payloadSender['phoneNumber'] = $this->formatPhone($sender['phone']);
         }
 
-        if (!empty($sender['street2'])) {
-            $payloadSender['line3'] = $sender['street2'];
-        }
-
-        $zipDashPos = strpos($sender['zipCode'], '-');
-        if (self::US_COUNTRY_CODE === $sender['countryCode'] && false !== $zipDashPos) {
-            $payloadSender['zipCode'] = substr($sender['zipCode'], 0, $zipDashPos);
+        $zipDashPos = strpos($payloadSender['zipCode'], '-');
+        if (self::US_COUNTRY_CODE === $payloadSender['countryCode'] && false !== $zipDashPos) {
+            $payloadSender['zipCode'] = substr($payloadSender['zipCode'], 0, $zipDashPos);
         }
 
         /**
@@ -275,7 +277,6 @@ class LpcLabelGenerationPayload {
             $totalWeight        = 0;
             $productsDimensions = [];
             foreach ($order->get_items() as $item) {
-                $data    = $item->get_data();
                 $product = $item->get_product();
                 if (empty($product)) {
                     throw new Exception(
@@ -283,10 +284,12 @@ class LpcLabelGenerationPayload {
                     );
                 }
 
-                if (!$product->needs_shipping()) {
+                // Compatibility with WPC Product Bundles for WooCommerce, don't count bundled products twice
+                if (!$product->needs_shipping() || 'woosb' === $product->get_type()) {
                     continue;
                 }
 
+                $data                 = $item->get_data();
                 $productWeight        = $product->get_weight() < 0.01 ? 0.01 : $product->get_weight();
                 $nbProductsToShip     += (float) $data['quantity'];
                 $weight               = (float) $productWeight * $data['quantity'];
@@ -746,7 +749,8 @@ class LpcLabelGenerationPayload {
                 );
             }
 
-            if (!$product->needs_shipping()) {
+            // Compatibility with WPC Product Bundles for WooCommerce, don't count bundled products twice
+            if (!$product->needs_shipping() || 'woosb' === $product->get_type()) {
                 continue;
             }
 

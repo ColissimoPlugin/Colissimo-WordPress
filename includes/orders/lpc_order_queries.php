@@ -15,6 +15,10 @@ class LpcOrderQueries {
             $selection .= ', ' . $lpcOutwardLabel . '.label_created_at, ' . $lpcOutwardLabel . '.tracking_number';
         }
 
+        if (empty($filters['woo_status']) || [''] === $filters['woo_status']) {
+            $filters['no_draft'] = true;
+        }
+
         if (self::isHposActive()) {
             $orders         = $wpdb->prefix . 'wc_orders';
             $ordersMeta     = $wpdb->prefix . 'wc_orders_meta';
@@ -221,9 +225,11 @@ class LpcOrderQueries {
             $query .= ' LEFT JOIN ' . $lpcOutwardLabel . ' ON ' . $lpcOutwardLabel . '.order_id = ' . $orderItems . '.order_id';
         }
 
-        if (!empty($filters)) {
-            $query .= self::addFilter($filters);
+        if (empty($filters['woo_status']) || [''] === $filters['woo_status']) {
+            $filters['no_draft'] = true;
         }
+
+        $query .= self::addFilter($filters);
 
         // phpcs:disable
         $result = $wpdb->get_results($query);
@@ -321,7 +327,7 @@ class LpcOrderQueries {
                     AND lastEventDate.meta_value < ' . $fromDate;
         } else {
             $postmeta = $wpdb->prefix . 'postmeta';
-            $query    = 'SELECT DISTINCT isDelivered.post_id 
+            $query    = 'SELECT DISTINCT isDelivered.post_id AS order_id 
                 FROM ' . $postmeta . ' AS isDelivered 
                 JOIN ' . $postmeta . ' AS lastEventDate 
                     ON lastEventDate.post_id = isDelivered.post_id 
@@ -561,6 +567,10 @@ class LpcOrderQueries {
                 }
             }
 
+            if (!empty($requestFilters['no_draft'])) {
+                $filters[] = $orders . '.status != "wc-checkout-draft"';
+            }
+
             // Make sure we take only orders and not subscriptions
             $filters[] = $orders . '.type = "shop_order"';
         } else {
@@ -669,6 +679,10 @@ class LpcOrderQueries {
                 if (!empty($wooStatus)) {
                     $filters[] = $posts . '.post_status IN ("' . implode('", "', $wooStatus) . '")';
                 }
+            }
+
+            if (!empty($requestFilters['no_draft'])) {
+                $filters[] = $posts . '.post_status != "wc-checkout-draft"';
             }
 
             // Make sure we take only orders and not subscriptions

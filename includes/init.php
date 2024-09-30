@@ -69,6 +69,7 @@ class LpcIncludeInit {
 
         LpcRegister::register('labelPackager', new LpcLabelPackager());
 
+        LpcRegister::register('accountApi', new LpcAccountApi());
         LpcRegister::register('labelGenerationInward', new LpcLabelGenerationInward());
         LpcRegister::register('labelGenerationOutward', new LpcLabelGenerationOutward());
         LpcRegister::register('labelGenerationAuto', new LpcLabelGenerationAuto());
@@ -81,7 +82,6 @@ class LpcIncludeInit {
         LpcRegister::register('lpcCron', new LpcCron());
         LpcRegister::register('lpcUpdate', new LpcUpdate());
         LpcRegister::register('customsDocumentsApi', new LpcCustomsDocumentsApi());
-        LpcRegister::register('accountApi', new LpcAccountApi());
         LpcRegister::register('labelInwardDownloadAccountAction', new LpcLabelInwardDownloadAccountAction());
     }
 }

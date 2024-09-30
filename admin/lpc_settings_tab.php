@@ -57,6 +57,7 @@ class LpcSettingsTab extends LpcComponent {
         $this->initDefaultCountry();
         $this->initMultiSelectRelayType();
         $this->initBlockCode();
+        $this->initSecuredReturn();
         $this->fixSavePassword();
         $this->initVideoTutorials();
         $this->initAdvancedPackaging();
@@ -513,7 +514,7 @@ class LpcSettingsTab extends LpcComponent {
                 $packagings[] = $newPackaging;
             }
 
-            update_option('lpc_packagings', $packagings);
+            update_option('lpc_packagings', $packagings, false);
         } catch (Exception $e) {
             LpcHelper::endAjax(false, ['message' => $e->getMessage()]);
         }
@@ -547,7 +548,7 @@ class LpcSettingsTab extends LpcComponent {
         $packagings[$firstKey]['priority']  = $secondPackaging['priority'];
         $packagings[$secondKey]['priority'] = $firstPackaging['priority'];
 
-        update_option('lpc_packagings', $packagings);
+        update_option('lpc_packagings', $packagings, false);
 
         LpcHelper::endAjax();
     }
@@ -574,7 +575,7 @@ class LpcSettingsTab extends LpcComponent {
             unset($packagings[$key]);
         }
 
-        update_option('lpc_packagings', $packagings);
+        update_option('lpc_packagings', $packagings, false);
 
         LpcHelper::endAjax();
     }
@@ -593,7 +594,7 @@ class LpcSettingsTab extends LpcComponent {
         $args                = [];
         $args['id_and_name'] = 'lpc_feedback';
         $args['label']       = 'Plugin feedback';
-        update_option('lpc_feedback_dismissed', true);
+        update_option('lpc_feedback_dismissed', true, false);
         echo LpcHelper::renderPartial('settings' . DS . 'feedback.php', $args);
     }
 
@@ -691,12 +692,16 @@ class LpcSettingsTab extends LpcComponent {
                 die('Invalid Token');
             }
 
-            if ('shipping' == $currentSection && !isset($_POST['lpc_relay_point_type'])) {
+            if ('shipping' === $currentSection && !isset($_POST['lpc_relay_point_type'])) {
                 $relayTypeOption = [
                     'id'   => 'lpc_relay_point_type',
                     'type' => 'multiselectrelaytype',
                 ];
                 WC_Admin_Settings::save_fields([$relayTypeOption], ['lpc_relay_point_type' => ['A2P', 'BPR', 'CMT', 'PCS', 'BDP']]);
+            }
+
+            if ('label' === $currentSection && !isset($_POST['lpc_secured_return'])) {
+                delete_option('lpc_secured_return');
             }
         } catch (Exception $exc) {
             LpcLogger::error(
@@ -792,7 +797,7 @@ class LpcSettingsTab extends LpcComponent {
         }
 
         // Reset accepted CGV status when credentials change
-        update_option('lpc_accepted_cgv', false);
+        update_option('lpc_accepted_cgv', false, false);
 
         $parentAccountId = LpcHelper::getVar('lpc_parent_account');
         if (!empty($parentAccountId)) {
@@ -953,8 +958,8 @@ class LpcSettingsTab extends LpcComponent {
     }
 
     private function logCredentialsValidity(bool $isValid) {
-        update_option('lpc_current_credentials_tested', true);
-        update_option('lpc_current_credentials_valid', $isValid);
+        update_option('lpc_current_credentials_tested', true, false);
+        update_option('lpc_current_credentials_valid', $isValid, false);
     }
 
     protected function initMultiSelectRelayType() {
@@ -963,6 +968,10 @@ class LpcSettingsTab extends LpcComponent {
 
     protected function initBlockCode() {
         add_action('woocommerce_admin_field_block_code', [$this, 'displayBlockCode']);
+    }
+
+    protected function initSecuredReturn() {
+        add_action('woocommerce_admin_field_secured_return', [$this, 'displaySecuredReturn']);
     }
 
     public function displayMultiSelectRelayType() {
@@ -1008,5 +1017,18 @@ class LpcSettingsTab extends LpcComponent {
 
             echo LpcHelper::renderPartial('settings' . DS . 'block_code.php', $args);
         }
+    }
+
+    public function displaySecuredReturn() {
+        $accountInformation = $this->accountApi->getAccountInformation();
+        $urls               = $this->accountApi->getAutologinURLs();
+        $args               = [
+            'secured_return'    => !empty($accountInformation['optionRetourToken']),
+            'services_url'      => $urls['urlParamServices'] ?? 'https://colissimo.entreprise.laposte.fr',
+            'checked'           => 1 === intval(LpcHelper::get_option('lpc_secured_return', 0)),
+            'return_from_front' => 'no' !== LpcHelper::get_option('lpc_customers_download_return_label', 'no'),
+        ];
+
+        echo LpcHelper::renderPartial('settings' . DS . 'secured_return.php', $args);
     }
 }

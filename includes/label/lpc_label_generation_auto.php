@@ -43,7 +43,7 @@ class LpcLabelGenerationAuto extends LpcComponent {
                 $allItemsOrder = $order->get_items();
                 $this->labelGenerationOutward->generate($order, ['items' => $allItemsOrder], true);
             } catch (Exception $e) {
-                LpcLogger::error(__METHOD__, $e->getMessage());
+                LpcLogger::error(__METHOD__, ['error' => $e->getMessage()]);
             }
         }
     }

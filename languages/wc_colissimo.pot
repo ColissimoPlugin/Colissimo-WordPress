@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.1.0\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-07-24\n"
+"POT-Creation-Date: 2024-09-30\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -456,13 +456,7 @@ msgstr ""
 msgid "You may change the address the return will be made from via the following fields:"
 msgstr ""
 
-msgid "Street"
-msgstr ""
-
 msgid "Zip code"
-msgstr ""
-
-msgid "Only France is allowed"
 msgstr ""
 
 msgid "Check that this address is allowed for MailBox picking return"
@@ -1182,9 +1176,6 @@ msgid "Allow customers to download return label from their account"
 msgstr ""
 
 msgid "If the return doesn't exist, it will be generated"
-msgstr ""
-
-msgid "For outward label %s"
 msgstr ""
 
 msgid "Default country for products without country"
@@ -2135,22 +2126,7 @@ msgstr ""
 msgid "Are you sure you want to delete this packaging?"
 msgstr ""
 
-msgid "Per label"
-msgstr ""
-
-msgid "Per product"
-msgstr ""
-
-msgid "Per label or per product"
-msgstr ""
-
 msgid "Select the products you would like to return:"
-msgstr ""
-
-msgid "Select the parcel you would like to return:"
-msgstr ""
-
-msgid "Download return label"
 msgstr ""
 
 msgid "Please only select products you ordered."
@@ -2250,5 +2226,59 @@ msgid "The secured code will only be activated for orders over the given value."
 msgstr ""
 
 msgid "The secured code will only be activated for orders under the given value. Keep empty to disable this limitation."
+msgstr ""
+
+msgid "Return products"
+msgstr ""
+
+msgid "Return details"
+msgstr ""
+
+msgid "Activate secured return"
+msgstr ""
+
+msgid "Generate a QR code that your clients can scan at a post office to print a label. This format is used to secure the return parcel deposit."
+msgstr ""
+
+msgid "This option depends on the service activation in your Colissimo client space [%s]"
+msgstr ""
+
+msgid "activate the service"
+msgstr ""
+
+msgid "Only active for return labels generated from the client's order page."
+msgstr ""
+
+msgid "How to return your parcel?"
+msgstr ""
+
+msgid "Pack your products."
+msgstr ""
+
+msgid "Go to the post office of your choice:"
+msgstr ""
+
+msgid "At the drop-off point, present your barcode to your contact or to the machine (or your 9-character code) to have your label printed and make your deposit."
+msgstr ""
+
+msgid "Track your parcel shipment on %s"
+msgstr ""
+
+msgid "Return from a post office"
+msgstr ""
+
+msgid "Print your label and stick it on your parcel."
+msgstr ""
+
+msgid "Drop off your parcel at the post office of your choice:"
+msgstr ""
+
+msgid "Put your parcel in your mailbox before the appointment time."
+msgstr ""
+
+msgid "Your label %s has been generated"
+msgstr ""
+
+msgid "Your secured code for the return label %s has been generated."
 msgstr ""
 

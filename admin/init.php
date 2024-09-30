@@ -147,7 +147,7 @@ class LpcAdminInit {
     }
 
     public function dismissFeedback() {
-        update_option('lpc_feedback_dismissed', true);
+        update_option('lpc_feedback_dismissed', true, false);
     }
 
     public function showFeedbackModal() {
@@ -155,12 +155,12 @@ class LpcAdminInit {
     }
 
     private function askForFeedback() {
-        $deadline = new DateTime('2024-08-01');
+        $deadline = new DateTime('2025-01-01');
         $now      = new DateTime();
 
-        if ($now >= $deadline) {
-            return;
-        }
+        // if ($now >= $deadline) {
+        // return;
+        // }
 
         $feedbackDismissed = LpcHelper::get_option('lpc_feedback_dismissed', false);
         $lastAskedFeedback = LpcHelper::get_option('lpc_asked_feedback', 0);
@@ -169,7 +169,7 @@ class LpcAdminInit {
             return;
         }
 
-        update_option('lpc_asked_feedback', time());
+        update_option('lpc_asked_feedback', time(), false);
 
         // Get the number of labels generated
         $outwardLabelDb = LpcRegister::get('outwardLabelDb');
