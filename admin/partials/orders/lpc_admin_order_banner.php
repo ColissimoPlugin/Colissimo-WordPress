@@ -31,6 +31,7 @@ $packagings               = LpcHelper::get_option('lpc_packagings', []);
 usort($packagings, function ($a, $b) {
     return $a['priority'] > $b['priority'] ? 1 : - 1;
 });
+$securedReturn = $args['secured_return_active'];
 ?>
 
 <div class="lpc__admin__order_banner">
@@ -368,14 +369,14 @@ usort($packagings, function ($a, $b) {
 					<input type="checkbox"
 						   name="lpc__admin__order_banner__generate_label__block_code__input"
 						   id="lpc__admin__order_banner__generate_label__block_code__input"
-						   <?php checked(!empty($args['blocking_code_checked'])); ?>>
+                        <?php checked(!empty($args['blocking_code_checked'])); ?>>
 				</div>
             <?php } ?>
 			<div class="lpc__admin__order_banner__generate_label__generate-label-button__container">
 				<select name="lpc__admin__order_banner__generate_label__outward_or_inward">
 					<option value="outward"><?php esc_html_e('Outward label', 'wc_colissimo'); ?></option>
-					<option value="inward"><?php esc_html_e('Inward label', 'wc_colissimo'); ?></option>
-					<option value="both"><?php esc_html_e('Outward and inward labels', 'wc_colissimo'); ?></option>
+					<option value="inward"<?php disabled($securedReturn); ?>><?php esc_html_e('Inward label', 'wc_colissimo'); ?></option>
+					<option value="both"<?php disabled($securedReturn); ?>><?php esc_html_e('Outward and inward labels', 'wc_colissimo'); ?></option>
 				</select>
 				<button type="button" class="button button-primary lpc__admin__order_banner__generate_label__generate-label-button">
                     <?php esc_html_e('Generate', 'wc_colissimo'); ?>

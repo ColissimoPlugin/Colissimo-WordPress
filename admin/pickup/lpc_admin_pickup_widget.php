@@ -70,6 +70,7 @@ class LpcAdminPickupWidget extends LpcComponent {
                 'token'             => $this->pickUpWidgetApi->authenticate(),
                 'dyPreparationTime' => LpcHelper::get_option('lpc_preparation_time', 1),
                 'dyWeight'          => '19000',
+                'origin'            => 'CMS',
             ];
 
         if (LpcHelper::get_option('lpc_prCustomizeWidget', 'no') == 'yes') {

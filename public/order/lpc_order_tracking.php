@@ -7,33 +7,41 @@ class LpcOrderTracking extends LpcComponent {
     protected $outwardLabelDb;
     /** @var LpcLabelInwardDownloadAccountAction */
     protected $labelInwardDownloadAccountAction;
-
+    /** @var LpcCapabilitiesPerCountry */
     protected $lpcCapabilitiesPerCountry;
+    /** @var LpcUnifiedTrackingApi */
+    protected $unifiedTrackingApi;
 
     public function __construct(
         LpcOutwardLabelDb $outwardLabelDb = null,
         LpcLabelInwardDownloadAccountAction $labelInwardDownloadAccountAction = null,
-        LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null
+        LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null,
+        LpcUnifiedTrackingApi $unifiedTrackingApi = null
     ) {
         $this->outwardLabelDb                   = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
         $this->labelInwardDownloadAccountAction = LpcRegister::get('labelInwardDownloadAccountAction', $labelInwardDownloadAccountAction);
         $this->lpcCapabilitiesPerCountry        = LpcRegister::get('capabilitiesPerCountry', $lpcCapabilitiesPerCountry);
+        $this->unifiedTrackingApi               = LpcRegister::get('unifiedTrackingApi', $unifiedTrackingApi);
     }
 
     public function getDependencies(): array {
-        return ['outwardLabelDb', 'labelInwardDownloadAccountAction', 'capabilitiesPerCountry'];
+        return ['outwardLabelDb', 'labelInwardDownloadAccountAction', 'capabilitiesPerCountry', 'unifiedTrackingApi'];
     }
 
     public function init() {
         add_filter('woocommerce_account_orders_columns', [$this, 'addTrackingLinkTitle'], 10, 1);
         add_action('woocommerce_my_account_my_orders_column_order-tracking', [$this, 'addTrackingLinkData'], 10, 1);
-        add_action('woocommerce_order_details_after_order_table', [$this, 'addReturnLabelDownload'], 10, 1);
+
+        add_action('woocommerce_order_details_after_order_table', [$this, 'addTrackingInformation'], 10, 1);
+        add_action('woocommerce_order_details_after_order_table', [$this, 'addReturnLabelDownload'], 11, 1);
     }
 
     public function addTrackingLinkTitle($columns) {
+        $addTrackingColumn = 'no' !== LpcHelper::get_option('lpc_show_tracking_column_front', 'no');
+
         $newColumns = [];
         foreach ($columns as $key => $column) {
-            if ('order-actions' === $key) {
+            if ('order-actions' === $key && $addTrackingColumn) {
                 $newColumns['order-tracking'] = __('Colissimo order tracking', 'wc_colissimo');
             }
             $newColumns[$key] = $column;
@@ -70,6 +78,54 @@ class LpcOrderTracking extends LpcComponent {
         }
 
         echo implode('<br />', $output);
+    }
+
+    public function addTrackingInformation(WC_Order $order) {
+
+        $orderId = $order->get_id();
+        $labels  = $this->outwardLabelDb->getLabelsInfosForOrdersId([$orderId]);
+        if (empty($labels)) {
+            return;
+        }
+        $isWebsitePage = 'website_tracking_page' === LpcHelper::get_option('lpc_email_tracking_link', 'website_tracking_page');
+        ?>
+		<h2 class="woocommerce-column__title"><?php esc_html_e('Colissimo tracking', 'wc_colissimo'); ?></h2>
+		<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
+			<thead>
+				<tr>
+                    <?php if (count($labels) > 1) { ?>
+						<th class="woocommerce-table__product-name parcel-number"><?php esc_html_e('Parcel', 'wc_colissimo'); ?></th>
+                    <?php } ?>
+					<th class="woocommerce-table__product-table parcel-tracking"><?php esc_html_e('Tracking', 'wc_colissimo'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+                <?php
+                $i = 0;
+                foreach ($labels as $oneLabel) {
+                    $i ++;
+                    ?>
+					<tr class="woocommerce-table__line-item order_item">
+                        <?php if (count($labels) > 1) { ?>
+							<td class="woocommerce-table__parcel-number parcel-number">
+                                <?php echo esc_html(sprintf(__('Parcel n°%s', 'wc_colissimo'), $i)); ?>
+							</td>
+                        <?php } ?>
+						<td class="woocommerce-table__parcel-tracking parcel-tracking">
+                            <?php
+                            if ($isWebsitePage) {
+                                $trackingLink = get_site_url() . $this->unifiedTrackingApi->getTrackingPageUrlForOrder($orderId, $oneLabel->tracking_number);
+                            } else {
+                                $trackingLink = str_replace('{lpc_tracking_number}', $oneLabel->tracking_number, LpcAbstractShipping::LPC_LAPOSTE_TRACKING_LINK);
+                            }
+                            ?>
+							<a target="_blank" href="<?php echo esc_url($trackingLink); ?>"><?php echo esc_html($oneLabel->tracking_number); ?></a>
+						</td>
+					</tr>
+                <?php } ?>
+			</tbody>
+		</table>
+        <?php
     }
 
     public function addReturnLabelDownload(WC_Order $order) {

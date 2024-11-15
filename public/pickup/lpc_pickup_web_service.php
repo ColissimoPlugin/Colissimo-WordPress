@@ -7,7 +7,7 @@ class LpcPickupWebService extends LpcPickup {
     const LEAFLET_JS_URL = 'https://unpkg.com/leaflet@1.9.2/dist/leaflet.js';
     const LEAFLET_JS_INTEGRITY = 'sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=';
     const LEAFLET_CSS_URL = 'https://unpkg.com/leaflet@1.9.2/dist/leaflet.css';
-    const GOOGLE_MAPS_JS_URL = 'https://maps.googleapis.com/maps/api/js?key=';
+    const GOOGLE_MAPS_JS_URL = 'https://maps.googleapis.com/maps/api/js?loading=async&libraries=marker&key=';
 
     protected $modal;
     protected $ajaxDispatcher;

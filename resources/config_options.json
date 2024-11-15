@@ -51,10 +51,11 @@
       "id": "lpc_id_webservices",
       "type": "text",
       "title": "User Name",
-      "desc": "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr",
+      "desc": "User Name of your account for La Poste webservices. Must have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr",
       "desc_tip": true,
       "class": "",
-      "default": ""
+      "default": "",
+      "placeholder": "123456"
     },
     {
       "id": "lpc_pwd_webservices",
@@ -72,7 +73,7 @@
       "id": "lpc_parent_account",
       "type": "text",
       "title": "Parent account user name",
-      "desc": "The 6 digits number of the parent account, if you are using an advanced Colissimo user.",
+      "desc": "The User Name of the parent account, if you are using an advanced Colissimo user.",
       "desc_tip": true,
       "class": "",
       "default": ""
@@ -486,10 +487,6 @@
       "title": "Return labels"
     },
     {
-      "id": "lpc_secured_return",
-      "type": "secured_return"
-    },
-    {
       "id": "lpc_customers_download_return_label",
       "type": "select",
       "title": "Allow customers to download return label from their account",
@@ -516,6 +513,10 @@
       }
     },
     {
+      "id": "lpc_secured_return",
+      "type": "secured_return"
+    },
+    {
       "id": "lpc_bal_return",
       "type": "checkbox",
       "title": "MailBox pick-up",
@@ -523,6 +524,15 @@
       "desc_tip": true,
       "row_class": "lpc_bal_return_container",
       "class": ""
+    },
+    {
+      "id": "lpc_createReturnLabelWithOutward",
+      "type": "checkbox",
+      "title": "Automatically create return label at the same time as the outward label",
+      "desc": "If you don't activate this option, you can still manually create return labels on order shipping page",
+      "desc_tip": true,
+      "class": "",
+      "row_class": "lpc_createReturnLabelWithOutward_container"
     },
     {
       "id": "lpc_using_insurance_inward",
@@ -557,14 +567,6 @@
       }
     },
     {
-      "id": "lpc_createReturnLabelWithOutward",
-      "type": "checkbox",
-      "title": "Automatically create return label at the same time as the outward label",
-      "desc": "If you don't activate this option, you can still manually create return labels on order shipping page",
-      "desc_tip": true,
-      "class": ""
-    },
-    {
       "id": "lpc_email_return_label",
       "type": "checkbox",
       "title": "Automatically email the return label to the customer",
@@ -597,30 +599,32 @@
       "type": "text",
       "title": "IP address",
       "class": "",
+      "row_class": "lpc_zpldpl_labels_ip_container",
       "default": "",
-      "desc": "IPV4 format IP address. Only if Ethernet is selected for Port",
-      "desc_tip": true
+      "desc": "IPV4 format IP address.",
+      "desc_tip": true,
+      "placeholder": "192.168.0.100"
     },
     {
       "id": "lpc_zpldpl_labels_protocol",
       "type": "select",
       "title": "Protocol",
       "class": "",
+      "row_class": "lpc_zpldpl_labels_protocol_container",
       "default": "DATAMAX",
       "options": {
         "DATAMAX": "DATAMAX",
         "INTERMEC": "INTERMEC",
         "ZEBRA": "ZEBRA"
-      },
-      "desc": "Only if USB is selected for Port",
-      "desc_tip": true
+      }
     },
     {
       "id": "lpc_zpldpl_labels_urlport",
       "type": "text",
       "title": "URL port",
       "class": "",
-      "default": "8000"
+      "default": "8000",
+      "placeholder": "8000"
     },
     {
       "id": "lpc_zpldpl_labels_urlprotocol",
@@ -669,6 +673,19 @@
       "options": {
         "website_tracking_page": "This website's tracking page",
         "laposte_tracking_page": "La Poste's tracking page"
+      }
+    },
+    {
+      "id": "lpc_show_tracking_column_front",
+      "type": "select",
+      "title": "Add a column for the order tracking",
+      "desc": "The clients will see an additional column containing the tracking number on their orders listing.",
+      "desc_tip": true,
+      "class": "",
+      "default": "no",
+      "options": {
+        "no": "No",
+        "yes": "Yes"
       }
     },
     {
@@ -727,6 +744,7 @@
       "desc": "If you select \"Yes\", the extra cost will be applied even if the shipping is free. This includes \"Free from order value\", \"Always free?\" and \"Free shipping classes\" options.",
       "desc_tip": true,
       "class": "",
+      "row_class": "lpc_extra_cost_over_free_container",
       "default": "no",
       "options": {
         "yes": "Yes",
@@ -874,19 +892,6 @@
       "default": ""
     },
     {
-      "id": "lpc_show_list_only_mobile",
-      "type": "select",
-      "title": "Default display in mobile",
-      "desc": "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list.",
-      "desc_tip": true,
-      "class": "",
-      "default": "map",
-      "options": {
-        "map": "Map and list",
-        "list": "List only"
-      }
-    },
-    {
       "id": "lpc_pickup_map_type",
       "type": "select",
       "title": "Pickup map type",
@@ -905,15 +910,29 @@
       "desc": "The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it.",
       "desc_tip": true,
       "class": "",
+      "row_class": "lpc_gmap_key_container",
       "default": ""
+    },
+    {
+      "id": "lpc_show_list_only_mobile",
+      "type": "select",
+      "title": "Default display in mobile",
+      "desc": "When the user is on a mobile device, the default display can be the list of relays or the map and the list.",
+      "desc_tip": true,
+      "class": "",
+      "row_class": "lpc_show_list_only_mobile_container",
+      "default": "map",
+      "options": {
+        "map": "Map and list",
+        "list": "List only"
+      }
     },
     {
       "id": "lpc_max_relay_point",
       "type": "number",
       "title": "Maximum number of displayed relays",
-      "desc": "Only applicable for map type other than Colissimo widget.",
-      "desc_tip": true,
       "class": "",
+      "row_class": "lpc_max_relay_point_container",
       "default": "20",
       "custom_attributes": {
         "min": "1",
@@ -931,9 +950,8 @@
       "id": "lpc_show_international",
       "type": "checkbox",
       "title": "Show international Relay Points",
-      "desc": "Only applicable for map type other than Colissimo widget.",
-      "desc_tip": true,
       "class": "",
+      "row_class": "lpc_show_international_container",
       "default": ""
     },
     {
@@ -952,6 +970,7 @@
       "desc": "If enabled, you can customize font and font color of the Colissimo widget",
       "desc_tip": true,
       "class": "",
+      "row_class": "lpc_prCustomizeWidget_container",
       "default": ""
     },
     {
@@ -959,6 +978,7 @@
       "type": "color",
       "title": "Colour of the selected pickup point in the list and on the map",
       "class": "",
+      "row_class": "lpc_prAddressTextColor_container",
       "default": ""
     },
     {
@@ -966,6 +986,7 @@
       "type": "color",
       "title": "Information icons color",
       "class": "",
+      "row_class": "lpc_prListTextColor_container",
       "default": ""
     },
     {
@@ -975,6 +996,7 @@
       "desc": "Font for texts inside the widget",
       "desc_tip": true,
       "class": "",
+      "row_class": "lpc_prDisplayFont_container",
       "default": "verdana",
       "options": {
         "georgia": "Georgia, serif",

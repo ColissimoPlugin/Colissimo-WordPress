@@ -55,7 +55,7 @@ $videoTutorials    = admin_url('admin.php?page=wc-settings&tab=lpc&section=video
             esc_html_e('To connect the plugin, you must enter your Colissimo credentials in the "General" tab of this plugin.', 'wc_colissimo');
             echo ' ';
             printf(
-                __('The ID must be a 6 digits number, this is the one you use to connect to %s.', 'wc_colissimo'),
+                __('The User Name must be the one you use to connect to %s.', 'wc_colissimo'),
                 '<a target="_blank" href="' . esc_url($colissimoWebsite) . '">Colissimo Entreprise</a>'
             );
             ?>

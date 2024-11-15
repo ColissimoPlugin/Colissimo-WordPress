@@ -194,7 +194,10 @@ class LpcLabelGenerationOutward extends LpcComponent {
             );
         }
 
-        if ('yes' === LpcHelper::get_option('lpc_createReturnLabelWithOutward')) {
+        $customerReturn = 'no' !== LpcHelper::get_option('lpc_customers_download_return_label', 'no');
+        $securedReturn  = 'no' !== LpcHelper::get_option('lpc_secured_return', 'no');
+        $autoReturn     = 'yes' === LpcHelper::get_option('lpc_createReturnLabelWithOutward', 'no');
+        if ($autoReturn && (!$customerReturn || !$securedReturn)) {
             $this->labelGenerationInward->generate($order);
         }
 

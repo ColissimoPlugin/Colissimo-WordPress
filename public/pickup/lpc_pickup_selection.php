@@ -129,7 +129,7 @@ class LpcPickupSelection extends LpcComponent {
 
     private function updatePickupMeta($orderId, $pickUpInfo) {
         $order = wc_get_order($orderId);
-        if (empty($order)) {
+        if (empty($order) || empty($pickUpInfo['identifiant'])) {
             return;
         }
 

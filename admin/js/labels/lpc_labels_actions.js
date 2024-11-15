@@ -105,6 +105,7 @@ jQuery(function ($) {
                     }).error(function (xhr, status, error) {
                         console.error('error on label ' + info.trackingNumber);
                         console.error('Error message: ' + xhr.responseText);
+                        console.error('Error message: ' + error);
                         if ($('#lpc_thermal_print_error_message').length === 0) {
                             displayErrors(lpcLabelsActions.errorMsgPrintThermal + ' ' + xhr.responseText + ' URL: ' + info.url);
                         }

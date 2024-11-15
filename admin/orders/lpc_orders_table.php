@@ -276,27 +276,27 @@ END_HTML;
     public function get_bulk_actions() {
         $actions = [];
 
-        if (current_user_can('lpc_manage_bordereau')) {
-            $actions[self::BULK_BORDEREAU_GENERATION_ACTION_NAME] = __('Generate bordereau', 'wc_colissimo');
-        }
-
         if (current_user_can('lpc_download_labels')) {
             $actions[self::BULK_LABEL_DOWNLOAD_ACTION_NAME] = __('Download label information', 'wc_colissimo');
         }
 
         if (current_user_can('lpc_manage_labels')) {
-            $actions[self::BULK_LABEL_GENERATION_INWARD_ACTION_NAME]  = __('Generate inward labels', 'wc_colissimo');
             $actions[self::BULK_LABEL_GENERATION_OUTWARD_ACTION_NAME] = __('Generate outward labels', 'wc_colissimo');
+            $actions[self::BULK_LABEL_GENERATION_INWARD_ACTION_NAME]  = __('Generate inward labels', 'wc_colissimo');
         }
 
         if (current_user_can('lpc_print_labels')) {
-            $actions[self::BULK_LABEL_PRINT_INWARD_ACTION_NAME]  = __('Print inward labels', 'wc_colissimo');
-            $actions[self::BULK_LABEL_PRINT_OUTWARD_ACTION_NAME] = __('Print outward labels', 'wc_colissimo');
             $actions[self::BULK_LABEL_PRINT_ACTION_NAME]         = __('Print label information', 'wc_colissimo');
+            $actions[self::BULK_LABEL_PRINT_OUTWARD_ACTION_NAME] = __('Print outward labels', 'wc_colissimo');
+            $actions[self::BULK_LABEL_PRINT_INWARD_ACTION_NAME]  = __('Print inward labels', 'wc_colissimo');
         }
 
         if (current_user_can('lpc_delete_labels')) {
             $actions[self::BULK_LABEL_DELETE_LABEL] = __('Delete labels', 'wc_colissimo');
+        }
+
+        if (current_user_can('lpc_manage_bordereau')) {
+            $actions[self::BULK_BORDEREAU_GENERATION_ACTION_NAME] = __('Generate bordereau', 'wc_colissimo');
         }
 
         return $actions;
@@ -693,8 +693,7 @@ END_DOWNLOAD_LINK;
         $trackingNumbers = $this->labelQueries->getTrackingNumbersForOrdersId($ids, $labelType);
 
         $stringTrackingNumbers = implode(',', $trackingNumbers);
-
-        $needInvoice = false;
+        $needInvoice           = false;
 
         if (LpcLabelPrintAction::PRINT_LABEL_TYPE_OUTWARD_AND_INWARD === $labelType) {
             $needInvoice = true;
@@ -708,6 +707,10 @@ END_DOWNLOAD_LINK;
 <div class="notice lpc-notice is-dismissible lpc-notice-error-notice notice-error"><p>$i18n</p></div>
 END_DOWNLOAD_LINK;
 
+            return;
+        }
+
+        if (empty($stringTrackingNumbers)) {
             return;
         }
 
@@ -753,6 +756,10 @@ END_PRINT_SCRIPT;
         }
 
         echo '<hr class="wp-header-end">';
+
+        $securedReturnActive = 'no' !== LpcHelper::get_option('lpc_customers_download_return_label', 'no');
+        $securedReturnActive = $securedReturnActive && 'no' !== LpcHelper::get_option('lpc_secured_return', 'no');
+        echo '<input type="hidden" id="lpc_secured_return" value="' . intval($securedReturnActive) . '" />';
     }
 
     protected function lpcGetFilters(): array {
@@ -774,7 +781,9 @@ END_PRINT_SCRIPT;
         $trackingNumbersByOrders         = [];
         $renderedTrackingNumbersByOrders = [];
         $labelFormatByTrackingNumber     = [];
-        $ordersInwardFailed              = get_option(LpcLabelGenerationInward::ORDERS_INWARD_PARCEL_FAILED, []);
+        $ordersInwardFailed              = LpcHelper::get_option(LpcLabelGenerationInward::ORDERS_INWARD_PARCEL_FAILED, []);
+        $securedReturnActive             = 'no' !== LpcHelper::get_option('lpc_customers_download_return_label', 'no');
+        $securedReturnActive             = $securedReturnActive && 'no' !== LpcHelper::get_option('lpc_secured_return', 'no');
 
         $this->labelQueries->getTrackingNumbersByOrdersId($trackingNumbersByOrders, $labelFormatByTrackingNumber, $labelInfoByTrackingNumber, $ordersId);
 
@@ -845,7 +854,7 @@ END_PRINT_SCRIPT;
                         . '</span><br>';
                 }
 
-                if (current_user_can('lpc_manage_labels')) {
+                if (!$securedReturnActive && current_user_can('lpc_manage_labels')) {
                     $renderedTrackingNumbersByOrders[$oneOrderId] .= '<div class="lpc_generate_inward_label lpc_generate_label">
                                                                  <i class="dashicons dashicons-plus lpc_generate_label_dashicon"'
                                                                      . $this->labelQueries->getLabelInwardGenerateAttr($oneOrderId, $outLabel) . '></i>'

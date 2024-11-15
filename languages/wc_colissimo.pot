@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.2.0\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.3.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-09-30\n"
+"POT-Creation-Date: 2024-11-15\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -48,7 +48,7 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
-msgid "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
+msgid "User Name of your account for La Poste webservices. Must have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
 msgstr ""
 
 msgid "Colissimo logs"
@@ -486,9 +486,6 @@ msgstr ""
 msgid "Show international Relay Points"
 msgstr ""
 
-msgid "Only applicable for map type other than Colissimo widget."
-msgstr ""
-
 msgid "Outward label was not generated:"
 msgstr ""
 
@@ -633,13 +630,10 @@ msgstr ""
 msgid "IP address"
 msgstr ""
 
-msgid "IPV4 format IP address. Only if Ethernet is selected for Port"
+msgid "IPV4 format IP address."
 msgstr ""
 
 msgid "Protocol"
-msgstr ""
-
-msgid "Only if USB is selected for Port"
 msgstr ""
 
 msgid "Print inward labels"
@@ -1631,7 +1625,7 @@ msgstr ""
 msgid "International"
 msgstr ""
 
-msgid "Type of displayed relays"
+msgid "Types of displayed relays"
 msgstr ""
 
 msgid "SELECTED RELAY"
@@ -1646,7 +1640,7 @@ msgstr ""
 msgid "Default display in mobile"
 msgstr ""
 
-msgid "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
+msgid "When the user is on a mobile device, the default display can be the list of relays or the map and the list."
 msgstr ""
 
 msgid "Map and list"
@@ -1781,7 +1775,7 @@ msgstr ""
 msgid "To connect the plugin, you must enter your Colissimo credentials in the \"General\" tab of this plugin."
 msgstr ""
 
-msgid "The ID must be a 6 digits number, this is the one you use to connect to %s."
+msgid "The User Name must be the one you use to connect to %s."
 msgstr ""
 
 msgid "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
@@ -2168,7 +2162,7 @@ msgstr ""
 msgid "Parent account user name"
 msgstr ""
 
-msgid "The 6 digits number of the parent account, if you are using an advanced Colissimo user."
+msgid "The User Name of the parent account, if you are using an advanced Colissimo user."
 msgstr ""
 
 msgid "Please enter your Colissimo application key to be able to generate labels and show the pickup map."
@@ -2280,5 +2274,26 @@ msgid "Your label %s has been generated"
 msgstr ""
 
 msgid "Your secured code for the return label %s has been generated."
+msgstr ""
+
+msgid "Application key required to get relay points"
+msgstr ""
+
+msgid "Add a column for the order tracking"
+msgstr ""
+
+msgid "The clients will see an additional column containing the tracking number on their orders listing."
+msgstr ""
+
+msgid "Parcel n°%s"
+msgstr ""
+
+msgid "If the secured return is enabled, only your customers will be able to generate return labels."
+msgstr ""
+
+msgid "URL port"
+msgstr ""
+
+msgid "URL protocol"
 msgstr ""
 

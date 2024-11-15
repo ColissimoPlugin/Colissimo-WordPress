@@ -379,14 +379,6 @@ class LpcSettingsTab extends LpcComponent {
     }
 
     public function displayCredentials() {
-        wp_enqueue_script(
-            'lpc_settings_credentialsjs',
-            plugins_url('/js/settings/credentials.js', __FILE__),
-            ['jquery'],
-            LPC_VERSION,
-            true
-        );
-
         $args = [
             'id_and_name'     => 'lpc_credentials_type',
             'label'           => 'Connection type',
@@ -415,6 +407,8 @@ class LpcSettingsTab extends LpcComponent {
     }
 
     public function displayVideoTutorials() {
+        wp_register_style('lpc_settings_videos', plugins_url('/css/settings/lpc_settings_videos.css', __FILE__), [], LPC_VERSION);
+        wp_enqueue_style('lpc_settings_videos');
         $args                = [];
         $args['id_and_name'] = 'lpc_video_tutorials';
         $args['label']       = 'Video tutorials';
@@ -639,6 +633,14 @@ class LpcSettingsTab extends LpcComponent {
      * Tabs of the configuration page
      */
     public function settingsSections() {
+        wp_enqueue_script(
+            'lpc_settings_settingsjs',
+            plugins_url('/js/settings/settings_display.js', __FILE__),
+            ['jquery'],
+            LPC_VERSION,
+            true
+        );
+
         $currentTab = $this->getCurrentSection();
 
         $sections = [
@@ -993,18 +995,17 @@ class LpcSettingsTab extends LpcComponent {
             ],
         ];
 
-        $tips = __('Only applicable for map type other than Colissimo widget.', 'wc_colissimo');
-        $tips .= ' ';
-        $tips .= __('For parcels weighing more than 20kg, only the "Post office" relay type will be shown.', 'wc_colissimo');
+        $tips = __('For parcels weighing more than 20kg, only the "Post office" relay type will be shown.', 'wc_colissimo');
 
         $args                    = [];
         $args['id_and_name']     = 'lpc_relay_point_type';
-        $args['label']           = 'Type of displayed relays';
+        $args['label']           = 'Types of displayed relays';
         $args['tips']            = $tips;
         $args['values']          = $relayTypesValues;
         $args['selected_values'] = get_option($args['id_and_name']);
         $args['multiple']        = true;
         $args['optgroup']        = true;
+        $args['row_class']       = 'lpc_relay_point_type_container';
         echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
     }
 

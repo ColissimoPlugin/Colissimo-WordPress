@@ -41,8 +41,8 @@ msgstr "Configuration générale"
 msgid "ID"
 msgstr "ID"
 
-msgid "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
-msgstr "Identifiant de votre compte pour les webservices La Poste. Doit être un nombre à 6 chiffres et avoir un contrat Facilité ou Privilège valide sur colissimo.entreprise.laposte.fr"
+msgid "User Name of your account for La Poste webservices. Must have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
+msgstr "Identifiant de votre compte pour les webservices La Poste. Doit avoir un contrat Facilité ou Privilège valide sur colissimo.entreprise.laposte.fr"
 
 msgid "Colissimo logs"
 msgstr "Logs Colissimo"
@@ -479,9 +479,6 @@ msgstr "AUne erreur est survenue lors de la confirmation du retour boîte aux le
 msgid "Show international Relay Points"
 msgstr "Afficher les points de retrait à l’international"
 
-msgid "Only applicable for map type other than Colissimo widget."
-msgstr "Applicable seulement pour les types de carte autres que le widget Colissimo."
-
 msgid "Outward label was not generated:"
 msgstr "L’étiquette aller n’a pas été générée :"
 
@@ -626,14 +623,11 @@ msgstr "Ethernet"
 msgid "IP address"
 msgstr "Adresse IP"
 
-msgid "IPV4 format IP address. Only if Ethernet is selected for Port"
-msgstr "Adresse IP au format IPV4. Seulement si Ethernet est sélectionné comme Port "
+msgid "IPV4 format IP address."
+msgstr "Adresse IP au format IPV4."
 
 msgid "Protocol"
 msgstr "Protocole"
-
-msgid "Only if USB is selected for Port"
-msgstr "Seulement si USB est sélectionné comme Port"
 
 msgid "Print inward labels"
 msgstr "Imprimer l’étiquette retour"
@@ -1166,7 +1160,7 @@ msgid "Insured"
 msgstr "Assuré"
 
 msgid "Allow customers to download return label from their account"
-msgstr "Autoriser les clients a télécharger l’étiquette de retour depuis leur compte"
+msgstr "Autoriser les clients à télécharger l’étiquette de retour depuis leur compte"
 
 msgid "If the return doesn't exist, it will be generated"
 msgstr "Si l’étiquette de retour n’éxiste pas elle sera générée"
@@ -1624,8 +1618,8 @@ msgstr "Bureau de poste"
 msgid "International"
 msgstr "International"
 
-msgid "Type of displayed relays"
-msgstr "Type de points de retrait affichés"
+msgid "Types of displayed relays"
+msgstr "Types de points de retrait affichés"
 
 msgid "SELECTED RELAY"
 msgstr "POINT DE RETRAIT CHOISI"
@@ -1639,8 +1633,8 @@ msgstr "Heures d’ouverture"
 msgid "Default display in mobile"
 msgstr "Affichage par défaut en mobile"
 
-msgid "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
-msgstr "Quand l’utilisateur est sur un appareil mobile avec GoogleMaps ou Leaflet, l’affichage par défaut peut être la liste des points de retrait ou la carte et la liste."
+msgid "When the user is on a mobile device, the default display can be the list of relays or the map and the list."
+msgstr "Quand l’utilisateur est sur un appareil mobile, l’affichage par défaut peut être la liste des points de retrait ou la carte et la liste."
 
 msgid "Map and list"
 msgstr "Carte et liste"
@@ -1774,8 +1768,8 @@ msgstr "J’associe mon compte à l’extension Colissimo"
 msgid "To connect the plugin, you must enter your Colissimo credentials in the \"General\" tab of this plugin."
 msgstr "Pour connecter l’extension, vous devez entrer vos identifiants Colissimo dans l’onglet \"Général\" de cette extension."
 
-msgid "The ID must be a 6 digits number, this is the one you use to connect to %s."
-msgstr "L’identifiant doit être un nombre à 6 chiffres, c’est celui que vous utilisez pour vous connecter sur %s."
+msgid "The User Name must be the one you use to connect to %s."
+msgstr "L’identifiant doit être celui que vous utilisez pour vous connecter sur %s."
 
 msgid "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
 msgstr "Je configure mes paramètres pour simplifier mes préparations d’expédition grâce aux fonctionnalités Colissimo"
@@ -2161,8 +2155,8 @@ msgstr "Type de connexion"
 msgid "Parent account user name"
 msgstr "Identifiant du compte parent"
 
-msgid "The 6 digits number of the parent account, if you are using an advanced Colissimo user."
-msgstr "Le numéro à 6 chiffres du compte parent, si vous utilisez un utilisateur avancé Colissimo."
+msgid "The User Name of the parent account, if you are using an advanced Colissimo user."
+msgstr "L'identifiant du compte parent, si vous utilisez un utilisateur avancé Colissimo."
 
 msgid "Please enter your Colissimo application key to be able to generate labels and show the pickup map."
 msgstr "Veuillez entrer votre clé de connexion Colissimo pour pouvoir générer des étiquettes et afficher la carte des points de retrait."
@@ -2275,3 +2269,26 @@ msgstr "Votre étiquette %s a bien été générée"
 msgid "Your secured code for the return label %s has been generated."
 msgstr "Votre code sécurisé pour l'étiquette retour %s a bien été généré."
 
+msgid "Application key required to get relay points"
+msgstr "Clé de connexion requise pour obtenir les points de retrait"
+
+msgid "Add a column for the order tracking"
+msgstr "Ajouter une colonne pour le suivi des commandes"
+
+msgid "The clients will see an additional column containing the tracking number on their orders listing."
+msgstr "Les clients verront une colonne supplémentaire contenant le numéro de suivi sur le listing de leurs commandes."
+
+msgid "Colissimo tracking"
+msgstr "Suivi Colissimo"
+
+msgid "Parcel n°%s"
+msgstr "Colis n°%s"
+
+msgid "If the secured return is enabled, only your customers will be able to generate return labels."
+msgstr "Si le retour sécurisé est activé, seuls vos clients pourront générer des étiquettes de retour."
+
+msgid "URL port"
+msgstr "Port de l'URL"
+
+msgid "URL protocol"
+msgstr "Protocole de l'URL"

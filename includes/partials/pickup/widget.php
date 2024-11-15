@@ -13,7 +13,7 @@
         echo LpcHelper::renderPartial('pickup' . DS . 'pick_up_info.php', ['relay' => $args['currentRelay']]);
     }
     ?>
-	<div>
+	<div id="lpc_layer_pickup_selection_button">
         <?php
         if (!empty($args['currentRelay'])) {
             $linkText = __('Change PickUp point', 'wc_colissimo');

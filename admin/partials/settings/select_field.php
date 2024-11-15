@@ -5,8 +5,9 @@ $multiple        = empty($args['multiple']) ? '' : 'multiple';
 $selected_values = $args['selected_values'] ? $args['selected_values'] : [];
 $values          = $args['values'];
 $tips            = empty($args['tips']) ? '' : $args['tips'];
+$rowClass        = $args['row_class'] ?? '';
 ?>
-<tr valign="top">
+<tr class="<?php echo esc_attr($rowClass); ?>">
 	<th scope="row">
 		<label for="<?php esc_attr_e($id_and_name); ?>">
             <?php esc_html_e($label, 'wc_colissimo');

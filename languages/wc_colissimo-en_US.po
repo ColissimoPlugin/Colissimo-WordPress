@@ -41,8 +41,8 @@ msgstr "General configuration"
 msgid "ID"
 msgstr "ID"
 
-msgid "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
-msgstr "ID of your account for La Poste webservices. Must be a 6 digits number and have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
+msgid "User Name of your account for La Poste webservices. Must have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
+msgstr "User Name of your account for La Poste webservices. Must have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr"
 
 msgid "Colissimo logs"
 msgstr "Colissimo logs"
@@ -479,9 +479,6 @@ msgstr "An error occured while confirming the mailBox pick-up."
 msgid "Show international Relay Points"
 msgstr "Show international Relay Points"
 
-msgid "Only applicable for map type other than Colissimo widget."
-msgstr "Only applicable for map type other than Colissimo widget."
-
 msgid "Outward label was not generated:"
 msgstr "Outward label was not generated:"
 
@@ -626,14 +623,11 @@ msgstr "Ethernet"
 msgid "IP address"
 msgstr "IP address"
 
-msgid "IPV4 format IP address. Only if Ethernet is selected for Port"
-msgstr "IPV4 format IP address. Only if Ethernet is selected for Port"
+msgid "IPV4 format IP address."
+msgstr "IPV4 format IP address."
 
 msgid "Protocol"
 msgstr "Protocol"
-
-msgid "Only if USB is selected for Port"
-msgstr "Only if USB is selected for Port"
 
 msgid "Print inward labels"
 msgstr "Print inward labels"
@@ -1624,8 +1618,8 @@ msgstr "Post office"
 msgid "International"
 msgstr "International"
 
-msgid "Type of displayed relays"
-msgstr "Type of displayed relays"
+msgid "Types of displayed relays"
+msgstr "Types of displayed relays"
 
 msgid "SELECTED RELAY"
 msgstr "SELECTED RELAY"
@@ -1639,8 +1633,8 @@ msgstr "Opening hours"
 msgid "Default display in mobile"
 msgstr "Default display in mobile"
 
-msgid "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
-msgstr "When the user is on a mobile device with GoogleMaps or Leaflet, the default display can be the list of relays or the map and the list."
+msgid "When the user is on a mobile device, the default display can be the list of relays or the map and the list."
+msgstr "When the user is on a mobile device, the default display can be the list of relays or the map and the list."
 
 msgid "Map and list"
 msgstr "Map and list"
@@ -1774,8 +1768,8 @@ msgstr "I associate my account to the Colissimo plugin"
 msgid "To connect the plugin, you must enter your Colissimo credentials in the \"General\" tab of this plugin."
 msgstr "To connect the plugin, you must enter your Colissimo credentials in the \"General\" tab of this plugin."
 
-msgid "The ID must be a 6 digits number, this is the one you use to connect to %s."
-msgstr "The ID must be a 6 digits number, this is the one you use to connect to %s."
+msgid "The User Name must be the one you use to connect to %s."
+msgstr "The User Name must be the one you use to connect to %s."
 
 msgid "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
 msgstr "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
@@ -2161,8 +2155,8 @@ msgstr "Connection type"
 msgid "Parent account user name"
 msgstr "Parent account user name"
 
-msgid "The 6 digits number of the parent account, if you are using an advanced Colissimo user."
-msgstr "The 6 digits number of the parent account, if you are using an advanced Colissimo user."
+msgid "The User Name of the parent account, if you are using an advanced Colissimo user."
+msgstr "The User Name of the parent account, if you are using an advanced Colissimo user."
 
 msgid "Please enter your Colissimo application key to be able to generate labels and show the pickup map."
 msgstr "Please enter your Colissimo application key to be able to generate labels and show the pickup map."
@@ -2274,3 +2268,24 @@ msgstr "Your label %s has been generated"
 
 msgid "Your secured code for the return label %s has been generated."
 msgstr "Your secured code for the return label %s has been generated."
+
+msgid "Application key required to get relay points"
+msgstr "Application key required to get relay points"
+
+msgid "Add a column for the order tracking"
+msgstr "Add a column for the order tracking"
+
+msgid "The clients will see an additional column containing the tracking number on their orders listing."
+msgstr "The clients will see an additional column containing the tracking number on their orders listing."
+
+msgid "Parcel n°%s"
+msgstr "Parcel n°%s"
+
+msgid "If the secured return is enabled, only your customers will be able to generate return labels."
+msgstr "If the secured return is enabled, only your customers will be able to generate return labels."
+
+msgid "URL port"
+msgstr "URL port"
+
+msgid "URL protocol"
+msgstr "URL protocol"

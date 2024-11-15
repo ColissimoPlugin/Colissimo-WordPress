@@ -108,10 +108,10 @@ class LpcPickupWidget extends LpcPickup {
             $availableCountries = ['FR'];
         }
 
-        $address = str_replace('’', "'", $customer['shipping_address'] ?? '');
+        $address  = str_replace('’', "'", $customer['shipping_address'] ?? '');
         $postcode = $customer['shipping_postcode'] ?? '';
-        $city = str_replace('’', "'", $customer['shipping_city'] ?? '');
-        $country = $customer['shipping_country'] ?? '';
+        $city     = str_replace('’', "'", $customer['shipping_city'] ?? '');
+        $country  = $customer['shipping_country'] ?? '';
 
         $widgetInfo = [
             'URLColissimo'      => self::BASE_URL,
@@ -124,6 +124,7 @@ class LpcPickupWidget extends LpcPickup {
             'token'             => $this->pickUpWidgetApi->authenticate(),
             'dyPreparationTime' => LpcHelper::get_option('lpc_preparation_time', 1),
             'dyWeight'          => '19000',
+            'origin'            => 'CMS',
         ];
 
         if (LpcHelper::get_option('lpc_prCustomizeWidget', 'no') == 'yes') {

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Colissimo shipping methods for WooCommerce
  * Description: This extension gives you the possibility to use the Colissimo shipping methods in WooCommerce
- * Version: 2.2.0
+ * Version: 2.3.0
  * Author: Colissimo
  * Author URI: https://www.colissimo.entreprise.laposte.fr/fr
  * Text Domain: wc_colissimo
@@ -40,8 +40,8 @@ if (
     define('LPC_CONTACT_PHONE', '0241742088');
 
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
-    $pluginData = get_plugin_data(LPC_FOLDER . DS . 'index.php');
-    define('LPC_VERSION', $pluginData['Version']);
+    $pluginData = get_file_data(__FILE__, ['version' => 'Version']);
+    define('LPC_VERSION', $pluginData['version']);
 
     class LpcInit {
         protected $register;
@@ -84,6 +84,15 @@ if (
             $this->handleDDP();
             $this->hposCompatibility();
             $this->initBlockCheckout();
+            $this->initTranslations();
+        }
+
+        public function initTranslations() {
+            add_action('plugins_loaded', function () {
+                if ('fr_FR' === get_locale()) {
+                    load_textdomain('wc_colissimo', LPC_FOLDER . 'languages/wc_colissimo-fr_FR.mo');
+                }
+            });
         }
 
         public function initBlockCheckout() {

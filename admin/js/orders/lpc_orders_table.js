@@ -71,4 +71,8 @@ jQuery(function ($) {
     $('#colissimo-tracking_number_import-button').off('click').on('click', function () {
         $inputFile.click();
     });
+
+    if ('1' === $('#lpc_secured_return').val()) {
+        $('#bulk-action-selector-top').find('option[value="bulk-label_generation_inward"]').attr('disabled', 'disabled');
+    }
 });

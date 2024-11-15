@@ -106,3 +106,7 @@
 	text-align: left;
 	max-width: 400px;
 }
+
+.lpc_label_action_delete:before, .lpc_label_action_send_email:before{
+	vertical-align: middle;
+}

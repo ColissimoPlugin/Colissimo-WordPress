@@ -375,6 +375,8 @@ class LpcAdminOrderBanner extends LpcComponent {
             $args['blocking_code_checked'] = (empty($minLimit) || $orderValue >= $minLimit) && (empty($maxLimit) || $orderValue <= $maxLimit);
         }
 
+        $args['secured_return_active'] = 'no' !== LpcHelper::get_option('lpc_customers_download_return_label', 'no') && 'no' !== LpcHelper::get_option('lpc_secured_return', 'no');
+
         echo LpcHelper::renderPartial('orders' . DS . 'lpc_admin_order_banner.php', $args);
     }
 
@@ -458,7 +460,12 @@ class LpcAdminOrderBanner extends LpcComponent {
                 }
             }
 
-            if ('inward' === $outwardOrInward || ('both' === $outwardOrInward && 'yes' !== LpcHelper::get_option('lpc_createReturnLabelWithOutward', 'no'))) {
+            $customersCanDownload  = 'no' !== LpcHelper::get_option('lpc_customers_download_return_label', 'no');
+            $securedReturn         = 'no' !== LpcHelper::get_option('lpc_secured_return', 'no');
+            $autoCreateReturnLabel = 'no' !== LpcHelper::get_option('lpc_createReturnLabelWithOutward', 'no');
+            $autoCreateReturnLabel = $autoCreateReturnLabel && (!$customersCanDownload || !$securedReturn);
+
+            if ('inward' === $outwardOrInward || ('both' === $outwardOrInward && !$autoCreateReturnLabel)) {
                 $this->lpcInwardLabelGeneration->generate($order, $customParams);
             }
         } catch (Exception $e) {

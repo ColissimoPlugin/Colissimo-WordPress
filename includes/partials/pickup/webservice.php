@@ -4,7 +4,7 @@ if (is_admin()) {
     if (!empty($currentScreen) && in_array($currentScreen->base, ['woocommerce_page_wc-orders', 'post'])) {
         if ('gmaps' === $args['mapType'] && !empty($args['apiKey'])) { ?>
             <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-			<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo $args['apiKey']; ?>" async defer></script>
+			<script src="https://maps.googleapis.com/maps/api/js?loading=async&libraries=marker&key=<?php echo $args['apiKey']; ?>" async defer></script>
             <?php
         }
 

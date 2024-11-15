@@ -81,7 +81,8 @@ jQuery(function ($) {
                     lat: coordinates.latitude,
                     lng: coordinates.longitude
                 },
-                disableDefaultUI: true
+                disableDefaultUI: true,
+                mapId: 'Colissimo'
             });
         } else if (lpcPickUpSelection.mapType === 'leaflet') {
             lpcMap = L.map('lpc_map').setView([
@@ -219,28 +220,21 @@ jQuery(function ($) {
 
         // Get the new markers and place them on the map
         if ('gmaps' === lpcPickUpSelection.mapType) {
-            let bounds = new google.maps.LatLngBounds();
-            const gmapsIcon = {
-                url: lpcPickUpSelection.mapMarker,
-                size: new google.maps.Size(36, 58),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(9, 32),
-                scaledSize: new google.maps.Size(18, 32)
-            };
-            markers.each(function (index, element) {
-                let relayPosition = new google.maps.LatLng($(element).attr('data-lpc-relay-latitude'), $(element).attr('data-lpc-relay-longitude'));
+            const bounds = new google.maps.LatLngBounds();
 
-                let markerLpc = new google.maps.Marker({
+            markers.each(function (index, element) {
+                const relayPosition = new google.maps.LatLng($(element).attr('data-lpc-relay-latitude'), $(element).attr('data-lpc-relay-longitude'));
+
+                const markerLpc = new google.maps.marker.AdvancedMarkerElement({
                     map: lpcGoogleMap,
                     position: relayPosition,
                     title: $(this).find('.lpc_layer_relay_name').text(),
-                    icon: gmapsIcon
+                    gmpClickable: true
                 });
 
                 // Add the information window on each marker
-                let infowindowLpc = new google.maps.InfoWindow({
-                    content: lpcGetRelayInfo($(this)),
-                    pixelOffset: new google.maps.Size(-9, -5)
+                const infowindowLpc = new google.maps.InfoWindow({
+                    content: lpcGetRelayInfo($(this))
                 });
                 lpcGmapsAttachClickInfoWindow(markerLpc, infowindowLpc, index);
                 lpcAttachClickChooseRelay(element);
@@ -364,11 +358,11 @@ jQuery(function ($) {
 
     // Add display relay detail click event
     function lpcGmapsAttachClickInfoWindow(marker, infoWindow, index) {
-        marker.addEventListener('click', function () {
+        google.maps.event.addListener(marker, 'click', function () {
             lpcGmapsClickHandler(marker, infoWindow);
         });
 
-        $('#lpc_layer_relay_' + index + ' .lpc_show_relay_details').click(function () {
+        $('#lpc_layer_relay_' + index + ' .lpc_show_relay_details').on('click', function () {
             lpcGmapsClickHandler(marker, infoWindow);
         });
     }
