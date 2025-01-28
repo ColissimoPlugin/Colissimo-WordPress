@@ -245,10 +245,13 @@ class LpcOrderQueries {
     public static function getLpcOrderIdsToRefreshDeliveryStatus(): array {
         global $wpdb;
 
+        $outwardLabels = $wpdb->prefix . 'lpc_outward_label';
         $orderItems    = $wpdb->prefix . 'woocommerce_order_items';
         $orderItemMeta = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
-        $timePeriod = '-' . LpcHelper::get_option('lpc_label_status_update_days', 90) . ' days';
+        $numberOfDays = LpcHelper::get_option('lpc_label_status_update_days', 90);
+        $numberOfDays = empty($numberOfDays) ? 90 : $numberOfDays;
+        $timePeriod   = '-' . $numberOfDays . ' days';
 
         /**
          * Filter allowing to modify the time period for which the tracking status should be updated.
@@ -267,7 +270,8 @@ class LpcOrderQueries {
             $orders     = $wpdb->prefix . 'wc_orders';
             $ordersMeta = $wpdb->prefix . 'wc_orders_meta';
             $query      = 'SELECT DISTINCT ' . $orderItems . '.order_id 
-                    FROM ' . $orderItems . '
+                    FROM ' . $orderItems . ' 
+                    JOIN ' . $outwardLabels . ' ON ' . $orderItems . '.order_id = ' . $outwardLabels . '.order_id 
                     JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
                     JOIN ' . $orders . ' ON ' . $orders . '.id = ' . $orderItems . '.order_id
                     LEFT JOIN ' . $ordersMeta . ' 
@@ -281,6 +285,7 @@ class LpcOrderQueries {
             $postmeta = $wpdb->prefix . 'postmeta';
             $query    = 'SELECT DISTINCT ' . $orderItems . '.order_id 
                     FROM ' . $orderItems . '
+                    JOIN ' . $outwardLabels . ' ON ' . $orderItems . '.order_id = ' . $outwardLabels . '.order_id 
                     JOIN ' . $orderItemMeta . ' ON ' . $orderItemMeta . '.order_item_id = ' . $orderItems . '.order_item_id
                     JOIN ' . $posts . ' ON ' . $posts . '.ID = ' . $orderItems . '.order_id
                     LEFT JOIN ' . $postmeta . ' 
@@ -521,9 +526,7 @@ class LpcOrderQueries {
             if (isset($requestFilters['country'])) {
                 $countries = array_filter(
                     $requestFilters['country'],
-                    function ($country) {
-                        return !empty($country);
-                    }
+                    fn($country) => !empty($country)
                 );
 
                 if (!empty($countries)) {
@@ -540,9 +543,7 @@ class LpcOrderQueries {
             if (isset($requestFilters['status'])) {
                 $status = array_filter(
                     $requestFilters['status'],
-                    function ($oneStatus) {
-                        return !empty($oneStatus);
-                    }
+                    fn($oneStatus) => !empty($oneStatus)
                 );
 
                 if (!empty($status)) {
@@ -557,9 +558,7 @@ class LpcOrderQueries {
             if (isset($requestFilters['woo_status'])) {
                 $wooStatus = array_filter(
                     $requestFilters['woo_status'],
-                    function ($oneWooStatus) {
-                        return !empty($oneWooStatus);
-                    }
+                    fn($oneWooStatus) => !empty($oneWooStatus)
                 );
 
                 if (!empty($wooStatus)) {
@@ -637,9 +636,7 @@ class LpcOrderQueries {
             if (isset($requestFilters['country'])) {
                 $countries = array_filter(
                     $requestFilters['country'],
-                    function ($country) {
-                        return !empty($country);
-                    }
+                    fn($country) => !empty($country)
                 );
 
                 if (!empty($countries)) {
@@ -654,9 +651,7 @@ class LpcOrderQueries {
             if (isset($requestFilters['status'])) {
                 $status = array_filter(
                     $requestFilters['status'],
-                    function ($oneStatus) {
-                        return !empty($oneStatus);
-                    }
+                    fn($oneStatus) => !empty($oneStatus)
                 );
 
                 if (!empty($status)) {
@@ -671,9 +666,7 @@ class LpcOrderQueries {
             if (isset($requestFilters['woo_status'])) {
                 $wooStatus = array_filter(
                     $requestFilters['woo_status'],
-                    function ($oneWooStatus) {
-                        return !empty($oneWooStatus);
-                    }
+                    fn($oneWooStatus) => !empty($oneWooStatus)
                 );
 
                 if (!empty($wooStatus)) {
@@ -692,9 +685,7 @@ class LpcOrderQueries {
         if (isset($requestFilters['label_type'])) {
             $labelTypes = array_filter(
                 $requestFilters['label_type'],
-                function ($labelType) {
-                    return !empty($labelType);
-                }
+                fn($labelType) => !empty($labelType)
             );
 
             if (in_array('inward', $labelTypes)) {
@@ -747,9 +738,7 @@ class LpcOrderQueries {
         if (isset($requestFilters['shipping_method'])) {
             $shippingMethods = array_filter(
                 $requestFilters['shipping_method'],
-                function ($shippingMethod) {
-                    return !empty($shippingMethod);
-                }
+                fn($shippingMethod) => !empty($shippingMethod)
             );
 
             if (!empty($shippingMethods)) {

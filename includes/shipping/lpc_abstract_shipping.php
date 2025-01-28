@@ -437,13 +437,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         if (isset($rates[0]['weight'])) {
             usort(
                 $rates,
-                function ($a, $b) {
-                    if ($a['weight'] == $b['weight']) {
-                        return 0;
-                    }
-
-                    return ($a['weight'] < $b['weight']) ? - 1 : 1;
-                }
+                fn($a, $b) => $a['weight'] <=> $b['weight']
             );
 
             foreach ($rates as $rate) {
@@ -482,9 +476,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 // Check if a line rates is corresponding with a shipping class defined
                 $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
                     $matchingRates,
-                    function ($rate) use ($oneCartShippingClassId) {
-                        return in_array($oneCartShippingClassId, $rate['shipping_class']) || in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class']);
-                    }
+                    fn($rate) => in_array($oneCartShippingClassId, $rate['shipping_class']) || in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class'])
                 );
             }
 

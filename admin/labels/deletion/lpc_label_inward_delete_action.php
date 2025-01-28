@@ -15,9 +15,9 @@ class LpcLabelInwardDeleteAction extends LpcComponent {
     protected $adminNotices;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcInwardLabelDb $inwardLabelDb = null,
-        LpcAdminNotices $adminNotices = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcInwardLabelDb $inwardLabelDb = null,
+        ?LpcAdminNotices $adminNotices = null
     ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->inwardLabelDb  = LpcRegister::get('inwardLabelDb', $inwardLabelDb);

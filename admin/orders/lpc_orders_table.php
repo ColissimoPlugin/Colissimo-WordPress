@@ -91,11 +91,7 @@ class LpcOrdersTable extends WP_List_Table {
         ];
 
         return array_map(
-            function ($v) {
-                return <<<END_HTML
-<span style="font-weight:bold;">$v</span>
-END_HTML;
-            },
+            fn($title) => '<span style="font-weight:bold;">' . $title . '</span>',
             $columns
         );
     }
@@ -163,9 +159,7 @@ END_HTML;
         $data      = [];
         $orders    = LpcOrderQueries::getLpcOrders($current_page, $per_page, $args, $filters);
         $ordersIds = array_map(
-            function ($order) {
-                return $order['order_id'];
-            },
+            fn($order) => $order['order_id'],
             $orders
         );
 
@@ -590,9 +584,7 @@ END_HTML;
 
     protected function getOrdersByIds(array $ids) {
         return array_map(
-            function ($id) {
-                return new WC_Order($id);
-            },
+            fn($id) => wc_get_order($id),
             $ids
         );
     }

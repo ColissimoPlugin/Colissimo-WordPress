@@ -88,9 +88,7 @@ class LpcShippingMethods extends LpcComponent {
     public function getAllColissimoShippingMethodsOfOrder(WC_Order $order) {
         $shipping_methods  = $order->get_shipping_methods();
         $shippingMethodIds = array_map(
-            function (WC_Order_item_Shipping $v) {
-                return ($v->get_method_id());
-            },
+            fn(WC_Order_item_Shipping $v) => $v->get_method_id(),
             $shipping_methods
         );
 

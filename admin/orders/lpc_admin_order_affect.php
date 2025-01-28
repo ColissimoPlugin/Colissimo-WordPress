@@ -13,10 +13,10 @@ class LpcAdminOrderAffect extends LpcComponent {
 
 
     public function __construct(
-        LpcShippingMethods $shippingMethods = null,
-        LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
-        LpcAdminPickupWebService $lpcAdminPickupWebService = null,
-        LpcAdminPickupWidget $lpcAdminPickupWidget = null
+        ?LpcShippingMethods $shippingMethods = null,
+        ?LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
+        ?LpcAdminPickupWebService $lpcAdminPickupWebService = null,
+        ?LpcAdminPickupWidget $lpcAdminPickupWidget = null
     ) {
         $this->lpcShippingMethods       = LpcRegister::get('shippingMethods', $shippingMethods);
         $this->lpcCapabilitiesByCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
@@ -65,9 +65,7 @@ class LpcAdminOrderAffect extends LpcComponent {
         $methods = $this->getColissimoShippingMethodsAvailable($order);
 
         $methods = array_map(
-            function ($value) {
-                return $value->get_method_title();
-            },
+            fn($value) => $value->get_method_title(),
             $methods
         );
 

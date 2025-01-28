@@ -1,6 +1,6 @@
 <?php
-$lpc_slip_table = (isset($args['table'])) ? $args['table'] : [];
-$get_args       = (isset($args['get'])) ? $args['get'] : [];
+$lpc_slip_table = $args['table'] ?? [];
+$get_args       = $args['get'] ?? [];
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'lpc_orders_header.php';
 ?>
 

@@ -8,7 +8,7 @@ class LpcCron extends LpcComponent {
     protected $unifiedTrackingApi;
     protected $lpcLabelPurge;
 
-    public function __construct(LpcUnifiedTrackingApi $lpcUnifiedTrackingApi = null, LpcLabelPurge $lpcLabelPurge = null) {
+    public function __construct(?LpcUnifiedTrackingApi $lpcUnifiedTrackingApi = null, ?LpcLabelPurge $lpcLabelPurge = null) {
         $this->unifiedTrackingApi = LpcRegister::get('unifiedTrackingApi', $lpcUnifiedTrackingApi);
         $this->lpcLabelPurge      = LpcRegister::get('labelPurge', $lpcLabelPurge);
     }

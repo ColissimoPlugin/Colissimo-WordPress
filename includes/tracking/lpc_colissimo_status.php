@@ -357,9 +357,7 @@ class LpcColissimoStatus extends LpcComponent {
         return array_keys(
             array_filter(
                 $this->status_list,
-                function ($status) {
-                    return $status['is_anomaly'];
-                }
+                fn($status) => $status['is_anomaly']
             )
         );
     }

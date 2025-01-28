@@ -18,9 +18,9 @@ class LpcLabelPrintAction extends LpcComponent {
     protected $inwardLabelDb;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcInwardLabelDb $inwardLabelDb = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcInwardLabelDb $inwardLabelDb = null
     ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->outwardLabelDb = LpcRegister::get('outwardLabelDb', $outwardLabelDb);

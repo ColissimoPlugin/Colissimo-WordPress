@@ -10,8 +10,8 @@ class LpcBordereauQueries extends LpcComponent {
     protected $bordereauDeleteAction;
 
     public function __construct(
-        LpcBordereauPrintAction $bordereauPrintAction = null,
-        LpcBordereauDeleteAction $bordereauDeleteAction = null
+        ?LpcBordereauPrintAction $bordereauPrintAction = null,
+        ?LpcBordereauDeleteAction $bordereauDeleteAction = null
     ) {
         $this->bordereauDeleteAction = LpcRegister::get('bordereauDeleteAction', $bordereauDeleteAction);
         $this->bordereauPrintAction  = LpcRegister::get('bordereauPrintAction', $bordereauPrintAction);

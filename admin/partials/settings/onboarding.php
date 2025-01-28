@@ -14,7 +14,7 @@ $colissimoListing  = admin_url('admin.php?page=wc_colissimo_view');
 $videoTutorials    = admin_url('admin.php?page=wc-settings&tab=lpc&section=video');
 ?>
 <tr>
-	<td class="forminp forminp-<?php echo esc_attr(sanitize_title($field['type'])); ?>">
+	<td class="forminp forminp-onboarding">
 		<p>
             <?php echo wp_kses_post(__('<u>Not yet registered on Colissimo?</u> Here is how to do it:', 'wc_colissimo')); ?>
 		</p>

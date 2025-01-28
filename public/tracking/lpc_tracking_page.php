@@ -8,7 +8,7 @@ class LpcTrackingPage extends LpcComponent {
 
     protected $lpcUnifiedTrackingApi;
 
-    public function __construct(LpcUnifiedTrackingApi $lpcUnifiedTrackingApi = null) {
+    public function __construct(?LpcUnifiedTrackingApi $lpcUnifiedTrackingApi = null) {
         $this->lpcUnifiedTrackingApi = LpcRegister::get('unifiedTrackingApi', $lpcUnifiedTrackingApi);
     }
 
@@ -50,7 +50,7 @@ class LpcTrackingPage extends LpcComponent {
         [$orderId, $trackingNumber] = explode('-', $decryptedVar);
 
         try {
-            $order = new WC_Order($orderId);
+            $order = wc_get_order($orderId);
 
             try {
                 if (isset($_SERVER['REMOTE_ADDR'])) {

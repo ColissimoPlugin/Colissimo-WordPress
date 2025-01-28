@@ -12,8 +12,8 @@ class LpcLabelOutwardGenerateAction extends LpcComponent {
     protected $labelGenerationOutward;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcLabelGenerationOutward $labelGenerationOutward = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcLabelGenerationOutward $labelGenerationOutward = null
     ) {
         $this->ajaxDispatcher         = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->labelGenerationOutward = LpcRegister::get('labelGenerationOutward', $labelGenerationOutward);
@@ -48,7 +48,7 @@ class LpcLabelOutwardGenerateAction extends LpcComponent {
         }
         $urlRedirection = admin_url('admin.php?page=wc_colissimo_view');
         $orderId        = LpcHelper::getVar(self::ACTION_ID_PARAM_NAME);
-        $order          = new WC_Order($orderId);
+        $order          = wc_get_order($orderId);
 
         $this->labelGenerationOutward->generate($order, ['items' => $order->get_items()], true);
         wp_redirect($urlRedirection);

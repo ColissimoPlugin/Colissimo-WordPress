@@ -47,21 +47,21 @@ class LpcAdminOrderBanner extends LpcComponent {
     protected $accountApi;
 
     public function __construct(
-        LpcLabelQueries $lpcLabelQueries = null,
-        LpcBordereauQueries $lpcBordereauQueries = null,
-        LpcShippingMethods $lpcShippingMethods = null,
-        LpcLabelGenerationOutward $lpcOutwardLabelGeneration = null,
-        LpcLabelGenerationInward $lpcInwardLabelGeneration = null,
-        LpcAdminNotices $lpcAdminNotices = null,
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcBordereauDownloadAction $bordereauDownloadAction = null,
-        LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
-        LpcCustomsDocumentsApi $customsDocumentsApi = null,
-        LpcColissimoStatus $colissimoStatus = null,
-        LpcAdminOrderAffect $lpcAdminOrderAffect = null,
-        LpcAdminPickupWebService $lpcAdminPickupWebService = null,
-        LpcAdminPickupWidget $lpcAdminPickupWidget = null,
-        LpcAccountApi $accountApi = null
+        ?LpcLabelQueries $lpcLabelQueries = null,
+        ?LpcBordereauQueries $lpcBordereauQueries = null,
+        ?LpcShippingMethods $lpcShippingMethods = null,
+        ?LpcLabelGenerationOutward $lpcOutwardLabelGeneration = null,
+        ?LpcLabelGenerationInward $lpcInwardLabelGeneration = null,
+        ?LpcAdminNotices $lpcAdminNotices = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcBordereauDownloadAction $bordereauDownloadAction = null,
+        ?LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
+        ?LpcCustomsDocumentsApi $customsDocumentsApi = null,
+        ?LpcColissimoStatus $colissimoStatus = null,
+        ?LpcAdminOrderAffect $lpcAdminOrderAffect = null,
+        ?LpcAdminPickupWebService $lpcAdminPickupWebService = null,
+        ?LpcAdminPickupWidget $lpcAdminPickupWidget = null,
+        ?LpcAccountApi $accountApi = null
     ) {
         $this->lpcLabelQueries           = LpcRegister::get('labelQueries', $lpcLabelQueries);
         $this->lpcBordereauQueries       = LpcRegister::get('bordereauQueries', $lpcBordereauQueries);
@@ -154,9 +154,7 @@ class LpcAdminOrderBanner extends LpcComponent {
         }
 
         $methods = array_map(
-            function ($value) {
-                return $value->get_method_title();
-            },
+            fn($value) => $value->get_method_title(),
             $methods
         );
 

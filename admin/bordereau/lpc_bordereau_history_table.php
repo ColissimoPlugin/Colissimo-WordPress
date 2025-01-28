@@ -10,8 +10,8 @@ class LpcBordereauHistoryTable extends WP_List_Table {
     protected $bordereauQueries;
 
     public function __construct(
-        LpcBordereauGenerationApi $bordereauGenerationApi = null,
-        LpcBordereauDownloadAction $bordereauDownloadAction = null
+        ?LpcBordereauGenerationApi $bordereauGenerationApi = null,
+        ?LpcBordereauDownloadAction $bordereauDownloadAction = null
     ) {
         parent::__construct();
 
@@ -31,11 +31,7 @@ class LpcBordereauHistoryTable extends WP_List_Table {
         ];
 
         return array_map(
-            function ($v) {
-                return <<<END_HTML
-<span style="font-weight:bold;">$v</span>
-END_HTML;
-            },
+            fn($title) => '<span style="font-weight:bold;">' . $title . '</span>',
             $columns
         );
     }

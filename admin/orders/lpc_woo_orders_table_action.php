@@ -10,7 +10,7 @@ class LpcWooOrdersTableAction extends LpcComponent {
     /** @var LpcLabelGenerationOutward */
     protected $labelGenerationOutward;
 
-    public function __construct(LpcAjax $ajaxDispatcher = null, LpcLabelGenerationOutward $labelGenerationOutward = null) {
+    public function __construct(?LpcAjax $ajaxDispatcher = null, ?LpcLabelGenerationOutward $labelGenerationOutward = null) {
         $this->ajaxDispatcher         = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->labelGenerationOutward = LpcRegister::get('labelGenerationOutward', $labelGenerationOutward);
     }
@@ -46,7 +46,7 @@ class LpcWooOrdersTableAction extends LpcComponent {
         }
 
         $orderId = LpcHelper::getVar(self::ORDER_ID_VAR_NAME);
-        $order   = new WC_Order($orderId);
+        $order   = wc_get_order($orderId);
 
         try {
             $this->labelGenerationOutward->generate($order, ['items' => $order->get_items()], true);

@@ -13,10 +13,10 @@ class LpcOrderTracking extends LpcComponent {
     protected $unifiedTrackingApi;
 
     public function __construct(
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcLabelInwardDownloadAccountAction $labelInwardDownloadAccountAction = null,
-        LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null,
-        LpcUnifiedTrackingApi $unifiedTrackingApi = null
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcLabelInwardDownloadAccountAction $labelInwardDownloadAccountAction = null,
+        ?LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null,
+        ?LpcUnifiedTrackingApi $unifiedTrackingApi = null
     ) {
         $this->outwardLabelDb                   = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
         $this->labelInwardDownloadAccountAction = LpcRegister::get('labelInwardDownloadAccountAction', $labelInwardDownloadAccountAction);

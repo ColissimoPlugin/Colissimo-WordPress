@@ -14,8 +14,8 @@ class LpcPickupWebService extends LpcPickup {
     protected $lpcPickUpSelection;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcPickupSelection $lpcPickUpSelection = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcPickupSelection $lpcPickUpSelection = null
     ) {
         $this->ajaxDispatcher     = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->lpcPickUpSelection = LpcRegister::get('pickupSelection', $lpcPickUpSelection);
@@ -179,9 +179,7 @@ class LpcPickupWebService extends LpcPickup {
             if ('all' != $relayTypes) {
                 $listRelaysWS = array_filter(
                     $listRelaysWS,
-                    function ($relay) use ($relayTypes) {
-                        return in_array($relay['typeDePoint'], $relayTypes);
-                    }
+                    fn($relay) => in_array($relay['typeDePoint'], $relayTypes)
                 );
             }
 

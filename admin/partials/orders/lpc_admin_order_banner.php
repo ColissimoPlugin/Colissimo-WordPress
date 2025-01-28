@@ -28,9 +28,7 @@ $multiParcelsLabels       = [
 $cn23Needed               = $args['lpc_cn23_needed'];
 $defaultCustoms           = $args['lpc_default_customs_category'];
 $packagings               = LpcHelper::get_option('lpc_packagings', []);
-usort($packagings, function ($a, $b) {
-    return $a['priority'] > $b['priority'] ? 1 : - 1;
-});
+usort($packagings, fn($a, $b) => $a['priority'] > $b['priority'] ? 1 : - 1);
 $securedReturn = $args['secured_return_active'];
 ?>
 

@@ -14,7 +14,7 @@ class LpcInwardLabelEmailManager extends LpcComponent {
     /** @var LpcInwardLabelDb */
     protected $inwardLabelDb;
 
-    public function __construct(LpcInwardLabelDb $inwardLabelDb = null) {
+    public function __construct(?LpcInwardLabelDb $inwardLabelDb = null) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher');
         $this->inwardLabelDb  = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
     }
@@ -78,7 +78,7 @@ class LpcInwardLabelEmailManager extends LpcComponent {
             WC()->mailer();
             $lpcInwardLabelGenerationEmail = new LpcInwardLabelGenerationEmail();
             $label                         = $this->inwardLabelDb->getLabelFor($trackingNumber);
-            $order                         = new WC_Order($label['order_id']);
+            $order                         = wc_get_order($label['order_id']);
             $sent                          = $lpcInwardLabelGenerationEmail->trigger($order, $label['label']);
             // TODO: Try to find a better way for the admin_notices
             $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');

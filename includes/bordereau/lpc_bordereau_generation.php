@@ -16,11 +16,11 @@ class LpcBordereauGeneration extends LpcComponent {
     protected $bordereauDb;
 
     public function __construct(
-        LpcBordereauGenerationApi $bordereauGenerationApi = null,
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcAjax $ajaxDispatcher = null,
-        LpcAdminNotices $lpcAdminNotices = null,
-        LpcBordereauDb $bordereauDb = null
+        ?LpcBordereauGenerationApi $bordereauGenerationApi = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcAdminNotices $lpcAdminNotices = null,
+        ?LpcBordereauDb $bordereauDb = null
     ) {
         $this->bordereauGenerationApi = LpcRegister::get('bordereauGenerationApi', $bordereauGenerationApi);
         $this->outwardLabelDb         = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
@@ -48,9 +48,7 @@ class LpcBordereauGeneration extends LpcComponent {
      */
     public function generate(array $orders) {
         $ordersId = array_map(
-            function (WC_Order $order) {
-                return $order->get_id();
-            },
+            fn(WC_Order $order) => $order->get_id(),
             $orders
         );
 

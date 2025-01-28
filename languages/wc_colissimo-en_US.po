@@ -2195,7 +2195,7 @@ msgid "Please note: If you have not provided the recipient's email address and p
 msgstr "Please note: If you have not provided the recipient's email address and phone number, the code cannot be sent to the recipient and will block delivery of the parcel."
 
 msgid "Access Colissimo Box"
-msgstr "Accéder à Colissimo Box"
+msgstr "Access Colissimo Box"
 
 msgid "Colissimo account"
 msgstr "Colissimo account"

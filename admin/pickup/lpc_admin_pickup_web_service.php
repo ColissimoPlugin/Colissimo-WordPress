@@ -6,7 +6,7 @@ class LpcAdminPickupWebService extends LpcComponent {
     protected $ajaxDispatcher;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null
+        ?LpcAjax $ajaxDispatcher = null
     ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
     }
@@ -155,9 +155,7 @@ class LpcAdminPickupWebService extends LpcComponent {
             if ('all' != $relayTypes) {
                 $listRelaysWS = array_filter(
                     $listRelaysWS,
-                    function ($relay) use ($relayTypes) {
-                        return in_array($relay['typeDePoint'], $relayTypes);
-                    }
+                    fn($relay) => in_array($relay['typeDePoint'], $relayTypes)
                 );
             }
 

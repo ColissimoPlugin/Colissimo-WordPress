@@ -7,7 +7,7 @@ class LpcLabelPurge extends LpcComponent {
     /** @var LpcOutwardLabelDb */
     protected $outwardLabelDb;
 
-    public function __construct(LpcInwardLabelDb $inwardLabelDb = null, LpcOutwardLabelDb $outwardLabelDb = null) {
+    public function __construct(?LpcInwardLabelDb $inwardLabelDb = null, ?LpcOutwardLabelDb $outwardLabelDb = null) {
         $this->inwardLabelDb = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
         $this->outwardLabelDb = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
     }

@@ -15,9 +15,9 @@ class LpcBordereauDeleteAction extends LpcComponent {
     protected $adminNotices;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcAdminNotices $adminNotices = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcAdminNotices $adminNotices = null
     ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->outwardLabelDb = LpcRegister::get('outwardLabelDb', $outwardLabelDb);

@@ -7,7 +7,7 @@ class LpcShippingZones extends LpcComponent {
     private $addCustomZonesDone = false;
     protected $lpcCapabilitiesPerCountry;
 
-    public function __construct(LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null) {
+    public function __construct(?LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null) {
         $this->lpcCapabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $lpcCapabilitiesPerCountry);
     }
 
@@ -92,14 +92,10 @@ class LpcShippingZones extends LpcComponent {
         $newZone->set_zone_name($zoneName);
 
         $existingZoneLocations = array_map(
-            function ($v) {
-                return $v->code;
-            },
+            fn($v) => $v->code,
             array_filter(
                 $newZone->get_zone_locations(),
-                function ($v) {
-                    return 'country' === $v->type;
-                }
+                fn($v) => 'country' === $v->type
             )
         );
         foreach ($countries as $country) {
@@ -111,9 +107,7 @@ class LpcShippingZones extends LpcComponent {
         }
 
         $existingShippingMethods = array_map(
-            function ($v) {
-                return $v->id;
-            },
+            fn($v) => $v->id,
             $newZone->get_shipping_methods()
         );
 

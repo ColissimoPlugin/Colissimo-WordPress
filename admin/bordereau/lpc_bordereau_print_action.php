@@ -14,8 +14,8 @@ class LpcBordereauPrintAction extends LpcComponent {
     protected $ajaxDispatcher;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcBordereauGenerationApi $bordereauGenerationApi = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcBordereauGenerationApi $bordereauGenerationApi = null
     ) {
         $this->ajaxDispatcher         = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->bordereauGenerationApi = LpcRegister::get('bordereauGenerationApi', $bordereauGenerationApi);

@@ -17,6 +17,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
 
     const ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME = 'lpc_order_ids_to_update_tracking';
     const UPDATE_TRACKING_ORDER_CRON_NAME = 'lpc_update_tracking';
+    const MAX_ORDERS_TO_UPDATE_PER_BATCH = 40;
 
     protected $ivSize;
     protected $shippingMethods;
@@ -27,10 +28,10 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
     protected $colissimoStatus;
 
     public function __construct(
-        LpcShippingMethods $shippingMethods = null,
-        LpcColissimoStatus $colissimoStatus = null,
-        LpcAjax $ajaxDispatcher = null,
-        LpcOutwardLabelDb $outwardLabelDb = null
+        ?LpcShippingMethods $shippingMethods = null,
+        ?LpcColissimoStatus $colissimoStatus = null,
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null
     ) {
         if (function_exists('openssl_cipher_iv_length')) {
             $this->ivSize = openssl_cipher_iv_length(self::CIPHER);
@@ -79,9 +80,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
 
         // Sort events first to last in case it isn't done on the API side
         usort($response['parcel']['event'],
-            function ($a, $b) {
-                return strtotime($a['date']) > strtotime($b['date']) ? 1 : - 1;
-            }
+            fn($a, $b) => strtotime($a['date']) > strtotime($b['date']) ? 1 : - 1
         );
 
         return $response;
@@ -144,6 +143,13 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
     public function updateAllStatuses($login = null, $password = null, $ip = null, $lang = null) {
         $matchingOrdersId = LpcOrderQueries::getLpcOrderIdsToRefreshDeliveryStatus();
 
+        LpcLogger::debug(
+            __METHOD__ . ' all orders found in the X past days',
+            [
+                'orderIds' => $matchingOrdersId,
+            ]
+        );
+
         $orderIdsToUpdateEncoded = get_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME);
 
         if (!empty($orderIdsToUpdateEncoded)) {
@@ -162,10 +168,10 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
         update_option(self::ORDER_IDS_TO_UPDATE_NAME_OPTION_NAME, $encodedMatchingOrdersId, false);
 
         if (!wp_next_scheduled(self::UPDATE_TRACKING_ORDER_CRON_NAME)) {
-            wp_schedule_event(time(), 'fifteen_minutes', self::UPDATE_TRACKING_ORDER_CRON_NAME);
+            $schedulingResult = wp_schedule_event(time(), 'fifteen_minutes', self::UPDATE_TRACKING_ORDER_CRON_NAME, [], true);
 
             if (!wp_next_scheduled(self::UPDATE_TRACKING_ORDER_CRON_NAME)) {
-                LpcLogger::debug('could not schedule event update statuses');
+				LpcLogger::debug('could not schedule event update statuses', [$schedulingResult]);
             }
         }
     }
@@ -193,8 +199,22 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
             return;
         }
 
-        $orderIdsToUpdateTracking = array_splice($allOrderIdsToUpdateTracking, 0, 20);
+        LpcLogger::debug(
+            __METHOD__ . ' all orders remaining to update statuses',
+            [
+                'orderIds' => $allOrderIdsToUpdateTracking,
+            ]
+        );
+
+        $orderIdsToUpdateTracking = array_splice($allOrderIdsToUpdateTracking, 0, self::MAX_ORDERS_TO_UPDATE_PER_BATCH);
         $orderStatusOnDelivered   = LpcHelper::get_option('lpc_status_on_delivered', LpcOrderStatuses::WC_LPC_DELIVERED);
+
+        LpcLogger::debug(
+            __METHOD__ . ' updating statuses for orders',
+            [
+                'orderIds' => $orderIdsToUpdateTracking,
+            ]
+        );
 
         foreach ($orderIdsToUpdateTracking as $orderId) {
             if (empty($orderId)) {

@@ -29,17 +29,17 @@ class LpcLabelQueries extends LpcComponent {
     protected $labelInwardCreateAction;
 
     public function __construct(
-        LpcInwardLabelDb $inwardLabelDb = null,
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcLabelOutwardDeleteAction $labelOutwardDeleteAction = null,
-        LpcLabelInwardDeleteAction $labelInwardDeleteAction = null,
-        LpcLabelPackagerDownloadAction $labelPackagerDownloadAction = null,
-        LpcLabelOutwardDownloadAction $labelOutwardDownloadAction = null,
-        LpcLabelInwardDownloadAction $labelInwardDownloadAction = null,
-        LpcLabelPrintAction $labelPrintAction = null,
-        LpcInwardLabelEmailManager $inwardLabelEmailManager = null,
-        LpcLabelOutwardGenerateAction $labelOutwardCreateAction = null,
-        LpcLabelInwardGenerateAction $labelInwardCreateAction = null
+        ?LpcInwardLabelDb $inwardLabelDb = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcLabelOutwardDeleteAction $labelOutwardDeleteAction = null,
+        ?LpcLabelInwardDeleteAction $labelInwardDeleteAction = null,
+        ?LpcLabelPackagerDownloadAction $labelPackagerDownloadAction = null,
+        ?LpcLabelOutwardDownloadAction $labelOutwardDownloadAction = null,
+        ?LpcLabelInwardDownloadAction $labelInwardDownloadAction = null,
+        ?LpcLabelPrintAction $labelPrintAction = null,
+        ?LpcInwardLabelEmailManager $inwardLabelEmailManager = null,
+        ?LpcLabelOutwardGenerateAction $labelOutwardCreateAction = null,
+        ?LpcLabelInwardGenerateAction $labelInwardCreateAction = null
     ) {
         $this->inwardLabelDb               = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
         $this->outwardLabelDb              = LpcRegister::get('outwardLabelDb', $outwardLabelDb);

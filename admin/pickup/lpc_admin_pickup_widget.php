@@ -13,8 +13,8 @@ class LpcAdminPickupWidget extends LpcComponent {
     protected $lpcCapabilitiesPerCountry;
 
     public function __construct(
-        LpcPickUpWidgetApi $pickUpWidgetApi = null,
-        LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null
+        ?LpcPickUpWidgetApi $pickUpWidgetApi = null,
+        ?LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null
     ) {
         $this->pickUpWidgetApi           = LpcRegister::get('pickupWidgetApi', $pickUpWidgetApi);
         $this->lpcCapabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $lpcCapabilitiesPerCountry);

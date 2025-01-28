@@ -8,8 +8,8 @@ class LpcWooOrdersTableBulkActions extends LpcComponent {
     private $actions;
 
     public function __construct(
-        LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null,
-        LpcAdminNotices $lpcAdminNotices = null
+        ?LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null,
+        ?LpcAdminNotices $lpcAdminNotices = null
     ) {
         $this->lpcCapabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $lpcCapabilitiesPerCountry);
         $this->lpcAdminNotices           = LpcRegister::get('lpcAdminNotices', $lpcAdminNotices);

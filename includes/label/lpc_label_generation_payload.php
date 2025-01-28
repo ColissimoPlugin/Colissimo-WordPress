@@ -66,10 +66,10 @@ class LpcLabelGenerationPayload {
     protected $accountApi;
 
     public function __construct(
-        LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
-        LpcShippingMethods $lpcShippingMethods = null,
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcAccountApi $accountApi = null
+        ?LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
+        ?LpcShippingMethods $lpcShippingMethods = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcAccountApi $accountApi = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->lpcShippingMethods     = LpcRegister::get('shippingMethods', $lpcShippingMethods);

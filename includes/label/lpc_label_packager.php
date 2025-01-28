@@ -10,9 +10,8 @@ class LpcLabelPackager extends LpcComponent {
     protected $inwardLabelDb;
 
     public function __construct(
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcInwardLabelDb $inwardLabelDb = null
-
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcInwardLabelDb $inwardLabelDb = null
     ) {
         $this->invoiceGenerateAction = LpcRegister::get('invoiceGenerateAction');
         $this->outwardLabelDb        = LpcRegister::get('outwardLabelDb', $outwardLabelDb);

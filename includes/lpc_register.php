@@ -44,9 +44,7 @@ class LpcRegister {
         }
 
         return array_map(
-            function ($nodeId) {
-                return self::get($nodeId);
-            },
+            fn($nodeId) => self::get($nodeId),
             $result
         );
     }

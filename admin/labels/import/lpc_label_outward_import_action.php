@@ -15,9 +15,9 @@ class LpcLabelOutwardImportAction extends LpcComponent {
     protected $labelGenerationOutward;
 
     public function __construct(
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcAjax $ajaxDispatcher = null,
-        LpcLabelGenerationOutward $labelGenerationOutward = null
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcLabelGenerationOutward $labelGenerationOutward = null
     ) {
         $this->outwardLabelDb         = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
         $this->ajaxDispatcher         = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);

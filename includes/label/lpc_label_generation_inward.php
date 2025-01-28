@@ -18,11 +18,11 @@ class LpcLabelGenerationInward extends LpcComponent {
     protected $accountApi;
 
     public function __construct(
-        LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
-        LpcLabelGenerationApi $labelGenerationApi = null,
-        LpcInwardLabelDb $inwardLabelDb = null,
-        LpcShippingMethods $shippingMethods = null,
-        LpcAccountApi $accountApi = null
+        ?LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
+        ?LpcLabelGenerationApi $labelGenerationApi = null,
+        ?LpcInwardLabelDb $inwardLabelDb = null,
+        ?LpcShippingMethods $shippingMethods = null,
+        ?LpcAccountApi $accountApi = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->labelGenerationApi     = LpcRegister::get('labelGenerationApi', $labelGenerationApi);
@@ -46,9 +46,7 @@ class LpcLabelGenerationInward extends LpcComponent {
         if (!empty($ordersFailed)) {
             update_option(
                 self::ORDERS_INWARD_PARCEL_FAILED,
-                array_filter($ordersFailed, function ($error) use ($time) {
-                    return $error['time'] < $time - 604800;
-                }),
+                array_filter($ordersFailed, fn($error) => $error['time'] < $time - 604800),
                 false
             );
         }

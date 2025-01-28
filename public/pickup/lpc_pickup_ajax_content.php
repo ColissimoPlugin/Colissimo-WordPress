@@ -5,7 +5,7 @@ class LpcPickupAjaxContent extends LpcComponent {
     protected $lpcPickupWebService;
     protected $lpcPickupWidget;
 
-    public function __construct(LpcPickupWebService $lpcPickupWebService = null, LpcPickupWidget $lpcPickupWidget = null) {
+    public function __construct(?LpcPickupWebService $lpcPickupWebService = null, ?LpcPickupWidget $lpcPickupWidget = null) {
         $this->lpcPickupWebService = LpcRegister::get('pickupWebService', $lpcPickupWebService);
         $this->lpcPickupWidget     = LpcRegister::get('pickupWidget', $lpcPickupWidget);
     }

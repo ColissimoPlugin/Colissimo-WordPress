@@ -1,16 +1,12 @@
 <?php
-$shippingMethods = isset($args['lpc_shipping_methods']) ? $args['lpc_shipping_methods'] : [];
-$buttonText      = isset($args['button_text']) ? $args['button_text'] : __('Click here to ship this order with Colissimo', 'wc_colissimo');
+$shippingMethods = $args['lpc_shipping_methods'] ?? [];
+$buttonText      = $args['button_text'] ?? __('Click here to ship this order with Colissimo', 'wc_colissimo');
 ?>
 
 <div class="lpc_order_affect" id="<?php echo esc_attr($args['lpc_partial_name']); ?>">
 	<script type="text/javascript">
         if (window.lpc_bind_order_affect !== undefined) {
             window.lpc_bind_order_affect();
-        }
-
-        if (window.initLpcModal !== undefined) {
-            window.initLpcModal();
         }
 	</script>
 

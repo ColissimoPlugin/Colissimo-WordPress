@@ -11,8 +11,8 @@ class LpcShippingRates extends LpcComponent {
     protected $shippingZones;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcShippingZones $shippingZones = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcShippingZones $shippingZones = null
     ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->shippingZones  = LpcRegister::get('shippingZones', $shippingZones);
@@ -225,14 +225,10 @@ class LpcShippingRates extends LpcComponent {
 
         if (empty($zoneKey)) {
             $currentZoneCountries = array_map(
-                function ($country) {
-                    return $country->code;
-                },
+                fn($country) => $country->code,
                 array_filter(
                     $currentZone->get_zone_locations(),
-                    function ($location) {
-                        return 'country' === $location->type;
-                    }
+                    fn($location) => 'country' === $location->type
                 )
             );
 

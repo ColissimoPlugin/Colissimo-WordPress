@@ -1,7 +1,7 @@
 <?php
-$lpc_orders_table_today = (isset($args['table_today'])) ? $args['table_today'] : [];
-$lpc_orders_table_all   = (isset($args['table_all'])) ? $args['table_all'] : [];
-$get_args               = (isset($args['get'])) ? $args['get'] : [];
+$lpc_orders_table_today = $args['table_today'] ?? [];
+$lpc_orders_table_all   = $args['table_all'] ?? [];
+$get_args               = $args['get'] ?? [];
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'lpc_orders_header.php';
 ?>
 

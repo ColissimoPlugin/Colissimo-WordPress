@@ -11,17 +11,6 @@ const lowestCoordinates = {
 };
 
 jQuery(function ($) {
-    $(document.body)
-        .on('updated_shipping_method', function () {
-            initLpcModal(); // this is needed when a new shipping method is chosen
-        })
-        .on('updated_wc_div', function () {
-            initLpcModal(); // this is needed when checkout is updated (new item quantity...)
-        })
-        .on('updated_checkout', function () {
-            initLpcModal(); // this is needed when checkout is loaded or updated (new item quantity...)
-        });
-
     function initButtonSwitchMobileLayout() {
         const mapContainer = document.getElementById('lpc_left');
         const button = document.getElementById('lpc_layer_relay_switch_mobile');

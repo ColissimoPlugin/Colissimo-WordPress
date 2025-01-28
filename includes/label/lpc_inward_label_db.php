@@ -65,9 +65,7 @@ END_SQL;
         }
 
         $orderIds = array_map(
-            function ($orderId) {
-                return (int) $orderId;
-            },
+            fn($orderId) => (int) $orderId,
             $orderIds
         );
 
@@ -277,9 +275,7 @@ END_SQL;
         $tableName = $this->getTableName();
 
         $ordersId = array_map(
-            function ($orderId) {
-                return (int) $orderId;
-            },
+            fn($orderId) => (int) $orderId,
             $ordersId
         );
 
@@ -391,9 +387,7 @@ END_SQL;
         // phpcs:disable
         $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
         $updatedColumns = array_filter($columns,
-            function ($column) {
-                return 'printed' === $column->Field;
-            });
+            fn($column) => 'printed' === $column->Field);
         if (!empty($updatedColumns)) {
             return;
         }
@@ -425,9 +419,7 @@ END_SQL;
         // phpcs:disable
         $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
         $updatedColumns = array_filter($columns,
-            function ($column) {
-                return 'cn23_format' === $column->Field;
-            }
+            fn($column) => 'cn23_format' === $column->Field
         );
 
         if (!empty($updatedColumns)) {

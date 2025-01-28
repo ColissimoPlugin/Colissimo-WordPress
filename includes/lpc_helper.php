@@ -297,9 +297,7 @@ class LpcHelper {
 
     public static function getMatchingPackaging(float $numberOfProducts, float $cartWeight, array $productDimensions) {
         $packagings = self::get_option('lpc_packagings', []);
-        usort($packagings, function ($a, $b) {
-            return $a['priority'] > $b['priority'] ? 1 : - 1;
-        });
+        usort($packagings, fn($a, $b) => $a['priority'] > $b['priority'] ? 1 : - 1);
 
         foreach ($packagings as $packaging) {
             if (!empty($packaging['max_products']) && $numberOfProducts > $packaging['max_products']) {

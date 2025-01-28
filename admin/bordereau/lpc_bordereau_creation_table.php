@@ -32,11 +32,7 @@ class LpcBordereauCreationTable extends WP_List_Table {
         ];
 
         return array_map(
-            function ($v) {
-                return <<<END_HTML
-<span style="font-weight:bold;">$v</span>
-END_HTML;
-            },
+            fn($title) => '<span style="font-weight:bold;">' . $title . '</span>',
             $columns
         );
     }
@@ -102,7 +98,7 @@ END_HTML;
             $orderId = $order['order_id'];
 
             try {
-                $wc_order = new WC_Order($orderId);
+                $wc_order = wc_get_order($orderId);
             } catch (Exception $exception) {
                 continue;
             }
@@ -115,7 +111,7 @@ END_HTML;
             $date = apply_filters('woocommerce_admin_order_date_format', __('M j, Y', 'woocommerce'));
 
             $orderDate = $wc_order->get_date_created();
-            $data[] = [
+            $data[]    = [
                 'data-id'             => $orderId,
                 'cb'                  => '<input type="checkbox" />',
                 'lpc-id'              => LpcOrdersTable::getSeeOrderLink($orderId),
@@ -153,9 +149,7 @@ END_HTML;
 
     protected function getOrdersByIds(array $ids) {
         return array_map(
-            function ($id) {
-                return new WC_Order($id);
-            },
+            fn($id) => wc_get_order($id),
             $ids
         );
     }

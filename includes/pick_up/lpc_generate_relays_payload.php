@@ -4,7 +4,9 @@ class LpcGenerateRelaysPayload {
     protected $payload;
 
     public function __construct() {
-        $this->payload = [];
+        $this->payload = [
+            'filterRelay' => '1',
+        ];
     }
 
     public function withCredentials() {

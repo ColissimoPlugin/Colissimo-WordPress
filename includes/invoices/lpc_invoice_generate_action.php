@@ -9,7 +9,7 @@ class LpcInvoiceGenerateAction extends LpcComponent {
     /** @var LpcAjax */
     protected $ajaxDispatcher;
 
-    public function __construct(LpcAjax $ajaxDispatcher = null) {
+    public function __construct(?LpcAjax $ajaxDispatcher = null) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
     }
 
@@ -22,7 +22,7 @@ class LpcInvoiceGenerateAction extends LpcComponent {
 
     public function generateInvoice($orderId, $filename, $destination) {
         try {
-            $order = new WC_Order($orderId);
+            $order = wc_get_order($orderId);
             $pdf   = new LPC_TCPDF(LpcTcpdfConfig\PDF_PAGE_ORIENTATION, LpcTcpdfConfig\PDF_UNIT, LpcTcpdfConfig\PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->SetMargins(LpcTcpdfConfig\PDF_MARGIN_LEFT, 5, LpcTcpdfConfig\PDF_MARGIN_RIGHT);
             $pdf->SetHeaderMargin(LpcTcpdfConfig\PDF_MARGIN_HEADER);

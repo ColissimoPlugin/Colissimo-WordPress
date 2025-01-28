@@ -32,20 +32,15 @@ function LpcModal(options) {
 
 
 jQuery(function ($) {
-    function initLpcModal() {
-        $('[data-lpc-template]').off('click').on('click', function (e) {
-            e.preventDefault();
+    $(document).on('click', '[data-lpc-template]', function (e) {
+        e.preventDefault();
 
-            LpcModal({
-                template: $(this).attr('data-lpc-template')
-            });
-
-            if ($(this).is('[data-lpc-callback]')) {
-                window[$(this).attr('data-lpc-callback')]($(this));
-            }
+        LpcModal({
+            template: $(this).attr('data-lpc-template')
         });
-    }
 
-    initLpcModal();
-    window.initLpcModal = initLpcModal;
+        if ($(this).is('[data-lpc-callback]')) {
+            window[$(this).attr('data-lpc-callback')]($(this));
+        }
+    });
 });

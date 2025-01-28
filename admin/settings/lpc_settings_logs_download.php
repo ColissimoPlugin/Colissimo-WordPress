@@ -9,7 +9,7 @@ class LpcSettingsLogsDownload extends LpcComponent {
     protected $ajaxDispatcher;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null
+        ?LpcAjax $ajaxDispatcher = null
     ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
     }

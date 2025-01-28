@@ -81,9 +81,7 @@ END_SQL;
         }
 
         $orderIds = array_map(
-            function ($orderId) {
-                return (int) $orderId;
-            },
+            fn($orderId) => (int) $orderId,
             $orderIds
         );
 
@@ -281,9 +279,7 @@ END_SQL;
         $tableName = $this->getTableName();
 
         $ordersId = array_map(
-            function ($orderId) {
-                return (int) $orderId;
-            },
+            fn($orderId) => (int) $orderId,
             $ordersId
         );
 
@@ -368,9 +364,7 @@ END_SQL;
         // phpcs:disable
         $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
         $updatedColumns = array_filter($columns,
-            function ($column) {
-                return 'bordereau_id' === $column->Field || 'detail' === $column->Field;
-            });
+            fn($column) => 'bordereau_id' === $column->Field || 'detail' === $column->Field);
         if (!empty($updatedColumns)) {
             return;
         }
@@ -415,9 +409,7 @@ END_SQL;
         // phpcs:disable
         $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
         $updatedColumns = array_filter($columns,
-            function ($column) {
-                return 'printed' === $column->Field;
-            });
+            fn($column) => 'printed' === $column->Field);
         if (!empty($updatedColumns)) {
             return;
         }
@@ -437,9 +429,7 @@ END_SQL;
         // phpcs:disable
         $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
         $updatedColumns = array_filter($columns,
-            function ($column) {
-                return in_array($column->Field, ['status_id', 'label_type']);
-            }
+            fn($column) => in_array($column->Field, ['status_id', 'label_type'])
         );
         if (!empty($updatedColumns)) {
             return;
@@ -470,9 +460,7 @@ END_SQL;
         // phpcs:disable
         $columns        = $wpdb->get_results('SHOW COLUMNS FROM ' . $tableName);
         $updatedColumns = array_filter($columns,
-            function ($column) {
-                return 'cn23_format' === $column->Field;
-            }
+            fn($column) => 'cn23_format' === $column->Field
         );
 
         if (!empty($updatedColumns)) {

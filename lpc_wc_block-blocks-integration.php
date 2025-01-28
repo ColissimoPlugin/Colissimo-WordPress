@@ -33,7 +33,7 @@ class LpcWcBlock_Blocks_Integration implements IntegrationInterface {
 
         $script_url = plugins_url($script_path, __FILE__);
 
-        $script_asset_path = dirname(__FILE__) . '/includes/js/blockCheckout/index.asset.php';
+        $script_asset_path = __DIR__ . '/includes/js/blockCheckout/index.asset.php';
         $script_asset      = file_exists($script_asset_path)
             ? require $script_asset_path
             : [
@@ -52,7 +52,7 @@ class LpcWcBlock_Blocks_Integration implements IntegrationInterface {
         wp_set_script_translations(
             'lpc_wc_block-blocks-integration',
             'wc_colissimo',
-            basename(dirname(__FILE__)) . '/languages/'
+            basename(__DIR__) . '/languages/'
         );
     }
 

@@ -10,8 +10,8 @@ class LpcUpdateStatusesAction extends LpcComponent {
     protected $ajaxDispatcher;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcUnifiedTrackingApi $unifiedTrackingApi = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcUnifiedTrackingApi $unifiedTrackingApi = null
     ) {
         $this->ajaxDispatcher     = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->unifiedTrackingApi = LpcRegister::get('unifiedTrackingApi', $unifiedTrackingApi);

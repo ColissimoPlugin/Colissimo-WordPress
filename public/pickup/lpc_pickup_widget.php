@@ -17,10 +17,10 @@ class LpcPickupWidget extends LpcPickup {
     protected $lpcPickupWebService;
 
     public function __construct(
-        LpcPickUpWidgetApi $pickUpWidgetApi = null,
-        LpcPickupSelection $lpcPickUpSelection = null,
-        LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null,
-        LpcPickupWebService $lpcPickupWebService = null
+        ?LpcPickUpWidgetApi $pickUpWidgetApi = null,
+        ?LpcPickupSelection $lpcPickUpSelection = null,
+        ?LpcCapabilitiesPerCountry $lpcCapabilitiesPerCountry = null,
+        ?LpcPickupWebService $lpcPickupWebService = null
     ) {
         $this->pickUpWidgetApi           = LpcRegister::get('pickupWidgetApi', $pickUpWidgetApi);
         $this->lpcPickUpSelection        = LpcRegister::get('pickupSelection', $lpcPickUpSelection);

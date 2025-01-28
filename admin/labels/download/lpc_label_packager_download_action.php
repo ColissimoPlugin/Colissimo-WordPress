@@ -16,10 +16,10 @@ class LpcLabelPackagerDownloadAction extends LpcComponent {
     protected $inwardLabelDb;
 
     public function __construct(
-        LpcAjax $ajaxDispatcher = null,
-        LpcLabelPackager $labelPackager = null,
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcInwardLabelDb $inwardLabelDb = null
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcLabelPackager $labelPackager = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcInwardLabelDb $inwardLabelDb = null
     ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->labelPackager  = LpcRegister::get('labelPackager', $labelPackager);

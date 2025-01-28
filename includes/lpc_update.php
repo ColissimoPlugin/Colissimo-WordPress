@@ -26,14 +26,14 @@ class LpcUpdate extends LpcComponent {
     protected $bordereauDb;
 
     public function __construct(
-        LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
-        LpcDbDefinition $dbDefinition = null,
-        LpcOutwardLabelDb $outwardLabelDb = null,
-        LpcInwardLabelDb $inwardLabelDb = null,
-        LpcAdminNotices $adminNotices = null,
-        LpcShippingZones $shippingZones = null,
-        LpcShippingMethods $shippingMethods = null,
-        LpcBordereauDb $bordereauDb = null
+        ?LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
+        ?LpcDbDefinition $dbDefinition = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcInwardLabelDb $inwardLabelDb = null,
+        ?LpcAdminNotices $adminNotices = null,
+        ?LpcShippingZones $shippingZones = null,
+        ?LpcShippingMethods $shippingMethods = null,
+        ?LpcBordereauDb $bordereauDb = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->dbDefinition           = LpcRegister::get('dbDefinition', $dbDefinition);
@@ -52,7 +52,7 @@ class LpcUpdate extends LpcComponent {
     public function init() {
         add_action(self::LPC_MIGRATION13_HOOK_NAME, [$this, 'doMigration13']);
         add_action('wp_loaded', [$this, 'update']);
-        add_filter('cron_schedules', [$this, 'addCronIntervals']);
+        add_filter('cron_schedules', [$this, 'addCronIntervals'], 100);
     }
 
     public function addCronIntervals($schedules) {
@@ -342,9 +342,7 @@ class LpcUpdate extends LpcComponent {
             $zone = WC_Shipping_Zones::get_zone($oneZone['id']);
 
             $existingShippingMethods = array_map(
-                function ($v) {
-                    return $v->id;
-                },
+                fn($v) => $v->id,
                 $zone->get_shipping_methods()
             );
 

@@ -23,9 +23,9 @@ class LpcSettingsTab extends LpcComponent {
     private $settingsLogsDownload;
 
     public function __construct(
-        LpcAdminNotices $adminNotices = null,
-        LpcAccountApi $accountApi = null,
-        LpcSettingsLogsDownload $settingsLogsDownload = null
+        ?LpcAdminNotices $adminNotices = null,
+        ?LpcAccountApi $accountApi = null,
+        ?LpcSettingsLogsDownload $settingsLogsDownload = null
     ) {
         $this->adminNotices         = LpcRegister::get('lpcAdminNotices', $adminNotices);
         $this->accountApi           = LpcRegister::get('accountApi', $accountApi);
@@ -440,9 +440,7 @@ class LpcSettingsTab extends LpcComponent {
         );
 
         $packagings = LpcHelper::get_option('lpc_packagings', []);
-        usort($packagings, function ($a, $b) {
-            return $a['priority'] > $b['priority'] ? 1 : - 1;
-        });
+        usort($packagings, fn($a, $b) => $a['priority'] > $b['priority'] ? 1 : - 1);
 
         $args = [
             'packagings' => $packagings,

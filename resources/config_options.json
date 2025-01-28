@@ -54,8 +54,7 @@
       "desc": "User Name of your account for La Poste webservices. Must have a valid Facilité or Privilège contract on colissimo.entreprise.laposte.fr",
       "desc_tip": true,
       "class": "",
-      "default": "",
-      "placeholder": "123456"
+      "default": ""
     },
     {
       "id": "lpc_pwd_webservices",

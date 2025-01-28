@@ -14,7 +14,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
     private $capabilitiesByCountry;
     private $shippingMethods;
 
-    public function __construct(LpcShippingMethods $shippingMethods = null) {
+    public function __construct(?LpcShippingMethods $shippingMethods = null) {
         $this->shippingMethods = LpcRegister::get('shippingMethods', $shippingMethods);
     }
 

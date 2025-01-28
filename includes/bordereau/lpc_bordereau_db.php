@@ -6,7 +6,7 @@ class LpcBordereauDb extends LpcDb {
     /** @var LpcBordereauGenerationApi */
     protected $bordereauGenerationApi;
 
-    public function __construct(LpcBordereauGenerationApi $bordereauGenerationApi = null) {
+    public function __construct(?LpcBordereauGenerationApi $bordereauGenerationApi = null) {
         $this->bordereauGenerationApi = LpcRegister::get('bordereauGenerationApi', $bordereauGenerationApi);
     }
 

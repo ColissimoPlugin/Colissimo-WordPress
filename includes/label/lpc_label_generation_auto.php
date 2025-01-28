@@ -4,7 +4,7 @@ class LpcLabelGenerationAuto extends LpcComponent {
 
     protected $labelGenerationOutward;
 
-    public function __construct(LpcLabelGenerationOutward $labelGenerationOutward = null) {
+    public function __construct(?LpcLabelGenerationOutward $labelGenerationOutward = null) {
         $this->labelGenerationOutward = LpcRegister::get('labelGenerationOutward', $labelGenerationOutward);
     }
 

@@ -15,7 +15,7 @@ class LpcModal {
         }
 
         $this->templateId = $templateId;
-        $this->elementId  = 'lpc' . rand(1000, 9999);
+        $this->elementId  = 'lpc' . random_int(1000, 9999);
         $this->content    = $content;
         $this->title      = $title;
     }

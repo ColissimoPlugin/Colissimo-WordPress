@@ -20,10 +20,10 @@ class LpcReturn extends LpcComponent {
     protected $pickUpConfirmation;
 
     public function __construct(
-        LpcLabelInwardDownloadAccountAction $labelInwardDownloadAccountAction = null,
-        LpcLabelGenerationApi $labelGenerationApi = null,
-        LpcLabelGenerationInward $labelGenerationInward = null,
-        LpcAccountApi $accountApi = null
+        ?LpcLabelInwardDownloadAccountAction $labelInwardDownloadAccountAction = null,
+        ?LpcLabelGenerationApi $labelGenerationApi = null,
+        ?LpcLabelGenerationInward $labelGenerationInward = null,
+        ?LpcAccountApi $accountApi = null
     ) {
         $this->labelInwardDownloadAccountAction = LpcRegister::get('labelInwardDownloadAccountAction', $labelInwardDownloadAccountAction);
         $this->labelGenerationApi               = LpcRegister::get('labelGenerationApi', $labelGenerationApi);
