@@ -305,11 +305,11 @@ msgstr "HS code custom attribute name"
 msgid "The name of the custom attribute you use to store the product HS code on products"
 msgstr "The name of the custom attribute you use to store the product HS code on products"
 
-msgid "For french overseas destinations only (except St-Pierre-et-Miquelon)"
-msgstr "For french overseas destinations only (except St-Pierre-et-Miquelon)"
+msgid "For French overseas destinations only (except St-Pierre-et-Miquelon and Mayotte)"
+msgstr "For French overseas destinations only (except St-Pierre-et-Miquelon and Mayotte)"
 
-msgid "Are parcels free of taxes and fees?"
-msgstr "Are parcels free of taxes and fees?"
+msgid "French overseas parcels sent with DDP (Delivered Duty Paid)?"
+msgstr "French overseas parcels sent with DDP (Delivered Duty Paid)?"
 
 msgid "Generate bordereau"
 msgstr "Generate bordereau"
@@ -1087,8 +1087,8 @@ msgstr "When the user will enter this coupon code, the following delivery method
 msgid "Display a button to import your tracking number in Colissimo listing"
 msgstr "Display a button to import your tracking number in Colissimo listing"
 
-msgid "This feature is only if you don't generate your labels on your website. You can import a CSV to set the tracking number in WooCommerce with the following columns: order_id, tracking_number"
-msgstr "This feature is only if you don't generate your labels on your website. You can import a CSV to set the tracking number in WooCommerce with the following columns: order_id, tracking_number"
+msgid "This feature is only needed if you don't generate your labels on your website. You can import a CSV to set the tracking numbers in WooCommerce with the columns order_id and tracking_number like so:<br/><br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
+msgstr "This feature is only needed if you don't generate your labels on your website. You can import a CSV to set the tracking numbers in WooCommerce with the columns order_id and tracking_number like so:<br/><br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
 
 msgid "Import tracking numbers"
 msgstr "Import tracking numbers"
@@ -2289,3 +2289,42 @@ msgstr "URL port"
 
 msgid "URL protocol"
 msgstr "URL protocol"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Required format:<br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
+msgstr "Required format:<br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
+
+msgid "Only Post offices"
+msgstr "Only Post offices"
+
+msgid "All relays"
+msgstr "All relays"
+
+msgid "Only Pickup points"
+msgstr "Only Pickup points"
+
+msgid "Only Pickup partner stores"
+msgstr "Only Pickup partner stores"
+
+msgid "Only Post offices and Pickup partner stores"
+msgstr "Only Post offices and Pickup partner stores"
+
+msgid "All relays without Pickup lockers"
+msgstr "All relays without Pickup lockers"
+
+msgid "All relays without Neighbor-relays Pickme"
+msgstr "All relays without Neighbor-relays Pickme"
+
+msgid "Extra cost for French overseas"
+msgstr "Extra cost for French overseas"
+
+msgid "Colissimo Box / Labels and packagings"
+msgstr "Colissimo Box / Labels and packagings"
+
+msgid "For your postage needs, order your labels in rolls or boxes directly from your dedicated space %s, and enjoy the best prices and quality standards on the market."
+msgstr "For your postage needs, order your labels in rolls or boxes directly from your dedicated space %s, and enjoy the best prices and quality standards on the market."
+
+msgid "Labels and packagings"
+msgstr "Labels and packagings"

@@ -110,7 +110,7 @@ class LpcInvoiceGenerateAction extends LpcComponent {
         }
         if ($order->get_customer_note()) {
             $output .= '<tr>
-					<th class="td" scope="row" colspan="2" style="text-align:left;">Note:</th>
+					<th class="td" scope="row" colspan="2" style="text-align:left;">' . __('Note', 'wc_colissimo') . '</th>
 					<td class="td" style="text-align:left;">' . wptexturize($order->get_customer_note()) . '</td>
 				</tr>';
         }

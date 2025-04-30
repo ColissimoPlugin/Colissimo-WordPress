@@ -113,6 +113,13 @@ class LpcPickupWidget extends LpcPickup {
         $city     = str_replace('’', "'", $customer['shipping_city'] ?? '');
         $country  = $customer['shipping_country'] ?? '';
 
+        $relayTypes = LpcHelper::get_option('lpc_relay_types', '');
+        if (empty($relayTypes)) {
+            $relayTypes = '1';
+        } elseif ('-1' === $relayTypes) {
+            $relayTypes = '0';
+        }
+
         $widgetInfo = [
             'URLColissimo'      => self::BASE_URL,
             'ceLang'            => defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'FR',
@@ -125,6 +132,7 @@ class LpcPickupWidget extends LpcPickup {
             'dyPreparationTime' => LpcHelper::get_option('lpc_preparation_time', 1),
             'dyWeight'          => '19000',
             'origin'            => 'CMS',
+            'filterRelay'       => $relayTypes,
         ];
 
         if (LpcHelper::get_option('lpc_prCustomizeWidget', 'no') == 'yes') {

@@ -123,7 +123,7 @@ class LpcLabelOutwardImportAction extends LpcComponent {
         $orderIdsIssues = [];
 
         foreach ($allLines as $key => $data) {
-            if (0 === $key) {
+            if (0 === $key || empty($data)) {
                 continue;
             }
 

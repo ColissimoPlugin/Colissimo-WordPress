@@ -48,6 +48,7 @@ class LpcLabelGenerationPayload {
     private const BELGIAN_COUNTRY_CODE = 'BE';
     private const US_COUNTRY_CODE = 'US';
     public const COUNTRIES_NEEDING_STATE = ['CA', self::US_COUNTRY_CODE];
+    public const COUNTRIES_FTD = ['GF', 'GP', 'MQ', 'RE'];
 
     protected $payload;
     protected $isReturnLabel;
@@ -234,8 +235,6 @@ class LpcLabelGenerationPayload {
             $payloadAddressee['address']['phoneNumber'] = $this->formatPhone($addressee['phoneNumber']);
         }
 
-        $this->setFtdGivenCountryCodeId($addressee['countryCode']);
-
         // Required bypass because Colissimo Labels for Belgium or Switzerland don't display line3
         $countryCodesNoLine3 = ['BE', 'CH'];
         if (in_array($addressee['countryCode'], $countryCodesNoLine3)) {
@@ -404,12 +403,14 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    protected function setFtdGivenCountryCodeId($destinationCountryId) {
-        if (LpcHelper::get_option('lpc_customs_isFtd') === 'yes' && $this->capabilitiesPerCountry->getFtdRequiredForDestination($destinationCountryId) === true) {
+    public function withFtd($countryCode) {
+        if (in_array($countryCode, self::COUNTRIES_FTD) && LpcHelper::get_option('lpc_customs_isFtd') === 'yes') {
             $this->payload['letter']['parcel']['ftd'] = true;
         } else {
             unset($this->payload['letter']['parcel']['ftd']);
         }
+
+        return $this;
     }
 
     public function withDepositDate(\DateTime $depositDate) {

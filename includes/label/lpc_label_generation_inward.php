@@ -207,6 +207,7 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->withInstructions($order->get_customer_note())
             ->withOutputFormat($customParams)
             ->withCustomsDeclaration($order, $customParams)
+            ->withFtd($returnAddress['countryCode'])
             ->withInsuranceValue($order->get_subtotal(), $order->get_shipping_country(), $shippingMethodUsed, $customParams);
 
         return $payload->checkConsistency();

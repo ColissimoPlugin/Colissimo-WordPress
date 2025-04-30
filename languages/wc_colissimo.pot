@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.4.0\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.5.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-28\n"
+"POT-Creation-Date: 2025-04-30\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -312,10 +312,10 @@ msgstr ""
 msgid "The name of the custom attribute you use to store the product HS code on products"
 msgstr ""
 
-msgid "For french overseas destinations only (except St-Pierre-et-Miquelon)"
+msgid "For French overseas destinations only (except St-Pierre-et-Miquelon and Mayotte)"
 msgstr ""
 
-msgid "Are parcels free of taxes and fees?"
+msgid "French overseas parcels sent with DDP (Delivered Duty Paid)?"
 msgstr ""
 
 msgid "Generate bordereau"
@@ -1094,7 +1094,7 @@ msgstr ""
 msgid "Display a button to import your tracking number in Colissimo listing"
 msgstr ""
 
-msgid "This feature is only if you don't generate your labels on your website. You can import a CSV to set the tracking number in WooCommerce with the following columns: order_id, tracking_number"
+msgid "This feature is only needed if you don't generate your labels on your website. You can import a CSV to set the tracking numbers in WooCommerce with the columns order_id and tracking_number like so:<br/><br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
 msgstr ""
 
 msgid "Import tracking numbers"
@@ -2295,5 +2295,44 @@ msgid "URL port"
 msgstr ""
 
 msgid "URL protocol"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "Required format:<br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
+msgstr ""
+
+msgid "Only Post offices"
+msgstr ""
+
+msgid "All relays"
+msgstr ""
+
+msgid "Only Pickup points"
+msgstr ""
+
+msgid "Only Pickup partner stores"
+msgstr ""
+
+msgid "Only Post offices and Pickup partner stores"
+msgstr ""
+
+msgid "All relays without Pickup lockers"
+msgstr ""
+
+msgid "All relays without Neighbor-relays Pickme"
+msgstr ""
+
+msgid "Extra cost for French overseas"
+msgstr ""
+
+msgid "Colissimo Box / Labels and packagings"
+msgstr ""
+
+msgid "For your postage needs, order your labels in rolls or boxes directly from your dedicated space %s, and enjoy the best prices and quality standards on the market."
+msgstr ""
+
+msgid "Labels and packagings"
 msgstr ""
 

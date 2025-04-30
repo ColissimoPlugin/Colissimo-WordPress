@@ -8,7 +8,7 @@
 		<script src="https://embed.typeform.com/next/embed.js"></script>
 
 		<style>
-			.button-primary.woocommerce-save-button{
+			.is-primary.woocommerce-save-button{
 				display: none;
 			}
 

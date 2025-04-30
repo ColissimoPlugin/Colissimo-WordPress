@@ -58,6 +58,13 @@ class LpcAdminPickupWidget extends LpcComponent {
 
         $args = [];
 
+        $relayTypes = LpcHelper::get_option('lpc_relay_types', '');
+        if (empty($relayTypes)) {
+            $relayTypes = '1';
+        } elseif ('-1' === $relayTypes) {
+            $relayTypes = '0';
+        }
+
         $args['widgetInfo'] =
             [
                 'ceCountryList'     => implode(',', $availableCountries),
@@ -71,6 +78,7 @@ class LpcAdminPickupWidget extends LpcComponent {
                 'dyPreparationTime' => LpcHelper::get_option('lpc_preparation_time', 1),
                 'dyWeight'          => '19000',
                 'origin'            => 'CMS',
+                'filterRelay'       => $relayTypes,
             ];
 
         if (LpcHelper::get_option('lpc_prCustomizeWidget', 'no') == 'yes') {

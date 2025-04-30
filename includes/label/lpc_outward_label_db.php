@@ -594,12 +594,13 @@ END_SQL;
         $tableName = $this->getTableName();
 
         // phpcs:disable
-        $sql = 'INSERT INTO ' . $tableName . ' (`order_id`, `tracking_number`) VALUES (%d, %s)';
+        $sql = 'INSERT INTO ' . $tableName . ' (`order_id`, `tracking_number`, `label_created_at`) VALUES (%d, %s, %s)';
 
         $sql = $wpdb->prepare(
             $sql,
             $orderId,
-            $trackingNumber
+            $trackingNumber,
+            current_time('mysql')
         );
 
         return $wpdb->query($sql);

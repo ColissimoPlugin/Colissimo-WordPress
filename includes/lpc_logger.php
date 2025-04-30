@@ -21,6 +21,16 @@ class LpcLogger {
     protected $logFile;
 
     public static function error($message, array $details = []) {
+        $debug                  = debug_backtrace();
+        $details['stack_trace'] = [];
+        foreach ($debug as $step) {
+            if (empty($step['file']) || empty($step['line'])) {
+                continue;
+            }
+
+            $details['stack_trace'][] = $step['file'] . ' => ' . $step['line'];
+        }
+
         self::log(self::ERROR_LEVEL, $message, $details);
     }
 

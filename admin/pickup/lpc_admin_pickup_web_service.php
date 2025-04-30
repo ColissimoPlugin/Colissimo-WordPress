@@ -94,21 +94,36 @@ class LpcAdminPickupWebService extends LpcComponent {
 
         $loadMore = (int) LpcHelper::getVar('loadMore', 0) === 1;
 
-        $generateRelaysPaypload = new LpcGenerateRelaysPayload();
+        $generateRelaysPayload = new LpcGenerateRelaysPayload();
 
         try {
-            $generateRelaysPaypload
+            $weight  = 0;
+            $orderId = (int) LpcHelper::getVar('orderId', 0);
+            if ($orderId > 0) {
+                $order = wc_get_order($orderId);
+                $items = $order->get_items();
+                foreach ($items as $item) {
+                    if (!empty($item['product_id'])) {
+                        $product = $item->get_product();
+                        if (!$product->is_virtual()) {
+                            $weight += wc_get_weight($product->get_weight(), 'kg') * $item['quantity'];
+                        }
+                    }
+                }
+            }
+
+            $generateRelaysPayload
                 ->withCredentials()
                 ->withAddress($address)
                 ->withShippingDate()
                 ->withOptionInter()
+                ->withRelayTypeFilter($weight)
                 ->checkConsistency();
 
+            $relaysPayload = $generateRelaysPayload->assemble();
+
             $relaysApi = new LpcRelaysApi();
-
-            $relaysPayload = $generateRelaysPaypload->assemble();
-
-            $resultWs = $relaysApi->getRelays($relaysPayload);
+            $resultWs  = $relaysApi->getRelays($relaysPayload);
         } catch (Exception $exception) {
             LpcLogger::error($exception->getMessage());
 
@@ -125,38 +140,10 @@ class LpcAdminPickupWebService extends LpcComponent {
             $listRelaysWS = $resultWs['listePointRetraitAcheminement'];
             $html         = '';
 
-            // Choose displayed relay types
-            $relayTypes = LpcHelper::get_option('lpc_relay_point_type', 'all');
-            if (empty($relayTypes)) {
-                $relayTypes = 'all';
-            }
-
             // Force Post office type if cart weight > 20kg
-            $weight  = 0;
-            $orderId = (int) LpcHelper::getVar('orderId', 0);
-            if ($orderId > 0) {
-                $order = wc_get_order($orderId);
-                $items = $order->get_items();
-                foreach ($items as $item) {
-                    if (!empty($item['product_id'])) {
-                        $product = $item->get_product();
-                        if (!$product->is_virtual()) {
-                            $weight += wc_get_weight($product->get_weight(), 'kg') * $item['quantity'];
-                        }
-                    }
-                }
-            }
             if ($weight > 20) {
-                $relayTypes  = ['BDP', 'BPR'];
                 $overWarning = __('Only post offices are available for this order', 'wc_colissimo');
                 $html        .= '<div class="lpc_layer_relay_warning_relay_type">' . $overWarning . '</div>';
-            }
-
-            if ('all' != $relayTypes) {
-                $listRelaysWS = array_filter(
-                    $listRelaysWS,
-                    fn($relay) => in_array($relay['typeDePoint'], $relayTypes)
-                );
             }
 
             // Limit number of displayed relays

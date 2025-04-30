@@ -24,7 +24,7 @@ class LpcInwardLabelEmailManager extends LpcComponent {
     }
 
     public function send_email($order_data) {
-        $lpcInwardLabelGenerationEmail = WC()->mailer()->emails['lpc_generate_inward_label'];
+        $lpcInwardLabelGenerationEmail = WC()->mailer()->emails['LpcInwardLabelGenerationEmail'];
         if (isset($order_data['label_filename'])) {
             $lpcInwardLabelGenerationEmail->trigger($order_data['order'], $order_data['label'], $order_data['label_filename']);
         } else {
@@ -34,7 +34,7 @@ class LpcInwardLabelEmailManager extends LpcComponent {
 
     public function generate_inward_label_woocommerce_email($emails) {
         require_once __DIR__ . DIRECTORY_SEPARATOR . 'lpc_inward_label_generation_email.php';
-        $emails['lpc_generate_inward_label'] = new LpcInwardLabelGenerationEmail();
+        $emails['LpcInwardLabelGenerationEmail'] = new LpcInwardLabelGenerationEmail();
 
         return $emails;
     }

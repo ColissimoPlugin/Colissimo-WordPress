@@ -173,10 +173,12 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
     }
 
     private function handleErrorRedirect(string $errorMessage) {
-        echo '<script type="text/javascript">';
-        echo 'alert("' . addslashes($errorMessage) . '");';
-        echo 'window.history.back();';
-        echo '</script>';
+        echo json_encode(
+            [
+                'type'  => 'error',
+                'error' => $errorMessage,
+            ]
+        );
         exit;
     }
 }

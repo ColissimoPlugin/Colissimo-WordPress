@@ -34,7 +34,8 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         $this->init_form_fields();
         $this->init_settings();
 
-        $this->title = $this->get_option('title');
+        $this->title      = $this->get_option('title');
+        $this->tax_status = $this->get_option('tax_status');
     }
 
     /**
@@ -48,6 +49,17 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 'description' => __('This controls the title which the user sees during checkout.', 'wc_colissimo'),
                 'default'     => $this->method_title,
                 'desc_tip'    => true,
+            ],
+            'tax_status'                                   => [
+                'title'       => __('Tax status', 'woocommerce'),
+                'description' => __('If a cost is defined, this controls if taxes are applied to that cost.', 'woocommerce'),
+                'desc_tip'    => true,
+                'type'        => 'select',
+                'options'     => [
+                    'taxable' => __('Taxable', 'woocommerce'),
+                    'none'    => _x('None', 'Tax status', 'woocommerce'),
+                ],
+                'default'     => $this->get_option('tax_status', 'taxable'),
             ],
             'always_free'                                  => [
                 'title'       => __('Always free?', 'wc_colissimo'),
@@ -520,13 +532,21 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 $cost = 0.0;
             }
 
+            $extraCost   = 0;
+            $countryCode = $package['destination']['country'];
+
+            $ftdActive = LpcHelper::get_option('lpc_customs_isFtd') === 'yes';
+            if ($ftdActive && in_array($countryCode, LpcLabelGenerationPayload::COUNTRIES_FTD)) {
+                $extraCost = LpcHelper::get_option('lpc_extracost_outremer', 0);
+            }
+
             // For DDP shipping methods, apply the extra cost if any, even when free shipping is active
             if (false !== strpos($this->id, '_ddp')) {
-                $countryCode = strtolower($package['destination']['country']);
-                $extraCost   = LpcHelper::get_option('lpc_extracost_' . $countryCode, 0);
-                if (!empty($extraCost)) {
-                    $cost += $extraCost;
-                }
+                $extraCost = LpcHelper::get_option('lpc_extracost_' . strtolower($countryCode), 0);
+            }
+
+            if (!empty($extraCost)) {
+                $cost += $extraCost;
             }
 
             // Apply discount on shipping if there is one
@@ -552,9 +572,10 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $translatedLabel = __($label, 'wc_colissimo');
 
             $rate = [
-                'id'    => $this->get_rate_id(),
-                'label' => $translatedLabel,
-                'cost'  => $cost,
+                'id'      => $this->get_rate_id(),
+                'label'   => $translatedLabel,
+                'cost'    => $cost,
+                'package' => $package,
             ];
 
             $this->add_rate($rate);
@@ -578,5 +599,16 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
 
             return !empty($token);
         }
+    }
+
+    /**
+     * Methods called by the Chronopost plugin, they don't check if the method is one of their own
+     */
+    public function refresh_methods() {
+
+    }
+
+    public function isAvailableForContract(): bool {
+        return false;
     }
 }

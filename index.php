@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Colissimo shipping methods for WooCommerce
  * Description: This extension gives you the possibility to use the Colissimo shipping methods in WooCommerce
- * Version: 2.4.0
+ * Version: 2.5.0
  * Author: Colissimo
  * Author URI: https://www.colissimo.entreprise.laposte.fr/fr
  * Text Domain: wc_colissimo
@@ -131,6 +131,9 @@ if (
             add_action('woocommerce_after_order_object_save', [$this, 'saveDdpInformation']);
         }
 
+        /**
+         * Only useful for a client that asked if we could record the DDP information in the order meta
+         */
         public function saveDdpInformation($order) {
             $usingDdp = $order->get_meta('lpc_using_ddp');
             if (in_array($usingDdp, [0, 1])) {
@@ -156,7 +159,9 @@ if (
                 return;
             }
 
-            $extraCost = LpcHelper::get_option('lpc_extracost_' . $order->get_shipping_country(), 0);
+            $countryCode = strtoupper($order->get_shipping_country());
+            $extraCost   = LpcHelper::get_option('lpc_extracost_' . strtolower($countryCode), 0);
+
             $order->update_meta_data('lpc_ddp_cost', $extraCost);
             $order->update_meta_data('lpc_using_ddp', 1);
             $order->save();

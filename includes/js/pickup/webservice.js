@@ -73,7 +73,7 @@ jQuery(function ($) {
                 disableDefaultUI: true,
                 mapId: 'Colissimo'
             });
-        } else if (lpcPickUpSelection.mapType === 'leaflet') {
+        } else if (lpcPickUpSelection.mapType === 'leaflet' && !lpcMap) {
             lpcMap = L.map('lpc_map').setView([
                 coordinates.latitude,
                 coordinates.longitude

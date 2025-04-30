@@ -42,6 +42,7 @@ if (is_admin()) {
             if ('link' === $args['type']) {
                 ?>
 				<a id="lpc_pick_up_web_service_show_map"
+				   class="lpc_pick_up_webservice_show_map"
 				   data-lpc-template="lpc_pick_up_web_service"
 				   data-lpc-callback="lpcInitMapWebService"><?php echo $linkText; ?></a>
                 <?php
@@ -49,6 +50,7 @@ if (is_admin()) {
                 ?>
 				<button type="button"
 						id="lpc_pick_up_web_service_show_map"
+						class="lpc_pick_up_webservice_show_map wp-element-button"
 						data-lpc-template="lpc_pick_up_web_service"
 						data-lpc-callback="lpcInitMapWebService"><?php echo $linkText; ?></button>
                 <?php

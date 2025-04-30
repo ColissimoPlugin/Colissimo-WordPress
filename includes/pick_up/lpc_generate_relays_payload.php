@@ -5,7 +5,7 @@ class LpcGenerateRelaysPayload {
 
     public function __construct() {
         $this->payload = [
-            'filterRelay' => '1',
+            'origin' => 'CMS',
         ];
     }
 
@@ -70,6 +70,29 @@ class LpcGenerateRelaysPayload {
         } else {
             $this->payload['optionInter'] = $optionInter;
         }
+
+        return $this;
+    }
+
+    public function withRelayTypeFilter(?int $weight = null) {
+        if (empty($weight)) {
+            $weight = wc_get_weight(WC()->cart->get_cart_contents_weight(), 'kg');
+        }
+
+        if (!empty($weight) && $weight > 20) {
+            $this->payload['filterRelay'] = '0';
+
+            return $this;
+        }
+
+        $relayTypes = LpcHelper::get_option('lpc_relay_types', '');
+        if (empty($relayTypes)) {
+            $relayTypes = '1';
+        } elseif ('-1' === $relayTypes) {
+            $relayTypes = '0';
+        }
+
+        $this->payload['filterRelay'] = $relayTypes;
 
         return $this;
     }

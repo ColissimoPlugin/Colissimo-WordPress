@@ -1,7 +1,6 @@
 <?php
 
 class LpcShippingMethods extends LpcComponent {
-
     public function init() {
         add_action(
             'woocommerce_init',
@@ -102,15 +101,90 @@ class LpcShippingMethods extends LpcComponent {
     }
 
     public function addShippingIcon($label, $method) {
-        $img = '';
-        if ('yes' === WC_Admin_Settings::get_option('display_logo') && in_array($method->get_method_id(), array_keys($this->getAllShippingMethods()))) {
-            $url   = plugins_url('/images/colissimo_icon.png', LPC_INCLUDES . 'init.php');
-            $class = 'lpc_shipping_icon lpc_shipping_icon_' . $method->get_method_id();
-            $style = 'max-width: 40px; display:inline; vertical-align: middle;';
-            $img   = '<img src="' . $url . '" style="' . $style . '" class="' . $class . '"> ';
+        $methodId = $method->get_method_id();
+        if ('yes' !== WC_Admin_Settings::get_option('display_logo') || !in_array($methodId, array_keys($this->getAllShippingMethods()))) {
+            return $label;
         }
 
-        return $img . $label;
+        $img = '<img src="' . esc_url(plugins_url('/images/colissimo.png', LPC_INCLUDES . 'init.php')) . '" 
+                    style="max-width: 100px; display:inline; vertical-align: middle;" 
+                    class="lpc_shipping_icon lpc_shipping_icon_' . $methodId . '"> ';
+
+        $countryCode = WC()->customer->get_shipping_country();
+
+        $partnerLogo  = '';
+        $partnerWidth = '80';
+        if (in_array($countryCode, ['IE', 'NL', 'PL', 'PT'])) {
+            $partnerLogo  = 'partners/dpd.png';
+            $partnerWidth = '56';
+        } elseif ('AT' === $countryCode) {
+            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_austria')) {
+                $partnerLogo = 'partners/post_ag.jpg';
+            } else {
+                $partnerLogo  = 'partners/dpd.png';
+                $partnerWidth = '56';
+            }
+        } elseif ('AU' === $countryCode) {
+            $partnerLogo  = 'partners/australia_post.svg';
+            $partnerWidth = '100';
+        } elseif ('BE' === $countryCode) {
+            $partnerLogo  = 'partners/bpost.png';
+            $partnerWidth = '70';
+        } elseif ('DE' === $countryCode) {
+            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_germany')) {
+                $partnerLogo  = 'partners/deutschpost.jpg';
+                $partnerWidth = '60';
+            } else {
+                $partnerLogo  = 'partners/dpd.png';
+                $partnerWidth = '56';
+            }
+        } elseif ('CA' === $countryCode) {
+            $partnerLogo  = 'partners/canada_post.jpg';
+            $partnerWidth = '100';
+        } elseif ('CH' === $countryCode) {
+            $partnerLogo = 'partners/swiss_post.jpg';
+        } elseif ('ES' === $countryCode) {
+            $partnerLogo = 'partners/seur.png';
+        } elseif ('GB' === $countryCode) {
+            $partnerLogo = 'partners/parcel_force.jpg';
+        } elseif ('IT' === $countryCode) {
+            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_italy')) {
+                $partnerLogo  = 'partners/poste_italiane.jpg';
+                $partnerWidth = '100';
+            } else {
+                $partnerLogo  = 'partners/brt.png';
+                $partnerWidth = '52';
+            }
+        } elseif ('LU' === $countryCode) {
+            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_luxembourg')) {
+                $partnerLogo  = 'partners/deutschpost.jpg';
+                $partnerWidth = '60';
+            } else {
+                $partnerLogo  = 'partners/dpd.png';
+                $partnerWidth = '56';
+            }
+        } elseif ('NC' === $countryCode) {
+            $partnerLogo  = 'partners/opt.png';
+            $partnerWidth = '100';
+        } elseif ('NO' === $countryCode) {
+            $partnerLogo = 'partners/postnord.svg';
+        } elseif ('PF' === $countryCode) {
+            $partnerLogo = 'partners/fare_rata.png';
+            $partnerWidth = '40';
+        } elseif ('SE' === $countryCode) {
+            $partnerLogo = 'partners/postnord.svg';
+        } elseif ('UA' === $countryCode) {
+            $partnerLogo  = 'partners/ukrposhta.png';
+            $partnerWidth = '100';
+        }
+
+        if (!empty($partnerLogo)) {
+            $img .= ' <span style="font-weight: normal; font-size: 1rem;">x</span> <img src="' . esc_url(plugins_url('/images/' . $partnerLogo, LPC_INCLUDES . 'init.php')) . '" 
+                    style="max-width: ' . $partnerWidth . 'px; display:inline; vertical-align: middle;" 
+                    class="lpc_shipping_icon lpc_shipping_icon_' . $methodId . '">';
+        }
+
+        return $img . '<br />' . $label;
     }
 
     public function moveAlwaysFreeOption() {

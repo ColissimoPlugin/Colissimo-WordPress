@@ -288,6 +288,25 @@ class LpcUpdate extends LpcComponent {
                 update_option('lpc_customers_download_return_label', 'yes', false);
             }
         }
+
+        // Update from version under 2.5.0
+        if (version_compare($versionInstalled, '2.5.0', '<')) {
+            $relayTypes = LpcHelper::get_option('lpc_relay_point_type', 'all');
+
+            if (!empty($relayTypes) && 'all' !== $relayTypes) {
+                sort($relayTypes);
+
+                if (['BDP', 'BPR'] === $relayTypes) {
+                    update_option('lpc_relay_types', '0');
+                } elseif (['A2P', 'PCS'] === $relayTypes) {
+                    update_option('lpc_relay_types', '2');
+                } else {
+                    update_option('lpc_relay_types', '1');
+                }
+            }
+
+            $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
+        }
     }
 
     /** Functions for update to 1.3 **/

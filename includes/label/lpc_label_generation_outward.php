@@ -312,6 +312,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withPostalNetwork($recipient['countryCode'], $order)
             ->withNonMachinable($customParams)
             ->withDDP($shippingMethodUsed)
+            ->withFtd($recipient['countryCode'])
             ->withMultiParcels($order->get_id(), $customParams)
             ->withBlockingCode($shippingMethodUsed, $order, $customParams);
 

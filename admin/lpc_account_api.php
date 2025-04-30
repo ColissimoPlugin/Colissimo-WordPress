@@ -11,7 +11,10 @@ class LpcAccountApi extends LpcRestApi {
     }
 
     public function getAutologinURLs(): array {
-        $payload = [];
+        $payload = [
+            'tagInfoPartner' => 'WOOCOMMERCE',
+        ];
+
         if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
             $payload['credential']['apiKey'] = LpcHelper::get_option('lpc_apikey');
         } else {

@@ -382,7 +382,7 @@
       "id": "display_import_tracking_number",
       "type": "checkbox",
       "title": "Display a button to import your tracking number in Colissimo listing",
-      "desc": "This feature is only if you don't generate your labels on your website. You can import a CSV to set the tracking number in WooCommerce with the following columns: order_id, tracking_number",
+      "desc": "This feature is only needed if you don't generate your labels on your website. You can import a CSV to set the tracking numbers in WooCommerce with the columns order_id and tracking_number like so:<br/><br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911",
       "desc_tip": true,
       "default": "no"
     },
@@ -697,6 +697,11 @@
       "title": "Packaging"
     },
     {
+      "id": "lpc_products",
+      "type": "lpc_products",
+      "title": "Colissimo Box / Labels and packagings"
+    },
+    {
       "id": "lpc_packaging_weight",
       "type": "numberinputwithweightunit"
     },
@@ -903,6 +908,41 @@
       }
     },
     {
+      "id": "lpc_relay_types",
+      "type": "select",
+      "title": "Types of displayed relays",
+      "desc": "For parcels weighing more than 20kg, only the \"Post office\" relay type will be shown.",
+      "desc_tip": true,
+      "class": "",
+      "default": "1",
+      "options": {
+        "-1": "Only Post offices",
+        "1": "All relays",
+        "2": "Only Pickup points",
+        "3": "Only Pickup partner stores",
+        "5": "Only Post offices and Pickup partner stores",
+        "10": "All relays without Pickup lockers",
+        "11": "All relays without Neighbor-relays Pickme"
+      }
+    },
+    {
+      "id": "lpc_select_default_pr",
+      "type": "checkbox",
+      "title": "Select automatically the nearest relay point",
+      "desc": "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address",
+      "desc_tip": true,
+      "class": "",
+      "default": ""
+    },
+    {
+      "id": "lpc_show_international",
+      "type": "checkbox",
+      "title": "Show international Relay Points",
+      "class": "",
+      "row_class": "lpc_show_international_container",
+      "default": ""
+    },
+    {
       "id": "lpc_gmap_key",
       "type": "text",
       "title": "Google maps API key",
@@ -937,30 +977,6 @@
         "min": "1",
         "max": "20"
       }
-    },
-    {
-      "id": "lpc_relay_point_type",
-      "type": "multiselectrelaytype",
-      "title": "",
-      "desc": "",
-      "class": ""
-    },
-    {
-      "id": "lpc_show_international",
-      "type": "checkbox",
-      "title": "Show international Relay Points",
-      "class": "",
-      "row_class": "lpc_show_international_container",
-      "default": ""
-    },
-    {
-      "id": "lpc_select_default_pr",
-      "type": "checkbox",
-      "title": "Select automatically the nearest relay point",
-      "desc": "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address",
-      "desc_tip": true,
-      "class": "",
-      "default": ""
     },
     {
       "id": "lpc_prCustomizeWidget",
@@ -1135,10 +1151,21 @@
     {
       "id": "lpc_customs_isFtd",
       "type": "checkbox",
-      "title": "Are parcels free of taxes and fees?",
-      "desc": "For french overseas destinations only (except St-Pierre-et-Miquelon)",
+      "title": "French overseas parcels sent with DDP (Delivered Duty Paid)?",
+      "desc": "For French overseas destinations only (except St-Pierre-et-Miquelon and Mayotte)",
       "desc_tip": true,
       "default": ""
+    },
+    {
+      "id": "lpc_extracost_outremer",
+      "type": "number",
+      "title": "Extra cost for French overseas",
+      "class": "",
+      "row_class": "lpc_extraCostOm",
+      "placeholder": "18",
+      "custom_attributes": {
+        "min": "0"
+      }
     },
     {
       "id": "lpc_eori_number",

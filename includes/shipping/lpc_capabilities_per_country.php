@@ -181,10 +181,6 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
         return $this->getInfoForDestination($countryCode, 'cn23');
     }
 
-    public function getFtdRequiredForDestination($countryCode) {
-        return $this->getInfoForDestination($countryCode, 'ftd');
-    }
-
     public function getInsuranceAvailableForDestination($countryCode) {
         return $this->getInfoForDestination($countryCode, 'insurance');
     }

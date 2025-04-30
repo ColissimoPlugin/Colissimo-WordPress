@@ -741,7 +741,11 @@ END_PRINT_SCRIPT;
         echo '<a id="colissimo_action_update" href="' . $buttonUpdateStatusAction . '" class="page-title-action">' . $buttonUpdateStatusLabel . '</a>';
 
         if (current_user_can('lpc_manage_labels') && WC_Admin_Settings::get_option('display_import_tracking_number', 'no') === 'yes') {
-            $buttonImportTrackingNumberLabel  = __('Import tracking numbers', 'wc_colissimo');
+            $buttonImportTrackingNumberLabel = __('Import tracking numbers', 'wc_colissimo');
+
+            $buttonImportTrackingNumberLabel  .= LpcHelper::tooltip(
+                __('Required format:<br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911', 'wc_colissimo')
+            );
             $buttonImportTrackingNumberAction = $this->labelOutwardImport->getUrlToImportTrackingNumbers();
             echo '<button type="button" class="page-title-action" id="colissimo-tracking_number_import-button">' . $buttonImportTrackingNumberLabel . '</button>';
             echo '<input name="tracking_number_import" id="colissimo-tracking_number_import" type="file" accept=".csv" colissimo-data-url="' . $buttonImportTrackingNumberAction . '">';
@@ -799,7 +803,8 @@ END_PRINT_SCRIPT;
                     $labelTooltip = '';
 
                     if (!empty($labelInfoByTrackingNumber[$outLabel])) {
-                        $dateGenerated = new DateTime($labelInfoByTrackingNumber[$outLabel]->label_created_at);
+                        $creationDate  = $labelInfoByTrackingNumber[$outLabel]->label_created_at ?? date('Y-m-d H:i:s', time());
+                        $dateGenerated = new DateTime($creationDate);
                         $labelTooltip  = sprintf(__('Label generated at %s', 'wc_colissimo'),
                                                  $dateGenerated->format(get_option('date_format', 'Y-m-d') . ' ' . get_option('time_format', 'H:i')));
                     }

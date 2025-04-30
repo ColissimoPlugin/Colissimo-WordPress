@@ -162,25 +162,11 @@ class LpcPickupWebService extends LpcPickup {
             $listRelaysWS = $resultWs['listePointRetraitAcheminement'];
             $html         = '';
 
-            // Choose displayed relay types
-            $relayTypes = LpcHelper::get_option('lpc_relay_point_type', 'all');
-            if (empty($relayTypes)) {
-                $relayTypes = 'all';
-            }
-
             // Force Post office type if cart weight > 20kg
             $cartWeight = wc_get_weight(WC()->cart->get_cart_contents_weight(), 'kg');
             if ($cartWeight > 20) {
-                $relayTypes  = ['BDP', 'BPR'];
                 $overWarning = __('Only post offices are available for this order', 'wc_colissimo');
                 $html        .= '<div class="lpc_layer_relay_warning_relay_type">' . $overWarning . '</div>';
-            }
-
-            if ('all' != $relayTypes) {
-                $listRelaysWS = array_filter(
-                    $listRelaysWS,
-                    fn($relay) => in_array($relay['typeDePoint'], $relayTypes)
-                );
             }
 
             // Limit number of displayed relays
@@ -252,17 +238,18 @@ class LpcPickupWebService extends LpcPickup {
         require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_relays_api.php';
 
         try {
-            $generateRelaysPaypload = new LpcGenerateRelaysPayload();
-            $relaysApi              = new LpcRelaysApi();
+            $generateRelaysPayload = new LpcGenerateRelaysPayload();
+            $relaysApi             = new LpcRelaysApi();
 
-            $generateRelaysPaypload
+            $generateRelaysPayload
                 ->withCredentials()
                 ->withAddress($address)
                 ->withShippingDate()
                 ->withOptionInter($optionInter)
+                ->withRelayTypeFilter()
                 ->checkConsistency();
 
-            $relaysPayload = $generateRelaysPaypload->assemble();
+            $relaysPayload = $generateRelaysPayload->assemble();
 
             return $relaysApi->getRelays($relaysPayload);
         } catch (Exception $exception) {

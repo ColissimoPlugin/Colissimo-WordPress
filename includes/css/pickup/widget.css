@@ -63,18 +63,26 @@ a.lpc_pick_up_widget_show_map{
 
 /* Search bar */
 #widget_colissimo_table_adresse{
-	width: auto;
+	width: 100%;
 }
 
 #widget_colissimo_table_adresse td{
 	background-color: #F7F7F7;
 }
 
+#widget_colissimo_table_adresse tr.widget_colissimo_padding:nth-of-type(2) td.widget_colissimo_table_adresse:nth-of-type(3){
+	text-align: right;
+}
+
 #widget_colissimo_table_adresse img.widget_colissimo_point_img{
 	height: 18px;
+	left: 180px;
 }
 
 #widget_colissimo_adresse{
+	margin-top: 26px;
+	margin-bottom: 26px;
+	min-height: 36px;
 	border: 1px solid #CDCDCD;
 	border-radius: 8px 0 0 8px;
 	margin-right: 0;
@@ -122,10 +130,6 @@ img.widget_colissimo_icone_img{
 	height: 16px;
 }
 
-.widget_colissimo_selected .widget_colissimo_table td{
-	background-color: #EBEBEB !important;
-}
-
 .widget_colissimo_liste .widget_colissimo_text_bold{
 	margin-bottom: 2px !important;
 	margin-top: 10px !important;
@@ -133,4 +137,20 @@ img.widget_colissimo_icone_img{
 
 .widget_colissimo_bouton_validation{
 	box-sizing: content-box;
+}
+
+@media screen and (max-width: 999px){
+	#widget_colissimo_table_adresse img.widget_colissimo_point_img{
+		left: 0;
+	}
+
+	#widget_colissimo_adresse{
+		border-radius: 0 0 0 0;
+	}
+}
+
+@media screen and (max-width: 500px){
+	#widget_colissimo_adresse{
+		margin-top: 20px;
+	}
 }

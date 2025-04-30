@@ -5,6 +5,7 @@ jQuery(function ($) {
         thermalPrint();
         extraCost();
         relays();
+        ddp();
     }
 
     init();
@@ -81,7 +82,6 @@ jQuery(function ($) {
         const $mobileMapContainer = $('.wc-settings-row-lpc_show_list_only_mobile_container');
         const $internationalPointsContainer = $('.wc-settings-row-lpc_show_international_container');
         const $maxPointsContainer = $('.wc-settings-row-lpc_max_relay_point_container');
-        const $typePointsContainer = $('.lpc_relay_point_type_container');
         const $customizeWidgetContainer = $('.wc-settings-row-lpc_prCustomizeWidget_container');
         const $customizeWidget = $('#lpc_prCustomizeWidget');
         const $addressTextColorContainer = $('.wc-settings-row-lpc_prAddressTextColor_container');
@@ -99,7 +99,6 @@ jQuery(function ($) {
                 $mobileMapContainer.hide();
                 $internationalPointsContainer.hide();
                 $maxPointsContainer.hide();
-                $typePointsContainer.hide();
                 $customizeWidgetContainer.show();
                 if ($customizeWidget.is(':checked')) {
                     $addressTextColorContainer.show();
@@ -114,7 +113,6 @@ jQuery(function ($) {
                 $mobileMapContainer.show();
                 $internationalPointsContainer.show();
                 $maxPointsContainer.show();
-                $typePointsContainer.show();
                 $customizeWidgetContainer.hide();
                 $addressTextColorContainer.hide();
                 $listTextColorContainer.hide();
@@ -133,5 +131,17 @@ jQuery(function ($) {
                 $displayFontContainer.hide();
             }
         });
+    }
+
+    function ddp() {
+        const $ftdExtraCostContainer = $('.wc-settings-row-lpc_extraCostOm');
+
+        $('#lpc_customs_isFtd').on('change', function () {
+            if ($(this).is(':checked')) {
+                $ftdExtraCostContainer.show();
+            } else {
+                $ftdExtraCostContainer.hide();
+            }
+        }).trigger('change');
     }
 });

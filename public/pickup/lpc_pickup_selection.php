@@ -54,10 +54,29 @@ class LpcPickupSelection extends LpcComponent {
         return $pickUpInfo;
     }
 
-    public function setCurrentPickUpLocationInfo($pickUpInfo) {
+    public function setCurrentPickUpLocationInfo($pickUpInfo, $orderId = null) {
         WC()->session->set(self::PICKUP_LOCATION_SESSION_VAR_NAME, $pickUpInfo);
         $this->initSession();
         $_SESSION[self::PICKUP_LOCATION_SESSION_VAR_NAME] = $pickUpInfo;
+
+        $debug      = debug_backtrace();
+        $stackTrace = [];
+        foreach ($debug as $step) {
+            if (empty($step['file']) || empty($step['line'])) {
+                continue;
+            }
+            $stackTrace[] = $step['file'] . ' => ' . $step['line'];
+        }
+
+        LpcLogger::debug(
+            'Changing the saved pickup data',
+            [
+                'pickupData' => $pickUpInfo,
+                'orderId'    => $orderId,
+                'saved'      => $this->getCurrentPickUpLocationInfo(),
+                'stackTrace' => $stackTrace,
+            ]
+        );
 
         return $this;
     }
@@ -85,7 +104,7 @@ class LpcPickupSelection extends LpcComponent {
                 $shippingMethod = $shipping->get_method_id();
                 if (LpcRelay::ID === $shippingMethod) {
                     $this->setPickupAsShippingAddress($order);
-                    $this->setCurrentPickUpLocationInfo(null);
+                    $this->setCurrentPickUpLocationInfo(null, $order->get_id());
                 }
             }
         );
@@ -105,7 +124,7 @@ class LpcPickupSelection extends LpcComponent {
                     if (LpcRelay::ID === $shippingMethod) {
                         $pickUpInfo = $this->getCurrentPickUpLocationInfo();
                         $this->updatePickupMeta($order, $pickUpInfo);
-                        $this->setCurrentPickUpLocationInfo(null);
+                        $this->setCurrentPickUpLocationInfo(null, $orderId);
                     }
                 } elseif (!empty($posted_data['shipping_method'])) {
                     // When activating the synced renewal on a subscription product, for some reason the shipping info isn't on the order
@@ -113,7 +132,7 @@ class LpcPickupSelection extends LpcComponent {
                     if (strpos($shippingMethod, LpcRelay::ID) !== false) {
                         // The action woocommerce_checkout_order_created didn't update the shipping address so we do it here
                         $this->setPickupAsShippingAddress($order);
-                        $this->setCurrentPickUpLocationInfo(null);
+                        $this->setCurrentPickUpLocationInfo(null, $orderId);
                     }
                 }
             },
@@ -123,7 +142,21 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     private function updatePickupMeta($order, $pickUpInfo) {
-        if (empty($order) || empty($pickUpInfo['identifiant'])) {
+        if (empty($order)) {
+            LpcLogger::error('Order missing when trying to save selected pickup during a purchase');
+
+            return;
+        }
+
+        if (empty($pickUpInfo['identifiant'])) {
+            LpcLogger::error(
+                'Pickup data missing when trying to save selected pickup during a purchase',
+                [
+                    'order'      => $order->get_id(),
+                    'pickUpInfo' => $pickUpInfo,
+                ]
+            );
+
             return;
         }
 
@@ -131,12 +164,22 @@ class LpcPickupSelection extends LpcComponent {
         $order->update_meta_data(self::PICKUP_LOCATION_LABEL_META_KEY, $pickUpInfo['nom']);
         $order->update_meta_data(self::PICKUP_PRODUCT_CODE_META_KEY, $pickUpInfo['typeDePoint']);
         $order->save();
+
+        LpcLogger::debug('Saved pickup data on order ' . $order->get_id(), ['pickUpInfo' => $pickUpInfo]);
     }
 
     private function setPickupAsShippingAddress($order, $isSubOrder = false) {
         $pickupData = $this->getCurrentPickUpLocationInfo();
 
-        if (empty($pickupData['adresse1'])) {
+        if (empty($pickupData['adresse1']) || empty($pickUpInfo['identifiant'])) {
+            LpcLogger::error(
+                'Could not save pickup data on order because the address was missing',
+                [
+                    'order'      => $order->get_id(),
+                    'pickupData' => $pickupData,
+                ]
+            );
+
             return;
         }
 
@@ -164,59 +207,29 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     public function preventPlaceOrderButton($orderButton) {
-        $wcSession      = WC()->session;
-        $wcCart         = WC()->cart;
-        $shippingMethod = $wcSession->get('chosen_shipping_methods');
-        $needShipping   = $wcCart->needs_shipping();
-
-        if (!$needShipping || empty($shippingMethod)) {
-            return $orderButton;
-        }
-        $relayMethod = false;
-        foreach ($shippingMethod as $oneMethod) {
-            if (strpos($oneMethod, LpcRelay::ID) !== false) {
-                $relayMethod = true;
-            }
-        }
-        if (!$relayMethod) {
+        if (!$this->isRelayRequired()) {
             return $orderButton;
         }
 
         $relayInfo = $this->getCurrentPickUpLocationInfo();
 
-        if (!empty($relayInfo)) {
+        if (!empty($relayInfo['adresse1']) && !empty($relayInfo['identifiant'])) {
             return $orderButton;
         }
 
         $textButton = __('Please select a pick-up point', 'wc_colissimo');
 
-        return '<button type="submit" class="button alt" name="woocommerce_checkout_place_order" id="place_order">' . $textButton . '</button>';
+        return '<button type="submit" class="button alt wp-element-button" name="woocommerce_checkout_place_order" id="place_order">' . $textButton . '</button>';
     }
 
     public function preventCheckoutProcess() {
-        $wcSession      = WC()->session;
-        $wcCart         = WC()->cart;
-        $shippingMethod = $wcSession->get('chosen_shipping_methods');
-        $needShipping   = $wcCart->needs_shipping();
-
-        if (!$needShipping || empty($shippingMethod)) {
-            return;
-        }
-
-        $relayMethod = false;
-        foreach ($shippingMethod as $oneMethod) {
-            if (strpos($oneMethod, LpcRelay::ID) !== false) {
-                $relayMethod = true;
-            }
-        }
-
-        if (!$relayMethod) {
+        if (!$this->isRelayRequired()) {
             return;
         }
 
         $relayInfo = $this->getCurrentPickUpLocationInfo();
 
-        if (empty($relayInfo)) {
+        if (empty($relayInfo['adresse1']) || empty($relayInfo['identifiant'])) {
             throw new Exception(__('Please select a pick-up point', 'wc_colissimo'));
         }
 
@@ -229,6 +242,7 @@ class LpcPickupSelection extends LpcComponent {
         }
 
         $customerPhoneNumber     = str_replace(' ', '', $customerPhoneNumber);
+        $wcSession               = WC()->session;
         $customerData            = $wcSession->get('customer');
         $customerShippingCountry = $customerData['shipping_country'];
 
@@ -293,5 +307,29 @@ class LpcPickupSelection extends LpcComponent {
                 $this->setPickupAsShippingAddress($order);
             }
         );
+    }
+
+    private function isRelayRequired(): bool {
+        $wcSession      = WC()->session;
+        $wcCart         = WC()->cart;
+        $shippingMethod = $wcSession->get('chosen_shipping_methods');
+        $needShipping   = $wcCart->needs_shipping();
+
+        if (!$needShipping || empty($shippingMethod)) {
+            return false;
+        }
+
+        $relayMethod = false;
+        foreach ($shippingMethod as $key => $oneMethod) {
+            if (strpos($oneMethod, LpcRelay::ID) !== false) {
+                $relayMethod = true;
+            }
+        }
+
+        if (!$relayMethod) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -51,11 +51,11 @@ class LpcSettingsTab extends LpcComponent {
         $this->initSelectOrderStatusDelivered();
         $this->initDisplayCredentials();
         $this->initDisplayCBox();
+        $this->initDisplayColissimoProducts();
         $this->initDisplayNumberInputWithWeightUnit();
         $this->initDisplaySelectAddressCountry();
         $this->initCheckStatus();
         $this->initDefaultCountry();
-        $this->initMultiSelectRelayType();
         $this->initBlockCode();
         $this->initSecuredReturn();
         $this->fixSavePassword();
@@ -184,6 +184,13 @@ class LpcSettingsTab extends LpcComponent {
         add_action(
             'woocommerce_admin_field_lpc_cbox',
             [$this, 'displayCBox']
+        );
+    }
+
+    protected function initDisplayColissimoProducts() {
+        add_action(
+            'woocommerce_admin_field_lpc_products',
+            [$this, 'displayColissimoProducts']
         );
     }
 
@@ -396,14 +403,28 @@ class LpcSettingsTab extends LpcComponent {
         $urls = $this->accountApi->getAutologinURLs();
 
         $args = [
-            'type'        => 'lpc_cbox',
-            'url'         => $urls['urlConnectedCbox'] ?? 'https://www.colissimo.entreprise.laposte.fr',
-            'urlServices' => $urls['urlParamServices'] ?? 'https://www.applications.colissimo.entreprise.laposte.fr/entreprise/mes-services/',
-            'text'        => 'Access Colissimo Box',
-            'class'       => '',
+            'type'         => 'lpc_cbox',
+            'url'          => $urls['urlConnectedCbox'] ?? 'https://www.colissimo.entreprise.laposte.fr',
+            'urlServices'  => $urls['urlParamServices'] ?? 'https://www.applications.colissimo.entreprise.laposte.fr/entreprise/mes-services/',
+            'urlMaterials' => $urls['urlEtiquettesEtEmballages'] ?? '',
+            'text'         => 'Access Colissimo Box',
+            'class'        => '',
         ];
 
         echo LpcHelper::renderPartial('settings' . DS . 'link.php', $args);
+    }
+
+    public function displayColissimoProducts() {
+        $urls = $this->accountApi->getAutologinURLs();
+        if (empty($urls['urlEtiquettesEtEmballages'])) {
+            return;
+        }
+
+        $args = [
+            'url' => $urls['urlEtiquettesEtEmballages'],
+        ];
+
+        echo LpcHelper::renderPartial('settings' . DS . 'packaging_materials.php', $args);
     }
 
     public function displayVideoTutorials() {
@@ -653,7 +674,7 @@ class LpcSettingsTab extends LpcComponent {
             'video'    => __('Video tutorials', 'wc_colissimo'),
         ];
 
-        $deadline = new DateTime('2024-08-01');
+        $deadline = new DateTime('2025-12-31');
         $now      = new DateTime();
 
         if ($now < $deadline) {
@@ -690,14 +711,6 @@ class LpcSettingsTab extends LpcComponent {
             // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             if (empty($_REQUEST['_wpnonce']) || !wp_verify_nonce(wp_unslash($_REQUEST['_wpnonce']), 'woocommerce-settings')) {
                 die('Invalid Token');
-            }
-
-            if ('shipping' === $currentSection && !isset($_POST['lpc_relay_point_type'])) {
-                $relayTypeOption = [
-                    'id'   => 'lpc_relay_point_type',
-                    'type' => 'multiselectrelaytype',
-                ];
-                WC_Admin_Settings::save_fields([$relayTypeOption], ['lpc_relay_point_type' => ['A2P', 'BPR', 'CMT', 'PCS', 'BDP']]);
             }
 
             if ('label' === $currentSection && !isset($_POST['lpc_secured_return'])) {
@@ -962,49 +975,12 @@ class LpcSettingsTab extends LpcComponent {
         update_option('lpc_current_credentials_valid', $isValid, false);
     }
 
-    protected function initMultiSelectRelayType() {
-        add_action('woocommerce_admin_field_multiselectrelaytype', [$this, 'displayMultiSelectRelayType']);
-    }
-
     protected function initBlockCode() {
         add_action('woocommerce_admin_field_block_code', [$this, 'displayBlockCode']);
     }
 
     protected function initSecuredReturn() {
         add_action('woocommerce_admin_field_secured_return', [$this, 'displaySecuredReturn']);
-    }
-
-    public function displayMultiSelectRelayType() {
-        $relayTypesValues = [
-            'fr'    => [
-                'label'  => 'France',
-                'values' => [
-                    'A2P' => __('Pickup station', 'wc_colissimo'),
-                    'BPR' => __('Post office', 'wc_colissimo'),
-                ],
-            ],
-            'inter' => [
-                'label'  => __('International', 'wc_colissimo'),
-                'values' => [
-                    'CMT' => __('Relay point', 'wc_colissimo'),
-                    'PCS' => __('Pickup station', 'wc_colissimo'),
-                    'BDP' => __('Post office', 'wc_colissimo'),
-                ],
-            ],
-        ];
-
-        $tips = __('For parcels weighing more than 20kg, only the "Post office" relay type will be shown.', 'wc_colissimo');
-
-        $args                    = [];
-        $args['id_and_name']     = 'lpc_relay_point_type';
-        $args['label']           = 'Types of displayed relays';
-        $args['tips']            = $tips;
-        $args['values']          = $relayTypesValues;
-        $args['selected_values'] = get_option($args['id_and_name']);
-        $args['multiple']        = true;
-        $args['optgroup']        = true;
-        $args['row_class']       = 'lpc_relay_point_type_container';
-        echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
     }
 
     public function displayBlockCode() {
