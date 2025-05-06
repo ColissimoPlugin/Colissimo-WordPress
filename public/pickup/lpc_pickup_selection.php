@@ -71,14 +71,12 @@ class LpcPickupSelection extends LpcComponent {
         LpcLogger::debug(
             'Changing the saved pickup data',
             [
-                'pickupData' => $pickUpInfo,
                 'orderId'    => $orderId,
+                'pickupData' => $pickUpInfo,
                 'saved'      => $this->getCurrentPickUpLocationInfo(),
                 'stackTrace' => $stackTrace,
             ]
         );
-
-        return $this;
     }
 
     private function initSession() {
@@ -171,7 +169,7 @@ class LpcPickupSelection extends LpcComponent {
     private function setPickupAsShippingAddress($order, $isSubOrder = false) {
         $pickupData = $this->getCurrentPickUpLocationInfo();
 
-        if (empty($pickupData['adresse1']) || empty($pickUpInfo['identifiant'])) {
+        if (empty($pickupData['adresse1']) || empty($pickupData['identifiant'])) {
             LpcLogger::error(
                 'Could not save pickup data on order because the address was missing',
                 [
@@ -181,6 +179,14 @@ class LpcPickupSelection extends LpcComponent {
             );
 
             return;
+        } else {
+            LpcLogger::debug(
+                'Saving pickup data on order',
+                [
+                    'order'      => $order->get_id(),
+                    'pickupData' => $pickupData,
+                ]
+            );
         }
 
         $this->updatePickupMeta($order, $pickupData);

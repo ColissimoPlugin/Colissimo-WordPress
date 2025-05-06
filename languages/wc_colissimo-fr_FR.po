@@ -2297,7 +2297,7 @@ msgid "Note"
 msgstr "Note"
 
 msgid "Required format:<br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
-msgstr "Format attendu:<br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
+msgstr "Format attendu :<br/>order_id,tracking_number<br/>123,6C12345678910<br/>456,6C12345678911"
 
 msgid "Only Post offices"
 msgstr "Uniquement les bureaux de Poste"

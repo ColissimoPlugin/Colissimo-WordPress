@@ -297,7 +297,7 @@ class LpcUpdate extends LpcComponent {
                 sort($relayTypes);
 
                 if (['BDP', 'BPR'] === $relayTypes) {
-                    update_option('lpc_relay_types', '0');
+                    update_option('lpc_relay_types', '-1');
                 } elseif (['A2P', 'PCS'] === $relayTypes) {
                     update_option('lpc_relay_types', '2');
                 } else {
