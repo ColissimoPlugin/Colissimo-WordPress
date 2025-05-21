@@ -152,7 +152,11 @@ class LpcPickupWebService extends LpcPickup {
             return $resultWs;
         }
 
-        if (0 == $resultWs['errorCode']) {
+        if (!isset($resultWs['errorCode'])) {
+            $message = $resultWs['message'] ?? __('Error', 'wc_colissimo');
+
+            return $this->ajaxDispatcher->makeError(['message' => $message]);
+        } elseif (0 == $resultWs['errorCode']) {
             if (empty($resultWs['listePointRetraitAcheminement'])) {
                 LpcLogger::warn(__('The web service returned 0 relay', 'wc_colissimo'));
 

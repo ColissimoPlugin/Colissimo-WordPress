@@ -105,7 +105,7 @@ class LpcGenerateRelaysPayload {
 
     protected function checkLogin() {
         if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
-            if (empty($this->payload['apikey'])) {
+            if (empty($this->payload['apiKey'])) {
                 throw new Exception(__('Application key required to get relay points', 'wc_colissimo'));
             }
         } else {

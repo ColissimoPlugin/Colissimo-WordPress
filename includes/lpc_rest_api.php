@@ -44,6 +44,7 @@ abstract class LpcRestApi extends LpcComponent {
                 CURLOPT_URL            => $url,
                 CURLOPT_HTTPHEADER     => $httpHeader,
                 CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 10,
             ]
         );
 
