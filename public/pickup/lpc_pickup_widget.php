@@ -58,6 +58,7 @@ class LpcPickupWidget extends LpcPickup {
                         'messagePhoneRequired'  => __('Please set a valid phone number', 'wc_colissimo'),
                         'messagePickupRequired' => __('Please set a pick up point', 'wc_colissimo'),
                         'pickUpSelectionUrl'    => $this->lpcPickUpSelection->getAjaxUrl(),
+                        'errorSavingRelay'      => __('An error occurred when trying to save the selected relay, please select it again.', 'wc_colissimo'),
                     ];
                     wp_localize_script('lpc_widgets_web_js_url', 'lpcPickUpSelection', $args);
 
@@ -125,7 +126,7 @@ class LpcPickupWidget extends LpcPickup {
             'ceLang'            => defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'FR',
             'ceCountryList'     => implode(',', $availableCountries),
             'ceAddress'         => $address,
-            'ceZipCode'         => $postcode,
+            'ceZipCode'         => preg_replace('#[^0-9]#', '', $postcode),
             'ceTown'            => $city,
             'ceCountry'         => $country,
             'token'             => $this->pickUpWidgetApi->authenticate(),
@@ -187,7 +188,7 @@ class LpcPickupWidget extends LpcPickup {
         if ('yes' === LpcHelper::get_option('lpc_select_default_pr', 'no')
             && empty($currentRelay)
             && count($address) == count(array_filter($address))) {
-            $currentRelay = $this->lpcPickupWebService->getDefaultPickupLocationInfoWS($address, '1');
+            $currentRelay = $this->lpcPickupWebService->getDefaultPickupLocationInfoWS($address);
         }
 
         $args = [

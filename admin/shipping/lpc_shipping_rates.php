@@ -4,6 +4,16 @@ class LpcShippingRates extends LpcComponent {
     const AJAX_TASK_NAME_EXPORT = 'shipping/export';
     const AJAX_TASK_NAME_IMPORT = 'shipping/import';
     const AJAX_TASK_NAME_DEFAULT_PRICES = 'shipping/default_prices';
+    const AJAX_TASK_NAME_SEARCH_CATEGORIES = 'shipping/lpc_search_categories';
+    const SHIPPING_RATES_COLUMNS = [
+        'min_weight',
+        'max_weight',
+        'min_price',
+        'max_price',
+        'shipping_class',
+        'product_category',
+        'price',
+    ];
 
     /** @var LpcAjax */
     protected $ajaxDispatcher;
@@ -30,20 +40,14 @@ class LpcShippingRates extends LpcComponent {
         $this->ajaxDispatcher->register(self::AJAX_TASK_NAME_EXPORT, [$this, 'export']);
         $this->ajaxDispatcher->register(self::AJAX_TASK_NAME_IMPORT, [$this, 'import']);
         $this->ajaxDispatcher->register(self::AJAX_TASK_NAME_DEFAULT_PRICES, [$this, 'defaultPrices']);
+        $this->ajaxDispatcher->register(self::AJAX_TASK_NAME_SEARCH_CATEGORIES, [$this, 'searchCategories']);
     }
 
     public function export() {
         $shippingMethod = WC_Shipping_Zones::get_shipping_method(LpcHelper::getVar('method_id'));
 
         $lines = [
-            [
-                'min_weight',
-                'max_weight',
-                'min_price',
-                'max_price',
-                'shipping_class',
-                'price',
-            ],
+            self::SHIPPING_RATES_COLUMNS,
         ];
 
         $shippingRates = $shippingMethod->get_option('shipping_rates', []);
@@ -53,7 +57,8 @@ class LpcShippingRates extends LpcComponent {
                 $rate['max_weight'] ?? '',
                 $rate['min_price'],
                 $rate['max_price'] ?? '',
-                implode(' ', $rate['shipping_class']),
+                empty($rate['shipping_class']) ? '' : implode(' ', $rate['shipping_class']),
+                empty($rate['product_category']) ? '' : implode(' ', $rate['product_category']),
                 $rate['price'],
             ];
         }
@@ -122,11 +127,13 @@ class LpcShippingRates extends LpcComponent {
         }
 
         if (empty($fileContent)) {
-            die(json_encode(
+            die(
+            json_encode(
                 [
                     'type'    => 'error',
                     'message' => __('The content of the file is empty', 'wc_colissimo'),
-                ])
+                ]
+            )
             );
         }
 
@@ -136,12 +143,34 @@ class LpcShippingRates extends LpcComponent {
 
         $headers = explode(',', array_shift($lines));
 
+        if (!empty(array_diff($headers, self::SHIPPING_RATES_COLUMNS))) {
+            die(
+            json_encode(
+                [
+                    'type'    => 'error',
+                    'message' => __('Some columns are not allowed', 'wc_colissimo'),
+                ]
+            )
+            );
+        }
+
+        if (!in_array('min_weight', $headers) || !in_array('price', $headers)) {
+            die(
+            json_encode(
+                [
+                    'type'    => 'error',
+                    'message' => __('Please import at least a minimum weight and a price', 'wc_colissimo'),
+                ]
+            )
+            );
+        }
+
         $rates = [];
         foreach ($lines as $line) {
             $rate    = [];
             $newLine = explode(',', $line);
             foreach ($headers as $key => $header) {
-                if ('shipping_class' === $header) {
+                if (in_array($header, ['shipping_class', 'product_category'])) {
                     $newValue = explode(' ', $newLine[$key]);
                 } else {
                     $newValue = strlen($newLine[$key]) === 0 ? '' : (float) $newLine[$key];
@@ -269,6 +298,38 @@ class LpcShippingRates extends LpcComponent {
         exit;
     }
 
+    public function searchCategories(): void {
+        $search = LpcHelper::getVar('search');
+        $page   = LpcHelper::getVar('page', 1);
+
+        $categories = get_terms(
+            [
+                'taxonomy'   => 'product_cat',
+                'hide_empty' => false,
+                'search'     => $search,
+                'number'     => 20,
+                'offset'     => ($page - 1) * 20,
+            ]
+        );
+
+        $results = [];
+        if (!empty($categories) && !is_wp_error($categories)) {
+            foreach ($categories as $category) {
+                $results[] = [
+                    'id'   => $category->term_id,
+                    'text' => $category->name,
+                ];
+            }
+        }
+
+        wp_send_json(
+            [
+                'results' => $results,
+                'more'    => count($categories) >= 20,
+            ]
+        );
+    }
+
     public function getUrlExport($shippingMethodId) {
         return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME_EXPORT) . '&method_id=' . $shippingMethodId;
     }
@@ -279,5 +340,9 @@ class LpcShippingRates extends LpcComponent {
 
     public function getUrlDefaultPrices($shippingMethodId) {
         return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME_DEFAULT_PRICES) . '&instance_id=' . $shippingMethodId;
+    }
+
+    public function getUrlSearchCategories() {
+        return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME_SEARCH_CATEGORIES);
     }
 }

@@ -252,13 +252,6 @@ class LpcOrderQueries {
         $numberOfDays = LpcHelper::get_option('lpc_label_status_update_days', 90);
         $numberOfDays = empty($numberOfDays) ? 90 : $numberOfDays;
         $timePeriod   = '-' . $numberOfDays . ' days';
-
-        /**
-         * Filter allowing to modify the time period for which the tracking status should be updated.
-         *
-         * @since 1.9.0
-         */
-        $timePeriod = apply_filters('lpc_update_delivery_status_period', $timePeriod);
         $fromDate   = date('Y-m-d', strtotime($timePeriod));
 
         $params = [

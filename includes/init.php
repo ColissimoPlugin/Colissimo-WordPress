@@ -22,6 +22,8 @@ require_once LPC_INCLUDES . 'shipping' . DS . 'lpc_capabilities_per_country.php'
 require_once LPC_INCLUDES . 'shipping' . DS . 'lpc_shipping_methods.php';
 require_once LPC_INCLUDES . 'shipping' . DS . 'lpc_shipping_zones.php';
 require_once LPC_INCLUDES . 'lpc_order_statuses.php';
+require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_pickup_selection.php';
+require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_pickup_web_service.php';
 require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_pick_up_widget_api.php';
 require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_relays_api.php';
 require_once LPC_INCLUDES . 'tracking' . DS . 'lpc_colissimo_status.php';
@@ -55,6 +57,8 @@ class LpcIncludeInit {
 
         LpcRegister::register('orderStatuses', new LpcOrderStatuses());
         LpcRegister::register('shippingMethods', new LpcShippingMethods());
+        LpcRegister::register('pickupSelection', new LpcPickupSelection());
+        LpcRegister::register('pickupWebService', new LpcPickupWebService());
         LpcRegister::register('pickupWidgetApi', new LpcPickUpWidgetApi());
         LpcRegister::register('relaysApi', new LpcRelaysApi());
 

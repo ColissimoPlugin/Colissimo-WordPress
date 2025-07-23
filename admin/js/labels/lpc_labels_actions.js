@@ -94,7 +94,7 @@ jQuery(function ($) {
             data: {lpc_thermal_labels_infos: thermalLabelsInfos},
             dataType: 'json'
         }).success(function (response) {
-            let urlsForOrdersId = JSON.parse(response);
+            const urlsForOrdersId = JSON.parse(response);
 
             urlsForOrdersId.forEach(info => {
                 if (info.url.length !== 0) {

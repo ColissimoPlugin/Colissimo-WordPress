@@ -8,7 +8,7 @@ class LpcLogger {
      * Number of lines displayed when seeing the logs
      */
     const LOG_LINES_NB = 1000;
-    const LOG_FILE = LPC_FOLDER . 'logs' . DS . 'colissimo.log';
+    const LOGS_FILE_NAME = 'general.log';
     const MAX_DETAILS_DEPTH = 7;
     const MAX_LOGS_LIFE_IN_DAYS = 14;
 
@@ -18,7 +18,13 @@ class LpcLogger {
     const INFO_LEVEL = 3;
     const DEBUG_LEVEL = 4;
 
-    protected $logFile;
+    public static function getLogsDirPath(): string {
+        return wp_upload_dir()['basedir'] . DIRECTORY_SEPARATOR . 'colissimo' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR;
+    }
+
+    public static function getLogsPath(): string {
+        return self::getLogsDirPath() . self::LOGS_FILE_NAME;
+    }
 
     public static function error($message, array $details = []) {
         $debug                  = debug_backtrace();
@@ -36,10 +42,6 @@ class LpcLogger {
 
     public static function warn($message, array $details = []) {
         self::log(self::WARN_LEVEL, $message, $details);
-    }
-
-    public static function warning($message, array $details = []) {
-        self::warn($message, $details);
     }
 
     public static function debug($message, array $details = []) {
@@ -85,8 +87,9 @@ class LpcLogger {
                 break;
         }
 
-        if (file_exists(self::LOG_FILE)) {
-            $logFileContent  = file_get_contents(self::LOG_FILE);
+        $logsPath = self::getLogsPath();
+        if (file_exists($logsPath)) {
+            $logFileContent  = file_get_contents($logsPath);
             $logFileEachLine = explode(PHP_EOL, $logFileContent);
 
             $logsLifeLimit = strtotime('-' . self::MAX_LOGS_LIFE_IN_DAYS . ' days');
@@ -104,11 +107,15 @@ class LpcLogger {
                 array_shift($logFileEachLine);
             }
         } else {
+            $logsDirPath = self::getLogsDirPath();
+            if (!is_dir($logsDirPath)) {
+                mkdir($logsDirPath, 0755, true);
+            }
+
             $logFileEachLine = [];
         }
-
         file_put_contents(
-            self::LOG_FILE,
+            $logsPath,
             implode(PHP_EOL, $logFileEachLine) . "\r\n<log>" . date('Y-m-d H:i:s', current_time('timestamp')) . ' - ' . $levelType . ' : ' . $content
         );
     }
@@ -119,8 +126,9 @@ class LpcLogger {
      * @return bool|string
      */
     public static function get_logs($lines = null, $downloadLink = '') {
-        if (!file_exists(self::LOG_FILE)) {
-            return __('The log file is empty', 'wc_colissimo');
+        $logsPath = self::getLogsPath();
+        if (!file_exists($logsPath)) {
+            return __('The logs file is empty', 'wc_colissimo');
         }
 
         $link = '';
@@ -132,7 +140,7 @@ class LpcLogger {
             $lines = self::LOG_LINES_NB;
         }
 
-        $f = fopen(self::LOG_FILE, 'rb');
+        $f = fopen($logsPath, 'rb');
         fseek($f, - 1, SEEK_END);
         if (fread($f, 1) != PHP_EOL) {
             $lines --;

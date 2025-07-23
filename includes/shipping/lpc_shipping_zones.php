@@ -131,11 +131,12 @@ class LpcShippingZones extends LpcComponent {
                     $optionValues = ['shipping_rates' => []];
                     foreach ($defaultPrices[$shippingMethod] as $onePrice) {
                         $optionValues['shipping_rates'][] = [
-                            'min_weight'     => wc_get_weight($onePrice['weight_min'], $weightUnit, 'g'),
-                            'max_weight'     => wc_get_weight($onePrice['weight_max'], $weightUnit, 'g'),
-                            'min_price'      => 0,
-                            'shipping_class' => [0 => 'all'],
-                            'price'          => $onePrice['price'],
+                            'min_weight'       => wc_get_weight($onePrice['weight_min'], $weightUnit, 'g'),
+                            'max_weight'       => wc_get_weight($onePrice['weight_max'], $weightUnit, 'g'),
+                            'min_price'        => 0,
+                            'shipping_class'   => [0 => 'all'],
+                            'product_category' => [0 => 'all'],
+                            'price'            => $onePrice['price'],
                         ];
                     }
 

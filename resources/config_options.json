@@ -83,6 +83,11 @@
       "title": "Access Colissimo Box"
     },
     {
+      "id": "lpc_contract_information",
+      "type": "lpc_contract_information",
+      "title": "Your contract information"
+    },
+    {
       "id": "lpc_section_general",
       "type": "sectionend"
     },
@@ -758,7 +763,7 @@
     {
       "id": "lpc_choose_min_max_rate",
       "type": "select",
-      "title": "Concurrent rates available",
+      "title": "Choice for concurrent rates",
       "desc": "In case several price rates are available for the same shipping method, choose the one to display to the customer.",
       "desc_tip": true,
       "class": "",
@@ -932,14 +937,6 @@
       "desc": "When the user selects the relay method during the checkout, it will automatically propose a relay point based on the shipping address",
       "desc_tip": true,
       "class": "",
-      "default": ""
-    },
-    {
-      "id": "lpc_show_international",
-      "type": "checkbox",
-      "title": "Show international Relay Points",
-      "class": "",
-      "row_class": "lpc_show_international_container",
       "default": ""
     },
     {
@@ -1506,6 +1503,11 @@
       "text": "Contact us",
       "class": "",
       "default": ""
+    },
+    {
+      "id": "lpc_doc",
+      "type": "lpcdoc",
+      "title": "Documentation"
     },
     {
       "id": "lpc_dev_doc",

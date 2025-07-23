@@ -60,5 +60,32 @@ $currentDiscount = $shippingMethod->get_option('shipping_discount', []);
 				</tbody>
 			</table>
 		</fieldset>
+
+		<template id="lpc_shipping_discount_row_template">
+			<tr>
+				<td class="check-column">
+					<input type="checkbox" />
+				</td>
+				<td style="text-align: center">
+					<input type="number"
+						   class="input-number regular-input"
+						   step="any"
+						   min="0"
+						   value="0"
+						   required
+						   name="shipping_discount[__row_id__][nb_product]" />
+				</td>
+				<td style="text-align: center">
+					<input max="100"
+						   type="number"
+						   class="input-number regular-input"
+						   step="any"
+						   min="0"
+						   value="0"
+						   required
+						   name="shipping_discount[__row_id__][percentage]" />
+				</td>
+			</tr>
+		</template>
 	</td>
 </tr>

@@ -1,8 +1,7 @@
 jQuery(function ($) {
-    $('#lpc_shipping_rates_add').click(function () {
-        const $ratesRows = $('.table_rates tr');
+    $('#lpc_shipping_rates_add').on('click', function () {
+        let $ratesRows = $('.table_rates tr');
         const newRowId = $ratesRows.length;
-        const shippingClassesOptions = $('#lpc_shipping_classes_example').html();
         let newRateMinWeight = $ratesRows.length > 0 ? $ratesRows.last().find('[name*="max_weight"]').val() : 0;
         let newRateMinPrice = $ratesRows.length > 0 ? $ratesRows.last().find('[name*="max_price"]').val() : 0;
 
@@ -13,73 +12,49 @@ jQuery(function ($) {
             newRateMinPrice = 0;
         }
 
-        let newRow = $('<tr>')
-            .append($('<td class="check-column"><input type="checkbox" /></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" value="'
-                      + newRateMinWeight
-                      + '" name="shipping_rates['
-                      + newRowId
-                      + '][min_weight]"/></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" name="shipping_rates['
-                      + newRowId
-                      + '][max_weight]"/></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" value="'
-                      + newRateMinPrice
-                      + '" name="shipping_rates['
-                      + newRowId
-                      + '][min_price]"/></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" name="shipping_rates['
-                      + newRowId
-                      + '][max_price]"/></td>'))
-            .append($(
-                '<td style="text-align: center"><select multiple="multiple" class="lpc__shipping_rates__shipping_class__select" style="width: auto; max-width: 10rem" required name="shipping_rates['
-                + newRowId
-                + '][shipping_class][]">'
-                + shippingClassesOptions
-                + '</select></td>'))
-            .append($('<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" required name="shipping_rates['
-                      + newRowId
-                      + '][price]"/></td>'));
+        const newRow = $('#lpc_shipping_grid_row_template')
+            .html()
+            .replaceAll('__row_id__', newRowId)
+            .replace('__min_weight__', newRateMinWeight)
+            .replace('__min_price__', newRateMinPrice);
 
-        $(this).closest('table').children('tbody').append(newRow);
+        const $tableContainer = $(this).closest('table').children('tbody');
+        $tableContainer.append(newRow);
 
-        if (!newRow.prev().hasClass('alternate')) {
-            newRow.addClass('alternate');
+        const $appendedRow = $tableContainer.children('tr').last();
+        if (!$appendedRow.prev().hasClass('alternate')) {
+            $appendedRow.addClass('alternate');
         }
 
         initializeSelectWoo();
     });
 
-    $('#lpc_shipping_discount_add').click(function () {
+    $('#lpc_shipping_discount_add').on('click', function () {
         let newRowId = $('.table_discount tr').length;
-        let newRow = $('<tr>')
-            .append($('<td class="check-column"><input type="checkbox" /></td>'))
-            .append($(
-                '<td style="text-align: center"><input type="number" class="input-number regular-input" step="any" min="0" required name="shipping_discount['
-                + newRowId
-                + '][nb_product]"/></td>'))
-            .append($(
-                '<td style="text-align: center"><input max="100" type="number" class="input-number regular-input" step="any" min="0" required name="shipping_discount['
-                + newRowId
-                + '][percentage]"/></td>'));
 
-        $(this).closest('table').children('tbody').append(newRow);
+        const newRow = $('#lpc_shipping_discount_row_template')
+            .html()
+            .replaceAll('__row_id__', newRowId);
 
-        if (!newRow.prev().hasClass('alternate')) {
-            newRow.addClass('alternate');
+        const $tableContainer = $(this).closest('table').children('tbody');
+        $tableContainer.append(newRow);
+
+        const $appendedRow = $tableContainer.children('tr').last();
+        if (!$appendedRow.prev().hasClass('alternate')) {
+            $appendedRow.addClass('alternate');
         }
 
         initializeSelectWoo();
     });
 
-    $('#lpc_shipping_rates_remove').click(function () {
+    $('#lpc_shipping_rates_remove').on('click', function () {
         if (confirm(lpcShippingRates.deleteRateConfirmation)) {
             $('.table_rates input:checked').closest('tr').remove();
             $('.table_rates input:checked').prop('checked', false);
         }
     });
 
-    $('#lpc_shipping_discount_remove').click(function () {
+    $('#lpc_shipping_discount_remove').on('click', function () {
         if (confirm(lpcShippingRates.deleteDiscountConfirmation)) {
             $('.table_discount input:checked').closest('tr').remove();
             $('.table_discount input:checked').prop('checked', false);
@@ -87,11 +62,41 @@ jQuery(function ($) {
     });
 
     function initializeSelectWoo() {
-        let $shippingClassSelect = $('.lpc__shipping_rates__shipping_class__select');
+        const $shippingClassSelect = $('.lpc__shipping_rates__shipping_class__select');
+        const $productCategorySelect = $('.lpc__shipping_rates__product_category__select');
+        const $priceGridSelectSelects = $('.lpc__shipping_rates__multiselect');
         $shippingClassSelect.selectWoo();
 
-        $shippingClassSelect.on('select2:select', function (e) {
-            let newValue = e.params.data.id;
+        $productCategorySelect.selectWoo({
+            ajax: {
+                url: lpcShippingRates.searchCategoriesAjaxUrl,
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            placeholder: lpcShippingRates.searchCategories,
+            minimumInputLength: 3,
+            allowClear: true
+        });
+
+        $priceGridSelectSelects.on('select2:select', function (e) {
+            const newValue = e.params.data.id;
             let values = $(this).val();
 
             if (newValue === 'all') {
@@ -104,10 +109,10 @@ jQuery(function ($) {
             }
         });
 
-        $shippingClassSelect.on('select2:unselect', function (e) {
-            let values = $(this).val();
+        $priceGridSelectSelects.on('select2:unselect', function (e) {
+            const values = $(this).val();
 
-            if (values === null) {
+            if (values === null || values.length === 0) {
                 $(this).val(['all']).trigger('change');
             }
         });
@@ -132,11 +137,16 @@ jQuery(function ($) {
             data: formData,
             processData: false,
             contentType: false
-        }).success(function () {
-            window.onbeforeunload = function () {
-                // blank function do nothing and
-            };
-            location.reload();
+        }).success(function (response) {
+            response = JSON.parse(response);
+
+            if (response.type === 'error') {
+                alert(response.message);
+            } else {
+                window.onbeforeunload = function () {
+                };
+                location.reload();
+            }
         }).error(function () {
             alert(lpcShippingRates.errorWhileImporting);
         });

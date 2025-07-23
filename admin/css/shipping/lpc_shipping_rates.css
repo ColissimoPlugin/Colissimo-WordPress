@@ -27,3 +27,20 @@
 	height: 100%;
 	vertical-align: middle;
 }
+
+.shippingrows th{
+	padding-right: 4px;
+}
+
+.shippingrows td{
+	padding: 8px 4px;
+}
+
+.lpc_grid_price, .lpc_grid_price > .input-number, .lpc_grid_min_weight, .lpc_grid_min_weight > .input-number, .lpc_grid_max_weight, .lpc_grid_max_weight > .input-number, .lpc_grid_min_price, .lpc_grid_min_price > .input-number, .lpc_grid_max_price, .lpc_grid_max_price > .input-number{
+	max-width: 90px;
+}
+
+.woocommerce .lpc_grid_shipping_class > .select2.select2-container, .woocommerce .lpc_grid_product_category > .select2.select2-container{
+	min-width: 300px !important;
+	max-width: 300px;
+}

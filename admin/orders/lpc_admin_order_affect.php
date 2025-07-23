@@ -1,5 +1,4 @@
 <?php
-require_once LPC_PUBLIC . 'pickup' . DS . 'lpc_pickup_selection.php';
 
 class LpcAdminOrderAffect extends LpcComponent {
 

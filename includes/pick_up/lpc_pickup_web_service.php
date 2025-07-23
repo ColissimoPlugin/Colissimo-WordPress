@@ -102,7 +102,7 @@ class LpcPickupWebService extends LpcPickup {
             'pickup' . DS . 'webservice_map.php',
             [
                 'ceAddress'     => str_replace('’', "'", $customer['shipping_address']),
-                'ceZipCode'     => $customer['shipping_postcode'],
+                'ceZipCode'     => preg_replace('#[^0-9]#', '', $customer['shipping_postcode']),
                 'ceTown'        => str_replace('’', "'", $customer['shipping_city']),
                 'ceCountryId'   => $customer['shipping_country'],
                 'maxRelayPoint' => LpcHelper::get_option('lpc_max_relay_point', 20),
@@ -237,7 +237,7 @@ class LpcPickupWebService extends LpcPickup {
         }
     }
 
-    public function getPickupWS($address, $optionInter = null) {
+    public function getPickupWS($address) {
         require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_generate_relays_payload.php';
         require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_relays_api.php';
 
@@ -249,7 +249,7 @@ class LpcPickupWebService extends LpcPickup {
                 ->withCredentials()
                 ->withAddress($address)
                 ->withShippingDate()
-                ->withOptionInter($optionInter)
+                ->withOptionInter()
                 ->withRelayTypeFilter()
                 ->checkConsistency();
 
@@ -261,8 +261,8 @@ class LpcPickupWebService extends LpcPickup {
         }
     }
 
-    public function getDefaultPickupLocationInfoWS($address, $optionInter = null) {
-        $resultWs = $this->getPickupWS($address, $optionInter);
+    public function getDefaultPickupLocationInfoWS($address) {
+        $resultWs = $this->getPickupWS($address);
         if (!empty($resultWs) && '0' == $resultWs['errorCode']) {
             $relays = $resultWs['listePointRetraitAcheminement'];
             if (count($relays) >= 1) {

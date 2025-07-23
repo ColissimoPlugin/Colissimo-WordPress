@@ -2,6 +2,7 @@
 
 class LpcPickupSelection extends LpcComponent {
     const AJAX_TASK_NAME = 'pickup_selection';
+    const PICKUP_LOCATION_DATA_META_KEY = '_lpc_meta_pickUpLocationData';
     const PICKUP_LOCATION_ID_META_KEY = '_lpc_meta_pickUpLocationId';
     const PICKUP_LOCATION_LABEL_META_KEY = '_lpc_meta_pickUpLocationLabel';
     const PICKUP_PRODUCT_CODE_META_KEY = '_lpc_meta_pickUpProductCode';
@@ -161,6 +162,7 @@ class LpcPickupSelection extends LpcComponent {
         $order->update_meta_data(self::PICKUP_LOCATION_ID_META_KEY, $pickUpInfo['identifiant']);
         $order->update_meta_data(self::PICKUP_LOCATION_LABEL_META_KEY, $pickUpInfo['nom']);
         $order->update_meta_data(self::PICKUP_PRODUCT_CODE_META_KEY, $pickUpInfo['typeDePoint']);
+        $order->update_meta_data(self::PICKUP_LOCATION_DATA_META_KEY, json_encode($pickUpInfo));
         $order->save();
 
         LpcLogger::debug('Saved pickup data on order ' . $order->get_id(), ['pickUpInfo' => $pickUpInfo]);
@@ -198,6 +200,16 @@ class LpcPickupSelection extends LpcComponent {
         $order->set_shipping_country(!empty($pickupData['codePays']) ? $pickupData['codePays'] : '');
         $order->set_shipping_company(!empty($pickupData['nom']) ? $pickupData['nom'] : '');
         $order->set_shipping_state('');
+
+        // To prevent Up2pay e-Transactions Crédit Agricole from messing with the shipping address
+        $up2PayPlugin = 'e-transactions-wc/wc-etransactions.php';
+        if (file_exists(WPMU_PLUGIN_DIR . DIRECTORY_SEPARATOR . $up2PayPlugin) || is_plugin_active($up2PayPlugin)) {
+            $order->update_meta_data('wc_etransactions_original_shipping_address_1', $order->get_shipping_address_1());
+            $order->update_meta_data('wc_etransactions_original_shipping_address_2', $order->get_shipping_address_2());
+            $order->update_meta_data('wc_etransactions_original_shipping_city', $order->get_shipping_city());
+            $order->update_meta_data('wc_etransactions_original_shipping_postcode', $order->get_shipping_postcode());
+            $order->update_meta_data('wc_etransactions_original_shipping_company', $order->get_shipping_company());
+        }
 
         $order->save();
 
@@ -326,7 +338,7 @@ class LpcPickupSelection extends LpcComponent {
         }
 
         $relayMethod = false;
-        foreach ($shippingMethod as $key => $oneMethod) {
+        foreach ($shippingMethod as $oneMethod) {
             if (strpos($oneMethod, LpcRelay::ID) !== false) {
                 $relayMethod = true;
             }

@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.5.2\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.6.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-21\n"
+"POT-Creation-Date: 2025-07-23\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Your average delay for preparation of a shipment, in days."
 msgstr ""
 
-msgid "The log file is empty"
+msgid "The logs file is empty"
 msgstr ""
 
 msgid "General configuration"
@@ -481,9 +481,6 @@ msgid "Your return tracking number is:"
 msgstr ""
 
 msgid "An error occured while confirming the mailBox pick-up."
-msgstr ""
-
-msgid "Show international Relay Points"
 msgstr ""
 
 msgid "Outward label was not generated:"
@@ -1556,7 +1553,7 @@ msgstr ""
 msgid "It is restricted to commercial shipments between 160€ and 1050€ included."
 msgstr ""
 
-msgid "The file you import must be a CSV with the columns min_weight, max_weight, min_price, max_price, shipping_class, price"
+msgid "The file you import must be a CSV with the columns min_weight, max_weight, min_price, max_price, shipping_class, product_category, price"
 msgstr ""
 
 msgid "Choose an amount"
@@ -2015,7 +2012,7 @@ msgstr ""
 msgid "Cheapest"
 msgstr ""
 
-msgid "Concurrent rates available"
+msgid "Choice for concurrent rates"
 msgstr ""
 
 msgid "In case several price rates are available for the same shipping method, choose the one to display to the customer."
@@ -2285,6 +2282,9 @@ msgstr ""
 msgid "The clients will see an additional column containing the tracking number on their orders listing."
 msgstr ""
 
+msgid "Colissimo tracking"
+msgstr ""
+
 msgid "Parcel n°%s"
 msgstr ""
 
@@ -2334,5 +2334,68 @@ msgid "For your postage needs, order your labels in rolls or boxes directly from
 msgstr ""
 
 msgid "Labels and packagings"
+msgstr ""
+
+msgid "An error occurred when trying to save the selected relay, please select it again."
+msgstr ""
+
+msgid "Product category"
+msgstr ""
+
+msgid "Search for categories"
+msgstr ""
+
+msgid "Some columns are not allowed"
+msgstr ""
+
+msgid "Please import at least a minimum weight and a price"
+msgstr ""
+
+msgid "Your contract information"
+msgstr ""
+
+msgid "Contract type:"
+msgstr ""
+
+msgid "Return in mailbox option:"
+msgstr ""
+
+msgid "Return in post office option:"
+msgstr ""
+
+msgid "Secured return option:"
+msgstr ""
+
+msgid "Secured shipping option:"
+msgstr ""
+
+msgid "Out-of-home contract type:"
+msgstr ""
+
+msgid "Pickup neighbor-relay option:"
+msgstr ""
+
+msgid "Estimated shipping date option:"
+msgstr ""
+
+msgid "Activated"
+msgstr ""
+
+msgid "Deactivated"
+msgstr ""
+
+msgid "Services enabled on your Colissimo contract"
+msgstr ""
+
+msgid "Documentation"
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Your Colissimo deposit places:"
+msgstr ""
+
+msgid "Mimosa option:"
 msgstr ""
 

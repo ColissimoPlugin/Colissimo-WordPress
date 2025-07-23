@@ -27,17 +27,17 @@
 						type="text"
 						id="lpc_modal_relays_search_zipcode"
 						class="lpc_modal_relays_search_input"
-						value="<?php echo $args['ceZipCode']; ?>"
-						placeholder="<?php echo __('Zipcode', 'wc_colissimo'); ?>">
+						value="<?php echo esc_attr($args['ceZipCode']); ?>"
+						placeholder="<?php esc_attr_e('Zipcode', 'wc_colissimo'); ?>">
 				<input
 						type="text"
 						id="lpc_modal_relays_search_city"
 						class="lpc_modal_relays_search_input"
-						value="<?php echo $args['ceTown']; ?>"
-						placeholder="<?php echo __('City', 'wc_colissimo'); ?>">
-				<input type="hidden" id="lpc_modal_relays_country_id" value="<?php echo $args['ceCountryId']; ?>">
+						value="<?php echo esc_attr($args['ceTown']); ?>"
+						placeholder="<?php esc_attr_e('City', 'wc_colissimo'); ?>">
+				<input type="hidden" id="lpc_modal_relays_country_id" value="<?php echo esc_attr($args['ceCountryId']); ?>">
 				<button id="lpc_layer_button_search" type="button">
-					<span id="lpc_layer_button_search_desktop"><?php echo __('Search', 'wc_colissimo'); ?></span>
+					<span id="lpc_layer_button_search_desktop"><?php esc_html_e('Search', 'wc_colissimo'); ?></span>
 					<span class="dashicons dashicons-search" id="lpc_layer_button_search_mobile"></span>
 				</button>
 			</div>

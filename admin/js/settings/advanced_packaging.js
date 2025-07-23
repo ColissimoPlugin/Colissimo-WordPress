@@ -187,7 +187,9 @@ jQuery(function ($) {
                         $saveButton.prop('disabled', false);
                         alert(response.data.message);
                     } else {
-                        $('.woocommerce-save-button').trigger('click');
+                        const $settingsSaveButton = $('.woocommerce-save-button');
+                        $settingsSaveButton.attr('disabled', false);
+                        $settingsSaveButton.trigger('click');
                     }
                 }
             });

@@ -81,6 +81,11 @@ class LpcAccountApi extends LpcRestApi {
     }
 
     public function getAccountInformation(array $payload = []): array {
+        static $accountInformation = null;
+        if (!empty($accountInformation)) {
+            return $accountInformation;
+        }
+
         if (empty($payload)) {
             if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
                 $payload['credential']['apiKey'] = LpcHelper::get_option('lpc_apikey');
@@ -134,6 +139,8 @@ class LpcAccountApi extends LpcRestApi {
         if (empty($response['cgv'])) {
             return [];
         }
+
+        $accountInformation = $response;
 
         return $response;
     }

@@ -6,6 +6,7 @@ jQuery(function ($) {
         extraCost();
         relays();
         ddp();
+        doc();
     }
 
     init();
@@ -80,7 +81,6 @@ jQuery(function ($) {
     function relays() {
         const $gmapsKeyContainer = $('.wc-settings-row-lpc_gmap_key_container');
         const $mobileMapContainer = $('.wc-settings-row-lpc_show_list_only_mobile_container');
-        const $internationalPointsContainer = $('.wc-settings-row-lpc_show_international_container');
         const $maxPointsContainer = $('.wc-settings-row-lpc_max_relay_point_container');
         const $customizeWidgetContainer = $('.wc-settings-row-lpc_prCustomizeWidget_container');
         const $customizeWidget = $('#lpc_prCustomizeWidget');
@@ -97,7 +97,6 @@ jQuery(function ($) {
 
             if ('widget' === $(this).val()) {
                 $mobileMapContainer.hide();
-                $internationalPointsContainer.hide();
                 $maxPointsContainer.hide();
                 $customizeWidgetContainer.show();
                 if ($customizeWidget.is(':checked')) {
@@ -111,7 +110,6 @@ jQuery(function ($) {
                 }
             } else {
                 $mobileMapContainer.show();
-                $internationalPointsContainer.show();
                 $maxPointsContainer.show();
                 $customizeWidgetContainer.hide();
                 $addressTextColorContainer.hide();
@@ -143,5 +141,11 @@ jQuery(function ($) {
                 $ftdExtraCostContainer.hide();
             }
         }).trigger('change');
+    }
+
+    function doc() {
+        $('#lpc_doc_download').on('click', function () {
+            window.open($('#lpc_doc_url').val(), '_blank');
+        });
     }
 });

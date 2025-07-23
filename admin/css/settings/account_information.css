@@ -1,0 +1,13 @@
+.colissimo-account-information-label{
+	font-weight: bold;
+}
+
+.forminp-lpc_contract_information ul{
+	margin-top: 5px;
+	font-size: 0.8rem;
+}
+
+.lpc_depot_list{
+	margin-left: 1rem;
+	list-style-type: disc;
+}

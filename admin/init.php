@@ -30,7 +30,7 @@ require_once LPC_ADMIN . 'labels' . DS . 'generate' . DS . 'lpc_label_outward_ge
 require_once LPC_ADMIN . 'lpc_compatibility.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_action.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_bulk_actions.php';
-require_once LPC_ADMIN . 'settings' . DS . 'lpc_settings_logs_download.php';
+require_once LPC_ADMIN . 'settings' . DS . 'lpc_settings_download.php';
 require_once LPC_ADMIN . 'shipping' . DS . 'lpc_shipping_rates.php';
 if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
     require_once LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php';
@@ -41,7 +41,7 @@ class LpcAdminInit {
         // Add left menu
         add_action('admin_menu', [$this, 'add_menus'], 99);
         add_action('admin_menu', [$this, 'add_dev_tool'], 99);
-        LpcRegister::register('settingsLogsDownload', new LpcSettingsLogsDownload());
+        LpcRegister::register('settingsDownload', new LpcSettingsDownload());
         LpcRegister::register('settingsTab', new LpcSettingsTab());
         LpcRegister::register('pickupRelayPointOnOrder', new LpcPickupRelayPointOnOrder());
 
@@ -304,6 +304,8 @@ class LpcAdminInit {
             return;
         }
 
+        $shippingRates = LpcRegister::get('shippingRates');
+
         LpcHelper::enqueueStyle('lpc_styles', plugins_url('/css/shipping/lpc_shipping_rates.css', __FILE__));
         LpcHelper::enqueueScript(
             'lpc_shipping_rates',
@@ -317,6 +319,8 @@ class LpcAdminInit {
                 'defaultPricesConfirmation'  => __('Are you sure you want to replace the current prices with the default ones?', 'wc_colissimo'),
                 'deleteRateConfirmation'     => __('Delete the selected rates?', 'wc_colissimo'),
                 'deleteDiscountConfirmation' => __('Delete the selected discounts?', 'wc_colissimo'),
+                'searchCategories'           => __('Search for categories', 'wc_colissimo'),
+                'searchCategoriesAjaxUrl'    => $shippingRates->getUrlSearchCategories(),
             ]
         );
     }

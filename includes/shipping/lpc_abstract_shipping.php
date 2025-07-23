@@ -3,6 +3,7 @@
 require_once LPC_INCLUDES . 'shipping' . DS . 'lpc_capabilities_per_country.php';
 
 abstract class LpcAbstractShipping extends WC_Shipping_Method {
+    const LPC_ALL_PRODUCT_CATEGORIES_CODE = 'all';
     const LPC_ALL_SHIPPING_CLASS_CODE = 'all';
     const LPC_NO_SHIPPING_CLASS_CODE = 'none';
     const LPC_LAPOSTE_TRACKING_LINK = 'https://www.laposte.fr/outils/suivre-vos-envois?code={lpc_tracking_number}';
@@ -208,12 +209,16 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         return $postData[$key];
     }
 
-    public function validate_shipping_rates_field($key) {
+    /**
+     * Called by WooCommerce when saving shipping method settings
+     */
+    public function validate_shipping_rates_field(string $key): array {
         $result   = [];
         $postData = $this->get_post_data();
         if (empty($postData[$key])) {
             return $result;
         }
+
         foreach ($postData[$key] as $rate) {
             $minWeight = (float) str_replace(',', '.', $rate['min_weight']);
             $maxWeight = (float) str_replace(',', '.', $rate['max_weight']);
@@ -226,12 +231,13 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $maxPrice  = max($maxPrice, 0);
 
             $item = [
-                'min_weight'     => $minWeight,
-                'max_weight'     => empty($maxWeight) ? '' : $maxWeight,
-                'min_price'      => $minPrice,
-                'max_price'      => empty($maxPrice) ? '' : $maxPrice,
-                'shipping_class' => $rate['shipping_class'],
-                'price'          => (float) str_replace(',', '.', $rate['price']),
+                'min_weight'       => $minWeight,
+                'max_weight'       => empty($maxWeight) ? '' : $maxWeight,
+                'min_price'        => $minPrice,
+                'max_price'        => empty($maxPrice) ? '' : $maxPrice,
+                'shipping_class'   => $rate['shipping_class'],
+                'product_category' => $rate['product_category'],
+                'price'            => (float) str_replace(',', '.', $rate['price']),
             ];
 
             $result[] = $item;
@@ -294,9 +300,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             return;
         }
 
-        $cartShippingClasses = [];
-        $rates               = $this->getRates();
-
+        $rates = $this->getRates();
         array_walk(
             $rates,
             function (&$rate) {
@@ -310,31 +314,74 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             }
         );
 
-        $lineTotal          = 0;
-        $lineTax            = 0;
-        $lineSubTotal       = 0;
-        $lineSubTax         = 0;
-        $articleQuantity    = 0;
-        $nbProductsToShip   = 0;
-        $discountToApply    = 0;
-        $totalWeight        = 0;
-        $productsDimensions = [];
+        $lineTotal             = 0;
+        $lineTax               = 0;
+        $lineSubTotal          = 0;
+        $lineSubTax            = 0;
+        $articleQuantity       = 0;
+        $nbProductsToShip      = 0;
+        $discountToApply       = 0;
+        $totalWeight           = 0;
+        $productsDimensions    = [];
+        $cartShippingClasses   = [];
+        $cartProductCategories = [];
 
         $noshipProductsCount = LpcHelper::get_option('lpc_calculate_shipping_with_noship_products', 'no') === 'yes';
+        $cartContents        = WC()->cart->cart_contents;
 
+        $yithBundlesHandled = [];
         foreach ($package['contents'] as $item) {
             if (empty($item['data'])) {
                 continue;
             }
 
-            $product = $item['data'];
-
+            $product         = $item['data'];
             $articleQuantity += $item['quantity'];
+
+            // Handle YITH Product Bundles for modified prices
+            if (!empty($item['bundled_by'])) {
+                // Handle when the bundle is removed, and count the price only once
+                if (!isset($cartContents[$item['bundled_by']]) || in_array($item['bundled_by'], $yithBundlesHandled)) {
+                    continue;
+                }
+
+                $yithBundlesHandled[] = $item['bundled_by'];
+
+                $currentProductLineTotal    = $cartContents[$item['bundled_by']]['line_total'];
+                $currentProductLineTax      = $cartContents[$item['bundled_by']]['line_tax'];
+                $currentProductLineSubTotal = $cartContents[$item['bundled_by']]['line_subtotal'];
+                $currentProductLineSubTax   = $cartContents[$item['bundled_by']]['line_subtotal_tax'];
+
+                $bundle                   = $cartContents[$item['bundled_by']]['data'];
+                $currentProductWeight     = (float) $bundle->get_weight() * $cartContents[$item['bundled_by']]['quantity'];
+                $currentProductDimensions = [
+                    $bundle->get_length(),
+                    $bundle->get_width(),
+                    $bundle->get_height(),
+                ];
+                $currentProductClassId = $bundle->get_shipping_class_id();
+                $currentProductCategories = $bundle->get_category_ids('edit');
+            } else {
+                $currentProductLineTotal    = $item['line_total'];
+                $currentProductLineTax      = $item['line_tax'];
+                $currentProductLineSubTotal = $item['line_subtotal'];
+                $currentProductLineSubTax   = $item['line_subtotal_tax'];
+
+                $currentProductWeight     = (float) $product->get_weight() * $item['quantity'];
+                $currentProductDimensions = [
+                    $product->get_length(),
+                    $product->get_width(),
+                    $product->get_height(),
+                ];
+                $currentProductClassId = $product->get_shipping_class_id();
+                $currentProductCategories = $product->get_category_ids('edit');
+            }
+
             if ($noshipProductsCount) {
-                $lineTotal    = $lineTotal + $item['line_total'];
-                $lineTax      = $lineTax + $item['line_tax'];
-                $lineSubTotal = $lineSubTotal + $item['line_subtotal'];
-                $lineSubTax   = $lineSubTax + $item['line_subtotal_tax'];
+                $lineTotal    = $lineTotal + $currentProductLineTotal;
+                $lineTax      = $lineTax + $currentProductLineTax;
+                $lineSubTotal = $lineSubTotal + $currentProductLineSubTotal;
+                $lineSubTax   = $lineSubTax + $currentProductLineSubTax;
             }
 
             if (is_callable([$product, 'needs_shipping']) && !$product->needs_shipping()) {
@@ -342,22 +389,23 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             }
 
             if (!$noshipProductsCount) {
-                $lineTotal    = $lineTotal + $item['line_total'];
-                $lineTax      = $lineTax + $item['line_tax'];
-                $lineSubTotal = $lineSubTotal + $item['line_subtotal'];
-                $lineSubTax   = $lineSubTax + $item['line_subtotal_tax'];
+                $lineTotal    = $lineTotal + $currentProductLineTotal;
+                $lineTax      = $lineTax + $currentProductLineTax;
+                $lineSubTotal = $lineSubTotal + $currentProductLineSubTotal;
+                $lineSubTax   = $lineSubTax + $currentProductLineSubTax;
             }
 
-            $productsDimensions[] = [
-                $product->get_length(),
-                $product->get_width(),
-                $product->get_height(),
-            ];
+            $productsDimensions[] = $currentProductDimensions;
 
             $nbProductsToShip      += (float) $item['quantity'];
-            $totalWeight           += (float) $product->get_weight() * $item['quantity'];
-            $shippingClassId       = $product->get_shipping_class_id();
+            $totalWeight           += $currentProductWeight;
+            $shippingClassId       = $currentProductClassId;
             $cartShippingClasses[] = empty($shippingClassId) ? self::LPC_NO_SHIPPING_CLASS_CODE : $shippingClassId;
+
+            $productCategories = $currentProductCategories;
+            if (!empty($productCategories)) {
+                $cartProductCategories[] = $productCategories;
+            }
         }
 
         $packagingMatchingCart = LpcHelper::getMatchingPackaging($nbProductsToShip, $totalWeight, $productsDimensions);
@@ -368,7 +416,6 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $totalWeight += $packagingMatchingCart['weight'];
         }
 
-        // Remove duplicate shipping classes
         $cartShippingClasses = array_unique($cartShippingClasses);
 
         // Check if there is an available discount
@@ -396,7 +443,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         $totalPrice = 'yes' === LpcHelper::get_option('lpc_calculate_shipping_before_coupon', 'no') ? $totalWithoutCouponPrice : $totalPrice;
 
         // DDP for GB must be commercial and between 160€ and 1050€
-        $isCommercialSend = self::CUSTOMS_CATEGORY_COMMERCIAL == LpcHelper::get_option('lpc_customs_defaultCustomsCategory');
+        $isCommercialSend = self::CUSTOMS_CATEGORY_COMMERCIAL === LpcHelper::get_option('lpc_customs_defaultCustomsCategory');
         if ('GB' === $package['destination']['country'] && LpcSignDDP::ID === $this->id && ($totalPrice < 160 || $totalPrice > 1050 || !$isCommercialSend)) {
             return;
         }
@@ -458,59 +505,39 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 }
             }
         } else {
-            $matchingRates = [];
+            $rateToChoose = LpcHelper::get_option('lpc_choose_min_max_rate', 'lowest');
 
             // Step 1 : retrieve all matching line rate with price, weight and shipping classes
             foreach ($rates as $oneRate) {
-                $arrayIntersection = array_intersect($cartShippingClasses, $oneRate['shipping_class']);
-                sort($arrayIntersection);
-                sort($cartShippingClasses);
-                $classMatches = $arrayIntersection == $cartShippingClasses;
+                // All cart shipping classes must be specified in the rate
+                $missingClasses = array_diff($cartShippingClasses, $oneRate['shipping_class']);
+                if (!empty($missingClasses) && !in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $oneRate['shipping_class'])) {
+                    continue;
+                }
+
+                // All cart products must have at least 1 of their categories specified in the rate (product_category might not exist on older rates)
+                if (!empty($oneRate['product_category'])) {
+                    foreach ($cartProductCategories as $oneProductCategories) {
+                        $matchingCategories = array_intersect($oneProductCategories, $oneRate['product_category']);
+                        if (empty($matchingCategories) && !in_array(self::LPC_ALL_PRODUCT_CATEGORIES_CODE, $oneRate['product_category'])) {
+                            continue 2;
+                        }
+                    }
+                }
 
                 if (
                     $totalWeight >= $oneRate['min_weight']
                     && (empty($oneRate['max_weight']) || $totalWeight < $oneRate['max_weight'])
                     && $totalPrice >= $oneRate['min_price']
                     && (empty($oneRate['max_price']) || $totalPrice < $oneRate['max_price'])
-                    && (
-                        $classMatches
-                        || in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $oneRate['shipping_class'])
-                    )
                 ) {
-                    $matchingRates[] = $oneRate;
-                }
-            }
-
-            $matchingShippingClassesRates = [];
-
-            // Step 2 : Match each shipping classes with corresponding line rates
-            foreach ($cartShippingClasses as $oneCartShippingClassId) {
-                // Check if a line rates is corresponding with a shipping class defined
-                $matchingShippingClassesRates[$oneCartShippingClassId] = array_filter(
-                    $matchingRates,
-                    fn($rate) => in_array($oneCartShippingClassId, $rate['shipping_class']) || in_array(self::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class'])
-                );
-            }
-
-            $shippingClassPrices = [];
-
-            // Step 3 : For each shipping class of the cart, take the cheapest or more expensive line rate depending on configuration
-            $rateToChoose = LpcHelper::get_option('lpc_choose_min_max_rate', 'lowest');
-            foreach ($matchingShippingClassesRates as $shippingClassId => $oneShippingMethodRate) {
-                foreach ($oneShippingMethodRate as $oneRate) {
-                    if (!isset($shippingClassPrices[$shippingClassId])) {
-                        $shippingClassPrices[$shippingClassId] = $oneRate['price'];
-                    } elseif (($shippingClassPrices[$shippingClassId] > $oneRate['price'] && 'lowest' === $rateToChoose)
-                              || ($shippingClassPrices[$shippingClassId] < $oneRate['price'] && 'highest' === $rateToChoose)) {
-                        $shippingClassPrices[$shippingClassId] = $oneRate['price'];
+                    if (null === $cost) {
+                        $cost = $oneRate['price'];
+                    } elseif ('lowest' === $rateToChoose && $oneRate['price'] < $cost) {
+                        $cost = $oneRate['price'];
+                    } elseif ('highest' === $rateToChoose && $oneRate['price'] > $cost) {
+                        $cost = $oneRate['price'];
                     }
-                }
-            }
-
-            // Step 4 : Take the more expensive shipping class
-            foreach ($shippingClassPrices as $onePrice) {
-                if (null === $cost || $onePrice > $cost) {
-                    $cost = $onePrice;
                 }
             }
         }

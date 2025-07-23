@@ -2,7 +2,7 @@
 $shippingMethod   = $args['shippingMethod'];
 $shippingClasses  = $args['shippingClasses'];
 $currentRates     = $shippingMethod->get_option('shipping_rates', []);
-$importTipMessage = __('The file you import must be a CSV with the columns min_weight, max_weight, min_price, max_price, shipping_class, price', 'wc_colissimo');
+$importTipMessage = __('The file you import must be a CSV with the columns min_weight, max_weight, min_price, max_price, shipping_class, product_category, price', 'wc_colissimo');
 ?>
 <tr valign="top">
 	<th scope="row" class="titledesc"><label><?php esc_html_e('Shipping rates', 'wc_colissimo'); ?></label></th>
@@ -17,33 +17,36 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
                         $currencyTxt = ' (' . $currency . ' ' . get_woocommerce_currency_symbol($currency) . ')';
                         $weightUnit  = ' (' . LpcHelper::get_option('woocommerce_weight_unit', '') . ')';
                         ?>
-						<th>
+						<th class="lpc_grid_min_weight">
                             <?php esc_html_e(__('From weight', 'wc_colissimo') . $weightUnit); ?>
                             <?php echo LpcHelper::tooltip(__('Included', 'wc_colissimo')); ?>
 						</th>
-						<th>
+						<th class="lpc_grid_max_weight">
                             <?php esc_html_e(__('To weight', 'wc_colissimo') . $weightUnit); ?>
                             <?php echo LpcHelper::tooltip(__('Excluded', 'wc_colissimo')); ?>
 						</th>
-						<th>
+						<th class="lpc_grid_min_price">
                             <?php esc_html_e(__('From cart price', 'wc_colissimo') . $currencyTxt); ?>
                             <?php echo LpcHelper::tooltip(__('Included', 'wc_colissimo')); ?>
 						</th>
-						<th>
+						<th class="lpc_grid_max_price">
                             <?php esc_html_e(__('To cart price', 'wc_colissimo') . $currencyTxt); ?>
                             <?php echo LpcHelper::tooltip(__('Excluded', 'wc_colissimo')); ?>
 						</th>
-						<th>
+						<th class="lpc_grid_shipping_class">
                             <?php esc_html_e('Shipping class', 'wc_colissimo'); ?>
 						</th>
-						<th>
+						<th class="lpc_grid_product_category">
+                            <?php esc_html_e('Product category', 'wc_colissimo'); ?>
+						</th>
+						<th class="lpc_grid_price">
                             <?php esc_html_e('Price', 'wc_colissimo'); ?>
 						</th>
 					</tr>
 				</thead>
 				<tfoot>
 					<tr>
-						<th colspan="7" id="lpc_shipping_rates_actions">
+						<th colspan="8" id="lpc_shipping_rates_actions">
 							<div style="margin-bottom: 8px;">
 								<button type="button" class="add button" id="lpc_shipping_rates_add" style="margin-left: 8px">
                                     <?php esc_html_e('Add rate', 'wc_colissimo'); ?>
@@ -170,7 +173,7 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
                         ?>
 						<tr>
 							<td class="check-column"><input type="checkbox" /></td>
-							<td style="text-align: center">
+							<td style="text-align: center" class="lpc_grid_min_weight">
 								<input type="number"
 									   class="input-number regular-input"
 									   step="any"
@@ -178,7 +181,7 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
 									   value="<?php echo isset($rate['min_weight']) ? esc_attr($rate['min_weight']) : ''; ?>"
 									   name="shipping_rates[<?php echo $i; ?>][min_weight]" />
 							</td>
-							<td style="text-align: center">
+							<td style="text-align: center" class="lpc_grid_max_weight">
 								<input type="number"
 									   class="input-number regular-input"
 									   step="any"
@@ -186,7 +189,7 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
 									   value="<?php echo isset($rate['max_weight']) ? esc_attr($rate['max_weight']) : ''; ?>"
 									   name="shipping_rates[<?php echo $i; ?>][max_weight]" />
 							</td>
-							<td style="text-align: center">
+							<td style="text-align: center" class="lpc_grid_min_price">
 								<input type="number"
 									   class="input-number regular-input"
 									   step="any"
@@ -194,7 +197,7 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
 									   value="<?php echo isset($rate['min_price']) ? esc_attr($rate['min_price']) : ''; ?>"
 									   name="shipping_rates[<?php echo $i; ?>][min_price]" />
 							</td>
-							<td style="text-align: center">
+							<td style="text-align: center" class="lpc_grid_max_price">
 								<input type="number"
 									   class="input-number regular-input"
 									   step="any"
@@ -202,17 +205,14 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
 									   value="<?php echo isset($rate['max_price']) ? esc_attr($rate['max_price']) : ''; ?>"
 									   name="shipping_rates[<?php echo $i; ?>][max_price]" />
 							</td>
-							<td style="text-align: center">
+							<td style="text-align: center" class="lpc_grid_shipping_class">
 								<select style="width: auto; max-width: 10rem"
 										name="shipping_rates[<?php echo $i; ?>][shipping_class][]"
 										multiple="multiple"
-										class="lpc__shipping_rates__shipping_class__select">
+										class="lpc__shipping_rates__multiselect lpc__shipping_rates__shipping_class__select">
 									<option value="<?php echo LpcAbstractShipping::LPC_ALL_SHIPPING_CLASS_CODE; ?>"
                                         <?php selected(
-                                            empty($rate['shipping_class']) || in_array(
-                                                LpcAbstractShipping::LPC_ALL_SHIPPING_CLASS_CODE,
-                                                $rate['shipping_class']
-                                            )
+                                            empty($rate['shipping_class']) || in_array(LpcAbstractShipping::LPC_ALL_SHIPPING_CLASS_CODE, $rate['shipping_class'])
                                         ); ?>>
                                         <?php esc_html_e('All products', 'wc_colissimo'); ?>
 									</option>
@@ -231,7 +231,36 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
                                     ?>
 								</select>
 							</td>
-							<td style="text-align: center">
+							<td style="text-align: center" class="lpc_grid_product_category">
+								<select style="width: auto; max-width: 10rem"
+										name="shipping_rates[<?php echo $i; ?>][product_category][]"
+										multiple="multiple"
+										class="lpc__shipping_rates__multiselect lpc__shipping_rates__product_category__select">
+									<option value="<?php echo LpcAbstractShipping::LPC_ALL_PRODUCT_CATEGORIES_CODE; ?>"
+                                        <?php selected(
+                                            empty($rate['product_category']) || in_array(LpcAbstractShipping::LPC_ALL_PRODUCT_CATEGORIES_CODE, $rate['product_category'])
+                                        ); ?>>
+                                        <?php esc_html_e('All categories', 'wc_colissimo'); ?>
+									</option>
+                                    <?php
+                                    if (!empty($rate['product_category'])) {
+                                        foreach ($rate['product_category'] as $oneCategoryId) {
+                                            if (LpcAbstractShipping::LPC_ALL_PRODUCT_CATEGORIES_CODE === $oneCategoryId) {
+                                                continue;
+                                            }
+
+                                            $category = get_term($oneCategoryId, 'product_cat');
+                                            if (empty($category->name)) {
+                                                continue;
+                                            }
+
+                                            echo '<option value="' . esc_attr($oneCategoryId) . '" selected="selected">' . esc_html($category->name) . '</option>';
+                                        }
+                                    }
+                                    ?>
+								</select>
+							</td>
+							<td style="text-align: center" class="lpc_grid_price">
 								<input type="number"
 									   class="input-number regular-input"
 									   step="any"
@@ -241,8 +270,10 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
 									   name="shipping_rates[<?php echo $i; ?>][price]" />
 							</td>
 						</tr>
-                        <?php $counter ++;
-                    } ?>
+                        <?php
+                        $counter ++;
+                    }
+                    ?>
 				</tbody>
 			</table>
 			<div style="margin-top: 14px;">
@@ -272,28 +303,69 @@ $importTipMessage = __('The file you import must be a CSV with the columns min_w
                 ?>
 			</div>
 		</fieldset>
+
+		<template id="lpc_shipping_grid_row_template">
+			<tr>
+				<td class="check-column">
+					<input type="checkbox" />
+				</td>
+				<td style="text-align: center" class="lpc_grid_min_weight">
+					<input type="number" class="input-number regular-input" step="any" min="0" value="__min_weight__" name="shipping_rates[__row_id__][min_weight]" />
+				</td>
+				<td style="text-align: center" class="lpc_grid_max_weight">
+					<input type="number" class="input-number regular-input" step="any" min="0" name="shipping_rates[__row_id__][max_weight]" />
+				</td>
+				<td style="text-align: center" class="lpc_grid_min_price">
+					<input type="number" class="input-number regular-input" step="any" min="0" value="__min_price__" name="shipping_rates[__row_id__][min_price]" />
+				</td>
+				<td style="text-align: center" class="lpc_grid_max_price">
+					<input type="number" class="input-number regular-input" step="any" min="0" name="shipping_rates[__row_id__][max_price]" />
+				</td>
+				<td style="text-align: center" class="lpc_grid_shipping_class">
+					<select multiple="multiple"
+							class="lpc__shipping_rates__multiselect lpc__shipping_rates__shipping_class__select"
+							style="width: auto; max-width: 10rem"
+							required
+							name="shipping_rates[__row_id__][shipping_class][]">
+						<option selected="selected" value="<?php echo LpcAbstractShipping::LPC_ALL_SHIPPING_CLASS_CODE; ?>">
+                            <?php esc_html_e('All products', 'wc_colissimo'); ?>
+						</option>
+                        <?php
+                        foreach ($shippingClasses as $oneClass) {
+                            echo '<option value="' . esc_attr($oneClass->term_id) . '">' . esc_html($oneClass->name) . '</option>';
+                        }
+                        ?>
+					</select>
+				</td>
+				<td style="text-align: center" class="lpc_grid_product_category">
+					<select multiple="multiple"
+							class="lpc__shipping_rates__multiselect lpc__shipping_rates__product_category__select"
+							style="width: auto; max-width: 10rem"
+							required
+							name="shipping_rates[__row_id__][product_category][]">
+						<option selected="selected" value="<?php echo LpcAbstractShipping::LPC_ALL_PRODUCT_CATEGORIES_CODE; ?>">
+                            <?php esc_html_e('All categories', 'wc_colissimo'); ?>
+						</option>
+					</select>
+				</td>
+				<td style="text-align: center" class="lpc_grid_price">
+					<input type="number" class="input-number regular-input" step="any" min="0" required name="shipping_rates[__row_id__][price]" />
+				</td>
+			</tr>
+		</template>
+
+		<style>
+			label{
+				font-weight: bold;
+			}
+
+			fieldset{
+				margin-bottom: 1rem;
+			}
+
+			.select2{
+				width: auto !important;
+			}
+		</style>
 	</td>
 </tr>
-<div id="lpc_shipping_classes_example" style="display: none">
-	<option selected="selected" value="<?php echo LpcAbstractShipping::LPC_ALL_SHIPPING_CLASS_CODE; ?>">
-        <?php esc_html_e('All products', 'wc_colissimo'); ?>
-	</option>
-    <?php
-    foreach ($shippingClasses as $oneClass) {
-        echo '<option value="' . esc_attr($oneClass->term_id) . '">' . esc_html($oneClass->name) . '</option>';
-    }
-    ?>
-</div>
-<style>
-	label{
-		font-weight: bold;
-	}
-
-	fieldset{
-		margin-bottom: 1rem;
-	}
-
-	.select2{
-		width: auto !important;
-	}
-</style>

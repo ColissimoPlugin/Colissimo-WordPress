@@ -14,19 +14,22 @@ class LpcLabelGenerationOutward extends LpcComponent {
     protected $labelGenerationInward;
     protected $shippingMethods;
     protected $outwardLabelDb;
+    protected $lpcPickupWebService;
 
     public function __construct(
         ?LpcCapabilitiesPerCountry $capabilitiesPerCountry = null,
         ?LpcLabelGenerationApi $labelGenerationApi = null,
         ?LpcLabelGenerationInward $labelGenerationInward = null,
         ?LpcShippingMethods $shippingMethods = null,
-        ?LpcOutwardLabelDb $outwardLabelDb = null
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcPickupWebService $lpcPickupWebService = null
     ) {
         $this->capabilitiesPerCountry = LpcRegister::get('capabilitiesPerCountry', $capabilitiesPerCountry);
         $this->labelGenerationApi     = LpcRegister::get('labelGenerationApi', $labelGenerationApi);
         $this->labelGenerationInward  = LpcRegister::get('labelGenerationInward', $labelGenerationInward);
         $this->shippingMethods        = LpcRegister::get('shippingMethods', $shippingMethods);
         $this->outwardLabelDb         = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
+        $this->lpcPickupWebService    = LpcRegister::get('pickupWebService', $lpcPickupWebService);
     }
 
     public function getDependencies(): array {
@@ -36,6 +39,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             'labelGenerationInward',
             'shippingMethods',
             'outwardLabelDb',
+            'pickupWebService',
         ];
     }
 
@@ -225,7 +229,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
                 continue;
             }
 
-            if (empty($alreadyGeneratedLabelItems[$item->get_id()]) || $alreadyGeneratedLabelItems[$item->get_id()]['qty'] < $item->get_quantity()) {
+            if (empty($alreadyGeneratedLabelItems[$item->get_id()]['qty']) || $alreadyGeneratedLabelItems[$item->get_id()]['qty'] < $item->get_quantity()) {
                 $fullyShipped = false;
                 break;
             }
@@ -239,6 +243,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             if ('insured' === $itemId) {
                 continue;
             }
+
             if (empty($alreadyGeneratedLabelItems[$itemId])) {
                 $alreadyGeneratedLabelItems[$itemId] = $oneItemDetail;
             } else {
@@ -295,6 +300,64 @@ class LpcLabelGenerationOutward extends LpcComponent {
 
         $shippingMethodUsed = $this->shippingMethods->getColissimoShippingMethodOfOrder($order);
 
+        if ('lpc_relay' === $shippingMethodUsed) {
+            $relayId = $order->get_meta(LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY);
+
+            if (empty($relayId)) {
+                // The relay data isn't stored, try to get the closest relay from the shipping address
+                $closestRelay = $this->lpcPickupWebService->getDefaultPickupLocationInfoWS(
+                    [
+                        'address'     => $recipient['street'],
+                        'zipCode'     => $recipient['zipCode'],
+                        'city'        => $recipient['city'],
+                        'countryCode' => $recipient['countryCode'],
+                    ]
+                );
+
+                if (!empty($closestRelay)) {
+                    $relayId = $closestRelay['identifiant'];
+
+                    LpcLogger::debug(
+                        'Applying closest relay data to label',
+                        [
+                            'orderID'      => $order->get_id(),
+                            'closestRelay' => $closestRelay,
+                        ]
+                    );
+
+                    $recipient['street']      = $closestRelay['adresse1'];
+                    $recipient['street2']     = $closestRelay['adresse2'] ?? '';
+                    $recipient['zipCode']     = $closestRelay['codePostal'];
+                    $recipient['city']        = $closestRelay['localite'];
+                    $recipient['countryCode'] = $closestRelay['codePays'];
+                    $recipient['companyName'] = $closestRelay['nom'] ?? '';
+                } else {
+                    LpcLogger::error(
+                        'No relay found for the shipping address',
+                        [
+                            'orderID' => $order->get_id(),
+                        ]
+                    );
+                    throw new Exception(__('No relay found for the shipping address', 'wc_colissimo'));
+                }
+            } else {
+                $relayData = $order->get_meta(LpcPickupSelection::PICKUP_LOCATION_DATA_META_KEY);
+                if (!empty($relayData)) {
+                    $relayData = json_decode($relayData, true);
+                    LpcLogger::debug('Applying saved relay data to label', [$relayData]);
+
+                    if (!empty($relayData['adresse1']) && $recipient['street'] !== $relayData['adresse1']) {
+                        $recipient['street']      = $relayData['adresse1'];
+                        $recipient['street2']     = $relayData['adresse2'] ?? '';
+                        $recipient['zipCode']     = $relayData['codePostal'];
+                        $recipient['city']        = $relayData['localite'];
+                        $recipient['countryCode'] = $relayData['codePays'];
+                        $recipient['companyName'] = $relayData['nom'] ?? '';
+                    }
+                }
+            }
+        }
+
         $payload = new LpcLabelGenerationPayload();
         $payload
             ->withOrderNumber($order->get_order_number())
@@ -317,7 +380,6 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withBlockingCode($shippingMethodUsed, $order, $customParams);
 
         if ('lpc_relay' === $shippingMethodUsed) {
-            $relayId = $order->get_meta(LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY);
             $payload->withPickupLocationId($relayId);
         }
 

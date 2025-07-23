@@ -32,7 +32,7 @@ msgstr "Délai de préparation moyen"
 msgid "Your average delay for preparation of a shipment, in days."
 msgstr "Votre délai moyen de préparation d’une livraison, en jours."
 
-msgid "The log file is empty"
+msgid "The logs file is empty"
 msgstr "Le fichier journal est vide"
 
 msgid "General configuration"
@@ -180,7 +180,7 @@ msgid "Always free?"
 msgstr "Toujours gratuit ?"
 
 msgid "If enabled, rates calculation for this shipping method will always be zero."
-msgstr "Si activé, les frais de livraisons seront toujours gratuit pour cette méthode."
+msgstr "Si activé, les frais de livraisons seront toujours gratuits pour cette méthode."
 
 msgid "The API key can be generated on cloud.google.com/maps-platform. Don't add your API key if there is a conflict with an other plugin using it."
 msgstr "La clé API peut être générée depuis cloud.google.com/maps-platform. N’ajoutez pas votre clé d’API s’il y a un conflit avec une autre extension qui l’utilise."
@@ -475,9 +475,6 @@ msgstr "Votre numéro de suivi de retour est :"
 
 msgid "An error occured while confirming the mailBox pick-up."
 msgstr "AUne erreur est survenue lors de la confirmation du retour boîte aux lettres."
-
-msgid "Show international Relay Points"
-msgstr "Afficher les points de retrait à l’international"
 
 msgid "Outward label was not generated:"
 msgstr "L’étiquette aller n’a pas été générée :"
@@ -1382,7 +1379,7 @@ msgid "Order %1$s is insured up to %2$s euros, this is the maximum amount for pa
 msgstr "La commande %1$s est assurée à la hauteur de %2$s euros, c’est le montant maximum pour les colis livrés avec la méthode d’expédition %3$s"
 
 msgid "Free if at least one item in the cart has one of the free shipping classes above"
-msgstr "Gratuit si au moins un des produits du panier a une des classes d’expédition gratuite ci-dessus"
+msgstr "Gratuit si au moins un des produits du panier a une des classes d’expédition gratuites ci-dessus"
 
 msgid "If enabled, delivery will be free, even if the other items in the cart do not have one of the free shipping classes above"
 msgstr "Si activé, la livraison sera gratuite même si les autres produits du panier n’ont pas une des classes d’expédition gratuite ci-dessus"
@@ -1549,8 +1546,8 @@ msgstr "Colis suiveur"
 msgid "It is restricted to commercial shipments between 160€ and 1050€ included."
 msgstr "Il est réservé aux envois commerciaux entre 160€ et 1050€ inclus."
 
-msgid "The file you import must be a CSV with the columns min_weight, max_weight, min_price, max_price, shipping_class, price"
-msgstr "Le fichier que vous importez doit obligatoirement un CSV avec les colonnes min_weight, max_weight, min_price, max_price, shipping_class, price"
+msgid "The file you import must be a CSV with the columns min_weight, max_weight, min_price, max_price, shipping_class, product_category, price"
+msgstr "Le fichier que vous importez doit obligatoirement un CSV avec les colonnes min_weight, max_weight, min_price, max_price, shipping_class, product_category, price"
 
 msgid "Choose an amount"
 msgstr "Choisir un montant"
@@ -2008,8 +2005,8 @@ msgstr "Le plus cher"
 msgid "Cheapest"
 msgstr "Le moins cher"
 
-msgid "Concurrent rates available"
-msgstr "Tarifs concurrents disponibles"
+msgid "Choice for concurrent rates"
+msgstr "Choix en cas de tarifs concurrents"
 
 msgid "In case several price rates are available for the same shipping method, choose the one to display to the customer."
 msgstr "Dans le cas où plusieurs tarifs sont disponibles pour la même méthode d’expédition, choisissez celui à afficher au client."
@@ -2331,3 +2328,66 @@ msgstr "Pour vos affranchissements, commandez directement vos étiquettes en rou
 
 msgid "Labels and packagings"
 msgstr "Etiquettes et emballages"
+
+msgid "An error occurred when trying to save the selected relay, please select it again."
+msgstr "Une erreur s'est produite lors de la tentative d'enregistrement du point de retrait sélectionné, veuillez le sélectionner à nouveau."
+
+msgid "Product category"
+msgstr "Catégorie de produit"
+
+msgid "Search for categories"
+msgstr "Rechercher des catégories"
+
+msgid "Some columns are not allowed"
+msgstr "Certaines colonnes ne sont pas autorisées"
+
+msgid "Please import at least a minimum weight and a price"
+msgstr "Veuillez importer au moins un poids minimum et un prix"
+
+msgid "Your contract information"
+msgstr "Vos informations de contrat"
+
+msgid "Contract type:"
+msgstr "Type de contrat :"
+
+msgid "Return in mailbox option:"
+msgstr "Option retour en boîte aux lettres :"
+
+msgid "Return in post office option:"
+msgstr "Option retour en bureau de poste :"
+
+msgid "Secured return option:"
+msgstr "Option retour sécurisé :"
+
+msgid "Secured shipping option:"
+msgstr "Option livraison sécurisée :"
+
+msgid "Out-of-home contract type:"
+msgstr "Type de contrat hors domicile :"
+
+msgid "Pickup neighbor-relay option:"
+msgstr "Option voisins relais :"
+
+msgid "Estimated shipping date option:"
+msgstr "Option date de livraison estimée :"
+
+msgid "Activated"
+msgstr "Activé"
+
+msgid "Deactivated"
+msgstr "Désactivé"
+
+msgid "Services enabled on your Colissimo contract"
+msgstr "Services activés sur votre contrat Colissimo"
+
+msgid "Documentation"
+msgstr "Documentation"
+
+msgid "Download"
+msgstr "Télécharger"
+
+msgid "Your Colissimo deposit places:"
+msgstr "Vos lieux de dépôt Colissimo :"
+
+msgid "Mimosa option:"
+msgstr "Option Mimosa :"

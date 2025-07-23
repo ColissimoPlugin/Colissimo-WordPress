@@ -19,21 +19,21 @@ class LpcSettingsTab extends LpcComponent {
     protected $adminNotices;
     /** @var LpcAccountApi */
     private $accountApi;
-    /** @var LpcSettingsLogsDownload */
-    private $settingsLogsDownload;
+    /** @var LpcSettingsDownload */
+    private $settingsDownload;
 
     public function __construct(
         ?LpcAdminNotices $adminNotices = null,
         ?LpcAccountApi $accountApi = null,
-        ?LpcSettingsLogsDownload $settingsLogsDownload = null
+        ?LpcSettingsDownload $settingsDownload = null
     ) {
-        $this->adminNotices         = LpcRegister::get('lpcAdminNotices', $adminNotices);
-        $this->accountApi           = LpcRegister::get('accountApi', $accountApi);
-        $this->settingsLogsDownload = LpcRegister::get('settingsLogsDownload', $settingsLogsDownload);
+        $this->adminNotices     = LpcRegister::get('lpcAdminNotices', $adminNotices);
+        $this->accountApi       = LpcRegister::get('accountApi', $accountApi);
+        $this->settingsDownload = LpcRegister::get('settingsDownload', $settingsDownload);
     }
 
     public function getDependencies(): array {
-        return ['lpcAdminNotices', 'accountApi', 'settingsLogsDownload'];
+        return ['lpcAdminNotices', 'accountApi', 'settingsDownload'];
     }
 
     public function init() {
@@ -51,10 +51,12 @@ class LpcSettingsTab extends LpcComponent {
         $this->initSelectOrderStatusDelivered();
         $this->initDisplayCredentials();
         $this->initDisplayCBox();
+        $this->initDisplayContractInformation();
         $this->initDisplayColissimoProducts();
         $this->initDisplayNumberInputWithWeightUnit();
         $this->initDisplaySelectAddressCountry();
         $this->initCheckStatus();
+        $this->initDocumentation();
         $this->initDefaultCountry();
         $this->initBlockCode();
         $this->initSecuredReturn();
@@ -118,6 +120,10 @@ class LpcSettingsTab extends LpcComponent {
 
     protected function initCheckStatus() {
         add_action('woocommerce_admin_field_lpcstatus', [$this, 'displayStatusLink']);
+    }
+
+    protected function initDocumentation() {
+        add_action('woocommerce_admin_field_lpcdoc', [$this, 'displayDocumentation']);
     }
 
     protected function initMultiSelectOrderStatus() {
@@ -187,6 +193,13 @@ class LpcSettingsTab extends LpcComponent {
         );
     }
 
+    protected function initDisplayContractInformation() {
+        add_action(
+            'woocommerce_admin_field_lpc_contract_information',
+            [$this, 'displayContractInformation']
+        );
+    }
+
     protected function initDisplayColissimoProducts() {
         add_action(
             'woocommerce_admin_field_lpc_products',
@@ -244,7 +257,7 @@ class LpcSettingsTab extends LpcComponent {
         if ('hooks' === $field['content']) {
             $modalContent = file_get_contents(LPC_FOLDER . 'resources' . DS . 'hooksDescriptions.php');
         } else {
-            $modalContent = '<pre>' . LpcLogger::get_logs(null, $this->settingsLogsDownload->getUrl()) . '</pre>';
+            $modalContent = '<pre>' . LpcLogger::get_logs(null, $this->settingsDownload->getUrl('logs')) . '</pre>';
         }
         $modal = new LpcModal($modalContent, __($field['title'], 'wc_colissimo'), 'lpc-' . $field['content']);
         $modal->loadScripts();
@@ -264,6 +277,11 @@ class LpcSettingsTab extends LpcComponent {
 
     public function displayStatusLink($field) {
         include LPC_FOLDER . 'admin' . DS . 'partials' . DS . 'settings' . DS . 'lpc_status.php';
+    }
+
+    public function displayDocumentation($field) {
+        $field['downloadUrl'] = $this->settingsDownload->getUrl('doc');
+        include LPC_FOLDER . 'admin' . DS . 'partials' . DS . 'settings' . DS . 'lpc_doc.php';
     }
 
     public function displayMultiSelectOrderStatus() {
@@ -412,6 +430,31 @@ class LpcSettingsTab extends LpcComponent {
         ];
 
         echo LpcHelper::renderPartial('settings' . DS . 'link.php', $args);
+    }
+
+    public function displayContractInformation() {
+        $accountInformation = $this->accountApi->getAccountInformation();
+        if (empty($accountInformation['contractType'])) {
+            return;
+        }
+
+        $args = [
+            'type'                           => 'lpc_contract_information',
+            'title'                          => __('Your contract information', 'wc_colissimo'),
+            'contractType'                   => ucfirst(strtolower($accountInformation['contractType'])),
+            'outOfHomeContract'              => ucfirst(strtolower($accountInformation['statutHD'])),
+            'pickupNeighborRelay'            => $accountInformation['statutPickme'] ? 'Activated' : 'Deactivated',
+            'mimosa'                         => empty($accountInformation['mimosaSubscribed']) ? 'Deactivated' : 'Activated',
+            'securedShipping'                => $accountInformation['statutCodeBloquant'] ? 'Activated' : 'Deactivated',
+            'estimatedShippingDate'          => $accountInformation['statutTunnelCommande'] ? 'Activated' : 'Deactivated',
+            'estimatedShippingDateDepotList' => empty($accountInformation['siteDepotList']) ? [] : $accountInformation['siteDepotList'],
+            'securedReturn'                  => $accountInformation['optionRetourToken'] ? 'Activated' : 'Deactivated',
+            'returnMailbox'                  => $accountInformation['optionRetourBAL'] ? 'Activated' : 'Deactivated',
+            'returnPostOffice'               => $accountInformation['optionRetourBP'] ? 'Activated' : 'Deactivated',
+        ];
+
+        wp_enqueue_style('lpc_settings_account', plugins_url('/css/settings/account_information.css', __FILE__), [], LPC_VERSION);
+        echo LpcHelper::renderPartial('settings' . DS . 'account_information.php', $args);
     }
 
     public function displayColissimoProducts() {

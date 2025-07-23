@@ -10,7 +10,12 @@
 	<div id="lpc_layer_error_message"></div>
     <?php
     if ($args['showInfo']) {
-        echo LpcHelper::renderPartial('pickup' . DS . 'pick_up_info.php', ['relay' => $args['currentRelay']]);
+        echo LpcHelper::renderPartial(
+            'pickup' . DS . 'pick_up_info.php',
+            [
+                'relay' => $args['currentRelay'],
+            ]
+        );
     }
     ?>
 	<div id="lpc_layer_pickup_selection_button">
@@ -20,11 +25,22 @@
         } else {
             $linkText = __('Choose PickUp point', 'wc_colissimo');
         }
-        ?>
-        <?php if ('link' === $args['type']) { ?>
-			<a id="lpc_pick_up_widget_show_map" class="lpc_pick_up_widget_show_map"><?php echo $linkText; ?></a>
+
+        $gutenbergAttr = empty($args['gutenberg']) ? '0' : '1';
+        if ('link' === $args['type']) {
+            ?>
+			<a id="lpc_pick_up_widget_show_map"
+			   class="lpc_pick_up_widget_show_map"
+			   data-lpc-isgutenberg="<?php echo esc_attr($gutenbergAttr); ?>">
+                <?php echo $linkText; ?>
+			</a>
         <?php } else { ?>
-			<button type="button" id="lpc_pick_up_widget_show_map" class="lpc_pick_up_widget_show_map wp-element-button"><?php echo $linkText; ?></button>
+			<button type="button"
+					id="lpc_pick_up_widget_show_map"
+					class="lpc_pick_up_widget_show_map wp-element-button"
+					data-lpc-isgutenberg="<?php echo esc_attr($gutenbergAttr); ?>">
+                <?php echo $linkText; ?>
+			</button>
         <?php } ?>
 	</div>
 <?php } ?>

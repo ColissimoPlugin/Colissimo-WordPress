@@ -695,16 +695,14 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withCuserInfoText($info = null) {
-        if (null === $info) {
-            global $woocommerce;
+    public function withCuserInfoText() {
+        global $woocommerce;
 
-            $woocommerceVersion = $woocommerce->version;
-            $pluginData         = get_plugin_data(LPC_FOLDER . DS . 'index.php', false, false);
-            $colissimoVersion   = $pluginData['Version'];
+        $woocommerceVersion = $woocommerce->version;
+        $pluginData         = get_plugin_data(LPC_FOLDER . DS . 'index.php', false, false);
+        $colissimoVersion   = $pluginData['Version'];
 
-            $info = 'WC' . $woocommerceVersion . ';' . $colissimoVersion;
-        }
+        $info = 'WC' . $woocommerceVersion . ';' . $colissimoVersion;
 
         $customFields = [
             'key'   => 'CUSER_INFO_TEXT',
@@ -714,7 +712,7 @@ class LpcLabelGenerationPayload {
         $this->payload['fields']['field'][] = $customFields;
         $this->payload['fields']['field'][] = [
             'key'   => 'CUSER_INFO_TEXT_3',
-            'value' => 'WOOCOMMERCE',
+            'value' => 'WOOCOMMERCE;' . $colissimoVersion,
         ];
 
         return $this;

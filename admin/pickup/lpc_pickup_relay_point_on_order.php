@@ -1,7 +1,5 @@
 <?php
 
-require_once LPC_PUBLIC . 'pickup' . DS . 'lpc_pickup_selection.php';
-
 class LpcPickupRelayPointOnOrder extends LpcComponent {
     public function init() {
         add_action('woocommerce_after_order_itemmeta', [$this, 'displayRelayPointInfo'], 10, 2);

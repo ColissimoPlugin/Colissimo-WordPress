@@ -1,7 +1,5 @@
 <?php
 
-require_once LPC_PUBLIC . 'pickup' . DS . 'lpc_pickup_selection.php';
-
 class LpcCapabilitiesPerCountry extends LpcComponent {
     const PATH_TO_COUNTRIES_PER_ZONE_JSON_FILE_FR = LPC_FOLDER . 'resources' . DS . 'capabilitiesByCountryFR.json';
     const PATH_TO_COUNTRIES_PER_ZONE_JSON_FILE_DOM1 = LPC_FOLDER . 'resources' . DS . 'capabilitiesByCountryDOM1.json';
