@@ -58,9 +58,9 @@ class LpcLabelQueries extends LpcComponent {
      * Retrieve an associative array where keys are order id, and values are matching tracking numbers.
      * Each tracking numbers are array where keys are outward tracking number, and values are array of inward tracking numbers
      *
-     * @param       $trackingNumbersByOrders
-     * @param       $labelFormatByTrackingNumber
-     * @param       $labelInfoByTrackingNumber
+     * @param array $trackingNumbersByOrders
+     * @param array $labelFormatByTrackingNumber
+     * @param array $labelInfoByTrackingNumber
      * @param array $ordersId
      */
     public function getTrackingNumbersByOrdersId(

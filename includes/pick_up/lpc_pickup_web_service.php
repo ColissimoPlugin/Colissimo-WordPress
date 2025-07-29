@@ -83,8 +83,8 @@ class LpcPickupWebService extends LpcPickup {
     /**
      * Uses a WC hook to add a "Select pick up location" button on the checkout page
      *
-     * @param     $method
-     * @param int $index
+     * @param object $method
+     * @param int    $index
      */
     public function addWebserviceMap($method, $index = 0) {
         if ($this->getMode($method->get_method_id(), $method->get_id()) !== self::WEB_SERVICE) {

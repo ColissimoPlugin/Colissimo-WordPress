@@ -359,7 +359,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                     $bundle->get_width(),
                     $bundle->get_height(),
                 ];
-                $currentProductClassId = $bundle->get_shipping_class_id();
+                $currentProductClassId    = $bundle->get_shipping_class_id();
                 $currentProductCategories = $bundle->get_category_ids('edit');
             } else {
                 $currentProductLineTotal    = $item['line_total'];
@@ -373,8 +373,13 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                     $product->get_width(),
                     $product->get_height(),
                 ];
-                $currentProductClassId = $product->get_shipping_class_id();
-                $currentProductCategories = $product->get_category_ids('edit');
+                $currentProductClassId    = $product->get_shipping_class_id();
+
+                if ('variation' === $product->get_type()) {
+                    $currentProductCategories = wc_get_product_term_ids($product->get_parent_id(), 'product_cat');
+                } else {
+                    $currentProductCategories = $product->get_category_ids('edit');
+                }
             }
 
             if ($noshipProductsCount) {
@@ -402,9 +407,8 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             $shippingClassId       = $currentProductClassId;
             $cartShippingClasses[] = empty($shippingClassId) ? self::LPC_NO_SHIPPING_CLASS_CODE : $shippingClassId;
 
-            $productCategories = $currentProductCategories;
-            if (!empty($productCategories)) {
-                $cartProductCategories[] = $productCategories;
+            if (!empty($currentProductCategories)) {
+                $cartProductCategories[] = $currentProductCategories;
             }
         }
 

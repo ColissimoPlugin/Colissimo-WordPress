@@ -249,7 +249,7 @@ class LpcSettingsTab extends LpcComponent {
     /**
      * Define the "lpcmodal" field type for the main configuration page
      *
-     * @param $field object containing parameters defined in the config_options.json
+     * @param object $field containing parameters defined in the config_options.json
      */
     public function displayModalButton($field) {
         wp_register_style('lpc_settings_support', plugins_url('/css/settings/lpc_settings_support.css', __FILE__), [], LPC_VERSION);
@@ -657,7 +657,7 @@ class LpcSettingsTab extends LpcComponent {
     /**
      * Build tab
      *
-     * @param $tab
+     * @param array $tab
      *
      * @return mixed
      */

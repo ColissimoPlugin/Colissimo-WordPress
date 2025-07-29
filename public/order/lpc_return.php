@@ -56,12 +56,12 @@ class LpcReturn extends LpcComponent {
         $balUrl = add_query_arg('lpc_bal_step', $balStep + 1, $balUrl);
 
         $data = [
-            'order'              => $order,
-            'generateUrlBase'    => $this->labelInwardDownloadAccountAction->getUrlForCustom($orderId),
-            'downloadUrlBase'    => $this->labelInwardDownloadAccountAction->getUrlForDownload($orderId, ''),
-            'balReturn'          => 'yes' === LpcHelper::get_option('lpc_bal_return', 'no') && 'FR' === $order->get_shipping_country(),
-            'balReturnUrl'       => $balUrl,
-            'securedReturn'      => false,
+            'order'           => $order,
+            'generateUrlBase' => $this->labelInwardDownloadAccountAction->getUrlForCustom($orderId),
+            'downloadUrlBase' => $this->labelInwardDownloadAccountAction->getUrlForDownload($orderId, ''),
+            'balReturn'       => 'yes' === LpcHelper::get_option('lpc_bal_return', 'no') && 'FR' === $order->get_shipping_country(),
+            'balReturnUrl'    => $balUrl,
+            'securedReturn'   => false,
         ];
 
         $accountInformation = $this->accountApi->getAccountInformation();
@@ -153,7 +153,7 @@ class LpcReturn extends LpcComponent {
     /**
      * Format address to display it using Woocommerce function
      *
-     * @param $address : got from user request
+     * @param array $address : got from user request
      *
      * @return array : address formatted
      */
@@ -170,7 +170,7 @@ class LpcReturn extends LpcComponent {
     /**
      * Prepare data for the API calls
      *
-     * @param $sender : address to check
+     * @param array $sender : address to check
      *
      * @return array
      */

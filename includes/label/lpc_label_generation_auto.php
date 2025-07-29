@@ -19,10 +19,10 @@ class LpcLabelGenerationAuto extends LpcComponent {
     /**
      * Automatically generate the label if order status matches status from configuration
      *
-     * @param $orderId
-     * @param $statusFrom
-     * @param $statusTo
-     * @param $order
+     * @param int    $orderId
+     * @param string $statusFrom
+     * @param string $statusTo
+     * @param object $order
      */
     public function generateLabelsAuto($orderId, $statusFrom, $statusTo, $order) {
         $orderStatuses = LpcHelper::get_option('lpc_generate_label_on', '');

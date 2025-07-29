@@ -56,7 +56,7 @@ class LpcLogger {
      * Method used to add messages to the log file.
      *
      * @param string     $type
-     * @param            $message
+     * @param string     $message
      * @param array|null $details
      */
     protected static function log($type, $message, array $details = []) {

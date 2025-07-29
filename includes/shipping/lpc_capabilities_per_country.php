@@ -232,7 +232,7 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
     /**
      * Get all countries available for a delivery method
      *
-     * @param $method
+     * @param string $methodId
      *
      * @return array
      */
@@ -273,8 +273,8 @@ class LpcCapabilitiesPerCountry extends LpcComponent {
 
 
     /**
-     * @param $storeCountryCode
-     * @param $countryCode
+     * @param string $storeCountryCode
+     * @param string $countryCode
      *
      * @return bool
      */

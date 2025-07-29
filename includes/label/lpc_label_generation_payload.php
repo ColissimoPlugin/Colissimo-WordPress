@@ -923,7 +923,7 @@ class LpcLabelGenerationPayload {
     /**
      * Retrieve product Origin Country
      *
-     * @param $product
+     * @param object $product
      *
      * @return string
      */
@@ -952,7 +952,7 @@ class LpcLabelGenerationPayload {
     /**
      * Retrieve product HS code
      *
-     * @param $product
+     * @param object $product
      *
      * @return array|string
      */
@@ -1316,7 +1316,7 @@ class LpcLabelGenerationPayload {
     }
 
     /**
-     * @param $productCode
+     * @param string $productCode
      *
      * @return false|int
      */
