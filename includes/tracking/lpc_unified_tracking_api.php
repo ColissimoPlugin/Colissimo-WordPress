@@ -19,6 +19,15 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
     const UPDATE_TRACKING_ORDER_CRON_NAME = 'lpc_update_tracking';
     const MAX_ORDERS_TO_UPDATE_PER_BATCH = 40;
 
+    const TRACKING_LANGUAGES = [
+        'fr_' => 'fr_FR',
+        'de_' => 'de_DE',
+        'en_' => 'en_GB',
+        'es_' => 'es_ES',
+        'it_' => 'it_IT',
+        'nl_' => 'nl_NL',
+    ];
+
     protected $ivSize;
     protected $shippingMethods;
     protected $ajaxDispatcher;
@@ -58,11 +67,27 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
     /**
      * @throws Exception When the response status code couldn't be retrieved.
      */
-    public function getTrackingInfo($trackingNumber, $ip) {
+    public function getTrackingInfo($orderId, $trackingNumber, $ip) {
+        $language = 'fr_FR';
+
+        $order = wc_get_order($orderId);
+        if (!empty($order)) {
+            $userId = $order->get_user_id();
+            if (!empty($userId)) {
+                $locale = get_user_locale($userId);
+                if (in_array($locale, self::TRACKING_LANGUAGES)) {
+                    $language = $locale;
+                } else {
+                    $localeStart = substr($locale, 0, 3);
+                    $language    = self::TRACKING_LANGUAGES[$localeStart] ?? 'en_GB';
+                }
+            }
+        }
+
         $request = [
             'parcelNumber' => $trackingNumber,
             'ip'           => $ip,
-            'lang'         => 'fr_FR',
+            'lang'         => $language,
         ];
 
         if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
@@ -171,7 +196,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
             $schedulingResult = wp_schedule_event(time(), 'fifteen_minutes', self::UPDATE_TRACKING_ORDER_CRON_NAME, [], true);
 
             if (!wp_next_scheduled(self::UPDATE_TRACKING_ORDER_CRON_NAME)) {
-				LpcLogger::debug('could not schedule event update statuses', [$schedulingResult]);
+                LpcLogger::debug('could not schedule event update statuses', [$schedulingResult]);
             }
         }
     }
@@ -249,7 +274,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
                 );
 
                 try {
-                    $currentState = $this->getTrackingInfo($trackingNumber, $ip);
+                    $currentState = $this->getTrackingInfo($orderId, $trackingNumber, $ip);
                 } catch (Exception $e) {
                     LpcLogger::error(
                         __METHOD__ . ' can\'t update status',

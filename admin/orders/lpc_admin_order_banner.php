@@ -318,26 +318,16 @@ class LpcAdminOrderBanner extends LpcComponent {
         $args['lpc_sending_service_config'] = 'partner';
         $productCode                        = $this->capabilitiesPerCountry->getProductCodeForOrder($order);
         $args['lpc_product_code']           = $productCode;
-        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE === $productCode) {
-            $shippingMethod                     = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
+        if (in_array($countryCode, LpcLabelGenerationPayload::COUNTRIES_WITH_PARTNER_SHIPPING) && LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE === $productCode) {
+            $countries = [
+                'AT' => 'lpc_domicileas_SendingService_austria',
+                'BE' => 'lpc_domicileas_SendingService_belgium',
+                'DE' => 'lpc_domicileas_SendingService_germany',
+                'IT' => 'lpc_domicileas_SendingService_italy',
+                'LU' => 'lpc_domicileas_SendingService_luxembourg',
+            ];
+
             $args['lpc_sending_service_needed'] = true;
-
-            if (in_array($shippingMethod, [LpcExpert::ID, LpcExpertDDP::ID])) {
-                $countries = [
-                    'AT' => 'lpc_expert_SendingService_austria',
-                    'DE' => 'lpc_expert_SendingService_germany',
-                    'IT' => 'lpc_expert_SendingService_italy',
-                    'LU' => 'lpc_expert_SendingService_luxembourg',
-                ];
-            } else {
-                $countries = [
-                    'AT' => 'lpc_domicileas_SendingService_austria',
-                    'DE' => 'lpc_domicileas_SendingService_germany',
-                    'IT' => 'lpc_domicileas_SendingService_italy',
-                    'LU' => 'lpc_domicileas_SendingService_luxembourg',
-                ];
-            }
-
             $args['lpc_sending_service_config'] = LpcHelper::get_option($countries[$countryCode]);
         }
 

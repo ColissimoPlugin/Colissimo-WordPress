@@ -2391,3 +2391,15 @@ msgstr "Your Colissimo deposit places:"
 
 msgid "Mimosa option:"
 msgstr "Mimosa option:"
+
+msgid "Checkout"
+msgstr "Checkout"
+
+msgid "Sending service Belgium"
+msgstr "Sending service Belgium"
+
+msgid "Download FR"
+msgstr "Download FR"
+
+msgid "Download EN"
+msgstr "Download EN"

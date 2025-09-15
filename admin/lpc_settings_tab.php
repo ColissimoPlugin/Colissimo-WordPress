@@ -280,7 +280,8 @@ class LpcSettingsTab extends LpcComponent {
     }
 
     public function displayDocumentation($field) {
-        $field['downloadUrl'] = $this->settingsDownload->getUrl('doc');
+        $field['downloadUrl']   = $this->settingsDownload->getUrl('doc');
+        $field['downloadUrlEN'] = $this->settingsDownload->getUrl('docEN');
         include LPC_FOLDER . 'admin' . DS . 'partials' . DS . 'settings' . DS . 'lpc_doc.php';
     }
 
@@ -711,6 +712,7 @@ class LpcSettingsTab extends LpcComponent {
             'label'    => __('Label', 'wc_colissimo'),
             'parcel'   => __('Parcel', 'wc_colissimo'),
             'shipping' => __('Shipping methods', 'wc_colissimo'),
+            'checkout' => __('Checkout', 'wc_colissimo'),
             'custom'   => __('Custom', 'wc_colissimo'),
             'ddp'      => __('DDP', 'wc_colissimo'),
             'support'  => __('Support', 'wc_colissimo'),

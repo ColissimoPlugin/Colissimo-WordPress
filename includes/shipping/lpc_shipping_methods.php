@@ -128,8 +128,13 @@ class LpcShippingMethods extends LpcComponent {
             $partnerLogo  = 'partners/australia_post.svg';
             $partnerWidth = '100';
         } elseif ('BE' === $countryCode) {
-            $partnerLogo  = 'partners/bpost.png';
-            $partnerWidth = '70';
+            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_belgium', 'partner')) {
+                $partnerLogo  = 'partners/bpost.png';
+                $partnerWidth = '70';
+            } else {
+                $partnerLogo  = 'partners/dpd.png';
+                $partnerWidth = '56';
+            }
         } elseif ('DE' === $countryCode) {
             if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_germany')) {
                 $partnerLogo  = 'partners/deutschpost.jpg';
@@ -169,7 +174,7 @@ class LpcShippingMethods extends LpcComponent {
         } elseif ('NO' === $countryCode) {
             $partnerLogo = 'partners/postnord.svg';
         } elseif ('PF' === $countryCode) {
-            $partnerLogo = 'partners/fare_rata.png';
+            $partnerLogo  = 'partners/fare_rata.png';
             $partnerWidth = '40';
         } elseif ('SE' === $countryCode) {
             $partnerLogo = 'partners/postnord.svg';

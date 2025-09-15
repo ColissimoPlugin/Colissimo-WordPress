@@ -55,6 +55,7 @@ class LpcTrackingPage extends LpcComponent {
             try {
                 if (isset($_SERVER['REMOTE_ADDR'])) {
                     $trackingInfo = $this->lpcUnifiedTrackingApi->getTrackingInfo(
+                        $orderId,
                         $trackingNumber,
                         wc_clean(wp_unslash($_SERVER['REMOTE_ADDR']))
                     );

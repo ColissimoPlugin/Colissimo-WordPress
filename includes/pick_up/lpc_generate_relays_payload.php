@@ -72,7 +72,10 @@ class LpcGenerateRelaysPayload {
 
     public function withRelayTypeFilter(?int $weight = null) {
         if (empty($weight)) {
-            $weight = wc_get_weight(WC()->cart->get_cart_contents_weight(), 'kg');
+            $cart = WC()->cart;
+            if (!empty($cart)) {
+                $weight = wc_get_weight(WC()->cart->get_cart_contents_weight(), 'kg');
+            }
         }
 
         if (!empty($weight) && $weight > 20) {
@@ -81,7 +84,7 @@ class LpcGenerateRelaysPayload {
             return $this;
         }
 
-        $relayTypes = LpcHelper::get_option('lpc_relay_types', '');
+        $relayTypes = LpcHelper::get_option('lpc_relay_types');
         if (empty($relayTypes)) {
             $relayTypes = '1';
         } elseif ('-1' === $relayTypes) {

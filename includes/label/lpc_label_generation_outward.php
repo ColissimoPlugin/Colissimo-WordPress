@@ -372,7 +372,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withInstructions($order->get_customer_note())
             ->withCustomsDeclaration($order, $customParams, $shippingMethodUsed)
             ->withOutputFormat()
-            ->withPostalNetwork($recipient['countryCode'], $order)
+            ->withPostalNetwork($recipient['countryCode'])
             ->withNonMachinable($customParams)
             ->withDDP($shippingMethodUsed)
             ->withFtd($recipient['countryCode'])

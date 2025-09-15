@@ -155,12 +155,12 @@ class LpcAdminInit {
     }
 
     private function askForFeedback() {
-        $deadline = new DateTime('2025-01-01');
+        $deadline = new DateTime('2025-12-31');
         $now      = new DateTime();
 
-        // if ($now >= $deadline) {
-        // return;
-        // }
+         if ($now >= $deadline) {
+             return;
+         }
 
         $feedbackDismissed = LpcHelper::get_option('lpc_feedback_dismissed', false);
         $lastAskedFeedback = LpcHelper::get_option('lpc_asked_feedback', 0);

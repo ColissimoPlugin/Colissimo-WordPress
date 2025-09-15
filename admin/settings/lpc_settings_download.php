@@ -5,7 +5,9 @@ defined('ABSPATH') || die('Restricted Access');
 class LpcSettingsDownload extends LpcComponent {
     const AJAX_TASK_NAME_LOGS = 'logs/download';
     const AJAX_TASK_NAME_DOC = 'doc/download';
+    const AJAX_TASK_NAME_DOC_EN = 'docEN/download';
     const DOC_FILE_PATH = LPC_FOLDER . 'resources' . DS . 'doc.pdf';
+    const DOC_EN_FILE_PATH = LPC_FOLDER . 'resources' . DS . 'docEN.pdf';
 
     /** @var LpcAjax */
     protected $ajaxDispatcher;
@@ -29,6 +31,7 @@ class LpcSettingsDownload extends LpcComponent {
     protected function listenToAjaxAction() {
         $this->ajaxDispatcher->register(self::AJAX_TASK_NAME_LOGS, [$this, 'logs']);
         $this->ajaxDispatcher->register(self::AJAX_TASK_NAME_DOC, [$this, 'doc']);
+        $this->ajaxDispatcher->register(self::AJAX_TASK_NAME_DOC_EN, [$this, 'docEN']);
     }
 
     public function logs() {
@@ -42,6 +45,10 @@ class LpcSettingsDownload extends LpcComponent {
 
     public function doc() {
         $this->downloadFile(self::DOC_FILE_PATH, 'Guide Colissimo pour WordPress.pdf');
+    }
+
+    public function docEN() {
+        $this->downloadFile(self::DOC_EN_FILE_PATH, 'Colissimo Guide for WordPress.pdf');
     }
 
     private function downloadFile(string $filePath, string $fileName) {
@@ -59,6 +66,8 @@ class LpcSettingsDownload extends LpcComponent {
             return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME_LOGS);
         } elseif ('doc' === $type) {
             return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME_DOC);
+        } elseif ('docEN' === $type) {
+            return $this->ajaxDispatcher->getUrlForTask(self::AJAX_TASK_NAME_DOC_EN);
         } else {
             throw new \InvalidArgumentException('Unknown type for LpcSettingsDownload');
         }

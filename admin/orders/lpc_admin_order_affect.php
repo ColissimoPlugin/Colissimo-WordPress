@@ -113,6 +113,19 @@ class LpcAdminOrderAffect extends LpcComponent {
             $order->update_meta_data(LpcPickupSelection::PICKUP_LOCATION_ID_META_KEY, $relayInformationData->identifiant);
             $order->update_meta_data(LpcPickupSelection::PICKUP_LOCATION_LABEL_META_KEY, $relayInformationData->nom);
             $order->update_meta_data(LpcPickupSelection::PICKUP_PRODUCT_CODE_META_KEY, $relayInformationData->typeDePoint);
+            $order->update_meta_data(
+                LpcPickupSelection::PICKUP_LOCATION_DATA_META_KEY,
+                json_encode(
+                    [
+                        'adresse1'   => $relayInformationData->adresse1,
+                        'adresse2'   => $relayInformationData->adresse2 ?? '',
+                        'codePostal' => $relayInformationData->codePostal,
+                        'localite'   => $relayInformationData->localite,
+                        'codePays'   => $relayInformationData->codePays,
+                        'nom'        => $relayInformationData->nom,
+                    ]
+                )
+            );
 
             $order->set_shipping_address_1($relayInformationData->adresse1);
             $order->set_shipping_postcode($relayInformationData->codePostal);

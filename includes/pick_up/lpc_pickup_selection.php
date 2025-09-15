@@ -7,6 +7,7 @@ class LpcPickupSelection extends LpcComponent {
     const PICKUP_LOCATION_LABEL_META_KEY = '_lpc_meta_pickUpLocationLabel';
     const PICKUP_PRODUCT_CODE_META_KEY = '_lpc_meta_pickUpProductCode';
     const PICKUP_LOCATION_SESSION_VAR_NAME = 'lpc_pickUpInfo';
+    const PICKUP_ADDRESS_FORCED_MARKER = 'lpc_forced_shipping_address_on_relay';
 
     protected $ajaxDispatcher;
 
@@ -91,22 +92,10 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     public function savePickUpSelectionOnOrderProcessed() {
-        add_action('woocommerce_store_api_checkout_order_processed',
-            function ($order) {
-                $shippings = $order->get_shipping_methods();
-                $shipping  = current($shippings);
+        add_action('woocommerce_store_api_checkout_update_order_meta', [$this, 'onCheckoutOrderUpdated']);
+        add_action('woocommerce_store_api_checkout_order_processed', [$this, 'onCheckoutOrderUpdated']);
+        add_action('woocommerce_update_order', [$this, 'forceShippingAddressOnRelay']);
 
-                if (empty($shipping)) {
-                    return;
-                }
-
-                $shippingMethod = $shipping->get_method_id();
-                if (LpcRelay::ID === $shippingMethod) {
-                    $this->setPickupAsShippingAddress($order);
-                    $this->setCurrentPickUpLocationInfo(null, $order->get_id());
-                }
-            }
-        );
         add_action(
             'woocommerce_checkout_order_processed',
             function ($orderId, $posted_data = []) {
@@ -138,6 +127,51 @@ class LpcPickupSelection extends LpcComponent {
             10,
             2
         );
+    }
+
+    public function forceShippingAddressOnRelay(int $orderId) {
+        $order = wc_get_order($orderId);
+        if (empty($order) || !$order->has_shipping_method('lpc_relay')) {
+            return;
+        }
+
+        $pickupData = $order->get_meta(self::PICKUP_LOCATION_DATA_META_KEY);
+        if (empty($pickupData)) {
+            return;
+        }
+
+        $decodedPickupData = json_decode($pickupData, true);
+        if (empty($decodedPickupData['adresse1']) || $order->get_shipping_address_1() === $decodedPickupData['adresse1']) {
+            return;
+        }
+
+        $forcedAddressNb = $order->get_meta(self::PICKUP_ADDRESS_FORCED_MARKER);
+        if (empty($forcedAddressNb)) {
+            $forcedAddressNb = 0;
+        }
+
+        if ($forcedAddressNb > 4) {
+            return;
+        }
+
+        $this->applyAddress($order, $decodedPickupData);
+        $order->update_meta_data(self::PICKUP_ADDRESS_FORCED_MARKER, $forcedAddressNb + 1);
+        $order->save();
+    }
+
+    public function onCheckoutOrderUpdated($order): void {
+        $shippings = $order->get_shipping_methods();
+        $shipping  = current($shippings);
+
+        if (empty($shipping)) {
+            return;
+        }
+
+        $shippingMethod = $shipping->get_method_id();
+        if (LpcRelay::ID === $shippingMethod) {
+            $this->setPickupAsShippingAddress($order);
+            $this->setCurrentPickUpLocationInfo(null, $order->get_id());
+        }
     }
 
     private function updatePickupMeta($order, $pickUpInfo) {
@@ -192,14 +226,7 @@ class LpcPickupSelection extends LpcComponent {
         }
 
         $this->updatePickupMeta($order, $pickupData);
-
-        $order->set_shipping_address_1(!empty($pickupData['adresse1']) ? $pickupData['adresse1'] : '');
-        $order->set_shipping_address_2(!empty($pickupData['adresse2']) ? $pickupData['adresse2'] : '');
-        $order->set_shipping_postcode(!empty($pickupData['codePostal']) ? $pickupData['codePostal'] : '');
-        $order->set_shipping_city(!empty($pickupData['localite']) ? $pickupData['localite'] : '');
-        $order->set_shipping_country(!empty($pickupData['codePays']) ? $pickupData['codePays'] : '');
-        $order->set_shipping_company(!empty($pickupData['nom']) ? $pickupData['nom'] : '');
-        $order->set_shipping_state('');
+        $this->applyAddress($order, $pickupData);
 
         // To prevent Up2pay e-Transactions Crédit Agricole from messing with the shipping address
         $up2PayPlugin = 'e-transactions-wc/wc-etransactions.php';
@@ -222,6 +249,16 @@ class LpcPickupSelection extends LpcComponent {
                 }
             }
         }
+    }
+
+    private function applyAddress(WC_Order $order, array $address): void {
+        $order->set_shipping_address_1($address['adresse1'] ?? '');
+        $order->set_shipping_address_2(!empty($address['adresse2']) ? $address['adresse2'] : '');
+        $order->set_shipping_postcode(!empty($address['codePostal']) ? $address['codePostal'] : '');
+        $order->set_shipping_city(!empty($address['localite']) ? $address['localite'] : '');
+        $order->set_shipping_country(!empty($address['codePays']) ? $address['codePays'] : '');
+        $order->set_shipping_company(!empty($address['nom']) ? $address['nom'] : '');
+        $order->set_shipping_state('');
     }
 
     public function preventPlaceOrderButton($orderButton) {

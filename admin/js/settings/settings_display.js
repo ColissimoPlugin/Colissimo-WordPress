@@ -147,5 +147,8 @@ jQuery(function ($) {
         $('#lpc_doc_download').on('click', function () {
             window.open($('#lpc_doc_url').val(), '_blank');
         });
+        $('#lpc_doc_EN_download').on('click', function () {
+            window.open($('#lpc_doc_EN_url').val(), '_blank');
+        });
     }
 });

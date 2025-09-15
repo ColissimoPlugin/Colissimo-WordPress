@@ -49,6 +49,7 @@ class LpcLabelGenerationPayload {
     private const US_COUNTRY_CODE = 'US';
     public const COUNTRIES_NEEDING_STATE = ['CA', self::US_COUNTRY_CODE];
     public const COUNTRIES_FTD = ['GF', 'GP', 'MQ', 'RE'];
+    public const COUNTRIES_WITH_PARTNER_SHIPPING = ['AT', 'BE', 'DE', 'IT', 'LU'];
 
     protected $payload;
     protected $isReturnLabel;
@@ -1328,29 +1329,19 @@ class LpcLabelGenerationPayload {
         return self::PRODUCT_CODE_RELAY === $productCode ? self::MAX_INSURANCE_AMOUNT_RELAY : self::MAX_INSURANCE_AMOUNT;
     }
 
-    public function withPostalNetwork($countryCode, $order) {
-        if (in_array($countryCode, ['AT', 'DE', 'IT', 'LU']) && self::PRODUCT_CODE_WITH_SIGNATURE === $this->payload['letter']['service']['productCode']) {
-            $shippingMethod = $this->lpcShippingMethods->getColissimoShippingMethodOfOrder($order);
+    public function withPostalNetwork($countryCode) {
+        if (in_array($countryCode, self::COUNTRIES_WITH_PARTNER_SHIPPING) && self::PRODUCT_CODE_WITH_SIGNATURE === $this->payload['letter']['service']['productCode']) {
+            $countries = [
+                'AT' => 'lpc_domicileas_SendingService_austria',
+                'BE' => 'lpc_domicileas_SendingService_belgium',
+                'DE' => 'lpc_domicileas_SendingService_germany',
+                'IT' => 'lpc_domicileas_SendingService_italy',
+                'LU' => 'lpc_domicileas_SendingService_luxembourg',
+            ];
 
-            if (in_array($shippingMethod, [LpcExpert::ID, LpcExpertDDP::ID])) {
-                $countries = [
-                    'AT' => 'lpc_expert_SendingService_austria',
-                    'DE' => 'lpc_expert_SendingService_germany',
-                    'IT' => 'lpc_expert_SendingService_italy',
-                    'LU' => 'lpc_expert_SendingService_luxembourg',
-                ];
-            } else {
-                $countries = [
-                    'AT' => 'lpc_domicileas_SendingService_austria',
-                    'DE' => 'lpc_domicileas_SendingService_germany',
-                    'IT' => 'lpc_domicileas_SendingService_italy',
-                    'LU' => 'lpc_domicileas_SendingService_luxembourg',
-                ];
-            }
-
-            $network = LpcHelper::get_option($countries[$countryCode]);
-
-            $customSendingService = isset($_REQUEST['lpc__admin__order_banner__generate_label__sending_service']) ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__sending_service'])) : $network;
+            $customSendingService = isset($_REQUEST['lpc__admin__order_banner__generate_label__sending_service'])
+                ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__sending_service']))
+                : LpcHelper::get_option($countries[$countryCode]);
 
             $this->payload['letter']['service']['reseauPostal'] = 'dpd' === $customSendingService ? 0 : 1;
         }

@@ -623,7 +623,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             return (bool) LpcHelper::get_option('lpc_current_credentials_valid', false);
         } else {
             $pickUpWidgetApi = LpcRegister::get('pickupWidgetApi');
-            $token           = $pickUpWidgetApi->authenticate();
+            $token           = $pickUpWidgetApi->authenticate(true);
 
             update_option('lpc_current_credentials_tested', true);
             update_option('lpc_current_credentials_valid', !empty($token));

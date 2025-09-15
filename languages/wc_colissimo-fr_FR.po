@@ -2391,3 +2391,15 @@ msgstr "Vos lieux de dépôt Colissimo :"
 
 msgid "Mimosa option:"
 msgstr "Option Mimosa :"
+
+msgid "Checkout"
+msgstr "Tunnel de commande"
+
+msgid "Sending service Belgium"
+msgstr "Service d’envoi pour la Belgique"
+
+msgid "Download FR"
+msgstr "Télécharger FR"
+
+msgid "Download EN"
+msgstr "Télécharger EN"
