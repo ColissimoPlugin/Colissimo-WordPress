@@ -224,7 +224,7 @@ class LpcLabelGenerationPayload {
                 $phoneNumber = preg_replace('/(04|00324)([0-9]{8})/', '+324$2', $phoneNumber);
             }
 
-            $phoneField             = self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode'] ? 'mobileNumber' : 'phoneNumber';
+            $phoneField             = self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode'] || self::US_COUNTRY_CODE === $addressee['countryCode'] ? 'mobileNumber' : 'phoneNumber';
             $addressee[$phoneField] = $phoneNumber;
         }
 
