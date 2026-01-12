@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'lpc_component.php';
 

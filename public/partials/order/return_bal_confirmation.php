@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <div class="lpc_balreturn">
 	<h2 class="entry-title margin-top-0"><?php esc_html_e('MailBox picking return', 'wc_colissimo'); ?></h2>
 

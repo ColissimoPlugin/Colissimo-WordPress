@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcUpdate extends LpcComponent {
     const LPC_DB_VERSION_OPTION_NAME = 'lpc_db_version';
@@ -307,6 +308,10 @@ class LpcUpdate extends LpcComponent {
 
             $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
         }
+
+        if (version_compare($versionInstalled, '2.7.0', '<')) {
+            $this->addHazardousProductsAttribute();
+        }
     }
 
     /** Functions for update to 1.3 **/
@@ -381,6 +386,54 @@ class LpcUpdate extends LpcComponent {
 
                 update_option($methodOptionKey, $methodSettings);
             }
+        }
+    }
+
+    private function addHazardousProductsAttribute(): void {
+        $attributeAlias = LpcLabelGenerationPayload::HAZMAT_ATTRIBUTE;
+        $taxonomy       = 'pa_' . $attributeAlias;
+
+        if (taxonomy_exists($taxonomy)) {
+            return;
+        }
+
+        global $wpdb;
+
+        $wpdb->insert(
+            $wpdb->prefix . 'woocommerce_attribute_taxonomies',
+            [
+                'attribute_name'    => $attributeAlias,
+                'attribute_label'   => __('Colissimo hazmat category', 'wc_colissimo'),
+                'attribute_type'    => 'select',
+                'attribute_orderby' => 'menu_order',
+                'attribute_public'  => 0,
+            ]
+        );
+
+        // Flush attributes cache
+        delete_transient('wc_attribute_taxonomies');
+
+        // Register taxonomy in WP so terms can be added
+        register_taxonomy(
+            $taxonomy,
+            [
+                'product',
+            ],
+            [
+                'show_ui'   => false,
+                'query_var' => $attributeAlias,
+                'rewrite'   => false,
+            ]
+        );
+
+        foreach (LpcLabelGenerationPayload::HAZMAT_CATEGORIES as $slug => $category) {
+            wp_insert_term(
+                __($category['label'], 'wc_colissimo'),
+                $taxonomy,
+                [
+                    'slug' => $slug,
+                ]
+            );
         }
     }
 }

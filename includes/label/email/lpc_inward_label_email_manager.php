@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcInwardLabelEmailManager extends LpcComponent {
 

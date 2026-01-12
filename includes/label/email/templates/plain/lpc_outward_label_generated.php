@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 $shipping_address2 = '';
 if (!empty($order->get_shipping_address_2())) {
     $shipping_address2 = $order->get_shipping_address_2() . "\n";

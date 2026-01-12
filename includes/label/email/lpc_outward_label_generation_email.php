@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcOutwardLabelGenerationEmail extends WC_Email {
     public function __construct() {

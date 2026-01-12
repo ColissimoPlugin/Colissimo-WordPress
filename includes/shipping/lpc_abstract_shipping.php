@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'shipping' . DS . 'lpc_capabilities_per_country.php';
 
@@ -325,6 +326,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         $productsDimensions    = [];
         $cartShippingClasses   = [];
         $cartProductCategories = [];
+        $cartHazmatCategories  = [];
 
         $noshipProductsCount = LpcHelper::get_option('lpc_calculate_shipping_with_noship_products', 'no') === 'yes';
         $cartContents        = WC()->cart->cart_contents;
@@ -392,6 +394,8 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
             if (is_callable([$product, 'needs_shipping']) && !$product->needs_shipping()) {
                 continue;
             }
+
+            $cartHazmatCategories = array_merge($cartHazmatCategories, $this->getProductHazmatCategories($product, $currentProductCategories));
 
             if (!$noshipProductsCount) {
                 $lineTotal    = $lineTotal + $currentProductLineTotal;
@@ -598,6 +602,22 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 }
             }
 
+            $extraCostHazmat = LpcHelper::get_option('lpc_hazmat_extra_cost', 'no');
+            if ('yes' === $extraCostHazmat && !empty($cartHazmatCategories)) {
+                $extraCost = 0;
+                foreach ($cartHazmatCategories as $hazmatCategorySlug) {
+                    if (empty(LpcLabelGenerationPayload::HAZMAT_CATEGORIES[$hazmatCategorySlug])) {
+                        continue;
+                    }
+
+                    if ($extraCost < LpcLabelGenerationPayload::HAZMAT_CATEGORIES[$hazmatCategorySlug]['extra_cost']) {
+                        $extraCost = LpcLabelGenerationPayload::HAZMAT_CATEGORIES[$hazmatCategorySlug]['extra_cost'];
+                    }
+                }
+
+                $cost += $extraCost;
+            }
+
             $titleFree       = $this->get_option('title_free', '');
             $label           = 0 == $cost && !empty($titleFree) ? $titleFree : $this->title;
             $translatedLabel = __($label, 'wc_colissimo');
@@ -630,6 +650,21 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
 
             return !empty($token);
         }
+    }
+
+    private function getProductHazmatCategories(object $product, array $productCategories): array {
+        $attributesContainer = 'variation' === $product->get_type() ? wc_get_product($product->get_parent_id()) : $product;
+        $attributes          = $attributesContainer->get_attributes();
+        if (!empty($attributes['pa_' . LpcLabelGenerationPayload::HAZMAT_ATTRIBUTE])) {
+            return $attributes['pa_' . LpcLabelGenerationPayload::HAZMAT_ATTRIBUTE]->get_slugs();
+        }
+
+        $hazmatCategories = [];
+        foreach ($productCategories as $categoryId) {
+            $hazmatCategories[] = get_term_meta($categoryId, LpcLabelGenerationPayload::HAZMAT_ATTRIBUTE, true);
+        }
+
+        return $hazmatCategories;
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 abstract class LpcRestApi extends LpcComponent {
     const DATA_TYPE_JSON = 'json';

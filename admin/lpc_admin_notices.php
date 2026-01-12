@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcAdminNotices extends LpcComponent {
     public function add_notice($notice, $class, $message) {

@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcLabelQueries extends LpcComponent {
 
     const REDIRECTION_WOO_ORDER_EDIT_PAGE = 'lpc_woocommerce_order_edit_page';

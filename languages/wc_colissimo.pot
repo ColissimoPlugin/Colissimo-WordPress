@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.7.1\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.8.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-26\n"
+"POT-Creation-Date: 2026-01-12\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -1769,10 +1769,10 @@ msgstr ""
 msgid "I associate my account to the Colissimo plugin"
 msgstr ""
 
-msgid "To connect the plugin, you must enter your Colissimo credentials in the \"General\" tab of this plugin."
+msgid "To connect the plugin, you must enter your Colissimo application key in the \"General\" tab of this plugin."
 msgstr ""
 
-msgid "The User Name must be the one you use to connect to %s."
+msgid "This application key must be generated from your account on %s on your user edit page."
 msgstr ""
 
 msgid "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
@@ -2409,5 +2409,218 @@ msgid "Download FR"
 msgstr ""
 
 msgid "Download EN"
+msgstr ""
+
+msgid "USA EORI number"
+msgstr ""
+
+msgid "EORI number for delivery to the United States"
+msgstr ""
+
+msgid "MID code for USA"
+msgstr ""
+
+msgid "The MID code is used by the USA customs to track where a product comes from. It is required and can be found by following <a href=\"https://www.fedex.com/en-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html\" target=\"_blank\">the Fedex guide</a>."
+msgstr ""
+
+msgid "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the \"General\" section of the Colissimo settings."
+msgstr ""
+
+msgid "Colissimo hazmat category"
+msgstr ""
+
+msgid "Category A - CLP hazardous product"
+msgstr ""
+
+msgid "Category B - ADR/GPE 2 hazardous product"
+msgstr ""
+
+msgid "Category C - ADR/GPE 3 hazardous product"
+msgstr ""
+
+msgid "Category D - Cosmetic hazardous product"
+msgstr ""
+
+msgid "Category E - Other derogated sensitive product"
+msgstr ""
+
+msgid "Hazardous materials are not allowed for return parcels."
+msgstr ""
+
+msgid "This product's weight exceeds the limit allowed per parcel for this hazardous materials category: %1$sg / %2$sg"
+msgstr ""
+
+msgid "Default Colissimo hazmat category"
+msgstr ""
+
+msgid "Add the extra cost to shipping price"
+msgstr ""
+
+msgid "The clients will pay the extra cost for hazardous materials along with the shipping price."
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Maximum quantity per parcel"
+msgstr ""
+
+msgid "Hazardous materials %1$s exceed the maximum allowed weight: %2$d/%3$dg."
+msgstr ""
+
+msgid "The total amount of hazardous materials exceeds the maximum allowed weight of %dg."
+msgstr ""
+
+msgid "Please ship this order in multiple parcels."
+msgstr ""
+
+msgid "The hazmat option lets you specify which parcel contains hazardous materials, ensuring that your goods are protected and safe during all the shipment."
+msgstr ""
+
+msgid "There are a total of 5 categories of hazardous materials that can be specified on your products and/or product categories. The categories are as follows:"
+msgstr ""
+
+msgid "Hazardous materials feature:"
+msgstr ""
+
+msgid "Delivery date"
+msgstr ""
+
+msgid "Display the expected delivery date"
+msgstr ""
+
+msgid "Choose to add the expected delivery date below the method name in the checkout."
+msgstr ""
+
+msgid "Deposit location"
+msgstr ""
+
+msgid "Select the location used to deposit your parcels."
+msgstr ""
+
+msgid "Cutt Off times for orders processing"
+msgstr ""
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
+
+msgid "Date format"
+msgstr ""
+
+msgid "WordPress settings (%s)"
+msgstr ""
+
+msgid "Text to display"
+msgstr ""
+
+msgid "Please include {date} in your text where the date should be shown."
+msgstr ""
+
+msgid "Delivery expected on {date}"
+msgstr ""
+
+msgid "Text color"
+msgstr ""
+
+msgid "Text font"
+msgstr ""
+
+msgid "January"
+msgstr ""
+
+msgid "February"
+msgstr ""
+
+msgid "March"
+msgstr ""
+
+msgid "April"
+msgstr ""
+
+msgid "May"
+msgstr ""
+
+msgid "June"
+msgstr ""
+
+msgid "July"
+msgstr ""
+
+msgid "August"
+msgstr ""
+
+msgid "September"
+msgstr ""
+
+msgid "October"
+msgstr ""
+
+msgid "November"
+msgstr ""
+
+msgid "December"
+msgstr ""
+
+msgid "l, F j"
+msgstr ""
+
+msgid "F j"
+msgstr ""
+
+msgid "M j"
+msgstr ""
+
+msgid "Weekly Schedule"
+msgstr ""
+
+msgid "Exceptions"
+msgstr ""
+
+msgid "Day"
+msgstr ""
+
+msgid "Add Exception"
+msgstr ""
+
+msgid "Cut Off hours"
+msgstr ""
+
+msgid "Set the daily cut-off time for order processing. Orders placed after this time will be shipped the next business day."
+msgstr ""
+
+msgid "No shipment this day"
+msgstr ""
+
+msgid "Text size"
+msgstr ""
+
+msgid "Hazardous materials"
+msgstr ""
+
+msgid "Default"
+msgstr ""
+
+msgid "The EORI number is mandatory for shipments to the USA, please set it in the Colissimo customs settings."
+msgstr ""
+
+msgid "Hazardous materials are not allowed outside France."
 msgstr ""
 

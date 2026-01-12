@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcPickupSelection extends LpcComponent {
     const AJAX_TASK_NAME = 'pickup_selection';
@@ -160,15 +161,7 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     public function onCheckoutOrderUpdated($order): void {
-        $shippings = $order->get_shipping_methods();
-        $shipping  = current($shippings);
-
-        if (empty($shipping)) {
-            return;
-        }
-
-        $shippingMethod = $shipping->get_method_id();
-        if (LpcRelay::ID === $shippingMethod) {
+        if (LpcOrderQueries::hasShippingMethod($order, LpcRelay::ID)) {
             $this->setPickupAsShippingAddress($order);
             $this->setCurrentPickUpLocationInfo(null, $order->get_id());
         }

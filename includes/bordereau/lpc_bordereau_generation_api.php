@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcBordereauGenerationApi extends LpcRestApi {
     const API_BASE_URL = 'https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/';
@@ -25,7 +26,7 @@ class LpcBordereauGenerationApi extends LpcRestApi {
         );
 
         $headers = [];
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             $headers[] = 'apiKey: ' . LpcHelper::get_option('lpc_apikey');
         } else {
             $request['contractNumber'] = LpcHelper::get_option('lpc_id_webservices');
@@ -84,7 +85,7 @@ class LpcBordereauGenerationApi extends LpcRestApi {
             ]
         );
 
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             // TODO make it work when available
             $request['stream_context'] = stream_context_create(
                 [

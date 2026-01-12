@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <input type="hidden" id="lpc_select_products" value="<?php esc_attr_e('You need to select at least one item to generate a label', 'wc_colissimo'); ?>" />
 <input type="hidden" id="lpc_generate_url" value="<?php echo esc_url($data['generateUrlBase'], null, 'javascript'); ?>" />
 <input type="hidden" id="lpc_download_url" value="<?php echo esc_url($data['downloadUrlBase'], null, 'javascript'); ?>" />

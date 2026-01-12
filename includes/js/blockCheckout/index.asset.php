@@ -8,5 +8,5 @@ return [
         'wp-element',
         'wp-plugins',
     ],
-    'version'      => 'fbe196a308da514a8b47',
+    'version'      => '84d29c36b78bd2ef8f7a',
 ];

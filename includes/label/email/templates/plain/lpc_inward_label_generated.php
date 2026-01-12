@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 echo '= ' . esc_html($email_heading) . " =\n\n";
 echo sprintf(__('Hi %s,', 'wc_colissimo'), esc_html($order->get_billing_first_name())) . "\n\n";
 echo sprintf(__('The inward label for order #%s has been generated.', 'wc_colissimo'), esc_html($order->get_order_number())) . "\n\n";

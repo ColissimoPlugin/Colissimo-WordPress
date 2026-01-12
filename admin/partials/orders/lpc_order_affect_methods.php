@@ -1,4 +1,6 @@
 <?php
+
+defined('ABSPATH') || die('Restricted Access');
 $shippingMethods = $args['lpc_shipping_methods'] ?? [];
 $buttonText      = $args['button_text'] ?? __('Click here to ship this order with Colissimo', 'wc_colissimo');
 ?>

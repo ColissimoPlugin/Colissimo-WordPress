@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <tr>
 	<td colspan="2">
 		<div id="lpc_feedback">

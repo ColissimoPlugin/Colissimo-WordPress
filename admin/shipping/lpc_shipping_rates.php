@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcShippingRates extends LpcComponent {
     const AJAX_TASK_NAME_EXPORT = 'shipping/export';

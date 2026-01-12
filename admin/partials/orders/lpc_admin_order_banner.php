@@ -1,4 +1,6 @@
 <?php
+
+defined('ABSPATH') || die('Restricted Access');
 $trackingNumbers          = $args['lpc_tracking_numbers'] ?? [];
 $labelFormat              = $args['lpc_label_formats'] ?? [];
 $orderItems               = isset($args['lpc_order_items']) && is_array($args['lpc_order_items']) ? $args['lpc_order_items'] : [];

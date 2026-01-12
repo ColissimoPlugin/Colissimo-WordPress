@@ -7,7 +7,7 @@
 	font-size: 0.8rem;
 }
 
-.lpc_depot_list{
+.lpc_depot_list, .lpc_hazmat_list{
 	margin-left: 1rem;
 	list-style-type: disc;
 }

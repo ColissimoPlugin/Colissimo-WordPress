@@ -5,6 +5,7 @@ jQuery(function ($) {
         thermalPrint();
         extraCost();
         relays();
+        shippingDate();
         ddp();
         doc();
     }
@@ -129,6 +130,19 @@ jQuery(function ($) {
                 $displayFontContainer.hide();
             }
         });
+    }
+
+    function shippingDate() {
+        const $customizeWidget = $('#lpc_display_shipping_date');
+        const $shippingDateOptionsContainers = $('.wc-settings-row-lpc_delivery_date_container');
+
+        $customizeWidget.on('change', function () {
+            if ($(this).is(':checked')) {
+                $shippingDateOptionsContainers.show();
+            } else {
+                $shippingDateOptionsContainers.hide();
+            }
+        }).trigger('change');
     }
 
     function ddp() {

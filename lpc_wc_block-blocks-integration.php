@@ -2,6 +2,7 @@
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 
+defined('ABSPATH') || die('Restricted Access');
 define('LpcWcBlock_VERSION', '0.1.0');
 
 /**

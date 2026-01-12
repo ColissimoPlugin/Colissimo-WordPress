@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <tr valign="top">
 	<th scope="row" class="titledesc">
 		<label><?php esc_html_e($field['title'], 'wc_colissimo'); ?></label>

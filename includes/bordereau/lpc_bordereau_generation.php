@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcBordereauGeneration extends LpcComponent {
     const MAX_LABEL_PER_BORDEREAU = 50;

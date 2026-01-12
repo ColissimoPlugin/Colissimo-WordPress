@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <nav class="nav-tab-wrapper woo-nav-tab-wrapper" style="margin-bottom: 1rem">
 	<a href="<?php echo esc_url(admin_url('admin.php?page=wc_colissimo_view&tab=orders')); ?>"
 	   class="nav-tab <?php echo 'orders' === $args['tab'] ? 'nav-tab-active' : ''; ?>">

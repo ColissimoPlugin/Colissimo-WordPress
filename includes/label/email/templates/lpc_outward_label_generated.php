@@ -1,5 +1,5 @@
 <?php
-// for phpcs
+defined('ABSPATH') || die('Restricted Access');
 
 /**
  * Action on the tracking email's header

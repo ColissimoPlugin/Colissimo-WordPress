@@ -1,4 +1,6 @@
 <?php
+
+defined('ABSPATH') || die('Restricted Access');
 $lpc_orders_table = $args['table'] ?? [];
 $get_args         = $args['get'] ?? [];
 wp_nonce_field('wc_colissimo_view');

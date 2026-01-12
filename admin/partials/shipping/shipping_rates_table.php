@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 $shippingMethod   = $args['shippingMethod'];
 $shippingClasses  = $args['shippingClasses'];
 $currentRates     = $shippingMethod->get_option('shipping_rates', []);

@@ -2,6 +2,8 @@
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcOrderQueries {
     public static function getLpcOrders($currentPage = 0, $elementsPerPage = 0, $args = [], $filters = []): array {
         global $wpdb;
@@ -252,7 +254,7 @@ class LpcOrderQueries {
         $numberOfDays = LpcHelper::get_option('lpc_label_status_update_days', 90);
         $numberOfDays = empty($numberOfDays) ? 90 : $numberOfDays;
         $timePeriod   = '-' . $numberOfDays . ' days';
-        $fromDate   = date('Y-m-d', strtotime($timePeriod));
+        $fromDate     = date('Y-m-d', strtotime($timePeriod));
 
         $params = [
             $orderItemMeta . '.meta_key = "method_id"',
@@ -755,5 +757,16 @@ class LpcOrderQueries {
         } else {
             return false;
         }
+    }
+
+    public static function hasShippingMethod(object $order, string $method): bool {
+        $shippings = $order->get_shipping_methods();
+        if (empty($shippings)) {
+            return false;
+        }
+
+        $shipping = current($shippings);
+
+        return $shipping->get_method_id() === $method;
     }
 }

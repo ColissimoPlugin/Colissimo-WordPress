@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <tr id="lpc_secured_return_container">
 	<th scope="row">
 		<label>

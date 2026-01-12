@@ -1,4 +1,6 @@
 <?php
+
+defined('ABSPATH') || die('Restricted Access');
 $lpc_slip_table = $args['table'] ?? [];
 $get_args       = $args['get'] ?? [];
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'lpc_orders_header.php';

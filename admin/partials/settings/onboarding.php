@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 $faciliteUrl      = 'https://www.colissimo.entreprise.laposte.fr/contrat-facilite';
 $privilegeUrl     = 'https://www.colissimo.entreprise.laposte.fr/contrat-privilege';
 $colissimoWebsite = 'https://www.colissimo.entreprise.laposte.fr/';
@@ -52,11 +53,11 @@ $videoTutorials    = admin_url('admin.php?page=wc-settings&tab=lpc&section=video
 		<b>1. <?php esc_html_e('I associate my account to the Colissimo plugin', 'wc_colissimo'); ?></b>
 		<p>
             <?php
-            esc_html_e('To connect the plugin, you must enter your Colissimo credentials in the "General" tab of this plugin.', 'wc_colissimo');
-            echo ' ';
+            esc_html_e('To connect the plugin, you must enter your Colissimo application key in the "General" tab of this plugin.', 'wc_colissimo');
+            echo '<br />';
             printf(
-                __('The User Name must be the one you use to connect to %s.', 'wc_colissimo'),
-                '<a target="_blank" href="' . esc_url($colissimoWebsite) . '">Colissimo Entreprise</a>'
+                __('This application key must be generated from your account on %s on your user edit page.', 'wc_colissimo'),
+                '<a target="_blank" href="' . esc_url($colissimoWebsite) . '">Colissimo Box</a>'
             );
             ?>
 		</p>

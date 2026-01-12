@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 if (is_admin()) {
     $currentScreen = get_current_screen();
     if (!empty($currentScreen) && in_array($currentScreen->base, ['woocommerce_page_wc-orders', 'post'])) {

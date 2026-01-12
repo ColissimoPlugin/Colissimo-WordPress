@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'lpc_rest_api.php';
 
@@ -25,7 +26,7 @@ class LpcPickUpWidgetApi extends LpcRestApi {
         }
 
         try {
-            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
                 $credentials = [
                     'apikey' => LpcHelper::get_option('lpc_apikey'),
                 ];

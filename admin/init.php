@@ -30,6 +30,8 @@ require_once LPC_ADMIN . 'labels' . DS . 'generate' . DS . 'lpc_label_outward_ge
 require_once LPC_ADMIN . 'lpc_compatibility.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_action.php';
 require_once LPC_ADMIN . 'orders' . DS . 'lpc_woo_orders_table_bulk_actions.php';
+require_once LPC_ADMIN . 'products' . DS . 'lpc_admin_product.php';
+require_once LPC_ADMIN . 'products' . DS . 'lpc_admin_product_category.php';
 require_once LPC_ADMIN . 'settings' . DS . 'lpc_settings_download.php';
 require_once LPC_ADMIN . 'shipping' . DS . 'lpc_shipping_rates.php';
 if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
@@ -72,6 +74,8 @@ class LpcAdminInit {
         LpcRegister::register('wooOrdersTableAction', new LpcWooOrdersTableAction());
         LpcRegister::register('wooOrdersTableBulkActions', new LpcWooOrdersTableBulkActions());
         LpcRegister::register('shippingRates', new LpcShippingRates());
+        LpcRegister::register('LpcAdminProduct', new LpcAdminProduct());
+        LpcRegister::register('LpcAdminProductCategory', new LpcAdminProductCategory());
 
         if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
             LpcRegister::register('capabilitiesDev', new LpcCapabilitiesFile());
@@ -158,9 +162,9 @@ class LpcAdminInit {
         $deadline = new DateTime('2025-12-31');
         $now      = new DateTime();
 
-         if ($now >= $deadline) {
-             return;
-         }
+        if ($now >= $deadline) {
+            return;
+        }
 
         $feedbackDismissed = LpcHelper::get_option('lpc_feedback_dismissed', false);
         $lastAskedFeedback = LpcHelper::get_option('lpc_asked_feedback', 0);
@@ -209,6 +213,7 @@ class LpcAdminInit {
             'credentials_validity',
             'cgv_invalid',
             'deprecated_methods',
+            'credentials_apikey',
         ];
         foreach ($notifications as $oneNotification) {
             $notice_content = $adminNotices->get_notice($oneNotification);

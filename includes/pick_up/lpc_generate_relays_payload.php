@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcGenerateRelaysPayload {
     protected $payload;
@@ -10,7 +11,7 @@ class LpcGenerateRelaysPayload {
     }
 
     public function withCredentials() {
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             $this->payload['apiKey'] = LpcHelper::get_option('lpc_apikey');
         } else {
             $this->payload['accountNumber'] = LpcHelper::get_option('lpc_id_webservices');
@@ -30,16 +31,6 @@ class LpcGenerateRelaysPayload {
         $this->payload['zipCode']     = $address['zipCode'];
         $this->payload['city']        = $address['city'];
         $this->payload['countryCode'] = $address['countryCode'];
-
-        return $this;
-    }
-
-    public function withWeight($weight) {
-        if (empty($weight)) {
-            unset($this->payload['weight']);
-        } else {
-            $this->payload['weight'] = $weight;
-        }
 
         return $this;
     }
@@ -103,7 +94,7 @@ class LpcGenerateRelaysPayload {
     }
 
     protected function checkLogin() {
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             if (empty($this->payload['apiKey'])) {
                 throw new Exception(__('Application key required to get relay points', 'wc_colissimo'));
             }

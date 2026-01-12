@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <form>
 	<div id="lpc_new_packaging_options">
 		<div class="lpc_new_packaging_row">

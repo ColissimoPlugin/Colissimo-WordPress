@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcBordereauHistoryTable extends WP_List_Table {
 
     /** @var LpcBordereauGenerationApi */

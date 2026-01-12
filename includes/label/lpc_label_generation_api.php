@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'lpc_rest_api.php';
 
@@ -21,7 +22,7 @@ class LpcLabelGenerationApi extends LpcRestApi {
             );
 
             $headers = [];
-            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
                 $headers[] = 'apiKey: ' . LpcHelper::get_option('lpc_apikey');
             }
 
@@ -76,7 +77,7 @@ class LpcLabelGenerationApi extends LpcRestApi {
         );
 
         $headers = [];
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             $headers[] = 'apiKey: ' . LpcHelper::get_option('lpc_apikey');
         }
 

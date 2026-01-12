@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <script type="text/template" id="tmpl-<?php echo $this->templateId; ?>">
 	<div class="lpc-modal">
 		<div class="lpc-lib-modal">

@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <div id="lpc_layer_relays">
 	<div class="content">
 

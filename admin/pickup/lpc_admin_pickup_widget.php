@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_pick_up_widget_api.php';
 require_once LPC_INCLUDES . 'lpc_modal.php';
@@ -91,26 +92,9 @@ class LpcAdminPickupWidget extends LpcComponent {
                 $args['widgetInfo']['couleur2'] = $args['lpcListTextColor'];
             }
 
-            $fontValue = LpcHelper::get_option('lpc_prDisplayFont', null);
-
-            $fontNames = [
-                'georgia'       => 'Georgia, serif',
-                'palatino'      => '"Palatino Linotype", "Book Antiqua", Palatino, serif',
-                'times'         => '"Times New Roman", Times, serif',
-                'arial'         => 'Arial, Helvetica, sans-serif',
-                'arialblack'    => '"Arial Black", Gadget, sans-serif',
-                'comic'         => '"Comic Sans MS", cursive, sans-serif',
-                'impact'        => 'Impact, Charcoal, sans-serif',
-                'lucida'        => '"Lucida Sans Unicode", "Lucida Grande", sans-serif',
-                'tahoma'        => 'Tahoma, Geneva, sans-serif',
-                'trebuchet'     => '"Trebuchet MS", Helvetica, sans-serif',
-                'verdana'       => 'Verdana, Geneva, sans-serif',
-                'courier'       => '"Courier New", Courier, monospace',
-                'lucidaconsole' => '"Lucida Console", Monaco, monospace',
-            ];
-
-            if (!empty($fontNames[$fontValue])) {
-                $args['widgetInfo']['font'] = $fontNames[$fontValue];
+            $font = LpcHelper::getFont('lpc_prDisplayFont');
+            if (!empty($font)) {
+                $args['widgetInfo']['font'] = $font;
             }
         }
 

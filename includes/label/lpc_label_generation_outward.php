@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'label' . DS . 'lpc_label_generation_payload.php';
 
@@ -59,7 +60,9 @@ class LpcLabelGenerationOutward extends LpcComponent {
         $detail       = empty($customParams['items']) ? [] : $customParams['items'];
         $fullyShipped = $this->isFullyShipped($order, $detail);
         if ($isWholeOrder) {
-            $customParams = [];
+            $customParams = [
+                'isAutoGeneration' => $customParams['isAutoGeneration'] ?? false,
+            ];
         }
 
         $time         = time();
@@ -148,7 +151,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
                 $lpc_admin_notices->add_notice(
                     'outward_label_generate',
                     'notice-error',
-                    sprintf(__('Order %s : Outward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $e->getMessage()
+                    sprintf(__('Order %s: Outward label was not generated:', 'wc_colissimo'), $orderId) . ' ' . $e->getMessage()
                 );
             }
 
@@ -200,7 +203,12 @@ class LpcLabelGenerationOutward extends LpcComponent {
         $securedReturn  = 'no' !== LpcHelper::get_option('lpc_secured_return', 'no');
         $autoReturn     = 'yes' === LpcHelper::get_option('lpc_createReturnLabelWithOutward', 'no');
         if ($autoReturn && (!$customerReturn || !$securedReturn)) {
-            $this->labelGenerationInward->generate($order);
+            $this->labelGenerationInward->generate(
+                $order,
+                [
+                    'isAutoGeneration' => true,
+                ]
+            );
         }
 
         return true;
@@ -260,7 +268,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
     /**
      * @throws Exception When the product code couldn't be found.
      */
-    protected function buildPayload(WC_Order $order, $customParams = []) {
+    protected function buildPayload(WC_Order $order, array $customParams = []) {
         $recipient = [
             'companyName' => $order->get_shipping_company(),
             'firstName'   => $order->get_shipping_first_name(),
@@ -377,7 +385,8 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withDDP($shippingMethodUsed)
             ->withFtd($recipient['countryCode'])
             ->withMultiParcels($order->get_id(), $customParams)
-            ->withBlockingCode($shippingMethodUsed, $order, $customParams);
+            ->withBlockingCode($shippingMethodUsed, $order, $customParams)
+            ->withHazmat($order, $customParams);
 
         if ('lpc_relay' === $shippingMethodUsed) {
             $payload->withPickupLocationId($relayId);

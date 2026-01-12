@@ -1,6 +1,18 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
+
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcShippingMethods extends LpcComponent {
+    /** @var LpcCheckoutApi */
+    protected $checkoutApi;
+
+    public function __construct(
+        ?LpcCheckoutApi $checkoutApi = null
+    ) {
+        $this->checkoutApi = LpcRegister::get('checkoutApi', $checkoutApi);
+    }
+
     public function init() {
         add_action(
             'woocommerce_init',
@@ -70,6 +82,11 @@ class LpcShippingMethods extends LpcComponent {
         );
 
         add_filter('woocommerce_cart_shipping_method_full_label', [$this, 'addShippingIcon'], 10, 2);
+        add_filter('woocommerce_cart_shipping_method_full_label', [$this, 'addShippingDate'], 10, 2);
+    }
+
+    public function getDependencies(): array {
+        return ['checkoutApi'];
     }
 
     public function getAllShippingMethods(): array {
@@ -190,6 +207,27 @@ class LpcShippingMethods extends LpcComponent {
         }
 
         return $img . '<br />' . $label;
+    }
+
+    public function addShippingDate($label, $method) {
+        $methodId = $method->get_method_id();
+        if ('yes' !== LpcHelper::get_option('lpc_display_shipping_date') || !in_array($methodId, array_keys($this->getAllShippingMethods()))) {
+            return $label;
+        }
+
+        $customer = WC()->customer;
+        $country  = $customer->get_shipping_country();
+        if ('FR' !== $country) {
+            return $label;
+        }
+
+        $postCode     = $customer->get_shipping_postcode();
+        $deliveryDate = $this->checkoutApi->getDeliveryDate($postCode);
+        if (empty($deliveryDate)) {
+            return $label;
+        }
+
+        return $label . '<br />' . $deliveryDate;
     }
 
     public function moveAlwaysFreeOption() {

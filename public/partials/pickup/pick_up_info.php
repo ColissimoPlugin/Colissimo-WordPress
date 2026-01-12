@@ -1,4 +1,6 @@
-<?php $relay = $args['relay'];
+<?php
+defined('ABSPATH') || die('Restricted Access');
+$relay = $args['relay'];
 if (!empty($relay)) {
     $openingDays = [
         'Monday'    => 'horairesOuvertureLundi',

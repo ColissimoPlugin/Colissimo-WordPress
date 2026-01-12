@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcBordereauCreationTable extends WP_List_Table {
 
     const BULK_SLIP_CREATION = 'bulk-slip_creation_ids';

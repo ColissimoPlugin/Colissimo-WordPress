@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 $id_and_name     = $args['id_and_name'];
 $label           = $args['label'];
 $multiple        = empty($args['multiple']) ? '' : 'multiple';

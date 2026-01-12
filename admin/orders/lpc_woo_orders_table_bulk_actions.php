@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcWooOrdersTableBulkActions extends LpcComponent {
     /** @var LpcCapabilitiesPerCountry */
     private $lpcCapabilitiesPerCountry;

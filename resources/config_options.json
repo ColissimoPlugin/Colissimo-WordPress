@@ -40,7 +40,6 @@
       "type": "password",
       "title": "Application key",
       "desc": "Key used to connect to Colissimo services. It can be created from your Colissimo Box account.",
-      "desc_tip": true,
       "class": "",
       "default": "",
       "custom_attributes": {
@@ -277,18 +276,6 @@
       "id": "lpc_section_labels",
       "type": "title",
       "title": "Labels"
-    },
-    {
-      "id": "lpc_preparation_time",
-      "type": "number",
-      "title": "Average preparation delay",
-      "desc": "Your average delay for preparation of a shipment, in days.",
-      "desc_tip": true,
-      "class": "",
-      "default": "1",
-      "custom_attributes": {
-        "min": "0"
-      }
     },
     {
       "id": "lpc_using_insurance",
@@ -680,7 +667,7 @@
     {
       "id": "lpc_products",
       "type": "lpc_products",
-      "title": "Colissimo Box / Labels and packagings"
+      "title": ""
     },
     {
       "id": "lpc_packaging_weight",
@@ -692,6 +679,35 @@
     },
     {
       "id": "lpc_section_packaging",
+      "type": "sectionend"
+    }
+  ],
+  "hazmat": [
+    {
+      "id": "lpc_section_hazmat",
+      "type": "title",
+      "title": "Global"
+    },
+    {
+      "id": "lpc_hazmat_extra_cost",
+      "type": "select",
+      "title": "Add the extra cost to shipping price",
+      "desc": "The clients will pay the extra cost for hazardous materials along with the shipping price.",
+      "desc_tip": true,
+      "class": "",
+      "default": "no",
+      "options": {
+        "no": "No",
+        "yes": "Yes"
+      }
+    },
+    {
+      "id": "lpc_hazmat",
+      "type": "lpc_hazmat",
+      "title": ""
+    },
+    {
+      "id": "lpc_section_hazmat",
       "type": "sectionend"
     }
   ],
@@ -941,19 +957,19 @@
       "row_class": "lpc_prDisplayFont_container",
       "default": "verdana",
       "options": {
-        "georgia": "Georgia, serif",
-        "palatino": "\"Palatino Linotype\", \"Book Antiqua\", Palatino, serif",
-        "times": "\"Times New Roman\", Times, serif",
         "arial": "Arial, Helvetica, sans-serif",
-        "arialblack": "\"Arial Black\", Gadget, sans-serif",
-        "comic": "\"Comic Sans MS\", cursive, sans-serif",
+        "arialblack": "Arial Black, Gadget, sans-serif",
+        "comic": "Comic Sans MS, cursive, sans-serif",
+        "courier": "Courier New, Courier, monospace",
+        "georgia": "Georgia, serif",
         "impact": "Impact, Charcoal, sans-serif",
-        "lucida": "\"Lucida Sans Unicode\", \"Lucida Grande\", sans-serif",
+        "lucidaconsole": "Lucida Console, Monaco, monospace",
+        "lucida": "Lucida Sans Unicode, Lucida Grande, sans-serif",
+        "palatino": "Palatino Linotype, Book Antiqua, Palatino, serif",
         "tahoma": "Tahoma, Geneva, sans-serif",
-        "trebuchet": "\"Trebuchet MS\", Helvetica, sans-serif",
-        "verdana": "Verdana, Geneva, sans-serif",
-        "courier": "\"Courier New\", Courier, monospace",
-        "lucidaconsole": "\"Lucida Console\", Monaco, monospace"
+        "times": "Times New Roman, Times, serif",
+        "trebuchet": "Trebuchet MS, Helvetica, sans-serif",
+        "verdana": "Verdana, Geneva, sans-serif"
       }
     },
     {
@@ -1060,6 +1076,108 @@
     {
       "id": "lpc_checkout",
       "type": "sectionend"
+    },
+    {
+      "id": "lpc_delivery_date",
+      "type": "title",
+      "title": "Delivery date"
+    },
+    {
+      "id": "lpc_preparation_time",
+      "type": "number",
+      "title": "Average preparation delay",
+      "desc": "Your average delay for preparation of a shipment, in days.",
+      "desc_tip": true,
+      "class": "",
+      "custom_attributes": {
+        "min": "0"
+      }
+    },
+    {
+      "id": "lpc_display_shipping_date",
+      "type": "checkbox",
+      "title": "Display the expected delivery date",
+      "desc": "Choose to add the expected delivery date below the method name in the checkout.",
+      "desc_tip": true,
+      "default": "no"
+    },
+    {
+      "id": "lpc_delivery_date_deposit_location",
+      "type": "lpc_deposit_location",
+      "title": "Deposit location"
+    },
+    {
+      "id": "lpc_delivery_date_cuttoff_times",
+      "type": "lpc_cuttoff",
+      "title": "Cutt Off times",
+      "row_class": "lpc_delivery_date_container"
+    },
+    {
+      "id": "lpc_delivery_date_format",
+      "type": "lpc_date_format",
+      "title": "Date format"
+    },
+    {
+      "id": "lpc_delivery_date_text",
+      "type": "lpc_text",
+      "title": "Text to display",
+      "desc": "Please include {date} in your text where the date should be shown.",
+      "placeholder": "Delivery expected on {date}",
+      "row_class": "lpc_delivery_date_container"
+    },
+    {
+      "id": "lpc_delivery_date_color",
+      "type": "color",
+      "title": "Text color",
+      "class": "",
+      "row_class": "lpc_delivery_date_container",
+      "default": ""
+    },
+    {
+      "id": "lpc_delivery_date_font",
+      "type": "select",
+      "title": "Text font",
+      "class": "",
+      "row_class": "lpc_delivery_date_container",
+      "default": "default",
+      "options": {
+        "default": "Default",
+        "arial": "Arial, Helvetica, sans-serif",
+        "arialblack": "Arial Black, Gadget, sans-serif",
+        "comic": "Comic Sans MS, cursive, sans-serif",
+        "courier": "Courier New, Courier, monospace",
+        "georgia": "Georgia, serif",
+        "impact": "Impact, Charcoal, sans-serif",
+        "lucidaconsole": "Lucida Console, Monaco, monospace",
+        "lucida": "Lucida Sans Unicode, Lucida Grande, sans-serif",
+        "palatino": "Palatino Linotype, Book Antiqua, Palatino, serif",
+        "tahoma": "Tahoma, Geneva, sans-serif",
+        "times": "Times New Roman, Times, serif",
+        "trebuchet": "Trebuchet MS, Helvetica, sans-serif",
+        "verdana": "Verdana, Geneva, sans-serif"
+      }
+    },
+    {
+      "id": "lpc_delivery_date_size",
+      "type": "select",
+      "title": "Text size",
+      "class": "",
+      "row_class": "lpc_delivery_date_container",
+      "default": "default",
+      "options": {
+        "default": "Default",
+        "10px": "10px",
+        "12px": "12px",
+        "14px": "14px",
+        "16px": "16px",
+        "18px": "18px",
+        "20px": "20px",
+        "22px": "22px"
+      }
+    },
+    {
+      "id": "lpc_delivery_date",
+      "type": "sectionend"
     }
   ],
   "custom": [
@@ -1136,7 +1254,8 @@
     {
       "id": "lpc_eori_number",
       "type": "text",
-      "title": "EORI number"
+      "title": "EORI number",
+      "placeholder": "FR123456789"
     },
     {
       "id": "lpc_eori_uk_number",
@@ -1144,6 +1263,18 @@
       "title": "UK EORI number",
       "desc": "EORI number for delivery to United Kingdom",
       "desc_tip": true
+    },
+    {
+      "id": "lpc_usa_eori_number",
+      "type": "text",
+      "title": "USA EORI number",
+      "desc": "EORI number for delivery to the United States",
+      "desc_tip": true
+    },
+    {
+      "id": "lpc_mid_code",
+      "type": "lpc_mid",
+      "title": "MID code for USA"
     },
     {
       "id": "lpc_vat_number",

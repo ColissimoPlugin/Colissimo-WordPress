@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'label' . DS . 'lpc_label_generation_payload.php';
 
@@ -35,7 +36,7 @@ class LpcLabelGenerationInward extends LpcComponent {
         return ['capabilitiesPerCountry', 'labelGenerationApi', 'inwardLabelDb', 'shippingMethods', 'accountApi'];
     }
 
-    public function generate(WC_Order $order, $customParams = []) {
+    public function generate(WC_Order $order, array $customParams = []) {
         if (is_admin() && empty($customParams['is_from_client'])) {
             $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
         }
@@ -158,7 +159,7 @@ class LpcLabelGenerationInward extends LpcComponent {
         return $parcelNumber;
     }
 
-    protected function buildPayload(WC_Order $order, $customParams = []) {
+    protected function buildPayload(WC_Order $order, array $customParams = []) {
         $customerAddress = [
             'companyName' => $order->get_shipping_company(),
             'firstName'   => $order->get_shipping_first_name(),
@@ -208,7 +209,8 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->withOutputFormat($customParams)
             ->withCustomsDeclaration($order, $customParams)
             ->withFtd($returnAddress['countryCode'])
-            ->withInsuranceValue($order->get_subtotal(), $order->get_shipping_country(), $shippingMethodUsed, $customParams);
+            ->withInsuranceValue($order->get_subtotal(), $order->get_shipping_country(), $shippingMethodUsed, $customParams)
+            ->withHazmat($order, $customParams);
 
         return $payload->checkConsistency();
     }

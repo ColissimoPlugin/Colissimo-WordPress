@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcShippingZones extends LpcComponent {
     const UNKNOWN_WC_COUNTRIES = ['AN', 'IC', 'XZ'];

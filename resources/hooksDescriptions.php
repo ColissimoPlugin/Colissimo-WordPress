@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <div style="margin-bottom: 50px;">
 	<p>
 		This plugin allows you to modify the information sent to Colissimo when generating a label.<br>

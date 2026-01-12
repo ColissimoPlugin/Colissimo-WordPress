@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <style>
 	.lpc_tracking{
 		max-width: 1000px;

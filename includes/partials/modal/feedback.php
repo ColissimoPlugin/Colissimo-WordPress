@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <style>
 	#<?php echo $this->elementId; ?>{
 		display: none;

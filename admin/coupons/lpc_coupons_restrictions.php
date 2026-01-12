@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcCouponsRestrictions extends LpcComponent {
 
     public function init() {

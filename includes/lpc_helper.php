@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcHelper {
     const CONFIG_FILE = 'config_options.json';
@@ -6,6 +7,29 @@ class LpcHelper {
     const ENCRYPTION_METHOD = 'AES-128-CTR';
     const ENCRYPTION_OPTION = 0;
     const ENCRYPTION_IV = '1234567891011121';
+    const DAYS = [
+        1 => 'Monday',
+        2 => 'Tuesday',
+        3 => 'Wednesday',
+        4 => 'Thursday',
+        5 => 'Friday',
+        6 => 'Saturday',
+        7 => 'Sunday',
+    ];
+    const MONTHS = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+    ];
 
     protected static $configOptions;
 
@@ -217,7 +241,7 @@ class LpcHelper {
 
         // Load the default values
         if (null === self::$configOptions) {
-            $configStructure = file_get_contents(LPC_RESOURCE_FOLDER . self::CONFIG_FILE);
+            $configStructure     = file_get_contents(LPC_RESOURCE_FOLDER . self::CONFIG_FILE);
             self::$configOptions = new ArrayObject(json_decode($configStructure, true));
         }
 
@@ -323,6 +347,44 @@ class LpcHelper {
         }
 
         return null;
+    }
+
+    public static function translateDate(string $date): string {
+        foreach (self::DAYS as $day) {
+            $date = str_replace($day, __($day, 'wc_colissimo'), $date);
+        }
+
+        foreach (self::MONTHS as $month) {
+            $date = str_replace($month, __($month, 'wc_colissimo'), $date);
+            $date = str_replace(substr($month, 0, 3), mb_substr(__($month, 'wc_colissimo'), 0, 3), $date);
+        }
+
+        return $date;
+    }
+
+    public static function getFont(string $option): ?string {
+        $fontValue = self::get_option($option, null);
+        if (empty($fontValue)) {
+            return null;
+        }
+
+        $fontNames = [
+            'georgia'       => 'Georgia, serif',
+            'palatino'      => '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+            'times'         => '"Times New Roman", Times, serif',
+            'arial'         => 'Arial, Helvetica, sans-serif',
+            'arialblack'    => '"Arial Black", Gadget, sans-serif',
+            'comic'         => '"Comic Sans MS", cursive, sans-serif',
+            'impact'        => 'Impact, Charcoal, sans-serif',
+            'lucida'        => '"Lucida Sans Unicode", "Lucida Grande", sans-serif',
+            'tahoma'        => 'Tahoma, Geneva, sans-serif',
+            'trebuchet'     => '"Trebuchet MS", Helvetica, sans-serif',
+            'verdana'       => 'Verdana, Geneva, sans-serif',
+            'courier'       => '"Courier New", Courier, monospace',
+            'lucidaconsole' => '"Lucida Console", Monaco, monospace',
+        ];
+
+        return $fontNames[$fontValue] ?? null;
     }
 
     private static function isPackagingFitting(array $packagingDimensions, array $productDimensions): bool {

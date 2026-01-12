@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 if (!class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
@@ -48,6 +50,8 @@ class LpcOrdersTable extends WP_List_Table {
     protected $bordereauQueries;
     /** @var LpcBordereauDb */
     protected $bordereauDb;
+    /** @var LpcAdminNotices */
+    protected $adminNotices;
 
     public function __construct() {
         parent::__construct();
@@ -68,6 +72,7 @@ class LpcOrdersTable extends WP_List_Table {
         $this->lpcLabelPurge               = LpcRegister::get('labelPurge');
         $this->bordereauQueries            = LpcRegister::get('bordereauQueries');
         $this->bordereauDb                 = LpcRegister::get('bordereauDb');
+        $this->adminNotices                = LpcRegister::get('lpcAdminNotices');
     }
 
     public function get_columns() {
@@ -735,6 +740,18 @@ END_PRINT_SCRIPT;
     }
 
     public function displayHeaders() {
+        if ('account' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
+            $args = [
+                'type'    => 'error',
+                'message' => sprintf(
+                    __('The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the "General" section of the Colissimo settings.',
+                       'wc_colissimo'),
+                    '<a target="_blank" href="https://www.colissimo.entreprise.laposte.fr/">Colissimo Box</a>'
+                ),
+            ];
+            echo LpcHelper::renderPartial('settings' . DS . 'message.php', $args);
+        }
+
         echo '<h1 class="wp-heading-inline">' . __('Colissimo Orders', 'wc_colissimo') . '</h1>';
         $buttonUpdateStatusAction = $this->updateStatuses->getUpdateAllStatusesUrl();
         $buttonUpdateStatusLabel  = __('Update Colissimo statuses', 'wc_colissimo');

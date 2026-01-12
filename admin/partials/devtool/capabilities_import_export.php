@@ -1,4 +1,6 @@
 <?php
+
+defined('ABSPATH') || die('Restricted Access');
 if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capabilities_file.php')) {
 
     $capabilities = LpcRegister::get('capabilitiesDev');

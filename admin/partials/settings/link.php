@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <tr>
 	<th scope="row" class="titledesc">
         <?php if (!empty($args['label'])) { ?>

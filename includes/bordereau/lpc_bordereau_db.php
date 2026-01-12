@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcBordereauDb extends LpcDb {
     const TABLE_NAME = 'lpc_bordereau';

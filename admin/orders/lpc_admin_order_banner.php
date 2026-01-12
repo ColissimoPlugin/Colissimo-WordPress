@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcAdminOrderBanner extends LpcComponent {
     /** @var LpcLabelQueries */
     protected $lpcLabelQueries;

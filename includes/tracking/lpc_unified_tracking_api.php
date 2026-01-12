@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcUnifiedTrackingApi extends LpcRestApi {
     const API_BASE_URL = 'https://ws.colissimo.fr/tracking-timeline-ws/rest/tracking/';
@@ -90,7 +91,7 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
             'lang'         => $language,
         ];
 
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             $request['apiKey'] = LpcHelper::get_option('lpc_apikey');
         } else {
             $request['login']    = LpcHelper::get_option('lpc_id_webservices');

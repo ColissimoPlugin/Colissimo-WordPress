@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcCapabilitiesPerCountry extends LpcComponent {
     const PATH_TO_COUNTRIES_PER_ZONE_JSON_FILE_FR = LPC_FOLDER . 'resources' . DS . 'capabilitiesByCountryFR.json';

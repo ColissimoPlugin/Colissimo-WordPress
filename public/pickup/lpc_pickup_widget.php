@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'pick_up' . DS . 'lpc_pick_up_widget_api.php';
 require_once LPC_INCLUDES . 'lpc_modal.php';
@@ -109,10 +110,10 @@ class LpcPickupWidget extends LpcPickup {
             $availableCountries = ['FR'];
         }
 
-        $address  = str_replace('’', "'", $customer['shipping_address'] ?? '');
-        $postcode = $customer['shipping_postcode'] ?? '';
-        $city     = str_replace('’', "'", $customer['shipping_city'] ?? '');
-        $country  = $customer['shipping_country'] ?? '';
+        $address  = str_replace('’', "'", $customer['shipping_address'] ?? '5 Parc du Champ de Mars');
+        $postcode = $customer['shipping_postcode'] ?? '75007';
+        $city     = str_replace('’', "'", $customer['shipping_city'] ?? 'Paris');
+        $country  = $customer['shipping_country'] ?? 'FR';
 
         $relayTypes = LpcHelper::get_option('lpc_relay_types', '');
         if (empty($relayTypes)) {
@@ -146,26 +147,9 @@ class LpcPickupWidget extends LpcPickup {
                 $widgetInfo['couleur2'] = $lpcListTextColor;
             }
 
-            $fontValue = LpcHelper::get_option('lpc_prDisplayFont', null);
-
-            $fontNames = [
-                'georgia'       => 'Georgia, serif',
-                'palatino'      => '"Palatino Linotype", "Book Antiqua", Palatino, serif',
-                'times'         => '"Times New Roman", Times, serif',
-                'arial'         => 'Arial, Helvetica, sans-serif',
-                'arialblack'    => '"Arial Black", Gadget, sans-serif',
-                'comic'         => '"Comic Sans MS", cursive, sans-serif',
-                'impact'        => 'Impact, Charcoal, sans-serif',
-                'lucida'        => '"Lucida Sans Unicode", "Lucida Grande", sans-serif',
-                'tahoma'        => 'Tahoma, Geneva, sans-serif',
-                'trebuchet'     => '"Trebuchet MS", Helvetica, sans-serif',
-                'verdana'       => 'Verdana, Geneva, sans-serif',
-                'courier'       => '"Courier New", Courier, monospace',
-                'lucidaconsole' => '"Lucida Console", Monaco, monospace',
-            ];
-
-            if (!empty($fontNames[$fontValue])) {
-                $widgetInfo['font'] = $fontNames[$fontValue];
+            $font = LpcHelper::getFont('lpc_prDisplayFont');
+            if (!empty($font)) {
+                $widgetInfo['font'] = $font;
             }
         }
 
@@ -180,10 +164,10 @@ class LpcPickupWidget extends LpcPickup {
         $currentRelay = $this->lpcPickUpSelection->getCurrentPickUpLocationInfo();
 
         $address = [
-            'address'     => $customer['shipping_address'],
-            'zipCode'     => $customer['shipping_postcode'],
-            'city'        => $customer['shipping_city'],
-            'countryCode' => $customer['shipping_country'],
+            'address'     => $customer['shipping_address'] ?? '',
+            'zipCode'     => $customer['shipping_postcode'] ?? '',
+            'city'        => $customer['shipping_city'] ?? '',
+            'countryCode' => $customer['shipping_country'] ?? '',
         ];
         if ('yes' === LpcHelper::get_option('lpc_select_default_pr', 'no')
             && empty($currentRelay)

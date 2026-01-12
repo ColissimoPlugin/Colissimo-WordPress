@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'lpc_rest_api.php';
 
@@ -15,7 +16,7 @@ class LpcAccountApi extends LpcRestApi {
             'tagInfoPartner' => 'WOOCOMMERCE',
         ];
 
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             $payload['credential']['apiKey'] = LpcHelper::get_option('lpc_apikey');
         } else {
             $payload['credential']['login']    = LpcHelper::get_option('lpc_id_webservices');
@@ -87,7 +88,7 @@ class LpcAccountApi extends LpcRestApi {
         }
 
         if (empty($payload)) {
-            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
                 $payload['credential']['apiKey'] = LpcHelper::get_option('lpc_apikey');
             } else {
                 $payload['credential']['login']    = LpcHelper::get_option('lpc_id_webservices');
@@ -143,5 +144,26 @@ class LpcAccountApi extends LpcRestApi {
         $accountInformation = $response;
 
         return $response;
+    }
+
+    public function isHazmatOptionActive(): bool {
+        $accountInformation = $this->getAccountInformation();
+
+        return !empty($accountInformation['hazmatStatus']);
+    }
+
+    public function getHazmatCategories(): array {
+        $accountInformation = $this->getAccountInformation();
+
+        if (!$this->isHazmatOptionActive() || empty($accountInformation['hazmatCategories'])) {
+            return [];
+        }
+
+        $hazmatCategories = LpcLabelGenerationPayload::HAZMAT_CATEGORIES;
+        foreach ($hazmatCategories as $key => $hazmatCategory) {
+            $hazmatCategories[$key]['active'] = in_array($hazmatCategory['code'], $accountInformation['hazmatCategories']);
+        }
+
+        return $hazmatCategories;
     }
 }

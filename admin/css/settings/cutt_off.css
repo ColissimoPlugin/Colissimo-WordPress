@@ -1,0 +1,142 @@
+#lpc_delivery_date_color{
+	width: 365px;
+}
+
+.lpc_cuttoff_container{
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.lpc_cuttoff_content-wrapper{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 40px;
+}
+
+/* Weekly Schedule Styles */
+.weekly-schedule{
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+}
+
+.weekly-schedule table{
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.weekly-schedule th{
+	text-align: left;
+	padding: 12px;
+	border-bottom: 2px solid #e0e0e0;
+	font-weight: 600;
+	color: #666;
+	font-size: 14px;
+}
+
+.weekly-schedule td{
+	padding: 12px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.weekly-schedule tr:last-child td{
+	border-bottom: none;
+}
+
+/* Exceptions Styles */
+.lpc_cuttoff_container .exceptions-section{
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+}
+
+.lpc_cuttoff_container .add-exception-btn{
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	margin-bottom: 20px;
+	transition: background-color 0.2s;
+}
+
+.lpc_cuttoff_container .add-exception-btn:hover{
+	background-color: #45a049;
+}
+
+.lpc_cuttoff_container .plus-icon{
+	font-size: 18px;
+	font-weight: bold;
+}
+
+#exceptionsList{
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+#exceptionsList .exception-item{
+	display: grid;
+	grid-template-columns: 1fr 1fr auto;
+	gap: 12px;
+	align-items: center;
+	padding: 12px;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	background-color: #fafafa;
+}
+
+#exceptionsList .exception-item input[type="date"],
+#exceptionsList .exception-item select,
+#weeklyTable select{
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 14px;
+	line-height: 28px;
+}
+
+#exceptionsList .exception-item input[type="date"]:focus,
+#exceptionsList .exception-item select:focus,
+#weeklyTable select:focus{
+	outline: none;
+	border-color: #4CAF50;
+	box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+.lpc_cuttoff_container .remove-btn{
+	width: 46px;
+	height: 46px;
+	border: none;
+	background-color: #ff6b6b;
+	color: white;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.2s;
+}
+
+.lpc_cuttoff_container .remove-btn:hover{
+	background-color: #ee5a52;
+}
+
+@media (max-width: 768px){
+	.lpc_cuttoff_content-wrapper{
+		grid-template-columns: 1fr;
+	}
+
+	#exceptionsList .exception-item{
+		grid-template-columns: 1fr;
+	}
+}

@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <?php if (!empty($args['widgetInfo']) && empty($args['gutenberg'])) { ?>
 	<script type="text/javascript">
         window.lpc_widget_info = <?php echo $args['widgetInfo']; ?>;

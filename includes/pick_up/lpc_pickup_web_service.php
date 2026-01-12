@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once LPC_INCLUDES . 'lpc_modal.php';
 require_once LPC_PUBLIC . 'pickup' . DS . 'lpc_pickup.php';
@@ -98,13 +99,18 @@ class LpcPickupWebService extends LpcPickup {
         $wcSession = WC()->session;
         $customer  = $wcSession->customer;
 
+        $address = $customer['shipping_address'] ?? '';
+        $postcode = $customer['shipping_postcode'] ?? '';
+        $city = $customer['shipping_city'] ?? '';
+        $country = $customer['shipping_country'] ?? 'FR';
+
         $map = LpcHelper::renderPartial(
             'pickup' . DS . 'webservice_map.php',
             [
-                'ceAddress'     => str_replace('’', "'", $customer['shipping_address']),
-                'ceZipCode'     => preg_replace('#[^0-9]#', '', $customer['shipping_postcode']),
-                'ceTown'        => str_replace('’', "'", $customer['shipping_city']),
-                'ceCountryId'   => $customer['shipping_country'],
+                'ceAddress'     => str_replace('’', "'", $address),
+                'ceZipCode'     => preg_replace('#[^0-9]#', '', $postcode),
+                'ceTown'        => str_replace('’', "'", $city),
+                'ceCountryId'   => $country,
                 'maxRelayPoint' => LpcHelper::get_option('lpc_max_relay_point', 20),
             ]
         );
@@ -112,10 +118,10 @@ class LpcPickupWebService extends LpcPickup {
         $currentRelay = $this->lpcPickUpSelection->getCurrentPickUpLocationInfo();
 
         $address = [
-            'address'     => $customer['shipping_address'],
-            'zipCode'     => $customer['shipping_postcode'],
-            'city'        => $customer['shipping_city'],
-            'countryCode' => $customer['shipping_country'],
+            'address'     => $address,
+            'zipCode'     => $postcode,
+            'city'        => $city,
+            'countryCode' => $country,
         ];
 
         if ('yes' === LpcHelper::get_option('lpc_select_default_pr', 'no')
@@ -263,7 +269,7 @@ class LpcPickupWebService extends LpcPickup {
 
     public function getDefaultPickupLocationInfoWS($address) {
         $resultWs = $this->getPickupWS($address);
-        if (!empty($resultWs) && '0' == $resultWs['errorCode']) {
+        if (isset($resultWs['errorCode']) && '0' == $resultWs['errorCode']) {
             $relays = $resultWs['listePointRetraitAcheminement'];
             if (count($relays) >= 1) {
                 $defaultRelay = array_shift($relays);

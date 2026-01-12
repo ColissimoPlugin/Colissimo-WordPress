@@ -1762,11 +1762,11 @@ msgstr "<u>Déjà inscrit sur Colissimo ?</u> Voici comment configurer votre ex
 msgid "I associate my account to the Colissimo plugin"
 msgstr "J’associe mon compte à l’extension Colissimo"
 
-msgid "To connect the plugin, you must enter your Colissimo credentials in the \"General\" tab of this plugin."
-msgstr "Pour connecter l’extension, vous devez entrer vos identifiants Colissimo dans l’onglet \"Général\" de cette extension."
+msgid "To connect the plugin, you must enter your Colissimo application key in the \"General\" tab of this plugin."
+msgstr "Pour connecter l’extension, vous devez entrer votre clé de connexion Colissimo dans l’onglet \"Général\" de cette extension."
 
-msgid "The User Name must be the one you use to connect to %s."
-msgstr "L’identifiant doit être celui que vous utilisez pour vous connecter sur %s."
+msgid "This application key must be generated from your account on %s on your user edit page."
+msgstr "Cette clé de connexion doit être générée depuis votre compte sur %s sur la page de modification de votre utilisateur."
 
 msgid "I configure my settings to simplify my shipping preparations thanks to Colissimo features"
 msgstr "Je configure mes paramètres pour simplifier mes préparations d’expédition grâce aux fonctionnalités Colissimo"
@@ -2403,3 +2403,216 @@ msgstr "Télécharger FR"
 
 msgid "Download EN"
 msgstr "Télécharger EN"
+
+msgid "USA EORI number"
+msgstr "Numéro EORI États-Unis"
+
+msgid "EORI number for delivery to the United States"
+msgstr "Numéro EORI spécifique pour les livraisons en direction des États-Unis"
+
+msgid "MID code for USA"
+msgstr "Code MID pour les États-Unis"
+
+msgid "The MID code is used by the USA customs to track where a product comes from. It is required and can be found by following <a href=\"https://www.fedex.com/en-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html\" target=\"_blank\">the Fedex guide</a>."
+msgstr "Le code MID est utilisé par les douanes américaines pour tracer l’origine d’un produit. Il est obligatoire et peut être trouvé en suivant <a href=\"https://www.fedex.com/fr-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html\" target=\"_blank\">le guide Fedex</a>."
+
+msgid "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the \"General\" section of the Colissimo settings."
+msgstr "Le type de connexion identifiant/mot de passe sera supprimé courant 2026 au profit de l'authentification par clé de connexion, en vue d'augmenter la sécurité de votre compte. Afin d'éviter toute interruption de vos livraisons, assurez-vous de générer une clé de connexion depuis la page d'édition de votre compte %s puis de l'entrer dans la section \"Général\" des réglages Colissimo."
+
+msgid "Colissimo hazmat category"
+msgstr "Catégorie de matières dangereuses Colissimo"
+
+msgid "Category A - CLP hazardous product"
+msgstr "Catégorie A - Produit dangereux au titre du CLP"
+
+msgid "Category B - ADR/GPE 2 hazardous product"
+msgstr "Catégorie B - Produit dangereux ADR/GPE 2"
+
+msgid "Category C - ADR/GPE 3 hazardous product"
+msgstr "Catégorie C - Produit dangereux ADR/GPE 3"
+
+msgid "Category D - Cosmetic hazardous product"
+msgstr "Catégorie D - Produit dangereux cosmétique"
+
+msgid "Category E - Other derogated sensitive product"
+msgstr "Catégorie E - Autre produit sensible dérogé"
+
+msgid "Hazardous materials are not allowed for return parcels."
+msgstr "Les matières dangereuses ne sont pas autorisées pour les colis de retour."
+
+msgid "This product's weight exceeds the limit allowed per parcel for this hazardous materials category: %1$sg / %2$sg"
+msgstr "Le poids de ce produit est supérieur à la limite autorisée par colis pour cette catégorie de matières dangereuses : %1$sg/%2$sg"
+
+msgid "Default Colissimo hazmat category"
+msgstr "Catégorie de matières dangereuses Colissimo par défaut"
+
+msgid "Add the extra cost to shipping price"
+msgstr "Répercuter le surcoût sur le prix de livraison"
+
+msgid "The clients will pay the extra cost for hazardous materials along with the shipping price."
+msgstr "Les clients paieront le surcoût pour les matières dangereuses en même temps que le prix de livraison."
+
+msgid "Category"
+msgstr "Catégorie"
+
+msgid "Maximum quantity per parcel"
+msgstr "Quantité maximum par colis"
+
+msgid "Hazardous materials %1$s exceed the maximum allowed weight: %2$d/%3$dg."
+msgstr "Les matières dangereuses %1$s dépassent le poids maximum autorisé : %2$d/%3$dg."
+
+msgid "The total amount of hazardous materials exceeds the maximum allowed weight of %dg."
+msgstr "Le poids total des matières dangereuses dépasse le poids maximum autorisé de %dg."
+
+msgid "Please ship this order in multiple parcels."
+msgstr "Veuillez expédier cette commande en plusieurs colis."
+
+msgid "The hazmat option lets you specify which parcel contains hazardous materials, ensuring that your goods are protected and safe during all the shipment."
+msgstr "L’option matières dangereuses vous permet de spécifier quel colis contient des matières dangereuses, garantissant la protection et la sécurité de vos marchandises pendant toute la durée de l’expédition."
+
+msgid "There are a total of 5 categories of hazardous materials that can be specified on your products and/or product categories. The categories are as follows:"
+msgstr "Il existe un total de 5 catégories de matières dangereuses qui peuvent être spécifiées sur vos produits et/ou catégories de produits. Les catégories sont les suivantes :"
+
+msgid "Hazardous materials feature:"
+msgstr "Fonctionnalité matières dangereuses :"
+
+msgid "Delivery date"
+msgstr "Date de livraison"
+
+msgid "Display the expected delivery date"
+msgstr "Afficher la date de livraison prévue"
+
+msgid "Choose to add the expected delivery date below the method name in the checkout."
+msgstr "Choisissez d’ajouter la date de livraison prévue sous le nom de la méthode dans le tunnel de commande."
+
+msgid "Deposit location"
+msgstr "Lieu de dépôt"
+
+msgid "Select the location used to deposit your parcels."
+msgstr "Sélectionnez le lieu utilisé pour déposer vos colis."
+
+msgid "Cutt Off times for orders processing"
+msgstr "Heures limites pour le traitement des commandes"
+
+msgid "Monday"
+msgstr "Lundi"
+
+msgid "Tuesday"
+msgstr "Mardi"
+
+msgid "Wednesday"
+msgstr "Mercredi"
+
+msgid "Thursday"
+msgstr "Jeudi"
+
+msgid "Friday"
+msgstr "Vendredi"
+
+msgid "Saturday"
+msgstr "Samedi"
+
+msgid "Sunday"
+msgstr "Dimanche"
+
+msgid "Date format"
+msgstr "Format de la date"
+
+msgid "WordPress settings (%s)"
+msgstr "Réglage WordPress (%s)"
+
+msgid "Text to display"
+msgstr "Texte à afficher"
+
+msgid "Please include {date} in your text where the date should be shown."
+msgstr "Veuillez inclure {date} dans votre texte à l’endroit où la date doit être affichée."
+
+msgid "Delivery expected on {date}"
+msgstr "Livraison prévue le {date}"
+
+msgid "Text color"
+msgstr "Couleur du texte"
+
+msgid "Text font"
+msgstr "Police du texte"
+
+msgid "January"
+msgstr "Janvier"
+
+msgid "February"
+msgstr "Février"
+
+msgid "March"
+msgstr "Mars"
+
+msgid "April"
+msgstr "Avril"
+
+msgid "May"
+msgstr "Mai"
+
+msgid "June"
+msgstr "Juin"
+
+msgid "July"
+msgstr "Juillet"
+
+msgid "August"
+msgstr "Août"
+
+msgid "September"
+msgstr "Septembre"
+
+msgid "October"
+msgstr "Octobre"
+
+msgid "November"
+msgstr "Novembre"
+
+msgid "December"
+msgstr "Décembre"
+
+msgid "l, F j"
+msgstr "l j F"
+
+msgid "F j"
+msgstr "j F"
+
+msgid "M j"
+msgstr "j M"
+
+msgid "Weekly Schedule"
+msgstr "Horaire hebdomadaire"
+
+msgid "Exceptions"
+msgstr "Exceptions"
+
+msgid "Day"
+msgstr "Jour"
+
+msgid "Add Exception"
+msgstr "Ajouter une exception"
+
+msgid "Cut Off hours"
+msgstr "Heures limites de dépôt"
+
+msgid "Set the daily cut-off time for order processing. Orders placed after this time will be shipped the next business day."
+msgstr "Définissez l’heure limite quotidienne pour le traitement des commandes. Les commandes passées après cette heure seront expédiées le jour ouvrable suivant."
+
+msgid "No shipment this day"
+msgstr "Aucun envoi ce jour"
+
+msgid "Text size"
+msgstr "Taille du texte"
+
+msgid "Hazardous materials"
+msgstr "Matières dangereuses"
+
+msgid "Default"
+msgstr "Par défaut"
+
+msgid "The EORI number is mandatory for shipments to the USA, please set it in the Colissimo customs settings."
+msgstr "Le numéro EORI est obligatoire pour les envois vers les États-Unis, veuillez le renseigner dans les réglages douaniers Colissimo."
+
+msgid "Hazardous materials are not allowed outside France."
+msgstr "Les matières dangereuses ne sont pas autorisées en dehors de la France."

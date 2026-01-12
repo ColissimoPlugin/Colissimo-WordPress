@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcWooOrdersTableAction extends LpcComponent {
     const AJAX_TASK_NAME = 'woocommerce/listing/generate/outward';
     const ORDER_ID_VAR_NAME = 'lpc_order_id';

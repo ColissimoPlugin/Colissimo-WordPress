@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 </tbody>
 </table>
 <div class="forminp-lpc_products">

@@ -114,17 +114,17 @@ jQuery(function ($) {
             }
 
             const packagingDimensions = [
-                packagings[packagingNumber].length,
-                packagings[packagingNumber].width,
-                packagings[packagingNumber].depth
+                Number(packagings[packagingNumber].length),
+                Number(packagings[packagingNumber].width),
+                Number(packagings[packagingNumber].depth)
             ];
-            packagingDimensions.sort();
+            packagingDimensions.sort((a, b) => a - b);
 
             let isFitting = true;
             for (let i = 0; i < productsDimensions.length; i++) {
-                productsDimensions[i].sort();
+                const productSizes = productsDimensions[i].map(size => Number(size)).sort((a, b) => a - b);
 
-                if (!isPackagingFitting(packagingDimensions, productsDimensions[i])) {
+                if (!isPackagingFitting(packagingDimensions, productSizes)) {
                     isFitting = false;
                 }
             }
@@ -397,16 +397,103 @@ jQuery(function ($) {
             const $packageWeightContainer = $('.lpc__admin__order_banner__generate_label__package_weight__container');
             const $nonMachinable = $('#lpc__admin__order_banner__generate_label__non_machinable__input');
             const selectedValue = $(this).val();
+
             if ('custom' === selectedValue) {
                 $nonMachinable.prop('checked', false);
                 $packageWeightContainer.show();
             } else {
+                if (selectedValue) {
+                    setPackagingDimensionsForDDP(selectedValue);
+                }
+
                 if ('auto' !== selectedValue) {
                     $nonMachinable.prop('checked', parseFloat(selectedValue.substring(selectedValue.indexOf('-') + 1)) > 120);
                 }
 
                 $packageWeightContainer.hide();
             }
+        }).trigger('change');
+    }
+
+    function setPackagingDimensionsForDDP(selectedPackaging) {
+        if ('custom' === selectedPackaging) {
+            return;
+        }
+
+        const $lengthInput = $('#lpc__admin__order_banner__generate_label__package_length');
+        const $widthInput = $('#lpc__admin__order_banner__generate_label__package_width');
+        const $heightInput = $('#lpc__admin__order_banner__generate_label__package_height');
+
+        if (!$lengthInput.length) {
+            return;
+        }
+
+        const packagings = JSON.parse($('#lpc__admin__order_banner__generate_label__packagings').val());
+
+        if ('auto' !== selectedPackaging) {
+            const selectedPackagingData = packagings.filter(function (packaging) {
+                const totalSize = Number(packaging.length) + Number(packaging.width) + Number(packaging.depth);
+
+                return packaging.weight + '-' + totalSize === selectedPackaging;
+            });
+
+            if (selectedPackagingData.length === 1) {
+                $lengthInput.val(selectedPackagingData[0].length);
+                $widthInput.val(selectedPackagingData[0].width);
+                $heightInput.val(selectedPackagingData[0].depth);
+            }
+
+            return;
+        }
+
+        let totalWeight = 0;
+        let numberOfProducts = 0;
+        let productsDimensions = [];
+
+        $('.lpc__admin__order_banner').find('.lpc__admin__order_banner__generate_label__item__weight').each(function () {
+            let itemId = $(this).attr('data-item-id');
+            if ($('#' + itemId + '-checkbox').prop('checked')) {
+                const quantity = parseFloat($('#' + itemId + '-qty').val());
+                const productWeight = parseFloat($(this).val());
+
+                totalWeight += productWeight * quantity;
+                numberOfProducts += quantity;
+                productsDimensions.push(JSON.parse($('#' + itemId + '-dimensions').val()));
+            }
         });
+
+        for (let packagingNumber = 0; packagingNumber < packagings.length; packagingNumber++) {
+            if (packagings[packagingNumber].max_products && numberOfProducts > packagings[packagingNumber].max_products) {
+                continue;
+            }
+
+            if (packagings[packagingNumber].max_weight && totalWeight > packagings[packagingNumber].max_weight) {
+                continue;
+            }
+
+            const packagingDimensions = [
+                Number(packagings[packagingNumber].length),
+                Number(packagings[packagingNumber].width),
+                Number(packagings[packagingNumber].depth)
+            ];
+            packagingDimensions.sort((a, b) => a - b);
+
+            let isFitting = true;
+            for (let i = 0; i < productsDimensions.length; i++) {
+                const productSizes = productsDimensions[i].map(size => Number(size)).sort((a, b) => a - b);
+
+                if (!isPackagingFitting(packagingDimensions, productSizes)) {
+                    isFitting = false;
+                }
+            }
+
+            if (isFitting) {
+                $lengthInput.val(packagings[packagingNumber].length);
+                $widthInput.val(packagings[packagingNumber].width);
+                $heightInput.val(packagings[packagingNumber].depth);
+
+                return;
+            }
+        }
     }
 });

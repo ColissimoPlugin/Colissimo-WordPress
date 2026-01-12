@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcCustomsDocumentsApi extends LpcRestApi {
     const API_BASE_URL = 'https://ws.colissimo.fr/api-document/rest/';
@@ -27,7 +28,7 @@ class LpcCustomsDocumentsApi extends LpcRestApi {
             $unsafeFileUpload = true;
         }
 
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             // TODO remove this option once the documents API has been fixed
             $contractNumber = LpcHelper::get_option('lpc_contract_number');
             $headers        = [

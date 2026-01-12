@@ -97,11 +97,7 @@ class LpcReturn extends LpcComponent {
                     $data['address']['address_1'] .= ' ' . $address2;
                 }
 
-                $shippingMethods = $order->get_shipping_methods();
-                $shippingMethod  = current($shippingMethods);
-
-                $shippingMethod = $shippingMethod->get_method_id();
-                if (LpcRelay::ID === $shippingMethod) {
+                if (LpcOrderQueries::hasShippingMethod($order, LpcRelay::ID)) {
                     $data['address'] = [
                         'company'     => $order->get_formatted_billing_full_name(),
                         'address_1'   => $order->get_billing_address_1(),

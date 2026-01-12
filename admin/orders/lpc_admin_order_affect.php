@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcAdminOrderAffect extends LpcComponent {
 
     protected $lpcShippingMethods;

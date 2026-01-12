@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcLabelGenerationAuto extends LpcComponent {
 
@@ -31,17 +32,23 @@ class LpcLabelGenerationAuto extends LpcComponent {
             $orderStatuses = [$orderStatuses];
         }
 
-        $key = array_search(LpcOrderStatuses::WC_LPC_DISABLE, $orderStatuses);
-
-        if (empty($orderStatuses) || $statusFrom === $statusTo || false !== $key) {
+        $disabled = in_array(LpcOrderStatuses::WC_LPC_DISABLE, $orderStatuses);
+        if (empty($orderStatuses) || $statusFrom === $statusTo || $disabled) {
             return;
         }
 
-        // Woocommerce removes the "wc-" prefix on the native order statuses that are sent in the hook
+        // WooCommerce removes the "wc-" prefix on the native order statuses that are sent in the hook
         if (in_array($statusTo, $orderStatuses) || in_array('wc-' . $statusTo, $orderStatuses)) {
             try {
                 $allItemsOrder = $order->get_items();
-                $this->labelGenerationOutward->generate($order, ['items' => $allItemsOrder], true);
+                $this->labelGenerationOutward->generate(
+                    $order,
+                    [
+                        'isAutoGeneration' => true,
+                        'items'            => $allItemsOrder,
+                    ],
+                    true
+                );
             } catch (Exception $e) {
                 LpcLogger::error(__METHOD__, ['error' => $e->getMessage()]);
             }

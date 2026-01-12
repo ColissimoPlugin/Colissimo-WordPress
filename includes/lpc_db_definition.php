@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcDbDefinition extends LpcComponent {
     /** @var LpcOutwardLabelDb */

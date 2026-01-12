@@ -1,4 +1,6 @@
 <?php
+
+defined('ABSPATH') || die('Restricted Access');
 $lpc_orders_table_today = $args['table_today'] ?? [];
 $lpc_orders_table_all   = $args['table_all'] ?? [];
 $get_args               = $args['get'] ?? [];

@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || die('Restricted Access');
+?>
 <tr valign="top">
     <th scope="row">
         <label for="<?php esc_attr_e($args['id_and_name']); ?>">

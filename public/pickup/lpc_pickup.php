@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 abstract class LpcPickup extends LpcComponent {
     const WEB_SERVICE = 'web_service';

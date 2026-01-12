@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcPickupRelayPointOnOrder extends LpcComponent {
     public function init() {

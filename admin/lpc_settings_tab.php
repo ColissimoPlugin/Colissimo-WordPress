@@ -53,6 +53,7 @@ class LpcSettingsTab extends LpcComponent {
         $this->initDisplayCBox();
         $this->initDisplayContractInformation();
         $this->initDisplayColissimoProducts();
+        $this->initDisplayHazmatDescription();
         $this->initDisplayNumberInputWithWeightUnit();
         $this->initDisplaySelectAddressCountry();
         $this->initCheckStatus();
@@ -64,6 +65,8 @@ class LpcSettingsTab extends LpcComponent {
         $this->initVideoTutorials();
         $this->initAdvancedPackaging();
         $this->initFeedback();
+        $this->iniMidCode();
+        $this->initShippingDate();
     }
 
     private function initSettingsPage() {
@@ -75,6 +78,8 @@ class LpcSettingsTab extends LpcComponent {
         add_action('woocommerce_update_options_' . self::LPC_SETTINGS_TAB_ID, [$this, 'saveLpcSettings']);
         // Settings tabs
         add_action('woocommerce_sections_' . self::LPC_SETTINGS_TAB_ID, [$this, 'settingsSections']);
+
+        add_action('woocommerce_admin_field_lpc_text', [$this, 'displayTextField']);
     }
 
     private function initWarningMessages() {
@@ -96,6 +101,16 @@ class LpcSettingsTab extends LpcComponent {
 
     protected function initFeedback() {
         add_action('woocommerce_admin_field_feedback', [$this, 'displayFeedback']);
+    }
+
+    protected function iniMidCode() {
+        add_action('woocommerce_admin_field_lpc_mid', [$this, 'displayMidCode']);
+    }
+
+    protected function initShippingDate() {
+        add_action('woocommerce_admin_field_lpc_deposit_location', [$this, 'displayDepositLocation']);
+        add_action('woocommerce_admin_field_lpc_cuttoff', [$this, 'displayShippingDate']);
+        add_action('woocommerce_admin_field_lpc_date_format', [$this, 'displayDateFormat']);
     }
 
     protected function fixSavePassword() {
@@ -204,6 +219,13 @@ class LpcSettingsTab extends LpcComponent {
         add_action(
             'woocommerce_admin_field_lpc_products',
             [$this, 'displayColissimoProducts']
+        );
+    }
+
+    protected function initDisplayHazmatDescription() {
+        add_action(
+            'woocommerce_admin_field_lpc_hazmat',
+            [$this, 'displayHazmatDescription']
         );
     }
 
@@ -408,7 +430,7 @@ class LpcSettingsTab extends LpcComponent {
         $args = [
             'id_and_name'     => 'lpc_credentials_type',
             'label'           => 'Connection type',
-            'selected_values' => LpcHelper::get_option('lpc_credentials_type', 'account'),
+            'selected_values' => LpcHelper::get_option('lpc_credentials_type', 'api_key'),
             'values'          => [
                 'account' => __('Colissimo account', 'wc_colissimo'),
                 'api_key' => __('Application key', 'wc_colissimo'),
@@ -452,6 +474,7 @@ class LpcSettingsTab extends LpcComponent {
             'securedReturn'                  => $accountInformation['optionRetourToken'] ? 'Activated' : 'Deactivated',
             'returnMailbox'                  => $accountInformation['optionRetourBAL'] ? 'Activated' : 'Deactivated',
             'returnPostOffice'               => $accountInformation['optionRetourBP'] ? 'Activated' : 'Deactivated',
+            'hazmatCategories'               => $this->accountApi->getHazmatCategories(),
         ];
 
         wp_enqueue_style('lpc_settings_account', plugins_url('/css/settings/account_information.css', __FILE__), [], LPC_VERSION);
@@ -469,6 +492,17 @@ class LpcSettingsTab extends LpcComponent {
         ];
 
         echo LpcHelper::renderPartial('settings' . DS . 'packaging_materials.php', $args);
+    }
+
+    public function displayHazmatDescription() {
+        wp_enqueue_style('lpc_settings_hazmat', plugins_url('/css/settings/hazmat.css', __FILE__), [], LPC_VERSION);
+
+        echo LpcHelper::renderPartial(
+            'settings' . DS . 'hazmat_description.php',
+            [
+                'hazmatCategories' => $this->accountApi->getHazmatCategories(),
+            ]
+        );
     }
 
     public function displayVideoTutorials() {
@@ -655,6 +689,99 @@ class LpcSettingsTab extends LpcComponent {
         echo LpcHelper::renderPartial('settings' . DS . 'feedback.php', $args);
     }
 
+    public function displayMidCode() {
+        $args                = [];
+        $args['id_and_name'] = 'lpc_mid_code';
+        $args['label']       = 'MID code for USA';
+        $args['value']       = LpcHelper::get_option('lpc_mid_code');
+        $args['desc']        = 'The MID code is used by the USA customs to track where a product comes from. It is required and can be found by following <a href="https://www.fedex.com/en-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html" target="_blank">the Fedex guide</a>.';
+        echo LpcHelper::renderPartial('settings' . DS . 'input_text.php', $args);
+    }
+
+    public function displayDepositLocation() {
+        $accountData = $this->accountApi->getAccountInformation();
+
+        if (empty($accountData['siteDepotList'])) {
+            return;
+        }
+
+        $args = [
+            'id_and_name'     => 'lpc_delivery_date_deposit_location',
+            'row_class'       => 'wc-settings-row-lpc_delivery_date_container',
+            'label'           => 'Deposit location',
+            'tips'            => __('Select the location used to deposit your parcels.', 'wc_colissimo'),
+            'values'          => array_combine(
+                array_column($accountData['siteDepotList'], 'codeRegate'),
+                array_column($accountData['siteDepotList'], 'libellepfc')
+            ),
+            'selected_values' => LpcHelper::get_option('lpc_delivery_date_deposit_location'),
+        ];
+
+        echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
+    }
+
+    public function displayShippingDate() {
+        wp_enqueue_style('lpc_settings_packaging', plugins_url('/css/settings/cutt_off.css', __FILE__), [], LPC_VERSION);
+
+        wp_enqueue_script(
+            'lpc_settings_cuttoffjs',
+            plugins_url('/js/settings/cutt_off.js', __FILE__),
+            ['jquery'],
+            LPC_VERSION,
+            true
+        );
+        wp_localize_script(
+            'lpc_settings_cuttoffjs',
+            'lpcSettingsCuttOff',
+            [
+                'messageDeleteMultiple' => __('Are you sure you want to delete the selected packagings?', 'wc_colissimo'),
+            ]
+        );
+
+        $hours = [
+            'none' => __('No shipment this day', 'wc_colissimo'),
+        ];
+        for ($i = 1; $i < 24; $i ++) {
+            $hour         = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
+            $hours[$i] = $hour;
+        }
+
+        $args = [
+            'id_and_name' => 'lpc_delivery_date_cuttoff_times',
+            'row_class'   => 'wc-settings-row-lpc_delivery_date_container',
+            'values'      => LpcHelper::get_option('lpc_delivery_date_cuttoff_times'),
+            'days'        => LpcHelper::DAYS,
+            'hours'       => $hours,
+        ];
+        echo LpcHelper::renderPartial('settings' . DS . 'cutt_off.php', $args);
+    }
+
+    public function displayDateFormat() {
+        $wpDateFormat = LpcHelper::get_option('date_format', __('l, F j', 'wc_colissimo'));
+
+        $args = [
+            'id_and_name'     => 'lpc_delivery_date_format',
+            'row_class'       => 'wc-settings-row-lpc_delivery_date_container',
+            'label'           => 'Date format',
+            'values'          => [
+                'default'  => sprintf(__('WordPress settings (%s)', 'wc_colissimo'), LpcHelper::translateDate(date($wpDateFormat))),
+                'full'     => LpcHelper::translateDate(date(__('l, F j', 'wc_colissimo'))),
+                'simple'   => LpcHelper::translateDate(date(__('F j', 'wc_colissimo'))),
+                'short'    => LpcHelper::translateDate(date(__('M j', 'wc_colissimo'))),
+                'm/d/Y' => date('m/d/Y'),
+                'd/m/Y'  => date('d/m/Y'),
+                'Y-m-d'    => date('Y-m-d'),
+            ],
+            'selected_values' => LpcHelper::get_option('lpc_delivery_date_format', 'default'),
+        ];
+
+        echo LpcHelper::renderPartial('settings' . DS . 'select_field.php', $args);
+    }
+
+    public function displayTextField($field) {
+        echo LpcHelper::renderPartial('settings' . DS . 'text.php', $field);
+    }
+
     /**
      * Build tab
      *
@@ -707,17 +834,27 @@ class LpcSettingsTab extends LpcComponent {
         $currentTab = $this->getCurrentSection();
 
         $sections = [
-            'home'     => __('Home', 'wc_colissimo'),
-            'main'     => __('General', 'wc_colissimo'),
-            'label'    => __('Label', 'wc_colissimo'),
-            'parcel'   => __('Parcel', 'wc_colissimo'),
-            'shipping' => __('Shipping methods', 'wc_colissimo'),
-            'checkout' => __('Checkout', 'wc_colissimo'),
-            'custom'   => __('Custom', 'wc_colissimo'),
-            'ddp'      => __('DDP', 'wc_colissimo'),
-            'support'  => __('Support', 'wc_colissimo'),
-            'video'    => __('Video tutorials', 'wc_colissimo'),
+            'home'   => __('Home', 'wc_colissimo'),
+            'main'   => __('General', 'wc_colissimo'),
+            'label'  => __('Label', 'wc_colissimo'),
+            'parcel' => __('Parcel', 'wc_colissimo'),
         ];
+
+        if ($this->accountApi->isHazmatOptionActive()) {
+            $sections['hazmat'] = __('Hazardous materials', 'wc_colissimo');
+        }
+
+        $sections = array_merge(
+            $sections,
+            [
+                'shipping' => __('Shipping methods', 'wc_colissimo'),
+                'checkout' => __('Checkout', 'wc_colissimo'),
+                'custom'   => __('Custom', 'wc_colissimo'),
+                'ddp'      => __('DDP', 'wc_colissimo'),
+                'support'  => __('Support', 'wc_colissimo'),
+                'video'    => __('Video tutorials', 'wc_colissimo'),
+            ]
+        );
 
         $deadline = new DateTime('2025-12-31');
         $now      = new DateTime();
@@ -831,7 +968,7 @@ class LpcSettingsTab extends LpcComponent {
         }
 
         $authentication = [];
-        if ('api_key' === LpcHelper::getVar('lpc_credentials_type', 'account')) {
+        if ('api_key' === LpcHelper::getVar('lpc_credentials_type', 'api_key')) {
             $oldApiKey = LpcHelper::get_option('lpc_apikey');
             $newApiKey = LpcHelper::getVar('lpc_apikey');
 
@@ -878,10 +1015,22 @@ class LpcSettingsTab extends LpcComponent {
             return;
         }
 
+        if ('account' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
+            $this->adminNotices->add_notice(
+                'credentials_apikey',
+                'notice-error',
+                sprintf(
+                    __('The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the "General" section of the Colissimo settings.',
+                   'wc_colissimo'),
+                    '<a target="_blank" href="https://www.colissimo.entreprise.laposte.fr/">Colissimo Box</a>'
+                )
+            );
+        }
+
         $testedCredentials = LpcHelper::get_option('lpc_current_credentials_tested');
 
         if (!$testedCredentials) {
-            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'account')) {
+            if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
                 $apikey = LpcHelper::get_option('lpc_apikey');
 
                 if (empty($apikey)) {

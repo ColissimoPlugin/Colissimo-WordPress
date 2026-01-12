@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 class LpcLabelGenerationPayload {
     private const MAX_INSURANCE_AMOUNT = 5000;
@@ -17,6 +18,7 @@ class LpcLabelGenerationPayload {
     public const PRODUCT_CODE_WITH_SIGNATURE_INTRA_DOM = 'COL';
     public const PRODUCT_CODE_RETURN_FRANCE = 'CORE';
     public const PRODUCT_CODE_RETURN_INT = 'CORI';
+    public const PRODUCT_CODE_OM_TO_EU = 'COLI';
 
     private const ALL_PRODUCT_CODES = [
         self::PRODUCT_CODE_WITH_SIGNATURE_OM,
@@ -28,6 +30,7 @@ class LpcLabelGenerationPayload {
         self::PRODUCT_CODE_WITHOUT_SIGNATURE,
         self::PRODUCT_CODE_WITH_SIGNATURE,
         self::PRODUCT_CODE_RELAY,
+        self::PRODUCT_CODE_OM_TO_EU,
     ];
     private const PRODUCT_CODE_INSURANCE_AVAILABLE = [
         self::PRODUCT_CODE_WITH_SIGNATURE,
@@ -36,20 +39,59 @@ class LpcLabelGenerationPayload {
         self::PRODUCT_CODE_RELAY,
         self::PRODUCT_CODE_RETURN_FRANCE,
         self::PRODUCT_CODE_RETURN_INT,
+        self::PRODUCT_CODE_OM_TO_EU,
     ];
 
     public const LABEL_FORMAT_PDF = 'PDF';
     public const LABEL_FORMAT_ZPL = 'ZPL';
     public const LABEL_FORMAT_DPL = 'DPL';
-    private const LABEL_FORMATS = [self::LABEL_FORMAT_PDF, self::LABEL_FORMAT_ZPL, self::LABEL_FORMAT_DPL];
+    private const LABEL_FORMATS = [
+        self::LABEL_FORMAT_PDF,
+        self::LABEL_FORMAT_ZPL,
+        self::LABEL_FORMAT_DPL,
+    ];
     const DEFAULT_FORMAT = 'PDF_A4_300dpi';
 
     private const FRENCH_COUNTRY_CODE = 'FR';
     private const BELGIAN_COUNTRY_CODE = 'BE';
     private const US_COUNTRY_CODE = 'US';
+    private const GB_COUNTRY_CODE = 'GB';
     public const COUNTRIES_NEEDING_STATE = ['CA', self::US_COUNTRY_CODE];
     public const COUNTRIES_FTD = ['GF', 'GP', 'MQ', 'RE'];
     public const COUNTRIES_WITH_PARTNER_SHIPPING = ['AT', 'BE', 'DE', 'IT', 'LU'];
+    public const HAZMAT_ATTRIBUTE = 'lpc-hazmat-category';
+    public const HAZMAT_CATEGORIES = [
+        'lpc-cata' => [
+            'label'      => 'Category A - CLP hazardous product',
+            'max_weight' => 5000,
+            'extra_cost' => 0.5,
+            'code'       => 'A',
+        ],
+        'lpc-catb' => [
+            'label'      => 'Category B - ADR/GPE 2 hazardous product',
+            'max_weight' => 1000,
+            'extra_cost' => 1,
+            'code'       => 'B',
+        ],
+        'lpc-catc' => [
+            'label'      => 'Category C - ADR/GPE 3 hazardous product',
+            'max_weight' => 500,
+            'extra_cost' => 2,
+            'code'       => 'C',
+        ],
+        'lpc-catd' => [
+            'label'      => 'Category D - Cosmetic hazardous product',
+            'max_weight' => 0,
+            'extra_cost' => 2,
+            'code'       => 'D',
+        ],
+        'lpc-cate' => [
+            'label'      => 'Category E - Other derogated sensitive product',
+            'max_weight' => 0,
+            'extra_cost' => 5,
+            'code'       => 'E',
+        ],
+    ];
 
     protected $payload;
     protected $isReturnLabel;
@@ -90,7 +132,7 @@ class LpcLabelGenerationPayload {
         $this->dimensionsAdded = false;
     }
 
-    public function withSender(array $sender = null, array $customParams = []) {
+    public function withSender(?array $sender = null, array $customParams = []) {
         if (null === $sender) {
             $sender = $this->getStoreAddress();
         }
@@ -159,7 +201,7 @@ class LpcLabelGenerationPayload {
     }
 
     public function withCredentials() {
-        if ('api_key' !== LpcHelper::get_option('lpc_credentials_type', 'account')) {
+        if ('api_key' !== LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             $contractNumber = LpcHelper::get_option('lpc_id_webservices');
 
             /**
@@ -340,7 +382,15 @@ class LpcLabelGenerationPayload {
                 intval($customParams['packageWidth']),
                 intval($customParams['packageHeight']),
             ];
+        } elseif (!empty($matchingPackaging)) {
+            $dimensions = [
+                intval($matchingPackaging['width']),
+                intval($matchingPackaging['length']),
+                intval($matchingPackaging['depth']),
+            ];
+        }
 
+        if (!empty($dimensions)) {
             sort($dimensions);
 
             $this->payload['fields']['field'][] = [
@@ -831,11 +881,25 @@ class LpcLabelGenerationPayload {
             'invoiceNumber'              => $order->get_order_number(),
         ];
 
-        if (!empty($shippingMethodUsed) && in_array($shippingMethodUsed, [LpcSignDDP::ID, LpcExpertDDP::ID])) {
-            $customsDeclarationPayload['description'] = substr(empty($customParams['description']) ? implode(' ', $articleDescriptions) : $customParams['description'], 0, 64);
+        $midCode = LpcHelper::get_option('lpc_mid_code');
+        if (!empty($midCode) && self::US_COUNTRY_CODE === $destinationCountryId) {
+            $midCode                               = 'MID: ' . $midCode;
+            $customsDeclarationPayload['comments'] = $midCode;
         }
 
-        if ('GB' === $destinationCountryId && !$this->isReturnLabel) {
+        if (!empty($shippingMethodUsed) && in_array($shippingMethodUsed, [LpcSignDDP::ID, LpcExpertDDP::ID])) {
+            $description = empty($customParams['description']) ? implode(' ', $articleDescriptions) : $customParams['description'];
+            $description = substr($description, 0, 64);
+
+            if (!empty($midCode) && self::US_COUNTRY_CODE === $destinationCountryId) {
+                $description = substr($description, 0, 64 - strlen(' - ' . $midCode));
+                $description .= ' - ' . $midCode;
+            }
+
+            $customsDeclarationPayload['description'] = $description;
+        }
+
+        if (self::GB_COUNTRY_CODE === $destinationCountryId && !$this->isReturnLabel) {
             $vatNumber = LpcHelper::get_option('lpc_vat_number', 0);
 
             if (0 === $vatNumber) {
@@ -894,12 +958,22 @@ class LpcLabelGenerationPayload {
         $this->payload['letter']['service']['totalAmount']          = (int) ($transportationAmount * 100);
         $this->payload['letter']['service']['transportationAmount'] = (int) ($transportationAmount * 100);
 
-        if ('GB' === $destinationCountryId) {
+        $eoriNumber = '';
+        if (self::GB_COUNTRY_CODE === $destinationCountryId) {
             $eoriNumber = LpcHelper::get_option('lpc_eori_uk_number');
             if ($totalItemsAmount >= 1000) {
                 $eoriNumber .= ' ' . LpcHelper::get_option('lpc_eori_number');
             }
-        } else {
+        } elseif (self::US_COUNTRY_CODE === $destinationCountryId) {
+            $eoriNumber = LpcHelper::get_option('lpc_usa_eori_number');
+            if (empty($eoriNumber)) {
+                throw new Exception(
+                    __('The EORI number is mandatory for shipments to the USA, please set it in the Colissimo customs settings.', 'wc_colissimo')
+                );
+            }
+        }
+
+        if (empty($eoriNumber)) {
             $eoriNumber = LpcHelper::get_option('lpc_eori_number');
         }
 
@@ -1454,7 +1528,149 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
+    public function withHazmat(WC_Order $order, array $customParams) {
+        if (!$this->accountApi->isHazmatOptionActive()) {
+            return $this;
+        }
+
+        $hazardousMaterials     = [];
+        $totalHazardousQuantity = 0;
+        $isCustomItems          = isset($customParams['items']);
+        foreach ($order->get_items() as $item) {
+            $itemId = $item->get_id();
+            if ($isCustomItems && !isset($customParams['items'][$itemId])) {
+                continue;
+            }
+
+            $product = $item->get_product();
+            if (empty($product)) {
+                throw new Exception(
+                    __('The product couldn\'t be found.', 'wc_colissimo')
+                );
+            }
+
+            if (!$product->needs_shipping()) {
+                continue;
+            }
+
+            $productHazmatCategory = $this->getProductHazmatCategorySlug($product);
+            if (empty($productHazmatCategory)) {
+                continue;
+            }
+
+            if (empty($hazardousMaterials[$productHazmatCategory])) {
+                $hazardousMaterials[$productHazmatCategory] = 0;
+            }
+
+            $quantity   = $customParams['items'][$itemId]['qty'] ?? $item->get_quantity();
+            $itemWeight = $customParams['items'][$itemId]['weight'] ?? $product->get_weight();
+
+            $hazardousQuantity                          = wc_get_weight($itemWeight * $quantity, 'g');
+            $hazardousMaterials[$productHazmatCategory] += $hazardousQuantity;
+            $totalHazardousQuantity                     += $hazardousQuantity;
+        }
+
+        // No hazmat products in this parcel
+        if (empty($hazardousMaterials)) {
+            return $this;
+        }
+
+        // Only France to France
+        if (
+            self::FRENCH_COUNTRY_CODE !== $this->payload['letter']['addressee']['address']['countryCode']
+            || self::FRENCH_COUNTRY_CODE !== $this->payload['letter']['sender']['address']['countryCode']
+        ) {
+            throw new Exception(
+                __('Hazardous materials are not allowed outside France.', 'wc_colissimo')
+            );
+        }
+
+        // TODO maybe don't show the "Return products" button / don't show the hazmat products ?
+        if ($this->getIsReturnLabel()) {
+            throw new Exception(
+                __('Hazardous materials are not allowed for return parcels.', 'wc_colissimo')
+            );
+        }
+
+        $highestHazmatCategoryCode = 'A';
+        $lowestHazmatCategory      = '';
+        foreach (self::HAZMAT_CATEGORIES as $slug => $category) {
+            if (!in_array($slug, array_keys($hazardousMaterials))) {
+                continue;
+            }
+
+            $highestHazmatCategoryCode = $category['code'];
+
+            if (empty($lowestHazmatCategory)) {
+                $lowestHazmatCategory = $slug;
+            }
+
+            // Auto generation and exceeding the maximum weight for this category
+            if (!empty($customParams['isAutoGeneration']) && !empty($category['max_weight']) && $hazardousMaterials[$slug] > $category['max_weight']) {
+                throw new Exception(
+                    sprintf(
+                        __('Hazardous materials %1$s exceed the maximum allowed weight: %2$d/%3$dg.', 'wc_colissimo'),
+                        __($category['label'], 'wc_colissimo'),
+                        $hazardousMaterials[$slug],
+                        $category['max_weight']
+                    ) . ' ' . __('Please ship this order in multiple parcels.', 'wc_colissimo')
+                );
+            }
+        }
+
+        // Auto generation and exceeding the total maximum weight for hazmat products
+        if (
+            !empty($customParams['isAutoGeneration'])
+            && !empty(self::HAZMAT_CATEGORIES[$lowestHazmatCategory]['max_weight'])
+            && $totalHazardousQuantity > self::HAZMAT_CATEGORIES[$lowestHazmatCategory]['max_weight']
+        ) {
+            throw new Exception(
+                sprintf(
+                    __('The total amount of hazardous materials exceeds the maximum allowed weight of %dg.', 'wc_colissimo'),
+                    self::HAZMAT_CATEGORIES[$lowestHazmatCategory]['max_weight']
+                ) . ' ' . __('Please ship this order in multiple parcels.', 'wc_colissimo')
+            );
+        }
+
+        // TODO to check, doc says boolean but gives "1" as the example, while hazmatPrintLogo has "true" in its example
+        $this->payload['letter']['parcel']['hazmatFlag']      = true;
+        $this->payload['letter']['parcel']['hazmatCategory']  = $highestHazmatCategoryCode;
+        $this->payload['letter']['parcel']['hazmatPrintLogo'] = true;
+
+        return $this;
+    }
+
     private function formatPhone(string $phoneNumber): string {
-        return str_replace(' ', '', $phoneNumber);
+        return preg_replace('/[^0-9+]/', '', $phoneNumber);
+    }
+
+    private function getProductHazmatCategorySlug(object $product): string {
+        if ('variation' === $product->get_type()) {
+            $attributesContainer = wc_get_product($product->get_parent_id());
+            $productCategoryIds  = wc_get_product_term_ids($product->get_parent_id(), 'product_cat');
+        } else {
+            $attributesContainer = $product;
+            $productCategoryIds  = $product->get_category_ids('edit');
+        }
+
+        $attributes = $attributesContainer->get_attributes();
+
+        if (!empty($attributes['pa_' . self::HAZMAT_ATTRIBUTE])) {
+            $productHazmatCategorySlugs = $attributes['pa_' . self::HAZMAT_ATTRIBUTE]->get_slugs();
+        } else {
+            $productHazmatCategorySlugs = [];
+            foreach ($productCategoryIds as $categoryId) {
+                $productHazmatCategorySlugs[] = get_term_meta($categoryId, self::HAZMAT_ATTRIBUTE, true);
+            }
+        }
+
+        $existingSlugs = array_reverse(array_keys(self::HAZMAT_CATEGORIES));
+        foreach ($existingSlugs as $oneSlug) {
+            if (in_array($oneSlug, $productHazmatCategorySlugs)) {
+                return $oneSlug;
+            }
+        }
+
+        return '';
     }
 }

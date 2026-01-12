@@ -30,6 +30,7 @@ require_once LPC_INCLUDES . 'tracking' . DS . 'lpc_colissimo_status.php';
 require_once LPC_INCLUDES . 'tracking' . DS . 'lpc_unified_tracking_api.php';
 require_once LPC_INCLUDES . 'tracking' . DS . 'lpc_update_statuses_action.php';
 require_once LPC_INCLUDES . 'orders' . DS . 'lpc_order_queries.php';
+require_once LPC_INCLUDES . 'orders' . DS . 'lpc_checkout_api.php';
 require_once LPC_INCLUDES . 'bordereau' . DS . 'lpc_bordereau_db.php';
 require_once LPC_INCLUDES . 'bordereau' . DS . 'lpc_bordereau_generation_api.php';
 require_once LPC_INCLUDES . 'bordereau' . DS . 'lpc_bordereau_generation.php';
@@ -39,9 +40,7 @@ require_once LPC_INCLUDES . 'lpc_update.php';
 require_once LPC_INCLUDES . 'customs' . DS . 'lpc_customs_documents_api.php';
 require_once LPC_ADMIN . 'lpc_account_api.php';
 
-
 class LpcIncludeInit {
-
     public function __construct() {
         LpcRegister::register('lpcAdminNotices', new LpcAdminNotices());
 
@@ -56,6 +55,7 @@ class LpcIncludeInit {
         LpcRegister::register('invoiceGenerateAction', new LpcInvoiceGenerateAction());
 
         LpcRegister::register('orderStatuses', new LpcOrderStatuses());
+        LpcRegister::register('checkoutApi', new LpcCheckoutApi());
         LpcRegister::register('shippingMethods', new LpcShippingMethods());
         LpcRegister::register('pickupSelection', new LpcPickupSelection());
         LpcRegister::register('pickupWebService', new LpcPickupWebService());

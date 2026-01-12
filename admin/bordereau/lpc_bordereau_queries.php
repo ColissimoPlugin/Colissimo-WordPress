@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || die('Restricted Access');
+
 class LpcBordereauQueries extends LpcComponent {
     const LABEL_TYPE_BORDEREAU = 'bordereau';
     const REDIRECTION_COLISSIMO_BORDEREAU_LISTING = 'lpc_colissimo_slip_history';

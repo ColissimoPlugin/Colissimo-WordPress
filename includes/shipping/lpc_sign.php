@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || die('Restricted Access');
 
 require_once __DIR__ . DS . 'lpc_abstract_shipping.php';
 
