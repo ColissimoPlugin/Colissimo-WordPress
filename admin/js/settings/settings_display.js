@@ -13,15 +13,21 @@ jQuery(function ($) {
     init();
 
     function changeCredentialsType() {
-        const $apiKeyFieldsContainers = $('#lpc_apikey, #lpc_contract_number').closest('tr');
-        const $accountFieldsContainers = $('#lpc_id_webservices, #lpc_pwd_webservices').closest('tr');
+        const $apiKeyFields = $('#lpc_apikey, #lpc_contract_number');
+        const $accountFields = $('#lpc_id_webservices, #lpc_pwd_webservices');
+        const $apiKeyFieldsContainers = $apiKeyFields.closest('tr');
+        const $accountFieldsContainers = $accountFields.closest('tr');
         $('#lpc_credentials_type').on('change', function () {
             if ('api_key' === $(this).val()) {
                 $accountFieldsContainers.hide();
                 $apiKeyFieldsContainers.show();
+                $apiKeyFields.attr('required', 'required');
+                $accountFields.removeAttr('required');
             } else {
                 $accountFieldsContainers.show();
                 $apiKeyFieldsContainers.hide();
+                $accountFields.attr('required', 'required');
+                $apiKeyFields.removeAttr('required');
             }
         }).trigger('change');
     }

@@ -40,31 +40,36 @@ class LpcBordereauGenerationApi extends LpcRestApi {
             $headers
         );
 
-        $response = $response['<jsonInfos>'] ?? $response;
+        $jsonResponse = $response['<jsonInfos>'] ?? [];
 
         LpcLogger::debug(
             'Generate bordereau response',
             [
                 'method'   => __METHOD__,
-                'response' => $response,
+                'response' => $jsonResponse,
             ]
         );
 
-        if (!isset($response['messages'][0]['id'])) {
+        if (!isset($jsonResponse['messages'][0]['id'])) {
             throw new Exception('Error when generating delivery slip.');
         }
 
-        if (0 != $response['messages'][0]['id']) {
+        if (0 != $jsonResponse['messages'][0]['id']) {
             LpcLogger::error(
                 __METHOD__ . 'error in API response',
-                ['response' => $response['messages']]
+                ['response' => $jsonResponse['messages']]
             );
-            throw new Exception('Error when generating bordereau: ' . $response['messages']['messageContent']);
+            throw new Exception('Error when generating bordereau: ' . $jsonResponse['messages']['messageContent']);
         }
 
         return $response;
     }
 
+    /**
+     * Needed for update to version 1.8.2, do not change soap call to use the stored delivery slips
+     *
+     * @throws Exception When the SOAP extension isn't available.
+     */
     public function getBordereauByNumber($bordereauNumber) {
         if (!class_exists('SoapClient')) {
             LpcLogger::error(
@@ -85,38 +90,14 @@ class LpcBordereauGenerationApi extends LpcRestApi {
             ]
         );
 
-        if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
-            // TODO make it work when available
-            $request['stream_context'] = stream_context_create(
-                [
-                    'http' => [
-                        'header' => 'token: ' . LpcHelper::get_option('lpc_apikey'),
-                    ],
-                ]
-            );
-        } else {
-            $request['contractNumber'] = LpcHelper::get_option('lpc_id_webservices');
-            $request['password']       = LpcHelper::getPasswordWebService();
-        }
+        $request['contractNumber'] = LpcHelper::get_option('lpc_id_webservices');
+        $request['password']       = LpcHelper::getPasswordWebService();
 
         // TODO use REST when available
         require_once LPC_FOLDER . 'lib' . DS . 'MTOMSoapClient.php';
         $soapClient = new KeepItSimple\Http\Soap\MTOMSoapClient(self::SOAP_BASE_URL, $request);
         $response   = $soapClient->getBordereauByNumber($request)->return;
 
-        /*
-        $parentAccountId = LpcHelper::get_option('lpc_parent_account');
-        if (!empty($parentAccountId)) {
-            $headers[] = 'partnerClientCode: ' . $parentAccountId;
-        }
-
-        $response = $this->query(
-            'getBordereauByNumber',
-            $request,
-            self::DATA_TYPE_JSON,
-            $headers
-        );
-        */
         LpcLogger::debug(
             'Get bordereau by number response',
             [
@@ -127,10 +108,10 @@ class LpcBordereauGenerationApi extends LpcRestApi {
 
         if (0 != $response->messages->id) {
             LpcLogger::error(
-                __METHOD__ . 'error in API response',
+                __METHOD__ . ' error in API response',
                 ['response' => $response->messages]
             );
-            throw new Exception('Error in API response');
+            throw new Exception(htmlentities($response->messages->messageContent ?? 'Error in API response'));
         }
 
         return $response;

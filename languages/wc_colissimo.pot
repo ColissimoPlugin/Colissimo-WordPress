@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.8.1\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.8.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-12\n"
+"POT-Creation-Date: 2026-01-19\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -402,7 +402,7 @@ msgstr ""
 msgid "You can follow up your order here:"
 msgstr ""
 
-msgid "Number of days to consider labels for purging (days)"
+msgid "Number of days to consider labels and delivery slips for purging (days)"
 msgstr ""
 
 msgid "Delay before deleting labels BLOB from database. Use 0 or leave empty to disable this purge."
@@ -2423,7 +2423,7 @@ msgstr ""
 msgid "The MID code is used by the USA customs to track where a product comes from. It is required and can be found by following <a href=\"https://www.fedex.com/en-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html\" target=\"_blank\">the Fedex guide</a>."
 msgstr ""
 
-msgid "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the \"General\" section of the Colissimo settings."
+msgid "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account (Manage users menu) then enter it in the \"General\" section of the Colissimo settings."
 msgstr ""
 
 msgid "Colissimo hazmat category"
@@ -2622,5 +2622,8 @@ msgid "The EORI number is mandatory for shipments to the USA, please set it in t
 msgstr ""
 
 msgid "Hazardous materials are not allowed outside France."
+msgstr ""
+
+msgid "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"
 msgstr ""
 

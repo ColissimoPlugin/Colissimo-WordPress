@@ -6,7 +6,9 @@ class LpcCron extends LpcComponent {
     const CRON_START_HOUR = 8;
     const CRON_END_HOUR = 20;
 
+    /** @var LpcUnifiedTrackingApi */
     protected $unifiedTrackingApi;
+    /** @var LpcLabelPurge */
     protected $lpcLabelPurge;
 
     public function __construct(?LpcUnifiedTrackingApi $lpcUnifiedTrackingApi = null, ?LpcLabelPurge $lpcLabelPurge = null) {

@@ -312,6 +312,10 @@ class LpcUpdate extends LpcComponent {
         if (version_compare($versionInstalled, '2.7.0', '<')) {
             $this->addHazardousProductsAttribute();
         }
+
+        if (version_compare($versionInstalled, '2.8.2', '<')) {
+            $this->bordereauDb->updateToVersion282();
+        }
     }
 
     /** Functions for update to 1.3 **/

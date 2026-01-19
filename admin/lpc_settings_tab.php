@@ -742,7 +742,7 @@ class LpcSettingsTab extends LpcComponent {
             'none' => __('No shipment this day', 'wc_colissimo'),
         ];
         for ($i = 1; $i < 24; $i ++) {
-            $hour         = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
+            $hour      = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
             $hours[$i] = $hour;
         }
 
@@ -764,13 +764,13 @@ class LpcSettingsTab extends LpcComponent {
             'row_class'       => 'wc-settings-row-lpc_delivery_date_container',
             'label'           => 'Date format',
             'values'          => [
-                'default'  => sprintf(__('WordPress settings (%s)', 'wc_colissimo'), LpcHelper::translateDate(date($wpDateFormat))),
-                'full'     => LpcHelper::translateDate(date(__('l, F j', 'wc_colissimo'))),
-                'simple'   => LpcHelper::translateDate(date(__('F j', 'wc_colissimo'))),
-                'short'    => LpcHelper::translateDate(date(__('M j', 'wc_colissimo'))),
-                'm/d/Y' => date('m/d/Y'),
-                'd/m/Y'  => date('d/m/Y'),
-                'Y-m-d'    => date('Y-m-d'),
+                'default' => sprintf(__('WordPress settings (%s)', 'wc_colissimo'), LpcHelper::translateDate(date($wpDateFormat))),
+                'full'    => LpcHelper::translateDate(date(__('l, F j', 'wc_colissimo'))),
+                'simple'  => LpcHelper::translateDate(date(__('F j', 'wc_colissimo'))),
+                'short'   => LpcHelper::translateDate(date(__('M j', 'wc_colissimo'))),
+                'm/d/Y'   => date('m/d/Y'),
+                'd/m/Y'   => date('d/m/Y'),
+                'Y-m-d'   => date('Y-m-d'),
             ],
             'selected_values' => LpcHelper::get_option('lpc_delivery_date_format', 'default'),
         ];
@@ -1016,13 +1016,14 @@ class LpcSettingsTab extends LpcComponent {
         }
 
         if ('account' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
+            $accountLink = __('https://www.colissimo.entreprise.laposte.fr/en/my-account#informations', 'wc_colissimo');
             $this->adminNotices->add_notice(
                 'credentials_apikey',
                 'notice-error',
                 sprintf(
-                    __('The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the "General" section of the Colissimo settings.',
-                   'wc_colissimo'),
-                    '<a target="_blank" href="https://www.colissimo.entreprise.laposte.fr/">Colissimo Box</a>'
+                    __('The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account (Manage users menu) then enter it in the "General" section of the Colissimo settings.',
+                       'wc_colissimo'),
+                    '<a target="_blank" href="' . esc_url($accountLink) . '">Colissimo Box</a>'
                 )
             );
         }

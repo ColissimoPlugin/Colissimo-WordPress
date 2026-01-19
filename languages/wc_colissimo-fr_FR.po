@@ -395,8 +395,8 @@ msgstr "Votre statut de commande a changé"
 msgid "You can follow up your order here:"
 msgstr "Vous pouvez suivre votre commande ici :"
 
-msgid "Number of days to consider labels for purging (days)"
-msgstr "Nombre de jours avant suppression des étiquettes (jours)"
+msgid "Number of days to consider labels and delivery slips for purging (days)"
+msgstr "Nombre de jours avant suppression des étiquettes et bordereaux (jours)"
 
 msgid "Delay before deleting labels BLOB from database. Use 0 or leave empty to disable this purge."
 msgstr "Délai avant suppression des étiquettes dans la base de données. Utiliser 0 ou laisser vide pour désactiver la suppression"
@@ -2416,8 +2416,8 @@ msgstr "Code MID pour les États-Unis"
 msgid "The MID code is used by the USA customs to track where a product comes from. It is required and can be found by following <a href=\"https://www.fedex.com/en-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html\" target=\"_blank\">the Fedex guide</a>."
 msgstr "Le code MID est utilisé par les douanes américaines pour tracer l’origine d’un produit. Il est obligatoire et peut être trouvé en suivant <a href=\"https://www.fedex.com/fr-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html\" target=\"_blank\">le guide Fedex</a>."
 
-msgid "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the \"General\" section of the Colissimo settings."
-msgstr "Le type de connexion identifiant/mot de passe sera supprimé courant 2026 au profit de l'authentification par clé de connexion, en vue d'augmenter la sécurité de votre compte. Afin d'éviter toute interruption de vos livraisons, assurez-vous de générer une clé de connexion depuis la page d'édition de votre compte %s puis de l'entrer dans la section \"Général\" des réglages Colissimo."
+msgid "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account (Manage users menu) then enter it in the \"General\" section of the Colissimo settings."
+msgstr "Le type de connexion identifiant/mot de passe sera supprimé courant 2026 au profit de l'authentification par clé de connexion, en vue d'augmenter la sécurité de votre compte. Afin d'éviter toute interruption de vos livraisons, assurez-vous de générer une clé de connexion depuis la page d'édition de votre compte %s (menu Gestion des utilisateurs) puis de l'entrer dans la section \"Général\" des réglages Colissimo."
 
 msgid "Colissimo hazmat category"
 msgstr "Catégorie de matières dangereuses Colissimo"
@@ -2616,3 +2616,6 @@ msgstr "Le numéro EORI est obligatoire pour les envois vers les États-Unis, ve
 
 msgid "Hazardous materials are not allowed outside France."
 msgstr "Les matières dangereuses ne sont pas autorisées en dehors de la France."
+
+msgid "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"
+msgstr "https://www.colissimo.entreprise.laposte.fr/mon-compte#informations"

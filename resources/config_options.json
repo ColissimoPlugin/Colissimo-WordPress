@@ -337,7 +337,7 @@
     {
       "id": "lpc_day_purge",
       "type": "number",
-      "title": "Number of days to consider labels for purging (days)",
+      "title": "Number of days to consider labels and delivery slips for purging (days)",
       "desc": "Delay before deleting labels BLOB from database. Use 0 or leave empty to disable this purge.",
       "desc_tip": true,
       "class": "",

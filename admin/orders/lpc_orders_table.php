@@ -744,7 +744,7 @@ END_PRINT_SCRIPT;
             $args = [
                 'type'    => 'error',
                 'message' => sprintf(
-                    __('The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the "General" section of the Colissimo settings.',
+                    __('The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account (Manage users menu) then enter it in the "General" section of the Colissimo settings.',
                        'wc_colissimo'),
                     '<a target="_blank" href="https://www.colissimo.entreprise.laposte.fr/">Colissimo Box</a>'
                 ),

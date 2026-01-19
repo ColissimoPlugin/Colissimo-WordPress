@@ -7,32 +7,41 @@ class LpcLabelPurge extends LpcComponent {
     protected $inwardLabelDb;
     /** @var LpcOutwardLabelDb */
     protected $outwardLabelDb;
+    /** @var LpcBordereauDb */
+    protected $bordereauDb;
 
-    public function __construct(?LpcInwardLabelDb $inwardLabelDb = null, ?LpcOutwardLabelDb $outwardLabelDb = null) {
+    public function __construct(
+        ?LpcInwardLabelDb $inwardLabelDb = null,
+        ?LpcOutwardLabelDb $outwardLabelDb = null,
+        ?LpcBordereauDb $bordereauDb = null
+    ) {
         $this->inwardLabelDb = LpcRegister::get('inwardLabelDb', $inwardLabelDb);
         $this->outwardLabelDb = LpcRegister::get('outwardLabelDb', $outwardLabelDb);
+        $this->bordereauDb = LpcRegister::get('bordereauDb', $bordereauDb);
     }
 
     public function getDependencies(): array {
-        return ['inwardLabelDb', 'outwardLabelDb'];
+        return ['inwardLabelDb', 'outwardLabelDb', 'bordereauDb'];
     }
 
     public function purgeReadyLabels() {
-        $nbDays = LpcHelper::get_option('lpc_day_purge', 30);
+        $nbDays = (int) LpcHelper::get_option('lpc_day_purge', 30);
 
-        if ('0' == $nbDays) {
+        if (empty($nbDays)) {
             return;
         }
 
         $matchingOrdersId = LpcOrderQueries::getLpcOrdersIdsForPurge();
 
         $this->purgeLabels($matchingOrdersId);
+        $this->purgeDeliverySlips($nbDays);
     }
 
     public function purgeLabels($orderIds) {
         if (empty($orderIds)) {
             return;
         }
+
         LpcLogger::debug(
             __METHOD__ . ' purge labels for',
             [
@@ -53,5 +62,16 @@ class LpcLabelPurge extends LpcComponent {
             $order->delete_meta_data(LpcLabelGenerationInward::INWARD_PARCEL_NUMBER_META_KEY);
             $order->save();
         }
+    }
+
+    private function purgeDeliverySlips(int $nbDays) {
+        LpcLogger::debug(
+            __METHOD__ . ' purge old delivery slips',
+            [
+                'days' => $nbDays,
+            ]
+        );
+
+        $this->bordereauDb->purge($nbDays);
     }
 }

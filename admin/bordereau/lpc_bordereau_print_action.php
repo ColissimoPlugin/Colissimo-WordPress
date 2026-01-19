@@ -12,17 +12,21 @@ class LpcBordereauPrintAction extends LpcComponent {
     protected $bordereauGenerationApi;
     /** @var LpcAjax */
     protected $ajaxDispatcher;
+    /** @var LpcBordereauDb */
+    protected $bordereauDb;
 
     public function __construct(
         ?LpcAjax $ajaxDispatcher = null,
-        ?LpcBordereauGenerationApi $bordereauGenerationApi = null
+        ?LpcBordereauGenerationApi $bordereauGenerationApi = null,
+        ?LpcBordereauDb $bordereauDb = null
     ) {
         $this->ajaxDispatcher         = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
         $this->bordereauGenerationApi = LpcRegister::get('bordereauGenerationApi', $bordereauGenerationApi);
+        $this->bordereauDb            = LpcRegister::get('bordereauDb', $bordereauDb);
     }
 
     public function getDependencies(): array {
-        return ['ajaxDispatcher', 'bordereauGenerationApi'];
+        return ['ajaxDispatcher', 'bordereauGenerationApi', 'bordereauDb'];
     }
 
     public function init() {
@@ -45,22 +49,30 @@ class LpcBordereauPrintAction extends LpcComponent {
         }
 
         try {
-            $bordereauID = LpcHelper::getVar(self::BORDEREAU_ID_VAR_NAME);
-            $bordereau   = $this->bordereauGenerationApi->getBordereauByNumber($bordereauID)->bordereau;
+            $deliverySlipId = LpcHelper::getVar(self::BORDEREAU_ID_VAR_NAME, 0, 'int');
+            $deliverySlip   = $this->bordereauDb->getDeliverySlipByColissimoId($deliverySlipId);
+            if (empty($deliverySlip)) {
+                // TODO temporary fetch old delivery slips with Colissimo API, remove this in 2027
+                $deliverySlip = $this->bordereauGenerationApi->getBordereauByNumber($deliverySlipId)->bordereau->bordereauDataHandler;
+
+                if (empty($deliverySlip)) {
+                    throw new Exception(__('File not found', 'wc_colissimo'));
+                }
+            }
 
             $tmpDir = ini_get('upload_tmp_dir');
             if (empty($tmpDir) || !is_writable($tmpDir)) {
                 $tmpDir = sys_get_temp_dir();
             }
 
-            $bordereauFileName = $tmpDir . DS . 'bordereau(' . $bordereau->bordereauHeader->bordereauNumber . ').pdf';
+            $deliverySlipFileName = $tmpDir . DS . 'bordereau(' . $deliverySlipId . ').pdf';
 
-            $bordereauContentFile = fopen($bordereauFileName, 'w');
-            fwrite($bordereauContentFile, $bordereau->bordereauDataHandler);
-            fclose($bordereauContentFile);
+            $deliverySlipContentFile = fopen($deliverySlipFileName, 'w');
+            fwrite($deliverySlipContentFile, $deliverySlip);
+            fclose($deliverySlipContentFile);
 
-            if (!empty($bordereauFileName)) {
-                MergePdf::merge([$bordereauFileName], MergePdf::DESTINATION__INLINE);
+            if (!empty($deliverySlipFileName)) {
+                MergePdf::merge([$deliverySlipFileName], MergePdf::DESTINATION__INLINE);
             }
         } catch (Exception $e) {
             header('HTTP/1.0 404 Not Found');

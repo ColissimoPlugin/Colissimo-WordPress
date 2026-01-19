@@ -395,8 +395,8 @@ msgstr "Your order status changed"
 msgid "You can follow up your order here:"
 msgstr "You can follow up your order here:"
 
-msgid "Number of days to consider labels for purging (days)"
-msgstr "Number of days to consider labels for purging (days)"
+msgid "Number of days to consider labels and delivery slips for purging (days)"
+msgstr "Number of days to consider labels and delivery slips for purging (days)"
 
 msgid "Delay before deleting labels BLOB from database. Use 0 or leave empty to disable this purge."
 msgstr "Delay before deleting labels BLOB from database. Use 0 or leave empty to disable this purge."
@@ -2416,8 +2416,8 @@ msgstr "MID code for USA"
 msgid "The MID code is used by the USA customs to track where a product comes from. It is required and can be found by following <a href=\"https://www.fedex.com/en-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html\" target=\"_blank\">the Fedex guide</a>."
 msgstr "The MID code is used by the USA customs to track where a product comes from. It is required and can be found by following <a href=\"https://www.fedex.com/en-fr/customer-support/faq/customs/customs-codes/how-to-generate-mid-code.html\" target=\"_blank\">the Fedex guide</a>."
 
-msgid "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the \"General\" section of the Colissimo settings."
-msgstr "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account then enter it in the \"General\" section of the Colissimo settings."
+msgid "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account (Manage users menu) then enter it in the \"General\" section of the Colissimo settings."
+msgstr "The login/password connexion type will be removed during 2026 in favor of application key authentication, to increase the security of your account. To avoid any interruption in your deliveries, make sure to generate an application key from the edit page of your %s account (Manage users menu) then enter it in the \"General\" section of the Colissimo settings."
 
 msgid "Colissimo hazmat category"
 msgstr "Colissimo hazmat category"
@@ -2616,3 +2616,6 @@ msgstr "The EORI number is mandatory for shipments to the USA, please set it in 
 
 msgid "Hazardous materials are not allowed outside France."
 msgstr "Hazardous materials are not allowed outside France."
+
+msgid "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"
+msgstr "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"

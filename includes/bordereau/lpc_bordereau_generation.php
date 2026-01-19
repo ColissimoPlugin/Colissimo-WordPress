@@ -100,7 +100,9 @@ class LpcBordereauGeneration extends LpcComponent {
         foreach ($trackingNumbersPerBatch as $batchOfTrackingNumbers) {
             $outwardLabelIds = $this->getOutwardLabelIdByTrackingNumber(array_keys($batchOfTrackingNumbers), $outwardIdByTrackingNumber);
             try {
-                $retrievedBordereau = $this->bordereauGenerationApi->generateBordereau(array_keys($batchOfTrackingNumbers));
+                $response = $this->bordereauGenerationApi->generateBordereau(array_keys($batchOfTrackingNumbers));
+                $retrievedBordereau = $response['<jsonInfos>'];
+                $deliverySlip = $response['<deliveryPaper>'];
             } catch (Exception $e) {
                 $this->lpcAdminNotices->add_notice('lpc_notice', 'notice-error', $e->getMessage());
                 continue;
@@ -116,7 +118,8 @@ class LpcBordereauGeneration extends LpcComponent {
                         0,
                         strlen($retrievedBordereau['bordereauHeader']['publishingDate']) - 3
                     )
-                )
+                ),
+                $deliverySlip
             );
 
             $newStatus = LpcHelper::get_option('lpc_order_status_on_bordereau_generated');

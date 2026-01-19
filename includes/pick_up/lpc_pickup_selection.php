@@ -113,7 +113,6 @@ class LpcPickupSelection extends LpcComponent {
                     if (LpcRelay::ID === $shippingMethod) {
                         $pickUpInfo = $this->getCurrentPickUpLocationInfo();
                         $this->updatePickupMeta($order, $pickUpInfo);
-                        $this->setCurrentPickUpLocationInfo(null, $orderId);
                     }
                 } elseif (!empty($posted_data['shipping_method'])) {
                     // When activating the synced renewal on a subscription product, for some reason the shipping info isn't on the order
@@ -121,7 +120,6 @@ class LpcPickupSelection extends LpcComponent {
                     if (strpos($shippingMethod, LpcRelay::ID) !== false) {
                         // The action woocommerce_checkout_order_created didn't update the shipping address so we do it here
                         $this->setPickupAsShippingAddress($order);
-                        $this->setCurrentPickUpLocationInfo(null, $orderId);
                     }
                 }
             },
@@ -163,7 +161,6 @@ class LpcPickupSelection extends LpcComponent {
     public function onCheckoutOrderUpdated($order): void {
         if (LpcOrderQueries::hasShippingMethod($order, LpcRelay::ID)) {
             $this->setPickupAsShippingAddress($order);
-            $this->setCurrentPickUpLocationInfo(null, $order->get_id());
         }
     }
 
