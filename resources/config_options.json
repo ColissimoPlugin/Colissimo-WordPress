@@ -689,16 +689,16 @@
       "title": "Global"
     },
     {
-      "id": "lpc_hazmat_extra_cost",
-      "type": "select",
-      "title": "Add the extra cost to shipping price",
+      "id": "lpc_hazmat_extra_cost_value",
+      "type": "number",
+      "title": "Extra cost for hazardous materials",
       "desc": "The clients will pay the extra cost for hazardous materials along with the shipping price.",
       "desc_tip": true,
       "class": "",
-      "default": "no",
-      "options": {
-        "no": "No",
-        "yes": "Yes"
+      "default": "0.2",
+      "custom_attributes": {
+        "min": "0",
+        "step": ".01"
       }
     },
     {
@@ -974,24 +974,6 @@
     },
     {
       "id": "lpc_relay",
-      "type": "sectionend"
-    },
-    {
-      "id": "lpc_expert",
-      "type": "title",
-      "title": "Colissimo International (Deprecated)"
-    },
-    {
-      "id": "lpc_expert_FreeFromOrderValue",
-      "type": "number",
-      "title": "Free from order value",
-      "desc": "Shipping cost will be free if the order value is over the given one (only applied if this field is strictly positive).",
-      "desc_tip": true,
-      "class": "",
-      "default": ""
-    },
-    {
-      "id": "lpc_expert",
       "type": "sectionend"
     }
   ],

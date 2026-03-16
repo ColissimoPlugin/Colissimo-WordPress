@@ -279,7 +279,7 @@ class LpcSettingsTab extends LpcComponent {
         if ('hooks' === $field['content']) {
             $modalContent = file_get_contents(LPC_FOLDER . 'resources' . DS . 'hooksDescriptions.php');
         } else {
-            $modalContent = '<pre>' . LpcLogger::get_logs(null, $this->settingsDownload->getUrl('logs')) . '</pre>';
+            $modalContent = '<pre>' . LpcLogger::get_logs($this->settingsDownload->getUrl('logs')) . '</pre>';
         }
         $modal = new LpcModal($modalContent, __($field['title'], 'wc_colissimo'), 'lpc-' . $field['content']);
         $modal->loadScripts();

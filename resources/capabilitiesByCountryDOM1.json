@@ -22,7 +22,7 @@
         "countries": {
             "AT": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "ES": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
-            "GB": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "cn23": true, "insurance": true},
+            "GB": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "GG": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "GI": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "IE": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
@@ -38,14 +38,14 @@
     "Z3": {
         "name": "Zone 3",
         "countries": {
-            "CH": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "cn23": true, "insurance": true},
+            "CH": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "CZ": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "DK": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "EE": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "FO": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "GL": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "HU": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
-            "LI": {"domiciless": false, "domicileas": "DOS", "domicileasddp": false, "pr": false, "expert": "DOS", "expertddp": false, "return": false, "cn23": true, "insurance": true},
+            "LI": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "LT": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "LV": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},
             "PL": {"domiciless": false, "domicileas": "COLI", "domicileasddp": false, "pr": false, "expert": "COLI", "expertddp": false, "return": false, "cn23": true, "insurance": true},

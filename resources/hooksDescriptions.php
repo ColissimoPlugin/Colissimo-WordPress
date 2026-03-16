@@ -275,4 +275,16 @@ defined('ABSPATH') || die('Restricted Access');
 	}, 10, 2);
 		</pre>
 	</div>
+	<div>
+		<h3>lpc_api_calls_timeout</h3>
+		<p>includes/lpc_rest_api.php</p>
+		<p>This filter lets you modify the timeout used when calling Colissimo APIs.
+			It can be useful for servers with slow external connections.</p>
+		<p>Example:</p>
+		<pre>
+	add_filter('lpc_api_calls_timeout', function($timeout){
+		return 30;
+	}, 10, 1);
+		</pre>
+	</div>
 </div>

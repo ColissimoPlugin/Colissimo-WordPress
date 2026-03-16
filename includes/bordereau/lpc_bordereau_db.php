@@ -91,17 +91,22 @@ END_SQL;
     }
 
     public function purge(int $nbDays) {
+        if (empty($nbDays)) {
+            return;
+        }
+
         global $wpdb;
         $tableName = $this->getTableName();
 
         // phpcs:disable
-        $sql   = 'UPDATE ' . $tableName . ' SET `delivery_slip` = NULL WHERE `created_at` < %s';
-        $query = $wpdb->prepare(
-            $sql,
-            date('Y-m-d H:i:s', time() - $nbDays * 86400)
+        $wpdb->query(
+            $wpdb->prepare(
+                'UPDATE ' . $tableName . ' 
+                SET `delivery_slip` = NULL 
+                WHERE `created_at` < DATE_SUB(NOW(), INTERVAL %d DAY)',
+                $nbDays
+            )
         );
-
-        $wpdb->query($query);
         // phpcs:enable
     }
 

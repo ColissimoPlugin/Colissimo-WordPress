@@ -48,7 +48,8 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     public function getCurrentPickUpLocationInfo() {
-        $pickUpInfo = WC()->session->get(self::PICKUP_LOCATION_SESSION_VAR_NAME);
+        $wcSession  = LpcHelper::getWooSession();
+        $pickUpInfo = $wcSession->get(self::PICKUP_LOCATION_SESSION_VAR_NAME);
         if (empty($pickUpInfo)) {
             $this->initSession();
             $pickUpInfo = $_SESSION[self::PICKUP_LOCATION_SESSION_VAR_NAME] ?? [];
@@ -58,7 +59,8 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     public function setCurrentPickUpLocationInfo($pickUpInfo, $orderId = null) {
-        WC()->session->set(self::PICKUP_LOCATION_SESSION_VAR_NAME, $pickUpInfo);
+        $wcSession = LpcHelper::getWooSession();
+        $wcSession->set(self::PICKUP_LOCATION_SESSION_VAR_NAME, $pickUpInfo);
         $this->initSession();
         $_SESSION[self::PICKUP_LOCATION_SESSION_VAR_NAME] = $pickUpInfo;
 
@@ -287,7 +289,7 @@ class LpcPickupSelection extends LpcComponent {
         }
 
         $customerPhoneNumber     = str_replace(' ', '', $customerPhoneNumber);
-        $wcSession               = WC()->session;
+        $wcSession               = LpcHelper::getWooSession();
         $customerData            = $wcSession->get('customer');
         $customerShippingCountry = $customerData['shipping_country'];
 
@@ -355,7 +357,7 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     private function isRelayRequired(): bool {
-        $wcSession      = WC()->session;
+        $wcSession      = LpcHelper::getWooSession();
         $wcCart         = WC()->cart;
         $shippingMethod = $wcSession->get('chosen_shipping_methods');
         $needShipping   = $wcCart->needs_shipping();

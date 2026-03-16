@@ -96,13 +96,13 @@ class LpcPickupWebService extends LpcPickup {
     }
 
     public function getWebserviceModal($forceCheckout = false) {
-        $wcSession = WC()->session;
+        $wcSession = LpcHelper::getWooSession();
         $customer  = $wcSession->customer;
 
-        $address = $customer['shipping_address'] ?? '';
+        $address  = $customer['shipping_address'] ?? '';
         $postcode = $customer['shipping_postcode'] ?? '';
-        $city = $customer['shipping_city'] ?? '';
-        $country = $customer['shipping_country'] ?? 'FR';
+        $city     = $customer['shipping_city'] ?? '';
+        $country  = $customer['shipping_country'] ?? 'FR';
 
         $map = LpcHelper::renderPartial(
             'pickup' . DS . 'webservice_map.php',

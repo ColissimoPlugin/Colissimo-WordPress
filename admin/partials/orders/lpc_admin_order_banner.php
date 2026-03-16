@@ -425,16 +425,24 @@ $securedReturn = $args['secured_return_active'];
                                         }
 
                                         if (!empty($additionalInformation)) {
-                                            echo ' (' . implode(', ', $additionalInformation) . ')';
+                                            echo ' (' . esc_html(implode(', ', $additionalInformation)) . ')';
                                         }
                                         ?>
 									</a>
                                     <?php
                                     $label = $args['outwardLabelDb']->getLabel($outwardTrackingNumber);
 
+                                    /**
+                                     * Filter on the date format shown in the Colissimo listing
+                                     *
+                                     * @since 1.6
+                                     */
+                                    $dateFormat = apply_filters('woocommerce_admin_order_date_format', __('M j, Y', 'woocommerce'));
+
+                                    echo '<br />' . esc_html(__('Creation date', 'wc_colissimo') . ': ' . (new WC_DateTime($label->label_created_at))->date_i18n($dateFormat));
                                     if (!empty($label->status_id)) {
                                         $labelStatus = $args['colissimoStatus']->getStatusInfo($label->status_id)['label'];
-                                        echo '<br />' . esc_html($labelStatus);
+                                        echo '<br />' . esc_html(__('Status', 'wc_colissimo') . ': ' . $labelStatus);
                                     }
                                     ?>
 									<br>

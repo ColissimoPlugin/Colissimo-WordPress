@@ -9,7 +9,7 @@ class LpcDdp extends LpcComponent {
     }
 
     public function addDdpDescription($method, $index = 0) {
-        // To get the currently selected shipping method: WC()->session->get('chosen_shipping_methods', [])
+        // To get the currently selected shipping method: LpcHelper::getWooSession()->get('chosen_shipping_methods', [])
         if (false === strpos($method->get_method_id(), '_ddp')) {
             return;
         }
@@ -21,7 +21,8 @@ class LpcDdp extends LpcComponent {
     }
 
     public function preventCheckoutProcess() {
-        $shippingMethod = WC()->session->get('chosen_shipping_methods');
+        $wcSession      = LpcHelper::getWooSession();
+        $shippingMethod = $wcSession->get('chosen_shipping_methods');
         $needShipping   = WC()->cart->needs_shipping();
 
         if (!$needShipping || empty($shippingMethod)) {

@@ -112,11 +112,16 @@ class LpcLabelOutwardImportAction extends LpcComponent {
         }
 
         if (in_array(- 1, $requiredColumns)) {
-            die(json_encode(
+            die(
+            json_encode(
                 [
                     'type'    => 'error',
-                    'message' => __('Missing columns in the imported CSV', 'wc_colissimo'),
-                ])
+                    'message' => sprintf(
+                        __('Missing columns in the imported CSV file. Required columns: %s', 'wc_colissimo'),
+                        implode(', ', array_keys($requiredColumns))
+                    ),
+                ]
+            )
             );
         }
 

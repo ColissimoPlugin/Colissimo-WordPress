@@ -12,7 +12,7 @@ abstract class LpcPickup extends LpcComponent {
 
         // Add the pickup selection button only when this shipping method is selected
         $selected       = false;
-        $wcSession      = WC()->session;
+        $wcSession      = LpcHelper::getWooSession();
         $shippingMethod = $wcSession->get('chosen_shipping_methods');
         foreach ($shippingMethod as $oneMethod) {
             if ($oneMethod === $instanceId) {

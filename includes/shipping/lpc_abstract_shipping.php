@@ -292,7 +292,6 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
 
     public function calculate_shipping($package = []) {
         $cost = null;
-
         if (!$this->checkPickupAvailability()) {
             return;
         }
@@ -451,7 +450,7 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
         $totalPrice = 'yes' === LpcHelper::get_option('lpc_calculate_shipping_before_coupon', 'no') ? $totalWithoutCouponPrice : $totalPrice;
 
         // DDP for GB must be commercial and between 160€ and 1050€
-        $isCommercialSend = self::CUSTOMS_CATEGORY_COMMERCIAL === LpcHelper::get_option('lpc_customs_defaultCustomsCategory');
+        $isCommercialSend = self::CUSTOMS_CATEGORY_COMMERCIAL === (int) LpcHelper::get_option('lpc_customs_defaultCustomsCategory');
         if ('GB' === $package['destination']['country'] && LpcSignDDP::ID === $this->id && ($totalPrice < 160 || $totalPrice > 1050 || !$isCommercialSend)) {
             return;
         }
@@ -602,20 +601,16 @@ abstract class LpcAbstractShipping extends WC_Shipping_Method {
                 }
             }
 
-            $extraCostHazmat = LpcHelper::get_option('lpc_hazmat_extra_cost', 'no');
-            if ('yes' === $extraCostHazmat && !empty($cartHazmatCategories)) {
-                $extraCost = 0;
+            $extraCostHazmat = LpcHelper::get_option('lpc_hazmat_extra_cost_value');
+            if (!empty($extraCostHazmat) && !empty($cartHazmatCategories)) {
                 foreach ($cartHazmatCategories as $hazmatCategorySlug) {
                     if (empty(LpcLabelGenerationPayload::HAZMAT_CATEGORIES[$hazmatCategorySlug])) {
                         continue;
                     }
 
-                    if ($extraCost < LpcLabelGenerationPayload::HAZMAT_CATEGORIES[$hazmatCategorySlug]['extra_cost']) {
-                        $extraCost = LpcLabelGenerationPayload::HAZMAT_CATEGORIES[$hazmatCategorySlug]['extra_cost'];
-                    }
+                    $cost += (float) str_replace(',', '.', $extraCostHazmat);
+                    break;
                 }
-
-                $cost += $extraCost;
             }
 
             $titleFree       = $this->get_option('title_free', '');

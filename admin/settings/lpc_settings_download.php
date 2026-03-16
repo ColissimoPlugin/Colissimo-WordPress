@@ -35,30 +35,35 @@ class LpcSettingsDownload extends LpcComponent {
     }
 
     public function logs() {
-        $logsPath = LpcLogger::getLogsPath();
-        if (file_exists($logsPath)) {
-            $this->downloadFile($logsPath, 'colissimo.log');
+        $logs = LpcLogger::get_logs('', LpcLogger::ALL_LINES);
+        if (!empty($logs)) {
+            $this->downloadFile(
+                [
+                    'content'  => str_replace('<br />', PHP_EOL, $logs),
+                    'fileName' => 'colissimo.log',
+                ]
+            );
         } else {
             esc_html_e('The logs file is empty', 'wc_colissimo');
         }
     }
 
     public function doc() {
-        $this->downloadFile(self::DOC_FILE_PATH, 'Guide Colissimo pour WordPress.pdf');
+        $this->downloadFile(
+            [
+                'filePath' => self::DOC_FILE_PATH,
+                'fileName' => 'Guide Colissimo pour WordPress.pdf',
+            ]
+        );
     }
 
     public function docEN() {
-        $this->downloadFile(self::DOC_EN_FILE_PATH, 'Colissimo Guide for WordPress.pdf');
-    }
-
-    private function downloadFile(string $filePath, string $fileName) {
-        header('Content-Disposition: attachment; filename="' . $fileName . '"');
-        header('Content-Type: application/force-download');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Type: text/plain');
-        readfile($filePath);
+        $this->downloadFile(
+            [
+                'filePath' => self::DOC_EN_FILE_PATH,
+                'fileName' => 'Colissimo Guide for WordPress.pdf',
+            ]
+        );
     }
 
     public function getUrl(string $type): string {
@@ -71,5 +76,34 @@ class LpcSettingsDownload extends LpcComponent {
         } else {
             throw new \InvalidArgumentException('Unknown type for LpcSettingsDownload');
         }
+    }
+
+    private function downloadFile(array $options): void {
+        if (!empty($options['filePath'])) {
+            global $wp_filesystem;
+            if (empty($wp_filesystem)) {
+                require_once ABSPATH . '/wp-admin/includes/file.php';
+                WP_Filesystem();
+            }
+
+            $fileContents = $wp_filesystem->get_contents($options['filePath']);
+            if (false === $fileContents) {
+                wp_die('Could not read file.');
+            }
+        } elseif (isset($options['content'])) {
+            $fileContents = $options['content'];
+        } else {
+            wp_die('Could not read file.');
+        }
+
+        header('Content-Disposition: attachment; filename="' . esc_attr($options['fileName']) . '"');
+        header('Content-Type: text/plain');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . strlen($fileContents));
+
+        echo $fileContents;
+        exit;
     }
 }

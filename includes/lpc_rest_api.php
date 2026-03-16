@@ -38,6 +38,13 @@ abstract class LpcRestApi extends LpcComponent {
 
         $httpHeader = array_merge($httpHeader, $headers);
 
+        /**
+         * Filter on the API calls timeout used for slow servers
+         *
+         * @since 2.9.0
+         */
+        $timeout = apply_filters('lpc_api_calls_timeout', 10);
+
         $ch = curl_init();
         curl_setopt_array(
             $ch,
@@ -45,7 +52,7 @@ abstract class LpcRestApi extends LpcComponent {
                 CURLOPT_URL            => $url,
                 CURLOPT_HTTPHEADER     => $httpHeader,
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT        => 5,
+                CURLOPT_TIMEOUT        => $timeout,
             ]
         );
 

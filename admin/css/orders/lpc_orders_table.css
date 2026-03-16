@@ -135,6 +135,10 @@
 	vertical-align: middle;
 }
 
+.lpc_label_action_disabled {
+    opacity: .6;
+}
+
 .column-lpc-date, .column-lpc-woo-status{
 	max-width: 75px !important;
 }

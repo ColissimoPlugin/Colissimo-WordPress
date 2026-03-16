@@ -170,8 +170,8 @@ class LpcLabelQueries extends LpcComponent {
         $disableText    = '';
         if (empty($label['label'])) {
             $disableActions = 'lpc_label_action_disabled';
-            $disableText    = __('You cannot do this action on imported tracking numbers', 'wc_colissimo');
-            $disableText    = ' lpc-data-text="' . $disableText . '"';
+            $disableText    = __('You cannot do this action on imported tracking numbers or purged labels.', 'wc_colissimo');
+            $disableText    = ' lpc-data-text="' . esc_attr($disableText) . '"';
         }
 
         $actions = '';
@@ -188,7 +188,8 @@ class LpcLabelQueries extends LpcComponent {
         }
 
         if (current_user_can('lpc_delete_labels')) {
-            $actions .= '<span class="dashicons dashicons-trash lpc_label_action_delete" ' . $this->getLabelOutwardDeletionAttr($trackingNumber, $redirection) . '></span>';
+            $actions .= '<span class="dashicons dashicons-trash lpc_label_action_delete" ' .
+                        $this->getLabelOutwardDeletionAttr($trackingNumber, $redirection) . '></span>';
         }
 
         return $actions;
@@ -198,25 +199,35 @@ class LpcLabelQueries extends LpcComponent {
         $printerIcon = $GLOBALS['wp_version'] >= '5.5' ? 'dashicons-printer' : 'dashicons-media-default';
         $label       = $this->inwardLabelDb->getLabelFor($trackingNumber);
 
+        $disableActions = '';
+        $disableText    = '';
+        if (empty($label['label'])) {
+            $disableActions = 'lpc_label_action_disabled';
+            $disableText    = __('You cannot do this action on imported tracking numbers or purged labels.', 'wc_colissimo');
+            $disableText    = ' lpc-data-text="' . esc_attr($disableText) . '"';
+        }
+
         $actions = '';
 
         if (current_user_can('lpc_download_labels')) {
-            $actions .= '<span class="dashicons dashicons-download lpc_label_action_download" ' .
-                        $this->getLabelInwardDownloadAttr($trackingNumber, $format) . '></span>';
+            $actions .= '<span class="dashicons dashicons-download lpc_label_action_download ' . $disableActions . '" ' .
+                        $this->getLabelInwardDownloadAttr($trackingNumber, $format) . $disableText . '></span>';
         }
 
         if (current_user_can('lpc_print_labels')) {
             $printedClass = $label['printed'] ? 'lpc_label_printed' : '';
-            $actions      .= '<span class="dashicons ' . $printerIcon . ' lpc_label_action_print ' . $printedClass . '" ' .
-                             $this->getLabelInwardPrintAttr($trackingNumber, $format) . '></span>';
+            $actions      .= '<span class="dashicons ' . $printerIcon . ' lpc_label_action_print ' . $disableActions . ' ' . $printedClass . '" ' .
+                             $this->getLabelInwardPrintAttr($trackingNumber, $format) . $disableText . '></span>';
         }
 
         if (current_user_can('lpc_delete_labels')) {
-            $actions .= '<span class="dashicons dashicons-trash lpc_label_action_delete" ' . $this->getLabelInwardDeletionAttr($trackingNumber, $redirection) . '></span>';
+            $actions .= '<span class="dashicons dashicons-trash lpc_label_action_delete" ' .
+                        $this->getLabelInwardDeletionAttr($trackingNumber, $redirection) . '></span>';
         }
 
         if (current_user_can('lpc_send_emails')) {
-            $actions .= '<span class="dashicons dashicons-email-alt lpc_label_action_send_email" ' . $this->getLabelInwardSendAttr($trackingNumber, $redirection) . '></span>';
+            $actions .= '<span class="dashicons dashicons-email-alt lpc_label_action_send_email ' . $disableActions . '" ' .
+                        $this->getLabelInwardSendAttr($trackingNumber, $redirection) . $disableText . '></span>';
         }
 
         return $actions;

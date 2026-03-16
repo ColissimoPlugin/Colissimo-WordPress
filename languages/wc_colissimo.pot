@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.8.2\n"
+"Project-Id-Version: Colissimo Officiel : Méthodes de livraison pour WooCommerce 2.9.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/colissimo-shipping-methods-for-woocommerce/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-19\n"
+"POT-Creation-Date: 2026-03-16\n"
 "X-Domain: wc_colissimo\n"
 
 
@@ -1103,13 +1103,13 @@ msgstr ""
 msgid "The content of the file is empty"
 msgstr ""
 
-msgid "Missing columns in the imported CSV"
+msgid "Missing columns in the imported CSV file. Required columns: %s"
 msgstr ""
 
 msgid "Could not insert tracking number for order(s): %s"
 msgstr ""
 
-msgid "You cannot do this action on imported tracking numbers"
+msgid "You cannot do this action on imported tracking numbers or purged labels."
 msgstr ""
 
 msgid "The labels that you've selected are imported tracking numbers, you cannot download them"
@@ -2453,7 +2453,7 @@ msgstr ""
 msgid "Default Colissimo hazmat category"
 msgstr ""
 
-msgid "Add the extra cost to shipping price"
+msgid "Extra cost for hazardous materials"
 msgstr ""
 
 msgid "The clients will pay the extra cost for hazardous materials along with the shipping price."
@@ -2462,7 +2462,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-msgid "Maximum quantity per parcel"
+msgid "Limited hazardous materials quantity"
 msgstr ""
 
 msgid "Hazardous materials %1$s exceed the maximum allowed weight: %2$d/%3$dg."
@@ -2625,5 +2625,8 @@ msgid "Hazardous materials are not allowed outside France."
 msgstr ""
 
 msgid "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"
+msgstr ""
+
+msgid "According to contract"
 msgstr ""
 

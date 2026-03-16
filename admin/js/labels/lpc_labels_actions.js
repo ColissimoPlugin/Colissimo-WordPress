@@ -44,7 +44,11 @@ jQuery(function ($) {
     });
 
     $('.lpc_label_action_send_email').off('click').on('click', function () {
-        let specificAction = $(this).attr('data-link');
+        if (isLabelDisabledAction(this)) {
+            return;
+        }
+
+        const specificAction = $(this).attr('data-link');
         if (specificAction !== undefined && specificAction !== '') {
             location.href = specificAction;
         }

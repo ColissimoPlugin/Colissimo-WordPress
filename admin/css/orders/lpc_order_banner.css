@@ -102,6 +102,10 @@
 	vertical-align: middle;
 }
 
+.lpc_label_action_disabled {
+    opacity: .6;
+}
+
 #tiptip_content{
 	text-align: left;
 	max-width: 400px;

@@ -73,8 +73,8 @@ class LpcPickupWidget extends LpcPickup {
                     );
                     wp_enqueue_script('lpc_widget');
 
-                    $WcSession  = WC()->session;
-                    $customer   = $WcSession->customer;
+                    $wcSession  = LpcHelper::getWooSession();
+                    $customer   = $wcSession->customer;
                     $widgetInfo = $this->getWidgetInfo($customer);
 
                     wp_add_inline_script('lpc_widget', 'window.lpc_widget_info = ' . $widgetInfo, 'before');
@@ -157,8 +157,8 @@ class LpcPickupWidget extends LpcPickup {
     }
 
     public function getWidgetModal($forceCheckout = false, $gutenberg = false) {
-        $WcSession = WC()->session;
-        $customer  = $WcSession->customer;
+        $wcSession = LpcHelper::getWooSession();
+        $customer  = $wcSession->customer;
 
         $widgetInfo   = $this->getWidgetInfo($customer);
         $currentRelay = $this->lpcPickUpSelection->getCurrentPickUpLocationInfo();

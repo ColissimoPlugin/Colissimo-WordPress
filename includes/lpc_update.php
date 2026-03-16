@@ -316,6 +316,31 @@ class LpcUpdate extends LpcComponent {
         if (version_compare($versionInstalled, '2.8.2', '<')) {
             $this->bordereauDb->updateToVersion282();
         }
+
+        if (version_compare($versionInstalled, '2.8.3', '<')) {
+            $this->capabilitiesPerCountry->saveCapabilitiesPerCountryInDatabase();
+
+            $logsFilePath = wp_upload_dir()['basedir'] . DIRECTORY_SEPARATOR . 'colissimo' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'general.log';
+            if (file_exists($logsFilePath)) {
+                $oldLogs = explode('<log>', file_get_contents($logsFilePath));
+
+                $newLogs = [];
+                foreach ($oldLogs as $oneLine) {
+                    if (empty($oneLine)) {
+                        continue;
+                    }
+
+                    $date      = substr($oneLine, 0, 19);
+                    $newLogs[] = [
+                        'time'    => strtotime($date),
+                        'content' => $oneLine,
+                    ];
+                }
+
+                update_option('lpc_logs', wp_json_encode($newLogs), false);
+                unlink($logsFilePath);
+            }
+        }
     }
 
     /** Functions for update to 1.3 **/

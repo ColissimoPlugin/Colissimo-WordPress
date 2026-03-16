@@ -308,50 +308,6 @@ class LpcOrderQueries {
         return $ordersId;
     }
 
-    public static function getLpcOrdersIdsForPurge(): array {
-        global $wpdb;
-
-        $nbDays      = LpcHelper::get_option('lpc_day_purge', 30);
-        $fromDate    = time() - $nbDays * 86400;
-        $isDelivered = LpcUnifiedTrackingApi::IS_DELIVERED_META_VALUE_TRUE;
-
-        if (self::isHposActive()) {
-            $ordersMeta = $wpdb->prefix . 'wc_orders_meta';
-            $query      = 'SELECT DISTINCT isDelivered.order_id 
-                FROM ' . $ordersMeta . ' AS isDelivered
-                JOIN ' . $ordersMeta . ' AS lastEventDate 
-                    ON lastEventDate.order_id = isDelivered.order_id 
-                WHERE isDelivered.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '" 
-                    AND isDelivered.meta_value = ' . intval($isDelivered) . ' 
-                    AND lastEventDate.meta_key = "' . LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY . '"
-                    AND lastEventDate.meta_value < ' . $fromDate;
-        } else {
-            $postmeta = $wpdb->prefix . 'postmeta';
-            $query    = 'SELECT DISTINCT isDelivered.post_id AS order_id 
-                FROM ' . $postmeta . ' AS isDelivered 
-                JOIN ' . $postmeta . ' AS lastEventDate 
-                    ON lastEventDate.post_id = isDelivered.post_id 
-                WHERE isDelivered.meta_key = "' . LpcUnifiedTrackingApi::IS_DELIVERED_META_KEY . '" 
-                    AND isDelivered.meta_value = ' . intval($isDelivered) . ' 
-                    AND lastEventDate.meta_key = "' . LpcUnifiedTrackingApi::LAST_EVENT_DATE_META_KEY . '"
-                    AND lastEventDate.meta_value < ' . $fromDate;
-        }
-
-        // phpcs:disable
-        $results = $wpdb->get_results($query);
-        // phpcs:enable
-
-        $ordersId = [];
-
-        if ($results) {
-            foreach ($results as $result) {
-                $ordersId[] = $result->order_id;
-            }
-        }
-
-        return $ordersId;
-    }
-
     public static function getLpcOrdersPostMetaList(string $metaName, bool $isAddressMeta = false) {
         global $wpdb;
 

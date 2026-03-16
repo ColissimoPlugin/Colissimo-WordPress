@@ -736,7 +736,7 @@ END_PRINT_SCRIPT;
             $ids = [$ids];
         }
 
-        $this->lpcLabelPurge->purgeLabels($ids);
+        $this->lpcLabelPurge->deleteLabels($ids);
     }
 
     public function displayHeaders() {

@@ -321,7 +321,6 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
                     $isDelivered = true;
                 }
                 $order->update_meta_data(self::IS_DELIVERED_META_KEY, $isDelivered ? self::IS_DELIVERED_META_VALUE_TRUE : self::IS_DELIVERED_META_VALUE_FALSE);
-                $order->save();
 
                 if ($isDelivered) {
                     $newOrderStatus = $orderStatusOnDelivered;
@@ -342,8 +341,9 @@ class LpcUnifiedTrackingApi extends LpcRestApi {
 
                 if (!empty($newOrderStatus) && 'unchanged_order_status' !== $newOrderStatus) {
                     $order->set_status($newOrderStatus);
-                    $order->save();
                 }
+
+                $order->save();
             }
         }
 

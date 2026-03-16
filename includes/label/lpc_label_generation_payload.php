@@ -54,6 +54,7 @@ class LpcLabelGenerationPayload {
 
     private const FRENCH_COUNTRY_CODE = 'FR';
     private const BELGIAN_COUNTRY_CODE = 'BE';
+    private const SWITZERLAND_COUNTRY_CODE = 'CH';
     private const US_COUNTRY_CODE = 'US';
     private const GB_COUNTRY_CODE = 'GB';
     public const COUNTRIES_NEEDING_STATE = ['CA', self::US_COUNTRY_CODE];
@@ -62,34 +63,34 @@ class LpcLabelGenerationPayload {
     public const HAZMAT_ATTRIBUTE = 'lpc-hazmat-category';
     public const HAZMAT_CATEGORIES = [
         'lpc-cata' => [
-            'label'      => 'Category A - CLP hazardous product',
-            'max_weight' => 5000,
-            'extra_cost' => 0.5,
-            'code'       => 'A',
+            'label'           => 'Category A - CLP hazardous product',
+            'max_weight'      => 5000,
+            'max_weight_text' => '< 5kg/5L',
+            'code'            => 'A',
         ],
         'lpc-catb' => [
-            'label'      => 'Category B - ADR/GPE 2 hazardous product',
-            'max_weight' => 1000,
-            'extra_cost' => 1,
-            'code'       => 'B',
+            'label'           => 'Category B - ADR/GPE 2 hazardous product',
+            'max_weight'      => 500,
+            'max_weight_text' => '< 0,5kg/0,5L',
+            'code'            => 'B',
         ],
         'lpc-catc' => [
-            'label'      => 'Category C - ADR/GPE 3 hazardous product',
-            'max_weight' => 500,
-            'extra_cost' => 2,
-            'code'       => 'C',
+            'label'           => 'Category C - ADR/GPE 3 hazardous product',
+            'max_weight'      => 1000,
+            'max_weight_text' => '< 1kg/1L',
+            'code'            => 'C',
         ],
         'lpc-catd' => [
-            'label'      => 'Category D - Cosmetic hazardous product',
-            'max_weight' => 0,
-            'extra_cost' => 2,
-            'code'       => 'D',
+            'label'           => 'Category D - Cosmetic hazardous product',
+            'max_weight'      => 1000,
+            'max_weight_text' => '< 1kg/1L',
+            'code'            => 'D',
         ],
         'lpc-cate' => [
-            'label'      => 'Category E - Other derogated sensitive product',
-            'max_weight' => 0,
-            'extra_cost' => 5,
-            'code'       => 'E',
+            'label'           => 'Category E - Other derogated sensitive product',
+            'max_weight'      => 0,
+            'max_weight_text' => 'According to contract',
+            'code'            => 'E',
         ],
     ];
 
@@ -276,10 +277,13 @@ class LpcLabelGenerationPayload {
 
         if (!empty($addressee['phoneNumber'])) {
             $payloadAddressee['address']['phoneNumber'] = $this->formatPhone($addressee['phoneNumber']);
+            if (self::BELGIAN_COUNTRY_CODE === $addressee['countryCode'] && empty($payloadAddressee['address']['mobileNumber'])) {
+                $payloadAddressee['address']['mobileNumber'] = $payloadAddressee['address']['phoneNumber'];
+            }
         }
 
         // Required bypass because Colissimo Labels for Belgium or Switzerland don't display line3
-        $countryCodesNoLine3 = ['BE', 'CH'];
+        $countryCodesNoLine3 = [self::BELGIAN_COUNTRY_CODE, self::SWITZERLAND_COUNTRY_CODE];
         if (in_array($addressee['countryCode'], $countryCodesNoLine3)) {
             if (!empty($addressee['street2'])) {
                 $payloadAddressee['address']['line2'] = $payloadAddressee['address']['line2'] . ' ' . $addressee['street2'];
@@ -500,17 +504,11 @@ class LpcLabelGenerationPayload {
          * @since 1.6
          */
         $delay = apply_filters('lpc_payload_delay', $delay, $this->getOrderNumber(), $this->getIsReturnLabel());
+        $delay = (int) $delay;
 
         $depositDate = new \DateTime();
-
-        $delay = (int) $delay;
         if ($delay > 0) {
             $depositDate->add(new \DateInterval("P{$delay}D"));
-        } else {
-            LpcLogger::warn(
-                'Preparation delay was not applied because it was negative or zero!',
-                ['given' => $delay]
-            );
         }
 
         return $this->withDepositDate($depositDate);
@@ -1593,7 +1591,7 @@ class LpcLabelGenerationPayload {
         }
 
         $highestHazmatCategoryCode = 'A';
-        $lowestHazmatCategory      = '';
+        $lowestHazmatLimit         = 30000;
         foreach (self::HAZMAT_CATEGORIES as $slug => $category) {
             if (!in_array($slug, array_keys($hazardousMaterials))) {
                 continue;
@@ -1601,8 +1599,8 @@ class LpcLabelGenerationPayload {
 
             $highestHazmatCategoryCode = $category['code'];
 
-            if (empty($lowestHazmatCategory)) {
-                $lowestHazmatCategory = $slug;
+            if (!empty($category['max_weight']) && $category['max_weight'] < $lowestHazmatLimit) {
+                $lowestHazmatLimit = $category['max_weight'];
             }
 
             // Auto generation and exceeding the maximum weight for this category
@@ -1621,18 +1619,16 @@ class LpcLabelGenerationPayload {
         // Auto generation and exceeding the total maximum weight for hazmat products
         if (
             !empty($customParams['isAutoGeneration'])
-            && !empty(self::HAZMAT_CATEGORIES[$lowestHazmatCategory]['max_weight'])
-            && $totalHazardousQuantity > self::HAZMAT_CATEGORIES[$lowestHazmatCategory]['max_weight']
+            && $totalHazardousQuantity > $lowestHazmatLimit
         ) {
             throw new Exception(
                 sprintf(
                     __('The total amount of hazardous materials exceeds the maximum allowed weight of %dg.', 'wc_colissimo'),
-                    self::HAZMAT_CATEGORIES[$lowestHazmatCategory]['max_weight']
+                    $lowestHazmatLimit
                 ) . ' ' . __('Please ship this order in multiple parcels.', 'wc_colissimo')
             );
         }
 
-        // TODO to check, doc says boolean but gives "1" as the example, while hazmatPrintLogo has "true" in its example
         $this->payload['letter']['parcel']['hazmatFlag']      = true;
         $this->payload['letter']['parcel']['hazmatCategory']  = $highestHazmatCategoryCode;
         $this->payload['letter']['parcel']['hazmatPrintLogo'] = true;

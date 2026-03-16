@@ -1096,14 +1096,14 @@ msgstr "File not found"
 msgid "The content of the file is empty"
 msgstr "The content of the file is empty"
 
-msgid "Missing columns in the imported CSV"
-msgstr "Missing columns in the imported CSV"
+msgid "Missing columns in the imported CSV file. Required columns: %s"
+msgstr "Missing columns in the imported CSV file. Required columns: %s"
 
 msgid "Could not insert tracking number for order(s): %s"
 msgstr "Could not insert tracking number for order(s): %s"
 
-msgid "You cannot do this action on imported tracking numbers"
-msgstr "You cannot do this action on imported tracking numbers"
+msgid "You cannot do this action on imported tracking numbers or purged labels."
+msgstr "You cannot do this action on imported tracking numbers or purged labels."
 
 msgid "The labels that you've selected are imported tracking numbers, you cannot download them"
 msgstr "The labels that you've selected are imported tracking numbers, you cannot download them"
@@ -2446,8 +2446,8 @@ msgstr "This product's weight exceeds the limit allowed per parcel for this haza
 msgid "Default Colissimo hazmat category"
 msgstr "Default Colissimo hazmat category"
 
-msgid "Add the extra cost to shipping price"
-msgstr "Add the extra cost to shipping price"
+msgid "Extra cost for hazardous materials"
+msgstr "Extra cost for hazardous materials"
 
 msgid "The clients will pay the extra cost for hazardous materials along with the shipping price."
 msgstr "The clients will pay the extra cost for hazardous materials along with the shipping price."
@@ -2455,8 +2455,8 @@ msgstr "The clients will pay the extra cost for hazardous materials along with t
 msgid "Category"
 msgstr "Category"
 
-msgid "Maximum quantity per parcel"
-msgstr "Maximum quantity per parcel"
+msgid "Limited hazardous materials quantity"
+msgstr "Limited hazardous materials quantity"
 
 msgid "Hazardous materials %1$s exceed the maximum allowed weight: %2$d/%3$dg."
 msgstr "Hazardous materials %1$s exceed the maximum allowed weight: %2$d/%3$dg."
@@ -2619,3 +2619,6 @@ msgstr "Hazardous materials are not allowed outside France."
 
 msgid "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"
 msgstr "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"
+
+msgid "According to contract"
+msgstr "According to contract"

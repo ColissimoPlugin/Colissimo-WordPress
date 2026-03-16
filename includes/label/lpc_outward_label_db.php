@@ -321,26 +321,24 @@ END_SQL;
         // phpcs:enable
     }
 
-    public function purgeLabelsByOrdersId($ordersId) {
-
-        if (!is_array($ordersId)) {
-            $ordersId = [$ordersId];
+    public function purgeLabels(int $nbDays) {
+        if (empty($nbDays)) {
+            return;
         }
-
-        $ordersId = array_map('intval', $ordersId);
 
         global $wpdb;
         $tableName = $this->getTableName();
 
-        $whereIn = implode(',', $ordersId);
-
         // phpcs:disable
-        $query = <<<END_SQL
-DELETE FROM $tableName
-WHERE order_id IN ($whereIn)
-END_SQL;
-
-        return $wpdb->query($query);
+        $wpdb->query(
+            $wpdb->prepare(
+                'UPDATE ' . $tableName . ' 
+                SET `label` = NULL, `cn23` = NULL 
+                WHERE `label` IS NOT NULL 
+                    AND `label_created_at` < DATE_SUB(NOW(), INTERVAL %d DAY)',
+                $nbDays
+            )
+        );
         // phpcs:enable
     }
 

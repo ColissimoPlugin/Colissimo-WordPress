@@ -387,6 +387,16 @@ class LpcHelper {
         return $fontNames[$fontValue] ?? null;
     }
 
+    public static function getWooSession() {
+        $woo = WC();
+
+        if (!$woo->session) {
+            $woo->initialize_session();
+        }
+
+        return $woo->session;
+    }
+
     private static function isPackagingFitting(array $packagingDimensions, array $productDimensions): bool {
         sort($packagingDimensions);
         sort($productDimensions);

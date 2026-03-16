@@ -1,33 +1,21 @@
 <?php
 defined('ABSPATH') || die('Restricted Access');
 
-/**
- * Class LpcLogger
- */
 class LpcLogger {
     /**
      * Number of lines displayed when seeing the logs
      */
-    const LOG_LINES_NB = 1000;
-    const LOGS_FILE_NAME = 'general.log';
+    const LOG_BLOCKS_NB = 300;
+    const MAX_LOG_BLOCKS = 1000;
     const MAX_DETAILS_DEPTH = 7;
     const MAX_LOGS_LIFE_IN_DAYS = 14;
+    const ALL_LINES = - 1;
 
-    const NONE_LEVEL = 0;
     const ERROR_LEVEL = 1;
     const WARN_LEVEL = 2;
-    const INFO_LEVEL = 3;
     const DEBUG_LEVEL = 4;
 
-    public static function getLogsDirPath(): string {
-        return wp_upload_dir()['basedir'] . DIRECTORY_SEPARATOR . 'colissimo' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR;
-    }
-
-    public static function getLogsPath(): string {
-        return self::getLogsDirPath() . self::LOGS_FILE_NAME;
-    }
-
-    public static function error($message, array $details = []) {
+    public static function error(string $message, array $details = []): void {
         $debug                  = debug_backtrace();
         $details['stack_trace'] = [];
         foreach ($debug as $step) {
@@ -41,35 +29,25 @@ class LpcLogger {
         self::log(self::ERROR_LEVEL, $message, $details);
     }
 
-    public static function warn($message, array $details = []) {
+    public static function warn(string $message, array $details = []): void {
         self::log(self::WARN_LEVEL, $message, $details);
     }
 
-    public static function debug($message, array $details = []) {
+    public static function debug(string $message, array $details = []): void {
         self::log(self::DEBUG_LEVEL, $message, $details);
     }
 
-    public static function info($message, array $details = []) {
-        self::log(self::INFO_LEVEL, $message, $details);
-    }
-
     /**
-     * Method used to add messages to the log file.
-     *
-     * @param string     $type
-     * @param string     $message
-     * @param array|null $details
+     * Method used to save messages to the logs.
      */
-    protected static function log($type, $message, array $details = []) {
+    protected static function log(string $type, string $content, array $details = []): void {
         $log = (int) LpcHelper::get_option('lpc_log', 0);
-
         if (empty($log)) {
             return;
         }
 
-        $content = $message;
         if (!empty($details)) {
-            $content .= PHP_EOL . wp_json_encode($details, 0, self::MAX_DETAILS_DEPTH);
+            $content .= '<br />' . wp_json_encode($details, 0, self::MAX_DETAILS_DEPTH);
         }
 
         $levelType = '';
@@ -83,86 +61,59 @@ class LpcLogger {
             case self::DEBUG_LEVEL:
                 $levelType = 'DEBUG';
                 break;
-            case self::INFO_LEVEL:
-                $levelType = 'INFO';
+        }
+
+        $logs = json_decode(LpcHelper::get_option('lpc_logs', '[]'), true);
+
+        // Only keep logs X days old
+        $logsLifeLimit = strtotime('-' . self::MAX_LOGS_LIFE_IN_DAYS . ' days');
+        foreach ($logs as $oneLog) {
+            if ($oneLog['time'] >= $logsLifeLimit) {
                 break;
-        }
-
-        $logsPath = self::getLogsPath();
-        if (file_exists($logsPath)) {
-            $logFileContent  = file_get_contents($logsPath);
-            $logFileEachLine = explode(PHP_EOL, $logFileContent);
-
-            $logsLifeLimit = strtotime('-' . self::MAX_LOGS_LIFE_IN_DAYS . ' days');
-            foreach ($logFileEachLine as $oneLine) {
-                if (strpos($oneLine, '<log>') !== 0) {
-                    array_shift($logFileEachLine);
-                    continue;
-                }
-
-                $date = substr($oneLine, 5, 10);
-                if (strtotime($date) >= $logsLifeLimit) {
-                    break;
-                }
-
-                array_shift($logFileEachLine);
-            }
-        } else {
-            $logsDirPath = self::getLogsDirPath();
-            if (!is_dir($logsDirPath)) {
-                mkdir($logsDirPath, 0755, true);
             }
 
-            $logFileEachLine = [];
+            array_shift($logs);
         }
-        file_put_contents(
-            $logsPath,
-            implode(PHP_EOL, $logFileEachLine) . "\r\n<log>" . date('Y-m-d H:i:s', current_time('timestamp')) . ' - ' . $levelType . ' : ' . $content
-        );
+
+        // Don't go past a maximum number of logs to not clog database
+        if (count($logs) > self::MAX_LOG_BLOCKS) {
+            array_shift($logs);
+        }
+
+        $time   = current_time('timestamp');
+        $logs[] = [
+            'time'    => $time,
+            'content' => date('Y-m-d H:i:s', $time) . ' - ' . $levelType . ' : ' . $content,
+        ];
+
+        update_option('lpc_logs', json_encode($logs), false);
     }
 
     /**
      * Returns the X last lines of the log file
-     *
-     * @return bool|string
      */
-    public static function get_logs($lines = null, $downloadLink = '') {
-        $logsPath = self::getLogsPath();
-        if (!file_exists($logsPath)) {
+    public static function get_logs(?string $downloadLink = null, int $lines = self::LOG_BLOCKS_NB): string {
+        $logs = json_decode(LpcHelper::get_option('lpc_logs', '[]'), true);
+        if (empty($logs)) {
             return __('The logs file is empty', 'wc_colissimo');
         }
 
         $link = '';
         if (!empty($downloadLink)) {
-            $link = '<a id="colissimo_settings_logs_download_link" href="' . esc_url($downloadLink) . '">' . __('Download logs', 'wc_colissimo') . '</a>';
+            $link = '<a id="colissimo_settings_logs_download_link" href="' . esc_url($downloadLink) . '">' . esc_html__('Download logs', 'wc_colissimo') . '</a>';
         }
 
-        if (null == $lines) {
-            $lines = self::LOG_LINES_NB;
-        }
-
-        $f = fopen($logsPath, 'rb');
-        fseek($f, - 1, SEEK_END);
-        if (fread($f, 1) != PHP_EOL) {
+        $result = '';
+        $logs   = array_reverse($logs);
+        foreach ($logs as $oneLog) {
+            $result .= $oneLog['content'] . '<br /><br />';
             $lines --;
+
+            if (empty($lines)) {
+                break;
+            }
         }
 
-        $logFile = '';
-        while (ftell($f) > 0 && $lines >= 0) {
-            // Figure out how far back we should jump
-            $seek = min(ftell($f), 4096);
-            fseek($f, - $seek, SEEK_CUR);
-
-            // Get the line
-            $logFile = ($chunk = fread($f, $seek)) . $logFile;
-            fseek($f, - mb_strlen($chunk, '8bit'), SEEK_CUR);
-
-            // Move to previous line
-            $lines -= substr_count($chunk, PHP_EOL);
-        }
-
-        fclose($f);
-
-        return $link . trim(implode('<br><br>', array_reverse(explode("\r\n<log>", $logFile))));
+        return $link . $result;
     }
 }

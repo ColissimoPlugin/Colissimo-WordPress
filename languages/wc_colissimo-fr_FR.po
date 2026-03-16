@@ -1096,14 +1096,14 @@ msgstr "Fichier introuvable"
 msgid "The content of the file is empty"
 msgstr "Le contenu du fichier est vide"
 
-msgid "Missing columns in the imported CSV"
-msgstr "Colonnes manquantes dans le fichier CSV"
+msgid "Missing columns in the imported CSV file. Required columns: %s"
+msgstr "Colonnes manquantes dans le fichier CSV. Colonnes requises : %s"
 
 msgid "Could not insert tracking number for order(s): %s"
 msgstr "Import des numéros de suivi impossible pour les commande(s) suivante(s) : %s"
 
-msgid "You cannot do this action on imported tracking numbers"
-msgstr "Vous ne pouvez pas faire cette action sur un numéro de suivi importé"
+msgid "You cannot do this action on imported tracking numbers or purged labels."
+msgstr "Vous ne pouvez pas effectuer cette action sur un numéro de suivi importé ou une étiquette purgée."
 
 msgid "The labels that you've selected are imported tracking numbers, you cannot download them"
 msgstr "Les étiquettes que vous avez séléctionnées sont des numéros de suivi importés, vous ne pouvez pas les télécharger"
@@ -2446,8 +2446,8 @@ msgstr "Le poids de ce produit est supérieur à la limite autorisée par colis 
 msgid "Default Colissimo hazmat category"
 msgstr "Catégorie de matières dangereuses Colissimo par défaut"
 
-msgid "Add the extra cost to shipping price"
-msgstr "Répercuter le surcoût sur le prix de livraison"
+msgid "Extra cost for hazardous materials"
+msgstr "Surcoût pour les produits dangereux"
 
 msgid "The clients will pay the extra cost for hazardous materials along with the shipping price."
 msgstr "Les clients paieront le surcoût pour les matières dangereuses en même temps que le prix de livraison."
@@ -2455,8 +2455,8 @@ msgstr "Les clients paieront le surcoût pour les matières dangereuses en même
 msgid "Category"
 msgstr "Catégorie"
 
-msgid "Maximum quantity per parcel"
-msgstr "Quantité maximum par colis"
+msgid "Limited hazardous materials quantity"
+msgstr "Quantité limitée de matières dangereuses"
 
 msgid "Hazardous materials %1$s exceed the maximum allowed weight: %2$d/%3$dg."
 msgstr "Les matières dangereuses %1$s dépassent le poids maximum autorisé : %2$d/%3$dg."
@@ -2619,3 +2619,6 @@ msgstr "Les matières dangereuses ne sont pas autorisées en dehors de la France
 
 msgid "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"
 msgstr "https://www.colissimo.entreprise.laposte.fr/mon-compte#informations"
+
+msgid "According to contract"
+msgstr "Selon contrat"
