@@ -45,6 +45,16 @@ class LpcShippingRates extends LpcComponent {
     }
 
     public function export() {
+        if (!current_user_can('lpc_manage_settings')) {
+            header('HTTP/1.0 401 Unauthorized');
+
+            return $this->ajaxDispatcher->makeAndLogError(
+                [
+                    'message' => 'Unauthorized access',
+                ]
+            );
+        }
+
         $shippingMethod = WC_Shipping_Zones::get_shipping_method(LpcHelper::getVar('method_id'));
 
         $lines = [
@@ -95,6 +105,19 @@ class LpcShippingRates extends LpcComponent {
     }
 
     public function import() {
+        if (!current_user_can('lpc_manage_settings')) {
+            header('HTTP/1.0 401 Unauthorized');
+
+            die(
+            json_encode(
+                [
+                    'type'    => 'error',
+                    'message' => 'Unauthorized access',
+                ]
+            )
+            );
+        }
+
         if (!isset($_FILES['lpc_shipping_rates_import']['name'])) {
             die(json_encode(
                 [
@@ -221,6 +244,16 @@ class LpcShippingRates extends LpcComponent {
     }
 
     public function defaultPrices() {
+        if (!current_user_can('lpc_manage_settings')) {
+            header('HTTP/1.0 401 Unauthorized');
+
+            return $this->ajaxDispatcher->makeAndLogError(
+                [
+                    'message' => 'Unauthorized access',
+                ]
+            );
+        }
+
         $response = [
             'type'    => 'error',
             'message' => '',
@@ -300,6 +333,17 @@ class LpcShippingRates extends LpcComponent {
     }
 
     public function searchCategories(): void {
+        if (!current_user_can('lpc_manage_settings')) {
+            header('HTTP/1.0 401 Unauthorized');
+
+            wp_send_json(
+                [
+                    'results' => [],
+                    'more'    => false,
+                ]
+            );
+        }
+
         $search = LpcHelper::getVar('search');
         $page   = LpcHelper::getVar('page', 1);
 

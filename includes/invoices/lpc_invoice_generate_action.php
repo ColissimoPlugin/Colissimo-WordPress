@@ -77,16 +77,7 @@ class LpcInvoiceGenerateAction extends LpcComponent {
 
         // Products using email invoice structure
         $output .= '<tbody>';
-        $output .= wc_get_email_order_items(
-            $order,
-            [
-                'show_sku'      => false,
-                'show_image'    => false,
-                'image_size'    => [32, 32],
-                'plain_text'    => '',
-                'sent_to_admin' => false,
-            ]
-        );
+        $output .= $this->printProductArray($order);
 
         $output .= '</tbody>';
 
@@ -117,6 +108,79 @@ class LpcInvoiceGenerateAction extends LpcComponent {
         $output .= '</tfoot></table></div>';
 
         return $output;
+    }
+
+    /** Based on WooCommerce email templates without email improvements */
+    protected function printProductArray(WC_Order $order): string {
+        $productsArray = '';
+        $items         = $order->get_items();
+        foreach ($items as $item_id => $item) {
+            /**
+             * Email Order Item Visibility hook.
+             *
+             * This filter allows you to control the visibility of order items in emails.
+             *
+             * @param bool                  $visible Whether the item is visible in the email.
+             * @param WC_Order_Item_Product $item    The order item object.
+             *
+             * @since 2.1.0
+             */
+            if (!apply_filters('woocommerce_order_item_visible', true, $item)) {
+                continue;
+            }
+
+            /**
+             * Email Order Item Thumbnail hook.
+             *
+             * @param string                $item_class The item CSS class
+             * @param WC_Order_Item_Product $item       The item being displayed.
+             * @param WC_Order              $order      The order object.
+             *
+             * @since 2.1.0
+             */
+            $productsArray .= '<tr class="' . esc_attr(apply_filters('woocommerce_order_item_class', 'order_item', $item, $order)) . '">';
+            // Item name
+            $productsArray .= '<td class="td font-family text-align-left" style="vertical-align: middle; word-wrap:break-word;">';
+            /**
+             * Order Item Name hook.
+             *
+             * @param string                $item_name The item name HTML.
+             * @param WC_Order_Item_Product $item      The item being displayed.
+             *
+             * @since 2.1.0
+             */
+            $productsArray .= wp_kses_post(apply_filters('woocommerce_order_item_name', $item->get_name(), $item, false));
+            $productsArray .= '</td>';
+
+            // Item quantity
+            $productsArray .= '<td class="td font-family text-align-left" style="vertical-align:middle;">';
+            $qty           = $item->get_quantity();
+            $refunded_qty  = $order->get_qty_refunded_for_item($item_id);
+
+            if ($refunded_qty) {
+                $qty_display = '<del>' . esc_html($qty) . '</del> <ins>' . esc_html($qty - ($refunded_qty * - 1)) . '</ins>';
+            } else {
+                $qty_display = esc_html($qty);
+            }
+            /**
+             * Email Order Item Quantity hook.
+             *
+             * @param int           $quantity Item quantity.
+             * @param WC_Order_Item $item     Item object.
+             *
+             * @since 2.4.0
+             */
+            $productsArray .= wp_kses_post(apply_filters('woocommerce_email_order_item_quantity', $qty_display, $item));
+            $productsArray .= '</td>';
+
+            // Item price
+            $productsArray .= '<td class="td font-family text-align-left" style="vertical-align:middle;">';
+            $productsArray .= wp_kses_post($order->get_formatted_line_subtotal($item));
+            $productsArray .= '</td>
+			</tr>';
+        }
+
+        return $productsArray;
     }
 
     protected function printCustomerInformationInHTML(WC_Order $order) {

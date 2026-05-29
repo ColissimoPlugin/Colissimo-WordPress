@@ -36,7 +36,7 @@ class LpcPickupWebService extends LpcPickup {
 
         $this->modal = new LpcModal(null, $imageHtmlTag, 'lpc_pick_up_web_service');
 
-        $this->ajaxDispatcher->register('pickupWS', [$this, 'pickupWS']);
+        $this->ajaxDispatcher->register('pickupWS', [$this, 'pickupWS'], false);
 
         add_action(
             'wp_enqueue_scripts',
@@ -108,7 +108,7 @@ class LpcPickupWebService extends LpcPickup {
             'pickup' . DS . 'webservice_map.php',
             [
                 'ceAddress'     => str_replace('’', "'", $address),
-                'ceZipCode'     => preg_replace('#[^0-9]#', '', $postcode),
+                'ceZipCode'     => preg_replace('#[^0-9a-zA-Z]#', '', $postcode),
                 'ceTown'        => str_replace('’', "'", $city),
                 'ceCountryId'   => $country,
                 'maxRelayPoint' => LpcHelper::get_option('lpc_max_relay_point', 20),
@@ -126,7 +126,7 @@ class LpcPickupWebService extends LpcPickup {
 
         if ('yes' === LpcHelper::get_option('lpc_select_default_pr', 'no')
             && empty($currentRelay)
-            && count($address) == count(array_filter($address))) {
+            && count($address) === count(array_filter($address))) {
             $currentRelay = $this->getDefaultPickupLocationInfoWS($address);
         }
 

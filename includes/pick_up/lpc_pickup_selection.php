@@ -11,16 +11,21 @@ class LpcPickupSelection extends LpcComponent {
     const PICKUP_ADDRESS_FORCED_MARKER = 'lpc_forced_shipping_address_on_relay';
 
     protected $ajaxDispatcher;
+    protected LpcAccountApi $accountApi;
 
-    public function __construct(?LpcAjax $ajaxDispatcher = null) {
+    public function __construct(
+        ?LpcAjax $ajaxDispatcher = null,
+        ?LpcAccountApi $accountApi = null
+    ) {
         $this->ajaxDispatcher = LpcRegister::get('ajaxDispatcher', $ajaxDispatcher);
+        $this->accountApi     = LpcRegister::get('accountApi', $accountApi);
 
         add_filter('woocommerce_order_button_html', [$this, 'preventPlaceOrderButton'], 10, 2);
         add_action('woocommerce_checkout_process', [$this, 'preventCheckoutProcess']);
     }
 
     public function getDependencies(): array {
-        return ['ajaxDispatcher'];
+        return ['ajaxDispatcher', 'accountApi'];
     }
 
     public function init() {
@@ -30,7 +35,7 @@ class LpcPickupSelection extends LpcComponent {
     }
 
     protected function listenToPickUpSelection() {
-        $this->ajaxDispatcher->register(self::AJAX_TASK_NAME, [$this, 'pickUpLocationListener']);
+        $this->ajaxDispatcher->register(self::AJAX_TASK_NAME, [$this, 'pickUpLocationListener'], false);
     }
 
     public function pickUpLocationListener() {
@@ -98,36 +103,46 @@ class LpcPickupSelection extends LpcComponent {
         add_action('woocommerce_store_api_checkout_update_order_meta', [$this, 'onCheckoutOrderUpdated']);
         add_action('woocommerce_store_api_checkout_order_processed', [$this, 'onCheckoutOrderUpdated']);
         add_action('woocommerce_update_order', [$this, 'forceShippingAddressOnRelay']);
+        add_action('woocommerce_checkout_order_processed', [$this, 'savePickupAddressOnOrder'], 10, 2);
+        add_action('woocommerce_store_api_checkout_order_processed', [$this, 'colissimoUsageApi'], 10, 1);
+    }
 
-        add_action(
-            'woocommerce_checkout_order_processed',
-            function ($orderId, $posted_data = []) {
-                $order = wc_get_order($orderId);
-                if (empty($order)) {
-                    return;
-                }
+    public function colissimoUsageApi($order): void {
+        $shippings = $order->get_shipping_methods();
+        if (empty($shippings)) {
+            return;
+        }
 
-                $shippings = $order->get_shipping_methods();
-                $shipping  = current($shippings);
+        $shipping = current($shippings);
+        $this->colissimoUsagePing($shipping->get_method_id());
+    }
 
-                if (!empty($shipping)) {
-                    $shippingMethod = $shipping->get_method_id();
-                    if (LpcRelay::ID === $shippingMethod) {
-                        $pickUpInfo = $this->getCurrentPickUpLocationInfo();
-                        $this->updatePickupMeta($order, $pickUpInfo);
-                    }
-                } elseif (!empty($posted_data['shipping_method'])) {
-                    // When activating the synced renewal on a subscription product, for some reason the shipping info isn't on the order
-                    $shippingMethod = array_pop($posted_data['shipping_method']);
-                    if (strpos($shippingMethod, LpcRelay::ID) !== false) {
-                        // The action woocommerce_checkout_order_created didn't update the shipping address so we do it here
-                        $this->setPickupAsShippingAddress($order);
-                    }
-                }
-            },
-            10,
-            2
-        );
+    public function savePickupAddressOnOrder($orderId, $posted_data = []) {
+        $order = wc_get_order($orderId);
+        if (empty($order)) {
+            return;
+        }
+
+        $shippings = $order->get_shipping_methods();
+        $shipping  = current($shippings);
+
+        $shippingMethod = '';
+        if (!empty($shipping)) {
+            $shippingMethod = $shipping->get_method_id();
+            if (LpcRelay::ID === $shippingMethod) {
+                $pickUpInfo = $this->getCurrentPickUpLocationInfo();
+                $this->updatePickupMeta($order, $pickUpInfo);
+            }
+        } elseif (!empty($posted_data['shipping_method'])) {
+            // When activating the synced renewal on a subscription product, for some reason the shipping info isn't on the order
+            $shippingMethod = array_pop($posted_data['shipping_method']);
+            if (strpos($shippingMethod, LpcRelay::ID) !== false) {
+                // The action woocommerce_checkout_order_created didn't update the shipping address so we do it here
+                $this->setPickupAsShippingAddress($order);
+            }
+        }
+
+        $this->colissimoUsagePing($shippingMethod);
     }
 
     public function forceShippingAddressOnRelay(int $orderId) {
@@ -378,5 +393,11 @@ class LpcPickupSelection extends LpcComponent {
         }
 
         return true;
+    }
+
+    private function colissimoUsagePing(string $shippingMethodId) {
+        if (strpos($shippingMethodId, 'lpc_') !== false) {
+            $this->accountApi->getAccountInformation([], true);
+        }
     }
 }

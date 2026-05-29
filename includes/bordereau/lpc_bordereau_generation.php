@@ -73,6 +73,16 @@ class LpcBordereauGeneration extends LpcComponent {
     }
 
     public function control() {
+        if (!current_user_can('lpc_manage_bordereau')) {
+            header('HTTP/1.0 401 Unauthorized');
+
+            return $this->ajaxDispatcher->makeAndLogError(
+                [
+                    'message' => 'Unauthorized access',
+                ]
+            );
+        }
+
         $outwardLabelsOrderIds = $this->outwardLabelDb->getOutwardLabelOrderIdOfTheDayWithoutBordereau();
 
         if (!empty($outwardLabelsOrderIds)) {

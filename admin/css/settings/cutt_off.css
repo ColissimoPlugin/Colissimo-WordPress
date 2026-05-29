@@ -3,14 +3,8 @@
 }
 
 .lpc_cuttoff_container{
-	max-width: 1200px;
-	margin: 0 auto;
-}
-
-.lpc_cuttoff_content-wrapper{
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 40px;
+	max-width: 750px;
+	margin: 0 auto 0 0;
 }
 
 /* Weekly Schedule Styles */
@@ -95,7 +89,8 @@
 
 #exceptionsList .exception-item input[type="date"],
 #exceptionsList .exception-item select,
-#weeklyTable select{
+#weeklyTable select,
+#weeklyTable input[type="number"]{
 	width: 100%;
 	padding: 8px 12px;
 	border: 1px solid #ddd;
@@ -132,10 +127,6 @@
 }
 
 @media (max-width: 768px){
-	.lpc_cuttoff_content-wrapper{
-		grid-template-columns: 1fr;
-	}
-
 	#exceptionsList .exception-item{
 		grid-template-columns: 1fr;
 	}

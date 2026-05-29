@@ -8,8 +8,11 @@ jQuery(function ($) {
     initCuttOff();
 
     function initializeWeeklySchedule() {
-        // Bind change event
+        // Bind change events
         $(document).on('change', '.day-select', function () {
+            updateJsonOutput();
+        });
+        $(document).on('change', '.preparation-delay', function () {
             updateJsonOutput();
         });
     }
@@ -45,7 +48,8 @@ jQuery(function ($) {
 
             // Set weekly schedule
             for (const [weekDay, time] of Object.entries(data.weekly_schedule)) {
-                $(`.day-select[data-day="${weekDay}"]`).val(time);
+                $(`[data-day="${weekDay}"] .day-select`).val(time.cuttOff);
+                $(`[data-day="${weekDay}"] .preparation-delay`).val(time.delay);
             }
 
             // Set exceptions
@@ -78,7 +82,10 @@ jQuery(function ($) {
 
         // Collect weekly schedule
         days.forEach(day => {
-            schedule[day] = $(`.day-select[data-day="${day}"]`).val();
+            schedule[day] = {
+                cuttOff: $(`[data-day="${day}"] .day-select`).val(),
+                delay: $(`[data-day="${day}"] .preparation-delay`).val()
+            };
         });
 
         // Collect exceptions

@@ -88,27 +88,26 @@ class LpcCheckoutApi extends LpcRestApi {
             return null;
         }
 
-        $time            = time();
-        $preparationTime = (int) LpcHelper::get_option('lpc_preparation_time');
-        $preparationTime *= self::SECONDS_IN_A_DAY;
-
         $nbTries     = 0;
+        $time        = time();
         $currentTime = (int) wp_date('H', $time);
+
+        // Find the processing day
         do {
-            $dayTime           = $time + $preparationTime + ($nbTries * self::SECONDS_IN_A_DAY);
-            $processingDate    = wp_date('Y-m-d', $dayTime);
-            $processingWeekday = wp_date('N', $dayTime);
+            $processingTime    = $time + ($nbTries * self::SECONDS_IN_A_DAY);
+            $processingDate    = wp_date('Y-m-d', $processingTime);
+            $processingWeekday = wp_date('N', $processingTime);
 
             // Check exceptions first
             $cuttOffTimeFromRules = $this->getExceptionCuttOff($cuttOffDates, $processingDate);
 
             // Get global weekday rule as a fallback
             if (empty($cuttOffTimeFromRules)) {
-                $cuttOffTimeFromRules = $cuttOffDates['weekly_schedule'][LpcHelper::DAYS[$processingWeekday]] ?? null;
+                $cuttOffTimeFromRules = $cuttOffDates['weekly_schedule'][LpcHelper::DAYS[$processingWeekday]]['cuttOff'] ?? null;
             }
 
             // For the first day, we accept orders placed before the cuttoff hour. For next days the order is ready the first business hour so don't check the time
-            if (0 === $nbTries && empty($preparationTime) && !empty($cuttOffTimeFromRules) && 'none' !== $cuttOffTimeFromRules && $currentTime > (int) $cuttOffTimeFromRules) {
+            if (0 === $nbTries && !empty($cuttOffTimeFromRules) && ('none' === $cuttOffTimeFromRules || $currentTime > (int) $cuttOffTimeFromRules)) {
                 $cuttOffTimeFromRules = null;
             }
 
@@ -119,7 +118,18 @@ class LpcCheckoutApi extends LpcRestApi {
             return null;
         }
 
-        return $processingDate;
+        // Apply the processing time
+        $preparationTime = (int) LpcHelper::get_option('lpc_preparation_time');
+
+        if (!empty($cuttOffDates['weekly_schedule'][LpcHelper::DAYS[$processingWeekday]]['delay'])) {
+            $preparationTime = (int) $cuttOffDates['weekly_schedule'][LpcHelper::DAYS[$processingWeekday]]['delay'];
+        }
+
+        if (!empty($preparationTime)) {
+            $processingTime += $preparationTime * self::SECONDS_IN_A_DAY;
+        }
+
+        return wp_date('Y-m-d', $processingTime);
     }
 
     private function getExceptionCuttOff(array $cuttOffDates, string $date): ?string {

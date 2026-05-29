@@ -57,6 +57,7 @@ class LpcIncludeInit {
         LpcRegister::register('orderStatuses', new LpcOrderStatuses());
         LpcRegister::register('checkoutApi', new LpcCheckoutApi());
         LpcRegister::register('shippingMethods', new LpcShippingMethods());
+        LpcRegister::register('accountApi', new LpcAccountApi());
         LpcRegister::register('pickupSelection', new LpcPickupSelection());
         LpcRegister::register('pickupWebService', new LpcPickupWebService());
         LpcRegister::register('pickupWidgetApi', new LpcPickUpWidgetApi());
@@ -73,7 +74,6 @@ class LpcIncludeInit {
 
         LpcRegister::register('labelPackager', new LpcLabelPackager());
 
-        LpcRegister::register('accountApi', new LpcAccountApi());
         LpcRegister::register('labelGenerationInward', new LpcLabelGenerationInward());
         LpcRegister::register('labelGenerationOutward', new LpcLabelGenerationOutward());
         LpcRegister::register('labelGenerationAuto', new LpcLabelGenerationAuto());

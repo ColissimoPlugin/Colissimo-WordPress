@@ -199,12 +199,16 @@ jQuery(function ($) {
                 }
             }
 
+            const nonceParam = $(this).data('nonce-param');
+            const nonce = $(this).data('nonce');
+
             $.ajax({
                 url: ajaxurl,
                 type: 'POST',
                 dataType: 'json',
                 data: {
                     action: 'lpc_order_generate_label',
+                    [nonceParam]: nonce,
                     order_id: orderId,
                     label_type: $('select[name="lpc__admin__order_banner__generate_label__outward_or_inward"]').val(),
                     items: itemsForLabel,
@@ -343,6 +347,9 @@ jQuery(function ($) {
                 orderId = urlParams.get('id');
             }
 
+            const $tableContainer = $(this).closest('table');
+
+            formData.append($tableContainer.data('nonce-param'), $tableContainer.data('nonce'));
             formData.append('action', 'lpc_order_send_documents');
             formData.append('order_id', orderId);
 

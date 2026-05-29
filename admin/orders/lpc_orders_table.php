@@ -380,8 +380,8 @@ class LpcOrdersTable extends WP_List_Table {
 
 		<label>
 			<input type="checkbox"
-				   name="order_country[]" <?php checked(in_array('', $selectedCountries)); ?>
-				   value="">
+			       name="order_country[]" <?php checked(in_array('', $selectedCountries)); ?>
+			       value="">
             <?php esc_html_e('All countries', 'wc_colissimo'); ?>
 		</label>
         <?php
@@ -531,22 +531,22 @@ class LpcOrdersTable extends WP_List_Table {
     }
 
     public function process_bulk_action() {
-        if (!empty($_REQUEST['_wpnonce'])) {
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-            $nonce  = wp_unslash($_REQUEST['_wpnonce']);
-            $action = 'bulk-' . $this->_args['plural'];
-
-            if (!wp_verify_nonce($nonce, $action)) {
-                wp_die(__('Access denied! (Security check failed)', 'wc_colissimo'));
-            }
-        } else {
+        if (empty($_REQUEST['_wpnonce'])) {
             return;
+        }
+
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        $nonce  = wp_unslash($_REQUEST['_wpnonce']);
+        $action = 'bulk-' . $this->_args['plural'];
+
+        if (!wp_verify_nonce($nonce, $action)) {
+            wp_die(__('Access denied! (Security check failed)', 'wc_colissimo'));
         }
 
         $action = $this->current_action();
         $ids    = LpcHelper::getVar(self::BULK_ACTION_IDS_PARAM_NAME, [], 'array');
         if (empty($ids)) {
-            // no selectionned IDs on bulk actions => nothing to do.
+            // No selected orders on bulk actions => nothing to do.
             return;
         }
 
@@ -558,31 +558,45 @@ class LpcOrdersTable extends WP_List_Table {
                 break;
 
             case self::BULK_LABEL_DOWNLOAD_ACTION_NAME:
-                $this->bulkLabelDownload($ids);
+                if (current_user_can('lpc_download_labels')) {
+                    $this->bulkLabelDownload($ids);
+                }
                 break;
 
             case self::BULK_LABEL_GENERATION_OUTWARD_ACTION_NAME:
-                $this->bulkLabelGeneration($this->labelGenerationOutward, $ids);
+                if (current_user_can('lpc_manage_labels')) {
+                    $this->bulkLabelGeneration($this->labelGenerationOutward, $ids);
+                }
                 break;
 
             case self::BULK_LABEL_GENERATION_INWARD_ACTION_NAME:
-                $this->bulkLabelGeneration($this->labelGenerationInward, $ids);
+                if (current_user_can('lpc_manage_labels')) {
+                    $this->bulkLabelGeneration($this->labelGenerationInward, $ids);
+                }
                 break;
 
             case self::BULK_LABEL_PRINT_INWARD_ACTION_NAME:
-                $this->bulkLabelPrint($ids, LpcInwardLabelDb::LABEL_TYPE_INWARD);
+                if (current_user_can('lpc_print_labels')) {
+                    $this->bulkLabelPrint($ids, LpcInwardLabelDb::LABEL_TYPE_INWARD);
+                }
                 break;
 
             case self::BULK_LABEL_PRINT_OUTWARD_ACTION_NAME:
-                $this->bulkLabelPrint($ids, LpcOutwardLabelDb::LABEL_TYPE_OUTWARD);
+                if (current_user_can('lpc_print_labels')) {
+                    $this->bulkLabelPrint($ids, LpcOutwardLabelDb::LABEL_TYPE_OUTWARD);
+                }
                 break;
 
             case self::BULK_LABEL_PRINT_ACTION_NAME:
-                $this->bulkLabelPrint($ids, LpcLabelPrintAction::PRINT_LABEL_TYPE_OUTWARD_AND_INWARD);
+                if (current_user_can('lpc_print_labels')) {
+                    $this->bulkLabelPrint($ids, LpcLabelPrintAction::PRINT_LABEL_TYPE_OUTWARD_AND_INWARD);
+                }
                 break;
 
             case self::BULK_LABEL_DELETE_LABEL:
-                $this->bulkDeleteLabel($ids);
+                if (current_user_can('lpc_delete_labels')) {
+                    $this->bulkDeleteLabel($ids);
+                }
                 break;
         }
     }

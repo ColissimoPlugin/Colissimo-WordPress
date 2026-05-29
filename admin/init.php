@@ -39,6 +39,9 @@ if (file_exists(LPC_FOLDER . 'dev-tools' . DS . 'capabilities' . DS . 'lpc_capab
 }
 
 class LpcAdminInit {
+    const NONCE_DISMISS_FEEDBACK = '_lpc_dismiss';
+    const NONCE_NAME_DISMISS_FEEDBACK = 'colissimo_dismiss';
+
     public function __construct() {
         // Add left menu
         add_action('admin_menu', [$this, 'add_menus'], 99);
@@ -151,7 +154,9 @@ class LpcAdminInit {
     }
 
     public function dismissFeedback() {
-        update_option('lpc_feedback_dismissed', true, false);
+        if (1 === (int) check_ajax_referer(self::NONCE_NAME_DISMISS_FEEDBACK, self::NONCE_DISMISS_FEEDBACK, false)) {
+            update_option('lpc_feedback_dismissed', true, false);
+        }
     }
 
     public function showFeedbackModal() {

@@ -139,10 +139,18 @@ jQuery(function ($) {
     }
 
     function shippingDate() {
-        const $customizeWidget = $('#lpc_display_shipping_date');
+        const $showEstimatedShippingDate = $('#lpc_display_shipping_date');
         const $shippingDateOptionsContainers = $('.wc-settings-row-lpc_delivery_date_container');
+        const $depositLocationSelect = $('#lpc_delivery_date_deposit_location');
 
-        $customizeWidget.on('change', function () {
+        if (!$depositLocationSelect.length) {
+            $showEstimatedShippingDate.closest('tr').hide();
+            $shippingDateOptionsContainers.hide();
+
+            return;
+        }
+
+        $showEstimatedShippingDate.on('change', function () {
             if ($(this).is(':checked')) {
                 $shippingDateOptionsContainers.show();
             } else {

@@ -59,7 +59,19 @@ class LpcLabelGenerationPayload {
     private const GB_COUNTRY_CODE = 'GB';
     public const COUNTRIES_NEEDING_STATE = ['CA', self::US_COUNTRY_CODE];
     public const COUNTRIES_FTD = ['GF', 'GP', 'MQ', 'RE'];
-    public const COUNTRIES_WITH_PARTNER_SHIPPING = ['AT', 'BE', 'DE', 'IT', 'LU'];
+    public const COUNTRIES_WITH_PARTNER_SHIPPING = [
+        'AT' => 'lpc_domicileas_SendingService_austria',
+        'BE' => 'lpc_domicileas_SendingService_belgium',
+        'DE' => 'lpc_domicileas_SendingService_germany',
+        'DK' => 'lpc_domicileas_SendingService_denmark',
+        'EE' => 'lpc_domicileas_SendingService_estonia',
+        'ES' => 'lpc_domicileas_SendingService_spain',
+        'FI' => 'lpc_domicileas_SendingService_finland',
+        'IT' => 'lpc_domicileas_SendingService_italy',
+        'LU' => 'lpc_domicileas_SendingService_luxembourg',
+        'NL' => 'lpc_domicileas_SendingService_netherlands',
+        'PL' => 'lpc_domicileas_SendingService_poland',
+    ];
     public const HAZMAT_ATTRIBUTE = 'lpc-hazmat-category';
     public const HAZMAT_CATEGORIES = [
         'lpc-cata' => [
@@ -139,14 +151,14 @@ class LpcLabelGenerationPayload {
         }
 
         $payloadSender = [
-            'companyName' => @$sender['companyName'],
-            'firstName'   => @$sender['firstName'],
-            'lastName'    => @$sender['lastName'],
-            'line2'       => @$sender['street'],
+            'companyName' => $sender['companyName'] ?? '',
+            'firstName'   => LpcHelper::toAscii($sender['firstName'] ?? ''),
+            'lastName'    => LpcHelper::toAscii($sender['lastName'] ?? ''),
+            'line2'       => $sender['street'] ?? '',
             'countryCode' => $sender['countryCode'],
             'city'        => $sender['city'],
             'zipCode'     => $sender['zipCode'],
-            'email'       => @$sender['email'],
+            'email'       => $sender['email'] ?? '',
         ];
 
         if (!empty($customParams['sender'])) {
@@ -236,17 +248,17 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
-    public function withAddressee(array $addressee) {
+    public function withAddressee(array $addressee, string $shippingMethodUsed) {
         $payloadAddressee = [
             'address' => [
-                'companyName' => @$addressee['companyName'],
-                'firstName'   => @$addressee['firstName'],
-                'lastName'    => @$addressee['lastName'],
+                'companyName' => $addressee['companyName'] ?? '',
+                'firstName'   => LpcHelper::toAscii($addressee['firstName'] ?? ''),
+                'lastName'    => LpcHelper::toAscii($addressee['lastName'] ?? ''),
                 'line2'       => $addressee['street'],
                 'countryCode' => $addressee['countryCode'],
                 'city'        => $addressee['city'],
                 'zipCode'     => $addressee['zipCode'],
-                'email'       => @$addressee['email'],
+                'email'       => $addressee['email'] ?? '',
             ],
         ];
 
@@ -267,7 +279,15 @@ class LpcLabelGenerationPayload {
                 $phoneNumber = preg_replace('/(04|00324)([0-9]{8})/', '+324$2', $phoneNumber);
             }
 
-            $phoneField             = self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode'] || self::US_COUNTRY_CODE === $addressee['countryCode'] ? 'mobileNumber' : 'phoneNumber';
+            $phoneField = 'phoneNumber';
+            if (
+                self::PRODUCT_CODE_RELAY === $this->payload['letter']['service']['productCode']
+                || in_array($shippingMethodUsed, [LpcSignDDP::ID, LpcExpertDDP::ID])
+                || self::US_COUNTRY_CODE === $addressee['countryCode']
+            ) {
+                $phoneField = 'mobileNumber';
+            }
+
             $addressee[$phoneField] = $phoneNumber;
         }
 
@@ -686,7 +706,7 @@ class LpcLabelGenerationPayload {
         }
 
         // Must have a phone number
-        if (empty($address['phoneNumber']) && empty($address['mobileNumber'])) {
+        if (empty($address['mobileNumber'])) {
             LpcLogger::error(
                 'Phone number missing for DDP label generation',
                 [
@@ -782,8 +802,10 @@ class LpcLabelGenerationPayload {
         $customsArticles     = [];
         $totalItemsAmount    = 0;
         $articleDescriptions = [];
+        $lastMidCode         = '';
+        $orderItems          = $order->get_items();
 
-        foreach ($order->get_items() as $item) {
+        foreach ($orderItems as $item) {
             $itemId = $item->get_id();
 
             if (!$isMasterParcel && $isCustomItems && !isset($customParams['items'][$itemId])) {
@@ -823,8 +845,12 @@ class LpcLabelGenerationPayload {
 
             $totalItemsAmount += $unitaryValue * $quantity;
 
-            // Handle emojis in product name
-            $description        = $item->get_name();
+            $description = $this->getProductCustomsDescription($product);
+            if (empty($description)) {
+                $description = $item->get_name();
+            }
+
+            // Handle emojis in product description
             $encodedDescription = wp_json_encode($description);
             if (strpos($encodedDescription, '\u') !== false) {
                 $description = trim(preg_replace('#\\\u.{4}#Ui', '', trim($encodedDescription, '"')));
@@ -833,7 +859,16 @@ class LpcLabelGenerationPayload {
             // The Colissimo API returns an error if there is an accent
             $description = LpcHelper::replaceAccents($description);
 
-            $description           = substr($description, 0, 64);
+            $midCode     = $this->getProductMidCode($product);
+            $lastMidCode = $midCode;
+            if (!empty($midCode) && self::US_COUNTRY_CODE === $destinationCountryId) {
+                $midCode     = ' - MID: ' . $midCode;
+                $description = substr($description, 0, 64 - strlen($midCode));
+                $description .= $midCode;
+            } else {
+                $description = substr($description, 0, 64);
+            }
+
             $articleDescriptions[] = $description;
 
             $customsArticle = [
@@ -879,17 +914,16 @@ class LpcLabelGenerationPayload {
             'invoiceNumber'              => $order->get_order_number(),
         ];
 
-        $midCode = LpcHelper::get_option('lpc_mid_code');
-        if (!empty($midCode) && self::US_COUNTRY_CODE === $destinationCountryId) {
-            $midCode                               = 'MID: ' . $midCode;
-            $customsDeclarationPayload['comments'] = $midCode;
+        if (!empty($lastMidCode) && self::US_COUNTRY_CODE === $destinationCountryId && count($orderItems) === 1) {
+            $customsDeclarationPayload['comments'] = 'MID: ' . $lastMidCode;
         }
 
         if (!empty($shippingMethodUsed) && in_array($shippingMethodUsed, [LpcSignDDP::ID, LpcExpertDDP::ID])) {
             $description = empty($customParams['description']) ? implode(' ', $articleDescriptions) : $customParams['description'];
             $description = substr($description, 0, 64);
 
-            if (!empty($midCode) && self::US_COUNTRY_CODE === $destinationCountryId) {
+            if (!empty($lastMidCode) && self::US_COUNTRY_CODE === $destinationCountryId) {
+                $midCode     = 'MID: ' . $lastMidCode;
                 $description = substr($description, 0, 64 - strlen(' - ' . $midCode));
                 $description .= ' - ' . $midCode;
             }
@@ -993,6 +1027,29 @@ class LpcLabelGenerationPayload {
         return $this;
     }
 
+    protected function getProductCustomsDescription($product): string {
+        $descriptionFieldName = LpcHelper::get_option('lpc_customs_descriptionFieldName');
+
+        if (empty($descriptionFieldName)) {
+            return '';
+        }
+
+        $description = $product->get_attribute($descriptionFieldName);
+        if (!empty($description)) {
+            return $description;
+        }
+
+        $parentProduct = wc_get_product($product->get_parent_id());
+        if (!empty($parentProduct)) {
+            $description = $parentProduct->get_attribute($descriptionFieldName);
+            if (!empty($description)) {
+                return $description;
+            }
+        }
+
+        return '';
+    }
+
     /**
      * Retrieve product Origin Country
      *
@@ -1051,6 +1108,29 @@ class LpcLabelGenerationPayload {
 
         // Set default HS code if not defined on the product
         return $defaultHsCode;
+    }
+
+    protected function getProductMidCode($product): string {
+        $defaultMidCode   = LpcHelper::get_option('lpc_mid_code');
+        $midCodeFieldName = LpcHelper::get_option('lpc_customs_midFieldName');
+        $midCode          = $product->get_attribute($midCodeFieldName);
+
+        if (!empty($midCode)) {
+            return $midCode;
+        }
+
+        // If empty, we check if the parent product has the attribute (for variable products)
+        $parentProduct = wc_get_product($product->get_parent_id());
+
+        if (!empty($parentProduct)) {
+            $midCode = $parentProduct->get_attribute($midCodeFieldName);
+
+            if (!empty($midCode)) {
+                return $midCode;
+            }
+        }
+
+        return $defaultMidCode;
     }
 
     public function isReturnLabel() {
@@ -1402,20 +1482,15 @@ class LpcLabelGenerationPayload {
     }
 
     public function withPostalNetwork($countryCode) {
-        if (in_array($countryCode, self::COUNTRIES_WITH_PARTNER_SHIPPING) && self::PRODUCT_CODE_WITH_SIGNATURE === $this->payload['letter']['service']['productCode']) {
-            $countries = [
-                'AT' => 'lpc_domicileas_SendingService_austria',
-                'BE' => 'lpc_domicileas_SendingService_belgium',
-                'DE' => 'lpc_domicileas_SendingService_germany',
-                'IT' => 'lpc_domicileas_SendingService_italy',
-                'LU' => 'lpc_domicileas_SendingService_luxembourg',
-            ];
-
+        if (
+            self::PRODUCT_CODE_WITH_SIGNATURE === $this->payload['letter']['service']['productCode']
+            && !empty(self::COUNTRIES_WITH_PARTNER_SHIPPING[$countryCode])
+        ) {
             $customSendingService = isset($_REQUEST['lpc__admin__order_banner__generate_label__sending_service'])
                 ? sanitize_text_field(wp_unslash($_REQUEST['lpc__admin__order_banner__generate_label__sending_service']))
-                : LpcHelper::get_option($countries[$countryCode]);
+                : LpcHelper::get_option(self::COUNTRIES_WITH_PARTNER_SHIPPING[$countryCode]);
 
-            $this->payload['letter']['service']['reseauPostal'] = 'dpd' === $customSendingService ? 0 : 1;
+            $this->payload['letter']['service']['reseauPostal'] = 'partner' === $customSendingService ? 1 : 0;
         }
 
         return $this;

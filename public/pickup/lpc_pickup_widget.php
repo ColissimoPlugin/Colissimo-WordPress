@@ -110,12 +110,7 @@ class LpcPickupWidget extends LpcPickup {
             $availableCountries = ['FR'];
         }
 
-        $address  = str_replace('’', "'", $customer['shipping_address'] ?? '5 Parc du Champ de Mars');
-        $postcode = $customer['shipping_postcode'] ?? '75007';
-        $city     = str_replace('’', "'", $customer['shipping_city'] ?? 'Paris');
-        $country  = $customer['shipping_country'] ?? 'FR';
-
-        $relayTypes = LpcHelper::get_option('lpc_relay_types', '');
+        $relayTypes = LpcHelper::get_option('lpc_relay_types');
         if (empty($relayTypes)) {
             $relayTypes = '1';
         } elseif ('-1' === $relayTypes) {
@@ -124,20 +119,30 @@ class LpcPickupWidget extends LpcPickup {
 
         $widgetInfo = [
             'URLColissimo'      => self::BASE_URL,
-            'ceLang'            => defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'FR',
-            'ceCountryList'     => implode(',', $availableCountries),
-            'ceAddress'         => $address,
-            'ceZipCode'         => preg_replace('#[^0-9]#', '', $postcode),
-            'ceTown'            => $city,
-            'ceCountry'         => $country,
+            'ceCountry'         => $customer['shipping_country'] ?? 'FR',
             'token'             => $this->pickUpWidgetApi->authenticate(),
+            'ceCountryList'     => implode(',', $availableCountries),
             'dyPreparationTime' => LpcHelper::get_option('lpc_preparation_time', 1),
-            'dyWeight'          => '19000',
+            'dyWeight'          => (int) wc_get_weight(WC()->cart->get_cart_contents_weight(), 'g'),
             'origin'            => 'CMS',
             'filterRelay'       => $relayTypes,
         ];
 
-        if (LpcHelper::get_option('lpc_prCustomizeWidget', 'no') == 'yes') {
+        $address = str_replace('’', "'", $customer['shipping_address'] ?? '');
+        if (!empty($address)) {
+            $widgetInfo['ceAddress'] = $address;
+        }
+
+        if (!empty($customer['shipping_postcode'])) {
+            $widgetInfo['ceZipCode'] = preg_replace('#[^0-9a-zA-Z]#', '', $customer['shipping_postcode']);
+        }
+
+        $city = str_replace('’', "'", $customer['shipping_city'] ?? '');
+        if (!empty($city)) {
+            $widgetInfo['ceTown'] = $city;
+        }
+
+        if (LpcHelper::get_option('lpc_prCustomizeWidget', 'no') === 'yes') {
             $lpcAddressTextColor = LpcHelper::get_option('lpc_prAddressTextColor', null);
             if (!empty($lpcAddressTextColor)) {
                 $widgetInfo['couleur1'] = $lpcAddressTextColor;

@@ -3,15 +3,13 @@
 defined('ABSPATH') || die('Restricted Access');
 
 class LpcAdminOrderAffect extends LpcComponent {
+    const NONCE_SWITCH_METHOD = '_lpc_switch_method';
+    const NONCE_NAME_SWITCH_METHOD = 'colissimo_switch_method';
 
     protected $lpcShippingMethods;
-
     protected $lpcCapabilitiesByCountry;
-
     protected $lpcAdminPickupWebService;
-
     protected $lpcAdminPickupWidget;
-
 
     public function __construct(
         ?LpcShippingMethods $shippingMethods = null,
@@ -82,6 +80,10 @@ class LpcAdminOrderAffect extends LpcComponent {
     }
 
     public function updateShippingMethod() {
+        if (!current_user_can('lpc_colissimo_bandeau') || 1 !== (int) check_ajax_referer(self::NONCE_NAME_SWITCH_METHOD, self::NONCE_SWITCH_METHOD, false)) {
+            LpcHelper::endAjax(false, ['message' => 'Unauthorized access']);
+        }
+
         $orderId = LpcHelper::getVar('order_id');
         if (empty($orderId)) {
             LpcHelper::endAjax(false, ['message' => 'Order not found']);

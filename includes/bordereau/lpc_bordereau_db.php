@@ -116,57 +116,20 @@ END_SQL;
         dbDelta($this->getTableDefinition());
 
         global $wpdb;
-        $query = "SELECT DISTINCT bordereau_id, order_id FROM {$wpdb->prefix}lpc_outward_label WHERE bordereau_id IS NOT NULL AND bordereau_id != 0";
+        $query = "SELECT DISTINCT bordereau_id FROM {$wpdb->prefix}lpc_outward_label WHERE bordereau_id IS NOT NULL AND bordereau_id != 0";
 
         // phpcs:disable
-        $results = $wpdb->get_results($query);
-
-        if (empty($results)) {
+        $deliverySlipIds = $wpdb->get_col($query);
+        if (empty($deliverySlipIds)) {
             return;
         }
 
-        $tableName          = $this->getTableName();
-        $bordereauxToInsert = [];
-        foreach ($results as $result) {
-            try {
-                $bordereau = $this->bordereauGenerationApi->getBordereauByNumber($result->bordereau_id)->bordereau;
-            } catch (Exception $exception) {
-                LpcLogger::error(
-                    'Could not load the bordereau from the Colissimo API',
-                    [
-                        'bordereau_id' => $result->bordereau_id,
-                        'message'      => $exception->getMessage(),
-                    ]
-                );
-                continue;
-            }
-            $bordereauxToInsert[] = $wpdb->prepare(
-                '(%d, %s)',
-                $result->bordereau_id,
-                date('Y-m-d H:i:s', strtotime($bordereau->bordereauHeader->publishingDate))
-            );
-
-            $order = wc_get_order($result->order_id);
-            if (empty($order)) {
-                continue;
-            }
-
-            $order->delete_meta_data('lpc_bordereau_id');
-            $order->save();
-        }
-
-        if (empty($bordereauxToInsert)) {
-            return;
-        }
-
-        $stringBordereauxToInsert = implode(',', $bordereauxToInsert);
-
-        $queryInsertLabels = <<<END_SQL
-INSERT INTO $tableName (`bordereau_external_id`, `created_at`) 
-VALUES $stringBordereauxToInsert
-END_SQL;
-
-        $wpdb->query($queryInsertLabels);
+        LpcLogger::error(
+            'Previous version too old to load the delivery slips from the Colissimo API',
+            [
+                'delivery_slip_ids' => implode(',', $deliverySlipIds),
+            ]
+        );
         // phpcs:enable
     }
 

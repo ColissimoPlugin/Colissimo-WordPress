@@ -18,7 +18,6 @@ abstract class LpcRestApi extends LpcComponent {
         $unsafeFileUpload = false
     ) {
         $url = $this->getApiUrl($action);
-        LpcLogger::debug(__METHOD__, ['url' => $url]);
 
         switch ($dataType) {
             case self::DATA_TYPE_URL:

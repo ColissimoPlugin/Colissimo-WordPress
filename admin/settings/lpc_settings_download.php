@@ -35,6 +35,16 @@ class LpcSettingsDownload extends LpcComponent {
     }
 
     public function logs() {
+        if (!current_user_can('manage_options')) {
+            header('HTTP/1.0 401 Unauthorized');
+
+            return $this->ajaxDispatcher->makeAndLogError(
+                [
+                    'message' => 'Unauthorized access',
+                ]
+            );
+        }
+
         $logs = LpcLogger::get_logs('', LpcLogger::ALL_LINES);
         if (!empty($logs)) {
             $this->downloadFile(
@@ -49,6 +59,16 @@ class LpcSettingsDownload extends LpcComponent {
     }
 
     public function doc() {
+        if (!current_user_can('manage_options')) {
+            header('HTTP/1.0 401 Unauthorized');
+
+            return $this->ajaxDispatcher->makeAndLogError(
+                [
+                    'message' => 'Unauthorized access',
+                ]
+            );
+        }
+
         $this->downloadFile(
             [
                 'filePath' => self::DOC_FILE_PATH,
@@ -58,6 +78,16 @@ class LpcSettingsDownload extends LpcComponent {
     }
 
     public function docEN() {
+        if (!current_user_can('manage_options')) {
+            header('HTTP/1.0 401 Unauthorized');
+
+            return $this->ajaxDispatcher->makeAndLogError(
+                [
+                    'message' => 'Unauthorized access',
+                ]
+            );
+        }
+
         $this->downloadFile(
             [
                 'filePath' => self::DOC_EN_FILE_PATH,

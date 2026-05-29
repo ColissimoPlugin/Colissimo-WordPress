@@ -2,8 +2,7 @@
 defined('ABSPATH') || die('Restricted Access');
 
 class LpcBordereauGenerationApi extends LpcRestApi {
-    const API_BASE_URL = 'https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/';
-    const SOAP_BASE_URL = 'https://ws.colissimo.fr/sls-ws/SlsServiceWS/2.0?wsdl';
+    const API_BASE_URL = 'https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/3.1/';
 
     public function getApiUrl($action) {
         return self::API_BASE_URL . $action;
@@ -60,58 +59,6 @@ class LpcBordereauGenerationApi extends LpcRestApi {
                 ['response' => $jsonResponse['messages']]
             );
             throw new Exception('Error when generating bordereau: ' . $jsonResponse['messages']['messageContent']);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Needed for update to version 1.8.2, do not change soap call to use the stored delivery slips
-     *
-     * @throws Exception When the SOAP extension isn't available.
-     */
-    public function getBordereauByNumber($bordereauNumber) {
-        if (!class_exists('SoapClient')) {
-            LpcLogger::error(
-                __METHOD__ . ' SOAP extension not activated on the server'
-            );
-            throw new Exception('Please activate the SOAP extension on your server. If you don\'t know how to do it, you can ask your hosting provider.');
-        }
-
-        $request = [
-            'bordereauNumber' => $bordereauNumber,
-        ];
-
-        LpcLogger::debug(
-            'Get bordereau by number query',
-            [
-                'method'  => __METHOD__,
-                'payload' => $request,
-            ]
-        );
-
-        $request['contractNumber'] = LpcHelper::get_option('lpc_id_webservices');
-        $request['password']       = LpcHelper::getPasswordWebService();
-
-        // TODO use REST when available
-        require_once LPC_FOLDER . 'lib' . DS . 'MTOMSoapClient.php';
-        $soapClient = new KeepItSimple\Http\Soap\MTOMSoapClient(self::SOAP_BASE_URL, $request);
-        $response   = $soapClient->getBordereauByNumber($request)->return;
-
-        LpcLogger::debug(
-            'Get bordereau by number response',
-            [
-                'method'   => __METHOD__,
-                'response' => $response->messages,
-            ]
-        );
-
-        if (0 != $response->messages->id) {
-            LpcLogger::error(
-                __METHOD__ . ' error in API response',
-                ['response' => $response->messages]
-            );
-            throw new Exception(htmlentities($response->messages->messageContent ?? 'Error in API response'));
         }
 
         return $response;

@@ -39,12 +39,16 @@ jQuery(function ($) {
                         orderId = urlParams.get('id');
                     }
 
+                    const nonceParam = $(this).data('nonce-param');
+                    const nonce = $(this).data('nonce');
+
                     $.ajax({
                         url: ajaxurl,
                         type: 'POST',
                         dataType: 'json',
                         data: {
                             action: 'lpc_order_affect',
+                            [nonceParam]: nonce,
                             order_id: orderId,
                             new_shipping_method: $('input[name="lpc_new_shipping_method"]:checked').val(),
                             shipping_item_id: $('input[name="lpc_order_affect_shipping_item_id"]').val(),

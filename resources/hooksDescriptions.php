@@ -287,4 +287,16 @@ defined('ABSPATH') || die('Restricted Access');
 	}, 10, 1);
 		</pre>
 	</div>
+	<div>
+		<h3>lpc_outward_label_generated_to_email</h3>
+		<p>includes/label/lpc_label_generation_outward.php</p>
+		<p>This action is called when the tracking email is sent to the client.</p>
+		<p>Example:</p>
+		<pre>
+	add_action('lpc_outward_label_generated_to_email', function($order) {
+        // $order->get_meta('lpc_outward_parcel_number');
+        // Your code here
+	}, 10, 1);
+		</pre>
+	</div>
 </div>

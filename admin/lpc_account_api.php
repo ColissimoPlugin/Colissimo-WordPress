@@ -12,9 +12,7 @@ class LpcAccountApi extends LpcRestApi {
     }
 
     public function getAutologinURLs(): array {
-        $payload = [
-            'tagInfoPartner' => 'WOOCOMMERCE',
-        ];
+        $payload = [];
 
         if ('api_key' === LpcHelper::get_option('lpc_credentials_type', 'api_key')) {
             $payload['credential']['apiKey'] = LpcHelper::get_option('lpc_apikey');
@@ -81,7 +79,7 @@ class LpcAccountApi extends LpcRestApi {
         return false;
     }
 
-    public function getAccountInformation(array $payload = []): array {
+    public function getAccountInformation(array $payload = [], bool $withTag = false): array {
         static $accountInformation = null;
         if (!empty($accountInformation)) {
             return $accountInformation;
@@ -101,11 +99,12 @@ class LpcAccountApi extends LpcRestApi {
             }
         }
 
-        $payload['tagInfoPartner'] = 'WOOCOMMERCE';
+        if ($withTag) {
+            $payload['tagInfoPartner'] = 'WOOCOMMERCE';
+        }
 
         try {
             $response = $this->query('v1/rest/additionalinformations', $payload);
-
             if (!empty($response['messageErreur'])) {
                 LpcLogger::error(
                     'Contract information request failed',

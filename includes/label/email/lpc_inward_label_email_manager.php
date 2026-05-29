@@ -50,6 +50,11 @@ class LpcInwardLabelEmailManager extends LpcComponent {
     }
 
     public function control() {
+        if (!current_user_can('lpc_send_emails')) {
+            header('HTTP/1.0 401 Unauthorized');
+            $this->handleErrorRedirect('Unauthorized access');
+        }
+
         $trackingNumber = LpcHelper::getVar(self::TRACKING_NUMBER_VAR_NAME);
         $redirection    = LpcHelper::getVar(self::REDIRECTION_VAR_NAME);
 

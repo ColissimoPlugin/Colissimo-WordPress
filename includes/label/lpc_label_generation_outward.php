@@ -122,7 +122,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             return false;
         }
 
-        $parcelNumber = $response['<jsonInfos>']['labelV2Response']['parcelNumber'];
+        $parcelNumber = $response['<jsonInfos>']['labelV31Response']['parcelNumber'];
         $label        = $response['<label>'];
         $cn23         = @$response['<cn23>'];
 
@@ -374,7 +374,7 @@ class LpcLabelGenerationOutward extends LpcComponent {
             ->withCommercialName(LpcHelper::get_option('lpc_origin_company_name'))
             ->withCuserInfoText()
             ->withSender()
-            ->withAddressee($recipient)
+            ->withAddressee($recipient, $shippingMethodUsed)
             ->withPackage($order, $customParams)
             ->withPreparationDelay()
             ->withInstructions($order->get_customer_note())

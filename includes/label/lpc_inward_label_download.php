@@ -40,7 +40,7 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
     }
 
     protected function listenToAjaxAction() {
-        $this->ajaxDispatcher->register(self::AJAX_TASK_NAME, [$this, 'control']);
+        $this->ajaxDispatcher->register(self::AJAX_TASK_NAME, [$this, 'control'], false);
     }
 
     public function control() {
@@ -49,6 +49,12 @@ class LpcLabelInwardDownloadAccountAction extends LpcComponent {
         $labelNumber = LpcHelper::getVar(self::LABEL_NUMBER_VAR_NAME);
 
         if (!empty($orderId)) {
+            $currentUser = wp_get_current_user();
+            $order       = wc_get_order($orderId);
+            if ($order->get_user_id() !== $currentUser->ID) {
+                $this->handleErrorRedirect(__('You are not allowed to generate a return label for this order.', 'wc_colissimo'));
+            }
+
             if (!empty($products)) {
                 $this->generateCustomLabel($orderId, $products);
             } elseif (!empty($labelNumber)) {

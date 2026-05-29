@@ -4,7 +4,7 @@ defined('ABSPATH') || die('Restricted Access');
 require_once LPC_INCLUDES . 'lpc_rest_api.php';
 
 class LpcLabelGenerationApi extends LpcRestApi {
-    const API_BASE_URL = 'https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/';
+    const API_BASE_URL = 'https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/3.1/';
 
     protected function getApiUrl($action) {
         return self::API_BASE_URL . $action;
@@ -27,7 +27,7 @@ class LpcLabelGenerationApi extends LpcRestApi {
             }
 
             $queryAction = $isSecuredReturn ? 'generateToken' : 'generateLabel';
-            $response = $this->query(
+            $response    = $this->query(
                 $queryAction,
                 $assembledPayload,
                 self::DATA_TYPE_JSON,

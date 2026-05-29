@@ -701,7 +701,7 @@ class LpcSettingsTab extends LpcComponent {
     public function displayDepositLocation() {
         $accountData = $this->accountApi->getAccountInformation();
 
-        if (empty($accountData['siteDepotList'])) {
+        if (empty($accountData['statutTunnelCommande']) || empty($accountData['siteDepotList'])) {
             return;
         }
 
@@ -1154,9 +1154,9 @@ class LpcSettingsTab extends LpcComponent {
             $lpc_admin_notices = LpcRegister::get('lpcAdminNotices');
             $lpc_admin_notices->add_notice(
                 'deprecated_methods',
-                'notice-warning',
+                'notice-error',
                 __(
-                    'The method "Colissimo International" is deprecated, it is strongly recommended to replace it with the method "Colissimo with signature".<br />You can export then import your price grid during this modification, the rates remain the same.',
+                    'The method "Colissimo International" is soon to be removed, please replace it with the method "Colissimo with signature" to avoid any service interruption.<br />You can export then import your price grid to replace easily, the rates remain the same.',
                     'wc_colissimo'
                 ) . '<br /><br />' .
                 __('Here are the affected zones:', 'wc_colissimo') . '<br />' .

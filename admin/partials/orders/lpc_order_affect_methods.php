@@ -51,8 +51,12 @@ $buttonText      = $args['button_text'] ?? __('Click here to ship this order wit
 		</div>
 
         <?php if (!empty($shippingMethods)) { ?>
-			<button type="button" class="button button-primary lpc_order_affect_validate_method">
-                <?php echo __('Choose', 'wc_colissimo'); ?>
+			<button
+					type="button"
+					class="button button-primary lpc_order_affect_validate_method"
+					data-nonce-param="<?php echo esc_attr(LpcAdminOrderAffect::NONCE_SWITCH_METHOD); ?>"
+					data-nonce="<?php echo esc_attr(wp_create_nonce(LpcAdminOrderAffect::NONCE_NAME_SWITCH_METHOD)); ?>">
+                <?php esc_html_e('Choose', 'wc_colissimo'); ?>
 			</button>
         <?php } ?>
 

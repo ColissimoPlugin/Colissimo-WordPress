@@ -88,7 +88,7 @@ class LpcLabelGenerationInward extends LpcComponent {
             return false;
         }
 
-        $contentResponseName = $isSecuredReturn ? 'tokenV2Response' : 'labelV2Response';
+        $contentResponseName = $isSecuredReturn ? 'tokenV3Response' : 'labelV31Response';
         $parcelNumber        = $response['<jsonInfos>'][$contentResponseName]['parcelNumber'];
         $label               = $response['<label>'];
 
@@ -202,7 +202,7 @@ class LpcLabelGenerationInward extends LpcComponent {
             ->withCredentials()
             ->withCuserInfoText()
             ->withSender($customerAddress, $customParams)
-            ->withAddressee($returnAddress)
+            ->withAddressee($returnAddress, $shippingMethodUsed)
             ->withPackage($order, $customParams)
             ->withPreparationDelay()
             ->withInstructions($order->get_customer_note())

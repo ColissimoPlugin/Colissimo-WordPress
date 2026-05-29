@@ -16,11 +16,11 @@ class LpcPickupAjaxContent extends LpcComponent {
     }
 
     public function init() {
-        add_action('wp_ajax_lpc_pickup_ajax_content', [$this, 'sendPickupContent']);
-        add_action('wp_ajax_nopriv_lpc_pickup_ajax_content', [$this, 'sendPickupContent']);
+        add_action('wp_ajax_lpc_pickup_ajax_content', [$this, 'getPickupSelection']);
+        add_action('wp_ajax_nopriv_lpc_pickup_ajax_content', [$this, 'getPickupSelection']);
     }
 
-    public function sendPickupContent() {
+    public function getPickupSelection() {
         if ('widget' === LpcHelper::get_option('lpc_pickup_map_type', 'widget')) {
             $content = $this->lpcPickupWidget->getWidgetModal(true, true);
         } else {

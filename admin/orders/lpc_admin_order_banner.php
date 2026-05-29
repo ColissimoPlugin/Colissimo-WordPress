@@ -3,6 +3,11 @@
 defined('ABSPATH') || die('Restricted Access');
 
 class LpcAdminOrderBanner extends LpcComponent {
+    const NONCE_GENERATE_LABEL = '_lpc_generate_label';
+    const NONCE_NAME_GENERATE_LABEL = 'colissimo_generate_label';
+    const NONCE_SEND_DOCUMENTS = '_lpc_send_documents';
+    const NONCE_NAME_SEND_DOCUMENTS = 'colissimo_send_documents';
+
     /** @var LpcLabelQueries */
     protected $lpcLabelQueries;
 
@@ -317,20 +322,15 @@ class LpcAdminOrderBanner extends LpcComponent {
         }
 
         $args['lpc_sending_service_needed'] = false;
-        $args['lpc_sending_service_config'] = 'partner';
+        $args['lpc_sending_service_config'] = 'dpd';
         $productCode                        = $this->capabilitiesPerCountry->getProductCodeForOrder($order);
         $args['lpc_product_code']           = $productCode;
-        if (in_array($countryCode, LpcLabelGenerationPayload::COUNTRIES_WITH_PARTNER_SHIPPING) && LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE === $productCode) {
-            $countries = [
-                'AT' => 'lpc_domicileas_SendingService_austria',
-                'BE' => 'lpc_domicileas_SendingService_belgium',
-                'DE' => 'lpc_domicileas_SendingService_germany',
-                'IT' => 'lpc_domicileas_SendingService_italy',
-                'LU' => 'lpc_domicileas_SendingService_luxembourg',
-            ];
-
+        if (
+            LpcLabelGenerationPayload::PRODUCT_CODE_WITH_SIGNATURE === $productCode
+            && !empty(LpcLabelGenerationPayload::COUNTRIES_WITH_PARTNER_SHIPPING[$countryCode])
+        ) {
             $args['lpc_sending_service_needed'] = true;
-            $args['lpc_sending_service_config'] = LpcHelper::get_option($countries[$countryCode]);
+            $args['lpc_sending_service_config'] = LpcHelper::get_option(LpcLabelGenerationPayload::COUNTRIES_WITH_PARTNER_SHIPPING[$countryCode], 'dpd');
         }
 
         // On demand
@@ -374,6 +374,10 @@ class LpcAdminOrderBanner extends LpcComponent {
      * @throws Exception When lpcAdminNotices isn't available.
      */
     public function generateLabel() {
+        if (!current_user_can('lpc_manage_labels') || 1 !== (int) check_ajax_referer(self::NONCE_NAME_GENERATE_LABEL, self::NONCE_GENERATE_LABEL, false)) {
+            LpcHelper::endAjax(false, ['message' => 'Unauthorized access.']);
+        }
+
         $checkedItems = LpcHelper::getVar('items', [], 'array');
         if (empty($checkedItems)) {
             LpcHelper::endAjax(false, ['message' => __('You need to select at least one item to generate a label', 'wc_colissimo')]);
@@ -466,6 +470,10 @@ class LpcAdminOrderBanner extends LpcComponent {
     }
 
     public function sendCustomsDocuments() {
+        if (!current_user_can('lpc_manage_documents') || 1 !== (int) check_ajax_referer(self::NONCE_NAME_SEND_DOCUMENTS, self::NONCE_SEND_DOCUMENTS, false)) {
+            LpcHelper::endAjax(false, ['message' => 'Unauthorized access.']);
+        }
+
         $orderId = LpcHelper::getVar('order_id');
         $order   = wc_get_order($orderId);
         if (empty($order)) {

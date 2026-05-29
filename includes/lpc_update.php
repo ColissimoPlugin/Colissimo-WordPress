@@ -220,8 +220,8 @@ class LpcUpdate extends LpcComponent {
                 'SendingService_italy',
                 'SendingService_luxembourg',
             ];
-            $expert     = LpcHelper::get_option('lpc_expert_SendingService', 'partner');
-            $domicileas = LpcHelper::get_option('lpc_domicileas_SendingService', 'partner');
+            $expert     = LpcHelper::get_option('lpc_expert_SendingService', 'dpd');
+            $domicileas = LpcHelper::get_option('lpc_domicileas_SendingService', 'dpd');
             foreach ($countries as $country) {
                 update_option('lpc_expert_' . $country, $expert, false);
                 update_option('lpc_domicileas_' . $country, $domicileas, false);
@@ -339,6 +339,23 @@ class LpcUpdate extends LpcComponent {
 
                 update_option('lpc_logs', wp_json_encode($newLogs), false);
                 unlink($logsFilePath);
+            }
+        }
+
+        if (version_compare($versionInstalled, '2.10.0', '<')) {
+            $cuttOffDates = LpcHelper::get_option('lpc_delivery_date_cuttoff_times');
+            if (!empty($cuttOffDates)) {
+                $cuttOffDates = @json_decode($cuttOffDates, true);
+                if (!empty($cuttOffDates['weekly_schedule'])) {
+                    foreach ($cuttOffDates['weekly_schedule'] as $index => $cuttOffHour) {
+                        $cuttOffDates['weekly_schedule'][$index] = [
+                            'cuttOff' => $cuttOffHour,
+                            'delay'   => '',
+                        ];
+                    }
+
+                    update_option('lpc_delivery_date_cuttoff_times', wp_json_encode($cuttOffDates), false);
+                }
             }
         }
     }

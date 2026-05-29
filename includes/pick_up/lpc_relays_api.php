@@ -11,14 +11,15 @@ class LpcRelaysApi extends LpcRestApi {
     }
 
     public function getRelays($payload) {
-        $paramsWithoutPassword = $payload;
-        unset($paramsWithoutPassword['password']);
+        $paramsWithoutCredentials = $payload;
+        unset($paramsWithoutCredentials['password']);
+        unset($paramsWithoutCredentials['apiKey']);
 
         LpcLogger::debug(
             'Get relays webservice query',
             [
                 'method'  => __METHOD__,
-                'payload' => $paramsWithoutPassword,
+                'payload' => $paramsWithoutCredentials,
                 'url'     => $this->getApiUrl('findRDVPointRetraitAcheminement'),
             ]
         );

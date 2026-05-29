@@ -2,7 +2,9 @@
 defined('ABSPATH') || die('Restricted Access');
 
 class LpcAjax extends LpcComponent {
-    protected $tasks = [];
+    private const NONCE_NAME = '_lpcnonce';
+
+    protected array $tasks = [];
 
     public function init() {
         // Ajax calls definition
@@ -12,23 +14,37 @@ class LpcAjax extends LpcComponent {
 
     public function dispatch() {
         $ajaxCall = LpcHelper::getVar('task');
-        if (is_string($ajaxCall)) {
-            if (isset($this->tasks[$ajaxCall])) {
-                $f = $this->tasks[$ajaxCall];
-                $result = $f();
-            } else {
-                $result = $this->makeAndLogError(['message' => sprintf(__('Unknown ajax call: %s', 'wc_colissimo'), $ajaxCall)]);
-            }
-        } else {
+        if (!is_string($ajaxCall)) {
             $result = $this->makeAndLogError(['message' => __('Wrong ajax call type', 'wc_colissimo')]);
+            $this->jsonResponse($result);
         }
 
-        echo wp_json_encode($result);
-        exit;
+        if (1 !== (int) check_ajax_referer($ajaxCall, self::NONCE_NAME, false)) {
+            $result = $this->makeAndLogError(['message' => 'Authentication failed']);
+            $this->jsonResponse($result);
+        }
+
+        if (!isset($this->tasks[$ajaxCall])) {
+            $result = $this->makeAndLogError(['message' => sprintf(__('Unknown ajax call: %s', 'wc_colissimo'), $ajaxCall)]);
+            $this->jsonResponse($result);
+        }
+
+        $isAdmin = current_user_can('lpc_manage_settings');
+        if (!$isAdmin && $this->tasks[$ajaxCall]['onlyAdmin']) {
+            $result = $this->makeAndLogError(['message' => 'Not allowed']);
+            $this->jsonResponse($result);
+        }
+
+        $f      = $this->tasks[$ajaxCall]['callback'];
+        $result = $f();
+        $this->jsonResponse($result);
     }
 
-    public function register($taskName, callable $f) {
-        $this->tasks[$taskName] = $f;
+    public function register(string $taskName, callable $f, bool $onlyAdmin = true): void {
+        $this->tasks[$taskName] = [
+            'callback'  => $f,
+            'onlyAdmin' => $onlyAdmin,
+        ];
     }
 
     public function makePayload($type, array $payload) {
@@ -36,6 +52,11 @@ class LpcAjax extends LpcComponent {
             $payload,
             ['type' => $type]
         );
+    }
+
+    private function jsonResponse($result) {
+        echo wp_json_encode($result);
+        exit;
     }
 
     public function makeError(array $payload) {
@@ -52,7 +73,13 @@ class LpcAjax extends LpcComponent {
         return $this->makePayload('error', $payload);
     }
 
-    public function getUrlForTask($taskName) {
-        return admin_url('admin-ajax.php?action=' . LPC_COMPONENT . '&task=' . $taskName);
+    public function getUrlForTask(string $taskName): string {
+        return add_query_arg(
+            self::NONCE_NAME,
+            wp_create_nonce($taskName),
+            admin_url(
+                'admin-ajax.php?action=' . LPC_COMPONENT . '&task=' . $taskName
+            )
+        );
     }
 }

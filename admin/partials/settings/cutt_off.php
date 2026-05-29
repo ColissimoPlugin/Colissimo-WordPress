@@ -35,20 +35,24 @@
 								<tr>
 									<th><?php esc_html_e('Day', 'wc_colissimo'); ?></th>
 									<th><?php esc_html_e('Cutt Off times for orders processing', 'wc_colissimo'); ?></th>
+									<th><?php esc_html_e('Preparation delay (days)', 'wc_colissimo'); ?></th>
 								</tr>
 							</thead>
 							<tbody>
                                 <?php foreach ($args['days'] as $day) { ?>
-									<tr>
+									<tr data-day="<?php echo esc_attr($day); ?>">
 										<td><?php esc_html_e($day, 'wc_colissimo'); ?></td>
 										<td>
-											<select class="day-select" data-day="<?php echo esc_attr($day); ?>">
+											<select class="day-select">
                                                 <?php
                                                 foreach ($args['hours'] as $value => $time) {
                                                     echo '<option value="' . esc_attr($value) . '">' . esc_html($time) . '</option>';
                                                 }
                                                 ?>
 											</select>
+										</td>
+										<td>
+											<input type="number" step="1" min="0" class="preparation-delay" />
 										</td>
 									</tr>
                                 <?php } ?>

@@ -10,7 +10,7 @@ $shippingCosts            = $args['lpc_shipping_costs'] ?? 0;
 $bordereauLinks           = $args['lpc_bordereauLinks'] ?? [];
 $customsDocumentsNeeded   = isset($args['lpc_customs_needed']) && $args['lpc_customs_needed'];
 $sendingServiceNeeded     = isset($args['lpc_sending_service_needed']) && $args['lpc_sending_service_needed'];
-$sendingServiceConfig     = $args['lpc_sending_service_config'] ?? 'partner';
+$sendingServiceConfig     = $args['lpc_sending_service_config'] ?? 'dpd';
 $insured                  = $args['lpc_customs_insured'] ?? [];
 $productCode              = $args['lpc_product_code'] ?? '';
 $ddp                      = $args['lpc_ddp'] ?? false;
@@ -75,25 +75,25 @@ $securedReturn = $args['secured_return_active'];
 						<tr>
 							<td class="lpc__admin__order_banner__generate_label__item__td__checkbox check-column">
 								<input type="hidden"
-									   class="lpc__admin__order_banner__generate_label__item__dimensions"
-									   id="<?php echo esc_attr($oneItem['id'] . '-dimensions'); ?>"
-									   value="<?php echo esc_attr($oneItem['dimensions']); ?>" />
+								       class="lpc__admin__order_banner__generate_label__item__dimensions"
+								       id="<?php echo esc_attr($oneItem['id'] . '-dimensions'); ?>"
+								       value="<?php echo esc_attr($oneItem['dimensions']); ?>" />
 								<input type="checkbox"
-									   data-item-id="<?php echo $oneItem['id']; ?>"
-									   class="lpc__admin__order_banner__generate_label__item__checkbox"
+								       data-item-id="<?php echo $oneItem['id']; ?>"
+								       class="lpc__admin__order_banner__generate_label__item__checkbox"
                                     <?php echo empty($oneItem['qty']) ? '' : 'checked'; ?>
 									   name="<?php echo $oneItem['id'] . '-checkbox'; ?>"
 									   id="<?php echo $oneItem['id'] . '-checkbox'; ?>"
 								></td>
 							<td><?php echo $oneItem['name']; ?></td>
 							<td><input type="number"
-									   class="lpc__admin__order_banner__generate_label__item__price"
-									   data-item-id="<?php echo $oneItem['id']; ?>"
-									   value="<?php echo $oneItem['price']; ?>"
-									   name="<?php echo $oneItem['id'] . '-price'; ?>"
-									   min="0"
-									   step="any"
-									   readonly="readonly"
+							           class="lpc__admin__order_banner__generate_label__item__price"
+							           data-item-id="<?php echo $oneItem['id']; ?>"
+							           value="<?php echo $oneItem['price']; ?>"
+							           name="<?php echo $oneItem['id'] . '-price'; ?>"
+							           min="0"
+							           step="any"
+							           readonly="readonly"
 								></td>
 							<td><input
 										style="display: inline-block; width: 50px"
@@ -107,13 +107,13 @@ $securedReturn = $args['secured_return_active'];
 										id="<?php echo $oneItem['id'] . '-qty'; ?>"
 								><span style="margin-left: 5px">/</span><span style="margin-left: 5px"><?php echo $oneItem['base_qty']; ?></span></td>
 							<td><input type="number"
-									   class="lpc__admin__order_banner__generate_label__item__weight"
-									   data-item-id="<?php echo $oneItem['id']; ?>"
-									   value="<?php echo $oneItem['weight']; ?>"
-									   min="0"
-									   step="any"
-									   readonly="readonly"
-									   name="<?php echo $oneItem['id'] . '-weight'; ?>"
+							           class="lpc__admin__order_banner__generate_label__item__weight"
+							           data-item-id="<?php echo $oneItem['id']; ?>"
+							           value="<?php echo $oneItem['weight']; ?>"
+							           min="0"
+							           step="any"
+							           readonly="readonly"
+							           name="<?php echo $oneItem['id'] . '-weight'; ?>"
 								></td>
 						</tr>
                     <?php } ?>
@@ -133,13 +133,13 @@ $securedReturn = $args['secured_return_active'];
                     <?php echo sprintf(__('Shipping costs (%s)', 'wc_colissimo'), $currency); ?>
 				</label>
 				<input type="number"
-					   min="0"
-					   step="any"
-					   class="lpc__admin__order_banner__generate_label__shipping_costs"
-					   id="lpc__admin__order_banner__generate_label__shipping_costs"
-					   name="lpc__admin__order_banner__generate_label__shipping_costs"
-					   value="<?php echo $shippingCosts; ?>"
-					   readonly="readonly"
+				       min="0"
+				       step="any"
+				       class="lpc__admin__order_banner__generate_label__shipping_costs"
+				       id="lpc__admin__order_banner__generate_label__shipping_costs"
+				       name="lpc__admin__order_banner__generate_label__shipping_costs"
+				       value="<?php echo $shippingCosts; ?>"
+				       readonly="readonly"
 				>
 			</div>
             <?php if (!empty($packagings)) { ?>
@@ -169,13 +169,13 @@ $securedReturn = $args['secured_return_active'];
                     <?php echo sprintf(__('Packaging weight (%s)', 'wc_colissimo'), $weightUnit); ?>
 				</label>
 				<input type="number"
-					   min="0"
-					   step="any"
-					   class="lpc__admin__order_banner__generate_label__package_weight"
-					   name="lpc__admin__order_banner__generate_label__package_weight"
-					   id="lpc__admin__order_banner__generate_label__package_weight"
-					   value="<?php echo esc_attr($args['lpc_packaging_weight']); ?>"
-					   readonly="readonly">
+				       min="0"
+				       step="any"
+				       class="lpc__admin__order_banner__generate_label__package_weight"
+				       name="lpc__admin__order_banner__generate_label__package_weight"
+				       id="lpc__admin__order_banner__generate_label__package_weight"
+				       value="<?php echo esc_attr($args['lpc_packaging_weight']); ?>"
+				       readonly="readonly">
 				<input type="hidden" id="lpc__admin__order_banner__generate_label__package_weight_calculated" value="<?php echo esc_attr($args['lpc_packaging_weight']); ?>">
 			</div>
 			<div class="lpc__admin__order_banner__generate_label__total_weight__container">
@@ -190,12 +190,12 @@ $securedReturn = $args['secured_return_active'];
                         <?php esc_html_e('Package length (cm)', 'wc_colissimo'); ?>
 					</label>
 					<input type="number"
-						   min="0"
-						   step="any"
-						   class="lpc__admin__order_banner__generate_label__package_length"
-						   name="lpc__admin__order_banner__generate_label__package_length"
-						   id="lpc__admin__order_banner__generate_label__package_length"
-						   value=""
+					       min="0"
+					       step="any"
+					       class="lpc__admin__order_banner__generate_label__package_length"
+					       name="lpc__admin__order_banner__generate_label__package_length"
+					       id="lpc__admin__order_banner__generate_label__package_length"
+					       value=""
 					>
 				</div>
 				<div class="lpc__admin__order_banner__generate_label__package_width__container">
@@ -203,12 +203,12 @@ $securedReturn = $args['secured_return_active'];
                         <?php esc_html_e('Package width (cm)', 'wc_colissimo'); ?>
 					</label>
 					<input type="number"
-						   min="0"
-						   step="any"
-						   class="lpc__admin__order_banner__generate_label__package_width"
-						   name="lpc__admin__order_banner__generate_label__package_width"
-						   id="lpc__admin__order_banner__generate_label__package_width"
-						   value=""
+					       min="0"
+					       step="any"
+					       class="lpc__admin__order_banner__generate_label__package_width"
+					       name="lpc__admin__order_banner__generate_label__package_width"
+					       id="lpc__admin__order_banner__generate_label__package_width"
+					       value=""
 					>
 				</div>
 				<div class="lpc__admin__order_banner__generate_label__package_height__container">
@@ -216,12 +216,12 @@ $securedReturn = $args['secured_return_active'];
                         <?php esc_html_e('Package height (cm)', 'wc_colissimo'); ?>
 					</label>
 					<input type="number"
-						   min="0"
-						   step="any"
-						   class="lpc__admin__order_banner__generate_label__package_height"
-						   name="lpc__admin__order_banner__generate_label__package_height"
-						   id="lpc__admin__order_banner__generate_label__package_height"
-						   value=""
+					       min="0"
+					       step="any"
+					       class="lpc__admin__order_banner__generate_label__package_height"
+					       name="lpc__admin__order_banner__generate_label__package_height"
+					       id="lpc__admin__order_banner__generate_label__package_height"
+					       value=""
 					>
 				</div>
 				<div class="lpc__admin__order_banner__generate_label__package_description__container">
@@ -230,10 +230,10 @@ $securedReturn = $args['secured_return_active'];
                         <?php echo LpcHelper::tooltip(__('The customs need a description of the package\'s content, in English.', 'wc_colissimo')); ?>
 					</label>
 					<input type="text"
-						   class="lpc__admin__order_banner__generate_label__package_description"
-						   name="lpc__admin__order_banner__generate_label__package_description"
-						   id="lpc__admin__order_banner__generate_label__package_description"
-						   value=""
+					       class="lpc__admin__order_banner__generate_label__package_description"
+					       name="lpc__admin__order_banner__generate_label__package_description"
+					       id="lpc__admin__order_banner__generate_label__package_description"
+					       value=""
 					>
 				</div>
             <?php } ?>
@@ -243,12 +243,12 @@ $securedReturn = $args['secured_return_active'];
                         <?php esc_attr_e('Sending service', 'wc_colissimo'); ?>
 					</label>
 					<select name="lpc__admin__order_banner__generate_label__sending_service"
-							class="lpc__admin__order_banner__generate_label__sending_service"
-							id="lpc__admin__order_banner__generate_label__sending_service">
+					        class="lpc__admin__order_banner__generate_label__sending_service"
+					        id="lpc__admin__order_banner__generate_label__sending_service">
 						<option value="partner" <?php echo 'partner' === $sendingServiceConfig ? 'selected="selected"' : ''; ?>>
                             <?php esc_attr_e('Local postal service', 'wc_colissimo'); ?>
 						</option>
-						<option value="dpd" <?php echo 'dpd' === $sendingServiceConfig ? 'selected="selected"' : ''; ?>>DPD</option>
+						<option value="dpd" <?php echo 'partner' !== $sendingServiceConfig ? 'selected="selected"' : ''; ?>>DPD</option>
 					</select>
 				</div>
             <?php } ?>
@@ -260,8 +260,8 @@ $securedReturn = $args['secured_return_active'];
                     <?php echo LpcHelper::tooltip(__('The non-machinable option isn\'t available for this shipping method and destination country.', 'wc_colissimo')); ?>
                 <?php } ?>
 				<input type="checkbox"
-					   name="lpc__admin__order_banner__generate_label__non_machinable__input"
-					   id="lpc__admin__order_banner__generate_label__non_machinable__input"
+				       name="lpc__admin__order_banner__generate_label__non_machinable__input"
+				       id="lpc__admin__order_banner__generate_label__non_machinable__input"
                     <?php echo LpcLabelGenerationPayload::PRODUCT_CODE_RELAY === $productCode ? 'disabled="disabled"' : ''; ?>>
 				<p>
                     <?php echo sprintf(__('To determine if your package is non machinable you can visit this %s', 'wc_colissimo'),
@@ -273,9 +273,9 @@ $securedReturn = $args['secured_return_active'];
                     <?php esc_html_e('Use Colissimo Insurance?', 'wc_colissimo'); ?>
 				</label>
 				<input type="checkbox" <?php echo 'yes' == LpcHelper::get_option('lpc_using_insurance') ? 'checked' : ''; ?>
-					   name="lpc__admin__order_banner__generate_label__using__insurance__input"
-					   class="lpc__admin__order_banner__generate_label__using__insurance__input"
-					   id="lpc_use_insurance">
+				       name="lpc__admin__order_banner__generate_label__using__insurance__input"
+				       class="lpc__admin__order_banner__generate_label__using__insurance__input"
+				       id="lpc_use_insurance">
 			</div>
 			<div class="lpc__admin__order_banner__generate_label__insurance__amount">
 				<label for="lpc_insurance_amount">
@@ -323,9 +323,9 @@ $securedReturn = $args['secured_return_active'];
                         ); ?>
 					</label>
 					<input type="checkbox"
-						   name="lpc__admin__order_banner__generate_label__multi__parcels__input"
-						   class="lpc__admin__order_banner__generate_label__multi__parcels__input"
-						   id="lpc_multi_parcels"
+					       name="lpc__admin__order_banner__generate_label__multi__parcels__input"
+					       class="lpc__admin__order_banner__generate_label__multi__parcels__input"
+					       id="lpc_multi_parcels"
                         <?php echo empty($parcelsAmount) ? '' : 'checked="checked"'; ?>>
 				</div>
 				<div class="lpc__admin__order_banner__generate_label__multi__parcels__number">
@@ -334,11 +334,11 @@ $securedReturn = $args['secured_return_active'];
                             <?php esc_html_e('Number of parcels:', 'wc_colissimo'); ?>
 						</label>
 						<input type="number"
-							   min="2"
-							   max="<?php echo intval(min($totalQuantity, 4)); ?>"
-							   name="lpc__admin__order_banner__generate_label__parcels_amount"
-							   id="lpc_multi_parcels_number"
-							   disabled="disabled">
+						       min="2"
+						       max="<?php echo intval(min($totalQuantity, 4)); ?>"
+						       name="lpc__admin__order_banner__generate_label__parcels_amount"
+						       id="lpc_multi_parcels_number"
+						       disabled="disabled">
                     <?php } elseif ($parcelCurrentNumber <= $parcelsAmount) { ?>
                         <?php echo sprintf(__('Parcel n°%1$s / %2$s', 'wc_colissimo'), $parcelCurrentNumber, $parcelsAmount); ?>
                         <?php echo LpcHelper::tooltip(
@@ -367,8 +367,8 @@ $securedReturn = $args['secured_return_active'];
                     );
                     ?>
 					<input type="checkbox"
-						   name="lpc__admin__order_banner__generate_label__block_code__input"
-						   id="lpc__admin__order_banner__generate_label__block_code__input"
+					       name="lpc__admin__order_banner__generate_label__block_code__input"
+					       id="lpc__admin__order_banner__generate_label__block_code__input"
                         <?php checked(!empty($args['blocking_code_checked'])); ?>>
 				</div>
             <?php } ?>
@@ -378,7 +378,11 @@ $securedReturn = $args['secured_return_active'];
 					<option value="inward"<?php disabled($securedReturn); ?>><?php esc_html_e('Inward label', 'wc_colissimo'); ?></option>
 					<option value="both"<?php disabled($securedReturn); ?>><?php esc_html_e('Outward and inward labels', 'wc_colissimo'); ?></option>
 				</select>
-				<button type="button" class="button button-primary lpc__admin__order_banner__generate_label__generate-label-button">
+				<button
+						type="button"
+						class="button button-primary lpc__admin__order_banner__generate_label__generate-label-button"
+						data-nonce-param="<?php echo esc_attr(LpcAdminOrderBanner::NONCE_GENERATE_LABEL); ?>"
+						data-nonce="<?php echo esc_attr(wp_create_nonce(LpcAdminOrderBanner::NONCE_NAME_GENERATE_LABEL)); ?>">
                     <?php esc_html_e('Generate', 'wc_colissimo'); ?>
 				</button>
 			</div>
@@ -510,7 +514,10 @@ $securedReturn = $args['secured_return_active'];
 				</td>
 			</tr>
 		</template>
-		<table class="wp-list-table widefat striped">
+		<table
+				class="wp-list-table widefat striped"
+				data-nonce-param="<?php echo esc_attr(LpcAdminOrderBanner::NONCE_SEND_DOCUMENTS); ?>"
+				data-nonce="<?php echo esc_attr(wp_create_nonce(LpcAdminOrderBanner::NONCE_NAME_SEND_DOCUMENTS)); ?>">
 			<thead>
                 <?php foreach ($trackingNumbers as $outwardTrackingNumber => $inwardTrackingNumbers) { ?>
 					<tr>
@@ -538,8 +545,8 @@ $securedReturn = $args['secured_return_active'];
 							</table>
 							<div class="text-center">
 								<button type="button"
-										class="button lpc__admin__order_banner__send_documents__more"
-										data-lpc-parcelnumber="<?php esc_attr_e($outwardTrackingNumber); ?>">
+								        class="button lpc__admin__order_banner__send_documents__more"
+								        data-lpc-parcelnumber="<?php esc_attr_e($outwardTrackingNumber); ?>">
                                     <?php esc_html_e('Add an other document', 'wc_colissimo'); ?>
 								</button>
 								<button type="button" class="button button-primary lpc__admin__order_banner__send_documents__listing__send_button">

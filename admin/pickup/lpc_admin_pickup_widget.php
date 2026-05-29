@@ -66,6 +66,17 @@ class LpcAdminPickupWidget extends LpcComponent {
             $relayTypes = '0';
         }
 
+        $weight = 0;
+        $items  = $order->get_items();
+        foreach ($items as $item) {
+            if (!empty($item['product_id'])) {
+                $product = $item->get_product();
+                if (!$product->is_virtual()) {
+                    $weight += wc_get_weight($product->get_weight(), 'g') * $item['quantity'];
+                }
+            }
+        }
+
         $args['widgetInfo'] =
             [
                 'ceCountryList'     => implode(',', $availableCountries),
@@ -77,7 +88,7 @@ class LpcAdminPickupWidget extends LpcComponent {
                 'URLColissimo'      => self::BASE_URL,
                 'token'             => $this->pickUpWidgetApi->authenticate(),
                 'dyPreparationTime' => LpcHelper::get_option('lpc_preparation_time', 1),
-                'dyWeight'          => '19000',
+                'dyWeight'          => empty($weight) ? 19000 : (int) $weight,
                 'origin'            => 'CMS',
                 'filterRelay'       => $relayTypes,
             ];

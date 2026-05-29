@@ -745,22 +745,22 @@
       "default": ""
     },
     {
-      "id": "lpc_domicileas_SendingService_austria",
+      "id": "lpc_domicileas_SendingService_germany",
       "type": "select",
-      "title": "Sending service Austria",
+      "title": "Sending service Germany",
       "class": "",
-      "default": "partner",
+      "default": "dpd",
       "options": {
         "partner": "Local postal service",
         "dpd": "DPD"
       }
     },
     {
-      "id": "lpc_domicileas_SendingService_germany",
+      "id": "lpc_domicileas_SendingService_austria",
       "type": "select",
-      "title": "Sending service Germany",
+      "title": "Sending service Austria",
       "class": "",
-      "default": "partner",
+      "default": "dpd",
       "options": {
         "partner": "Local postal service",
         "dpd": "DPD"
@@ -771,7 +771,51 @@
       "type": "select",
       "title": "Sending service Belgium",
       "class": "",
-      "default": "partner",
+      "default": "dpd",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_denmark",
+      "type": "select",
+      "title": "Sending service for Denmark",
+      "class": "",
+      "default": "dpd",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_spain",
+      "type": "select",
+      "title": "Sending service for Spain",
+      "class": "",
+      "default": "dpd",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_estonia",
+      "type": "select",
+      "title": "Sending service for Estonia",
+      "class": "",
+      "default": "dpd",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_finland",
+      "type": "select",
+      "title": "Sending service for Finland",
+      "class": "",
+      "default": "dpd",
       "options": {
         "partner": "Local postal service",
         "dpd": "DPD"
@@ -782,7 +826,7 @@
       "type": "select",
       "title": "Sending service Italy",
       "class": "",
-      "default": "partner",
+      "default": "dpd",
       "options": {
         "partner": "Local postal service",
         "dpd": "DPD"
@@ -793,7 +837,29 @@
       "type": "select",
       "title": "Sending service Luxembourg",
       "class": "",
-      "default": "partner",
+      "default": "dpd",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_netherlands",
+      "type": "select",
+      "title": "Sending service for Netherlands",
+      "class": "",
+      "default": "dpd",
+      "options": {
+        "partner": "Local postal service",
+        "dpd": "DPD"
+      }
+    },
+    {
+      "id": "lpc_domicileas_SendingService_poland",
+      "type": "select",
+      "title": "Sending service for Poland",
+      "class": "",
+      "default": "dpd",
       "options": {
         "partner": "Local postal service",
         "dpd": "DPD"
@@ -1200,6 +1266,14 @@
       "default": "country_of_manufacture"
     },
     {
+      "id": "lpc_customs_descriptionFieldName",
+      "type": "text",
+      "title": "Product description custom attribute name",
+      "desc": "The name of the custom attribute you use to store the product's description for the CN23. The product name will be used if not available.",
+      "desc_tip": true,
+      "default": "customs_description"
+    },
+    {
       "id": "lpc_customs_defaultCustomsCategory",
       "type": "select",
       "title": "Default customs category",
@@ -1257,6 +1331,14 @@
       "id": "lpc_mid_code",
       "type": "lpc_mid",
       "title": "MID code for USA"
+    },
+    {
+      "id": "lpc_customs_midFieldName",
+      "type": "text",
+      "title": "MID code custom attribute name",
+      "desc": "The name of the custom attribute you use to store the product's MID code.",
+      "desc_tip": true,
+      "default": "mid_code"
     },
     {
       "id": "lpc_vat_number",

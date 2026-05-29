@@ -128,10 +128,9 @@ class LpcShippingMethods extends LpcComponent {
                     class="lpc_shipping_icon lpc_shipping_icon_' . $methodId . '"> ';
 
         $countryCode = WC()->customer->get_shipping_country();
-
         $partnerLogo  = '';
         $partnerWidth = '80';
-        if (in_array($countryCode, ['IE', 'NL', 'PL', 'PT'])) {
+        if (in_array($countryCode, ['DK', 'EE', 'IE', 'NL', 'PL', 'PT'])) {
             $partnerLogo  = 'partners/dpd.png';
             $partnerWidth = '56';
         } elseif ('AT' === $countryCode) {
@@ -145,7 +144,7 @@ class LpcShippingMethods extends LpcComponent {
             $partnerLogo  = 'partners/australia_post.svg';
             $partnerWidth = '100';
         } elseif ('BE' === $countryCode) {
-            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_belgium', 'partner')) {
+            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_belgium')) {
                 $partnerLogo  = 'partners/bpost.png';
                 $partnerWidth = '70';
             } else {
@@ -166,7 +165,20 @@ class LpcShippingMethods extends LpcComponent {
         } elseif ('CH' === $countryCode) {
             $partnerLogo = 'partners/swiss_post.jpg';
         } elseif ('ES' === $countryCode) {
-            $partnerLogo = 'partners/seur.png';
+            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_spain')) {
+                $partnerLogo = 'partners/seur.png';
+            } else {
+                $partnerLogo  = 'partners/dpd.png';
+                $partnerWidth = '56';
+            }
+        } elseif ('FI' === $countryCode) {
+            if ('partner' === LpcHelper::get_option('lpc_domicileas_SendingService_finland')) {
+                $partnerLogo = 'partners/posti.png';
+                $partnerWidth = '50';
+            } else {
+                $partnerLogo  = 'partners/dpd.png';
+                $partnerWidth = '56';
+            }
         } elseif ('GB' === $countryCode) {
             $partnerLogo = 'partners/parcel_force.jpg';
         } elseif ('IT' === $countryCode) {

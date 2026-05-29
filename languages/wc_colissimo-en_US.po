@@ -2011,8 +2011,8 @@ msgstr "Choice for concurrent rates"
 msgid "In case several price rates are available for the same shipping method, choose the one to display to the customer."
 msgstr "In case several price rates are available for the same shipping method, choose the one to display to the customer."
 
-msgid "The method \"Colissimo International\" is deprecated, it is strongly recommended to replace it with the method \"Colissimo with signature\".<br />You can export then import your price grid during this modification, the rates remain the same."
-msgstr "The method \"Colissimo International\" is deprecated, it is strongly recommended to replace it with the method \"Colissimo with signature\".<br />You can export then import your price grid during this modification, the rates remain the same."
+msgid "The method \"Colissimo International\" is soon to be removed, please replace it with the method \"Colissimo with signature\" to avoid any service interruption.<br />You can export then import your price grid to replace easily, the rates remain the same."
+msgstr "The method \"Colissimo International\" is soon to be removed, please replace it with the method \"Colissimo with signature\" to avoid any service interruption.<br />You can export then import your price grid to replace easily, the rates remain the same."
 
 msgid "Here are the affected zones:"
 msgstr "Here are the affected zones:"
@@ -2622,3 +2622,39 @@ msgstr "https://www.colissimo.entreprise.laposte.fr/en/my-account#informations"
 
 msgid "According to contract"
 msgstr "According to contract"
+
+msgid "Product description custom attribute name"
+msgstr "Product description custom attribute name"
+
+msgid "The name of the custom attribute you use to store the product's description for the CN23. The product name will be used if not available."
+msgstr "The name of the custom attribute you use to store the product's description for the CN23. The product name will be used if not available."
+
+msgid "Sending service for Denmark"
+msgstr "Sending service for Denmark"
+
+msgid "Sending service for Estonia"
+msgstr "Sending service for Estonia"
+
+msgid "Sending service for Finland"
+msgstr "Sending service for Finland"
+
+msgid "Sending service for Netherlands"
+msgstr "Sending service for Netherlands"
+
+msgid "Sending service for Poland"
+msgstr "Sending service for Poland"
+
+msgid "Sending service for Spain"
+msgstr "Sending service for Spain"
+
+msgid "MID Code"
+msgstr "MID Code"
+
+msgid "MID code custom attribute name"
+msgstr "MID code custom attribute name"
+
+msgid "The name of the custom attribute you use to store the product's MID code."
+msgstr "The name of the custom attribute you use to store the product's MID code."
+
+msgid "Preparation delay (days)"
+msgstr "Preparation delay (days)"
